@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: video-aigc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: video_aigc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - video-aigc-postgres:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d video_aigc"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  video-aigc-postgres:
