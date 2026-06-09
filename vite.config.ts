@@ -83,7 +83,12 @@ function ensureSchema() {
       edges jsonb not null default '[]'::jsonb,
       updated_at timestamptz not null default now()
     );
-  `).then(() => undefined)
+  `)
+    .then(() => undefined)
+    .catch((error) => {
+      schemaReady = undefined
+      throw error
+    })
   return schemaReady
 }
 
