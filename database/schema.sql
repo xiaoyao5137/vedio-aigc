@@ -17,3 +17,17 @@ create table if not exists workflow_configs (
   edges jsonb not null default '[]'::jsonb,
   updated_at timestamptz not null default now()
 );
+
+create table if not exists execution_records (
+  id text primary key,
+  workflow_id text not null,
+  workflow_name text not null,
+  mode text not null,
+  title text not null,
+  runtime_inputs jsonb not null default '{}'::jsonb,
+  result jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists execution_records_workflow_created_idx
+  on execution_records (workflow_id, created_at desc);

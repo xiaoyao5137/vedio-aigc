@@ -210,6 +210,51 @@
   font-size: 12px;
 }
 
+.workflow-table-card {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.workflow-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #d9dee7;
+  border-radius: 10px;
+}
+
+.workflow-card > div:first-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.workflow-card strong {
+  font-size: 16px;
+  color: #111827;
+}
+
+.workflow-card p {
+  font-size: 14px;
+  color: #526071;
+  margin: 0;
+}
+
+.workflow-card span {
+  font-size: 13px;
+  color: #78909c;
+}
+
+.workflow-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .node-palette h2,
 .canvas h2,
 .inspector h2,
@@ -440,6 +485,43 @@
   font-size: 12px;
 }
 
+.dag-node.loop-node {
+  border: 2px dashed #ff9800;
+  background: rgba(255, 152, 0, 0.05);
+}
+
+.loop-container {
+  position: absolute;
+  border: 2px dashed #ff9800;
+  border-radius: 12px;
+  background: rgba(255, 152, 0, 0.05);
+  pointer-events: none;
+}
+
+.loop-header {
+  position: absolute;
+  top: -30px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #fff4e5;
+  border: 1px solid #ff9800;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #9a5b00;
+}
+
+.loop-header strong {
+  font-weight: 600;
+}
+
+.loop-header span {
+  color: #b8721a;
+  font-size: 12px;
+}
+
 .node-chain {
   margin-top: 15px;
   display: flex;
@@ -609,7 +691,7 @@ textarea:focus {
 
 .param-editor {
   display: grid;
-  grid-template-columns: 1fr 98px 62px 1fr 36px;
+  grid-template-columns: 1.2fr 1.2fr 98px 62px 1fr 36px;
   align-items: center;
   gap: 7px;
   padding: 9px;
@@ -814,6 +896,41 @@ textarea:focus {
 .model-result {
   min-height: 128px;
   white-space: pre-wrap;
+}
+
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialog-content {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 480px;
+  max-width: 600px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-content h2 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 
 @media (max-width: 1240px) {

@@ -4,6 +4,7 @@ import {
   Bot,
   CheckCircle2,
   Clapperboard,
+  Code2,
   Copy,
   FlaskConical,
   Image as ImageIcon,
@@ -16,16 +17,15 @@ import {
   Settings,
   Sparkles,
   Trash2,
-  Upload,
 } from 'lucide-react'
 import './App.css'
 
-type NodeKind = 'input' | 'image' | 'video' | 'text'
+type NodeKind = 'input' | 'image' | 'video' | 'text' | 'code' | 'loop'
 type ParamType = 'text' | 'number' | 'boolean' | 'image' | 'images' | 'json'
 type ModelCapability = 'text' | 'image' | 'video'
 type ModelProvider = 'Anthropic' | 'OpenAI' | 'Kling' | 'Custom'
 
-type WorkflowParam = { id: string; name: string; type: ParamType; required: boolean; value: string }
+type WorkflowParam = { id: string; name: string; englishName?: string; type: ParamType; required: boolean; value: string }
 type UploadedAsset = { id: string; name: string; dataUrl: string }
 type LoopConfig = { enabled: boolean; sourcePath: string; fallbackCount: number; itemVar: string }
 type WorkflowNode = {
@@ -39,6 +39,8 @@ type WorkflowNode = {
   uploads: UploadedAsset[]
   loop: LoopConfig
   position: { x: number; y: number }
+  parentId?: string
+  childIds?: string[]
 }
 type WorkflowEdge = { id: string; from: string; to: string }
 type Workflow = { id: string; name: string; description: string; nodes: WorkflowNode[]; edges: WorkflowEdge[] }
@@ -53,6 +55,7 @@ type ModelConfig = {
 }
 type AppConfig = { models: ModelConfig[]; workflows: Workflow[] }
 type ModelView = { mode: 'list' } | { mode: 'detail'; modelId: string }
+type WorkflowView = 'list' | 'edit'
 type GraphDrag =
   | { type: 'node'; nodeId: string; offsetX: number; offsetY: number }
   | { type: 'edge'; from: string; x: number; y: number }
@@ -63,6 +66,8 @@ const nodeMeta: Record<NodeKind, { label: string; icon: typeof Pencil }> = {
   text: { label: '文本推理节点', icon: Bot },
   image: { label: '图片生成节点', icon: ImageIcon },
   video: { label: '视频生成节点', icon: Clapperboard },
+  code: { label: '代码执行节点', icon: Code2 },
+  loop: { label: '循环控制节点', icon: Repeat },
 }
 
 const createId = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 8)}`
@@ -125,73 +130,83 @@ const storyNodes: WorkflowNode[] = [
     title: '项目输入',
     kind: 'input',
     resultVar: 'input',
-    prompt: '短视频主题：${topic}，目标平台：${platform}',
+    prompt: '',
     params: [
-      { id: 'topic', name: 'topic', type: 'text', required: true, value: '城市夜跑装备推荐' },
-      { id: 'platform', name: 'platform', type: 'text', required: true, value: '抖音' },
-      { id: 'ratio', name: 'ratio', type: 'text', required: true, value: '9:16' },
+      { id: 'topic', name: '主题', englishName: 'topic', type: 'text', required: true, value: '城市夜跑装备推荐' },
+      { id: 'platform', name: '平台', englishName: 'platform', type: 'text', required: true, value: '抖音' },
+      { id: 'vedio_count', name: '视频数量', englishName: 'vedio_count', type: 'number', required: true, value: '2' },
     ],
     uploads: [],
     loop: defaultLoop(),
     position: { x: 50, y: 170 },
   },
   {
-    id: 'node-fragments',
-    title: '8段脚本片段',
+    id: 'node-script',
+    title: '剧本生成',
     kind: 'text',
     modelId: 'claude-opus-4-8',
-    resultVar: 'script_fragments',
-    prompt: '基于 ${input.topic} 生成 8 个可独立成镜头的短视频脚本片段。',
-    params: [
-      {
-        id: 'items',
-        name: 'items',
-        type: 'json',
-        required: true,
-        value:
-          '[\n  "开场展示夜跑场景",\n  "跑鞋缓震特写",\n  "透气衣物细节",\n  "耳机与配速提醒",\n  "反光装备安全提示",\n  "腰包收纳演示",\n  "跑后拉伸恢复",\n  "结尾购买建议"\n]',
-      },
-    ],
+    resultVar: 'script_generation',
+    prompt: '基于主题"${input.topic}"，为平台"${input.platform}"生成${input.vedio_count}个短视频分镜剧本。\n只返回 JSON 数组，不要 Markdown，每个数组对象必须包含：title、content、duration、camera、mood、firstFramePrompt。',
+    params: [],
     uploads: [],
     loop: defaultLoop(),
     position: { x: 360, y: 100 },
   },
   {
+    id: 'node-loop',
+    title: '按分镜数量循环',
+    kind: 'loop',
+    resultVar: 'shot_loop',
+    prompt: '',
+    params: [],
+    uploads: [],
+    loop: { enabled: true, sourcePath: 'script_generation.shots', fallbackCount: 8, itemVar: 'shot' },
+    position: { x: 650, y: 200 },
+  },
+  {
     id: 'node-image',
-    title: '循环生成8张首帧',
+    title: '首帧图生成',
     kind: 'image',
     modelId: 'gpt-image-2',
-    resultVar: 'first_frames',
-    prompt: '为第 ${loop.index} 个脚本片段生成竖版首帧：${item}',
-    params: [{ id: 'style', name: 'style', type: 'text', required: true, value: '写实运动广告，夜景霓虹' }],
+    resultVar: 'first_frame',
+    prompt: '你是千万粉丝级"真实动物拟人化"短视频金牌UI设计师，请设计以下短视频剧情的4:3比例的首帧图，用于贴给可灵生成短视频。\n剧情如下：\n${shot.content}',
+    params: [
+      { id: 'referenceImages', name: '参考图（可上传或引用变量）', englishName: 'referenceImages', type: 'images', required: false, value: '' },
+      { id: 'size', name: '尺寸', englishName: 'size', type: 'text', required: true, value: '1024x1024' },
+    ],
     uploads: [],
-    loop: { enabled: true, sourcePath: 'script_fragments.items', fallbackCount: 8, itemVar: 'item' },
-    position: { x: 690, y: 55 },
+    loop: defaultLoop(),
+    position: { x: 900, y: 100 },
   },
   {
     id: 'node-video',
-    title: '循环生成8个视频分镜',
+    title: '分镜生成',
     kind: 'video',
     modelId: 'keling3',
-    resultVar: 'video_shots',
-    prompt: '基于 ${item} 和 ${first_frames.items} 生成第 ${loop.index} 个视频分镜。',
-    params: [{ id: 'duration', name: 'duration', type: 'number', required: true, value: '3' }],
+    resultVar: 'video_shot',
+    prompt: '根据剧本生成视频：${shot.content}',
+    params: [
+      { id: 'referenceImage', name: '首帧参考图', englishName: 'referenceImage', type: 'image', required: false, value: '${first_frame}' },
+      { id: 'duration', name: '时长（秒）', englishName: 'duration', type: 'number', required: true, value: '3' },
+      { id: 'camera', name: '镜头运动', englishName: 'camera', type: 'text', required: false, value: '${shot.camera}' },
+      { id: 'mood', name: '氛围', englishName: 'mood', type: 'text', required: false, value: '${shot.mood}' },
+    ],
     uploads: [],
-    loop: { enabled: true, sourcePath: 'script_fragments.items', fallbackCount: 8, itemVar: 'item' },
-    position: { x: 1030, y: 150 },
+    loop: defaultLoop(),
+    position: { x: 1200, y: 180 },
   },
 ]
 
 const initialWorkflows: Workflow[] = [
   {
     id: 'wf-story',
-    name: '夜跑短视频分镜生成',
-    description: '基于 8 段脚本循环生成 8 张首帧和 8 个视频分镜。',
+    name: '打工猫短视频分镜生成',
+    description: '脚本生成后由代码节点拆取 JSON 数组，循环节点按数组长度逐段生成首帧和视频分镜。',
     nodes: storyNodes,
     edges: [
-      { id: 'edge-input-fragments', from: 'node-input', to: 'node-fragments' },
-      { id: 'edge-fragments-image', from: 'node-fragments', to: 'node-image' },
-      { id: 'edge-fragments-video', from: 'node-fragments', to: 'node-video' },
+      { id: 'edge-input-script', from: 'node-input', to: 'node-script' },
+      { id: 'edge-script-loop', from: 'node-script', to: 'node-loop' },
+      { id: 'edge-loop-image', from: 'node-loop', to: 'node-image' },
       { id: 'edge-image-video', from: 'node-image', to: 'node-video' },
     ],
   },
@@ -327,20 +342,6 @@ function executeWorkflow(workflow: Workflow) {
   return { context, logs }
 }
 
-function readUploads(files: FileList | null, onDone: (assets: UploadedAsset[]) => void) {
-  if (!files?.length) return
-  Promise.all(
-    Array.from(files).map(
-      (file) =>
-        new Promise<UploadedAsset>((resolve) => {
-          const reader = new FileReader()
-          reader.onload = () => resolve({ id: createId('asset'), name: file.name, dataUrl: String(reader.result) })
-          reader.readAsDataURL(file)
-        }),
-    ),
-  ).then(onDone)
-}
-
 function App() {
   const viewportRef = useRef<HTMLDivElement>(null)
   const surfaceRef = useRef<HTMLDivElement>(null)
@@ -352,11 +353,13 @@ function App() {
   const [selectedNodeId, setSelectedNodeId] = useState(workflows[0]?.nodes[0]?.id ?? '')
   const [modelTab, setModelTab] = useState<ModelCapability>('text')
   const [modelView, setModelView] = useState<ModelView>({ mode: 'list' })
+  const [workflowView, setWorkflowView] = useState<WorkflowView>('list')
   const [drag, setDrag] = useState<GraphDrag>(null)
   const [zoom, setZoom] = useState(1)
   const [storageDiagnostic, setStorageDiagnostic] = useState('')
   const [configLoaded, setConfigLoaded] = useState(false)
   const [configStatus, setConfigStatus] = useState('正在连接 PostgreSQL 配置库...')
+  const [showInputDialog, setShowInputDialog] = useState(false)
   const activeWorkflow = workflows.find((workflow) => workflow.id === activeWorkflowId) ?? workflows[0]
   const selectedNode = activeWorkflow.nodes.find((node) => node.id === selectedNodeId) ?? activeWorkflow.nodes[0]
   const liveResult = useMemo(() => executeWorkflow(activeWorkflow), [activeWorkflow])
@@ -495,7 +498,7 @@ function App() {
       resultVar: `${kind}_${activeWorkflow.nodes.length + 1}`,
       prompt: kind === 'input' ? '输入 ${name}' : `使用上下文变量生成${nodeMeta[kind].label}`,
       modelId: models.find((model) => model.capability === kind)?.id,
-      params: [{ id: createId('param'), name: 'name', type: 'text', required: false, value: '' }],
+      params: [{ id: createId('param'), name: 'name', englishName: 'name', type: 'text', required: false, value: '' }],
       uploads: [],
       loop: defaultLoop(),
       position,
@@ -542,7 +545,7 @@ function App() {
   }
   const addParam = () =>
     updateNode(selectedNode.id, {
-      params: [...selectedNode.params, { id: createId('param'), name: `param_${selectedNode.params.length + 1}`, type: 'text', required: false, value: '' }],
+      params: [...selectedNode.params, { id: createId('param'), name: `param_${selectedNode.params.length + 1}`, englishName: `param_${selectedNode.params.length + 1}`, type: 'text', required: false, value: '' }],
     })
   const removeParam = (paramId: string) => updateNode(selectedNode.id, { params: selectedNode.params.filter((param) => param.id !== paramId) })
   const updateModel = (id: string, patch: Partial<ModelConfig>) => setDraftModels((current) => current.map((model) => (model.id === id ? { ...model, ...patch } : model)))
@@ -554,6 +557,20 @@ function App() {
       { id: createId('model'), name: `自定义模型 ${current.length + 1}`, provider: 'Custom', capability: modelTab, settings: { endpoint: '', apiKey: '', model: '' }, testInput: '输入测试内容', testResult: '' },
     ])
   const removeModel = (id: string) => setDraftModels((current) => current.filter((model) => model.id !== id))
+
+  const runWorkflow = () => {
+    const inputNode = activeWorkflow.nodes.find((node) => node.kind === 'input')
+    if (inputNode) {
+      setShowInputDialog(true)
+    } else {
+      setRunResult(executeWorkflow(activeWorkflow))
+    }
+  }
+
+  const executeWithInput = () => {
+    setShowInputDialog(false)
+    setRunResult(executeWorkflow(activeWorkflow))
+  }
 
   const getModelStorageSummary = (items: ModelConfig[]) =>
     items.map((model) => ({
@@ -671,8 +688,34 @@ function App() {
       </aside>
 
       {page === 'workflow' ? (
+        workflowView === 'list' ? (
+          <section className="workspace">
+            <header className="topbar">
+              <div>
+                <h1>短视频工作流</h1>
+                <p>管理和编排视频生成工作流</p>
+              </div>
+              <button className="primary-btn" onClick={addWorkflow}><Plus size={17} />新建工作流</button>
+            </header>
+            <div className="workflow-table-card">
+              {workflows.map((workflow) => (
+                <article key={workflow.id} className="workflow-card">
+                  <div>
+                    <strong>{workflow.name}</strong>
+                    <p>{workflow.description}</p>
+                    <span>{workflow.nodes.length} 节点 · {workflow.edges.length} 连线</span>
+                  </div>
+                  <div className="workflow-card-actions">
+                    <button className="ghost-btn" onClick={() => { setActiveWorkflowId(workflow.id); setSelectedNodeId(workflow.nodes[0]?.id ?? ''); setWorkflowView('edit') }}><Pencil size={16} />编辑</button>
+                    <button className="primary-btn" onClick={() => { setActiveWorkflowId(workflow.id); setSelectedNodeId(workflow.nodes[0]?.id ?? ''); setWorkflowView('edit'); setRunResult(executeWorkflow(workflow)) }}><Play size={16} />执行</button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : (
         <section className="workspace">
-          <header className="topbar"><div><h1>短视频工作流</h1><p>节点可在画布上拖动，拖拽输出点到输入点即可建立依赖；点击连线可删除依赖。</p></div><button className="primary-btn" onClick={() => setRunResult(executeWorkflow(activeWorkflow))}><Play size={17} />执行工作流</button></header>
+          <header className="topbar"><div><h1>短视频工作流</h1><p>节点可在画布上拖动，拖拽输出点到输入点即可建立依赖；点击连线可删除依赖。</p></div><div className="topbar-actions"><button className="ghost-btn" onClick={() => setWorkflowView('list')}>返回列表</button><button className="primary-btn" onClick={runWorkflow}><Play size={17} />执行工作流</button></div></header>
           <div className="workflow-grid">
             <section className="node-palette">
               <div className="panel-title"><h2>工作流</h2><button className="icon-btn" title="新增工作流" onClick={addWorkflow}><Plus size={16} /></button></div>
@@ -709,17 +752,61 @@ function App() {
                         })()
                       : null}
                   </svg>
+                  {activeWorkflow.nodes.filter((node) => node.kind === 'loop').map((loopNode) => {
+                    const getDownstreamNodes = (nodeId: string, visited = new Set<string>()): string[] => {
+                      if (visited.has(nodeId)) return []
+                      visited.add(nodeId)
+                      const directChildren = activeWorkflow.edges.filter((e) => e.from === nodeId).map((e) => e.to)
+                      return directChildren.concat(...directChildren.map((childId) => getDownstreamNodes(childId, visited)))
+                    }
+                    const childIds = getDownstreamNodes(loopNode.id)
+                    const children = activeWorkflow.nodes.filter((n) => childIds.includes(n.id))
+                    if (!children.length) return null
+                    const minX = Math.min(...children.map((n) => n.position.x))
+                    const minY = Math.min(...children.map((n) => n.position.y))
+                    const maxX = Math.max(...children.map((n) => n.position.x + 248))
+                    const maxY = Math.max(...children.map((n) => n.position.y + 124))
+                    return (
+                      <div key={loopNode.id} className="loop-container" style={{ left: minX - 20, top: minY - 50, width: maxX - minX + 40, height: maxY - minY + 70 }}>
+                        <div className="loop-header"><Repeat size={16} /><strong>{loopNode.title}</strong><span>循环 {loopNode.loop.fallbackCount} 次</span></div>
+                      </div>
+                    )
+                  })}
                   {activeWorkflow.nodes.map((node) => {
-                    const Icon = nodeMeta[node.kind].icon
+                    const meta = nodeMeta[node.kind]
+                    if (!meta) return null
+                    const Icon = meta.icon
                     const model = models.find((item) => item.id === node.modelId)
+                    const isInLoop = activeWorkflow.nodes.some((n) => {
+                      if (n.kind !== 'loop') return false
+                      const getDownstream = (nodeId: string, visited = new Set<string>()): string[] => {
+                        if (visited.has(nodeId)) return []
+                        visited.add(nodeId)
+                        const children = activeWorkflow.edges.filter((e) => e.from === nodeId).map((e) => e.to)
+                        return children.concat(...children.map((childId) => getDownstream(childId, visited)))
+                      }
+                      return getDownstream(n.id).includes(node.id)
+                    })
+                    if (node.kind === 'loop') {
+                      return (
+                        <article className={selectedNode?.id === node.id ? 'dag-node loop-node selected' : 'dag-node loop-node'} key={node.id} style={{ left: node.position.x, top: node.position.y }} onMouseDown={(e) => startNodeDrag(e, node)} onClick={() => setSelectedNodeId(node.id)}>
+                          <button className="port port-in" title="输入连接点" onMouseUp={(e) => finishEdgeDrag(e, node.id)} />
+                          <button className="port port-out" title="输出连接点" onMouseDown={(e) => startEdgeDrag(e, node)} />
+                          <span className="dag-node-top"><Icon size={20} /><strong>{node.title}</strong><button className="node-action" title="删除节点" onClick={(e) => { e.stopPropagation(); removeNode(node.id) }}><Trash2 size={14} /></button></span>
+                          <small>{meta.label}</small>
+                          <code>${'{' + node.resultVar + '}'}</code>
+                          <span className="loop-badge"><Repeat size={13} />循环 {node.loop.fallbackCount}</span>
+                        </article>
+                      )
+                    }
                     return (
                       <article className={selectedNode?.id === node.id ? 'dag-node selected' : 'dag-node'} key={node.id} style={{ left: node.position.x, top: node.position.y }} onMouseDown={(e) => startNodeDrag(e, node)} onClick={() => setSelectedNodeId(node.id)}>
                         <button className="port port-in" title="输入连接点" onMouseUp={(e) => finishEdgeDrag(e, node.id)} />
                         <button className="port port-out" title="输出连接点" onMouseDown={(e) => startEdgeDrag(e, node)} />
                         <span className="dag-node-top"><Icon size={20} /><strong>{node.title}</strong><button className="node-action" title="删除节点" onClick={(e) => { e.stopPropagation(); removeNode(node.id) }}><Trash2 size={14} /></button></span>
-                        <small>{nodeMeta[node.kind].label}{model ? ` · ${model.name}` : ''}</small>
+                        <small>{meta.label}{model ? ` · ${model.name}` : ''}</small>
                         <code>${'{' + node.resultVar + '}'}</code>
-                        {node.loop.enabled ? <span className="loop-badge"><Repeat size={13} />循环 {node.loop.fallbackCount}</span> : null}
+                        {isInLoop ? null : node.loop.enabled ? <span className="loop-badge"><Repeat size={13} />循环 {node.loop.fallbackCount}</span> : null}
                       </article>
                     )
                   })}
@@ -734,15 +821,15 @@ function App() {
               <label>结果变量名<input value={selectedNode.resultVar} onChange={(event) => updateNode(selectedNode.id, { resultVar: event.target.value })} /></label>
               {selectedNode.kind !== 'input' ? <label>使用模型<select value={selectedNode.modelId ?? ''} onChange={(event) => updateNode(selectedNode.id, { modelId: event.target.value })}>{availableModels.map((model) => <option key={model.id} value={model.id}>{model.name}</option>)}</select></label> : null}
               <label>提示词 / 模板<textarea rows={5} value={selectedNode.prompt} onChange={(event) => updateNode(selectedNode.id, { prompt: event.target.value })} /></label>
-              {(selectedNode.kind === 'image' || selectedNode.kind === 'video') ? <div className="loop-config"><label className="check-label"><input type="checkbox" checked={selectedNode.loop.enabled} onChange={(event) => updateNode(selectedNode.id, { loop: { ...selectedNode.loop, enabled: event.target.checked } })} />启用循环执行器</label><label>循环来源变量<input value={selectedNode.loop.sourcePath} onChange={(event) => updateNode(selectedNode.id, { loop: { ...selectedNode.loop, sourcePath: event.target.value } })} /></label><div className="position-grid"><label>默认次数<input type="number" value={selectedNode.loop.fallbackCount} onChange={(event) => updateNode(selectedNode.id, { loop: { ...selectedNode.loop, fallbackCount: Number(event.target.value) } })} /></label><label>单项变量名<input value={selectedNode.loop.itemVar} onChange={(event) => updateNode(selectedNode.id, { loop: { ...selectedNode.loop, itemVar: event.target.value } })} /></label></div></div> : null}
+              {selectedNode.kind === 'loop' ? <div className="loop-config"><label>循环来源变量<input value={selectedNode.loop.sourcePath} onChange={(event) => updateNode(selectedNode.id, { loop: { ...selectedNode.loop, sourcePath: event.target.value } })} /></label><div className="position-grid"><label>默认次数<input type="number" value={selectedNode.loop.fallbackCount} onChange={(event) => updateNode(selectedNode.id, { loop: { ...selectedNode.loop, fallbackCount: Number(event.target.value) } })} /></label><label>单项变量名<input value={selectedNode.loop.itemVar} onChange={(event) => updateNode(selectedNode.id, { loop: { ...selectedNode.loop, itemVar: event.target.value } })} /></label></div></div> : null}
               <div className="panel-title compact"><h3>入参字段</h3><button className="ghost-btn" onClick={addParam}><Plus size={16} />添加</button></div>
-              <div className="param-list">{selectedNode.params.map((param) => <div className="param-editor" key={param.id}><input value={param.name} onChange={(event) => updateParam(selectedNode.id, param.id, { name: event.target.value })} /><select value={param.type} onChange={(event) => updateParam(selectedNode.id, param.id, { type: event.target.value as ParamType })}><option value="text">文本</option><option value="number">数字</option><option value="boolean">布尔</option><option value="image">单图</option><option value="images">多图</option><option value="json">JSON</option></select><label className="check-label"><input type="checkbox" checked={param.required} onChange={(event) => updateParam(selectedNode.id, param.id, { required: event.target.checked })} />必填</label><input value={param.value} onChange={(event) => updateParam(selectedNode.id, param.id, { value: event.target.value })} /><button className="icon-btn" title="删除入参" onClick={() => removeParam(param.id)}><Trash2 size={15} /></button></div>)}</div>
-              {selectedNode.kind === 'image' || selectedNode.params.some((param) => param.type === 'image' || param.type === 'images') ? <div className="upload-box"><div><strong>手工上传图片</strong><span>支持 1 张或多张，上传后会进入该节点上下文。</span></div><label className="upload-btn"><Upload size={16} />选择图片<input type="file" accept="image/*" multiple onChange={(event) => readUploads(event.target.files, (assets) => updateNode(selectedNode.id, { uploads: [...selectedNode.uploads, ...assets] }))} /></label><div className="thumb-grid">{selectedNode.uploads.map((asset) => <img key={asset.id} src={asset.dataUrl} alt={asset.name} title={asset.name} />)}</div></div> : null}
+              <div className="param-list">{selectedNode.params.map((param) => <div className="param-editor" key={param.id}><input placeholder="中文名" value={param.name} onChange={(event) => updateParam(selectedNode.id, param.id, { name: event.target.value })} /><input placeholder="英文名" value={param.englishName || ''} onChange={(event) => updateParam(selectedNode.id, param.id, { englishName: event.target.value })} /><select value={param.type} onChange={(event) => updateParam(selectedNode.id, param.id, { type: event.target.value as ParamType })}><option value="text">文本</option><option value="number">数字</option><option value="boolean">布尔</option><option value="image">单图</option><option value="images">多图</option><option value="json">JSON</option></select><label className="check-label"><input type="checkbox" checked={param.required} onChange={(event) => updateParam(selectedNode.id, param.id, { required: event.target.checked })} />必填</label><input value={param.value} onChange={(event) => updateParam(selectedNode.id, param.id, { value: event.target.value })} /><button className="icon-btn" title="删除入参" onClick={() => removeParam(param.id)}><Trash2 size={15} /></button></div>)}</div>
             </section>
 
             <section className="context-panel"><div><h2>上下文变量</h2><p>DAG 按依赖拓扑排序执行，循环结果会以 items 数组写入变量。</p></div><pre>{JSON.stringify(liveResult.context, null, 2)}</pre><div className="run-log"><h3>最近执行</h3>{runResult.logs.map((log) => <span key={log}><CheckCircle2 size={15} />{log}</span>)}</div></section>
           </div>
         </section>
+        )
       ) : (
         <section className="workspace">
           {modelView.mode === 'list' ? (
@@ -830,6 +917,33 @@ function App() {
           )}
         </section>
       )}
+      {showInputDialog && (() => {
+        const inputNode = activeWorkflow.nodes.find((node) => node.kind === 'input')
+        if (!inputNode) return null
+        return (
+          <div className="dialog-overlay" onClick={() => setShowInputDialog(false)}>
+            <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+              <h2>项目输入参数</h2>
+              <div className="param-list">
+                {inputNode.params.map((param) => (
+                  <label key={param.id}>
+                    {param.name} {param.englishName && `(${param.englishName})`}
+                    <input
+                      type={param.type === 'number' ? 'number' : 'text'}
+                      value={param.value}
+                      onChange={(e) => updateParam(inputNode.id, param.id, { value: e.target.value })}
+                    />
+                  </label>
+                ))}
+              </div>
+              <div className="dialog-actions">
+                <button className="ghost-btn" onClick={() => setShowInputDialog(false)}>取消</button>
+                <button className="primary-btn" onClick={executeWithInput}>确认执行</button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </main>
   )
 }
