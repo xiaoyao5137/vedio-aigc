@@ -23,3 +23,7 @@ logs/
 *.njsproj
 *.sln
 *.sw?
+
+# Local planning and generated workflow artifacts
+.claude/
+public/generated/

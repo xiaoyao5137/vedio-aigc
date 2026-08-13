@@ -1,0 +1,909 @@
+{
+  "schema_version": "1.0",
+  "project": {
+    "title": "三国前夜：黄巾篇",
+    "episode_range": "001-010",
+    "format": "竖屏历史短剧",
+    "aspect_ratio": "9:16",
+    "target_duration_per_episode_sec": 60,
+    "shot_duration_rule": "单镜头仅使用5秒或10秒，均在3-10秒范围内，并适配常见可灵视频时长档位",
+    "historical_policy": "以《后汉书》《三国志》为主；正史未载的具体对话、会面过程和普通人细节仅作克制的合理戏剧化，不把《三国演义》情节伪装为史实。"
+  },
+  "asset_usage": {
+    "instruction": "先按character_reference_images制作并上传统一定妆图，再把下列相对路径替换为可灵API可访问的URL或素材ID；每个镜头只绑定reference_images中列出的角色图。",
+    "continuity_rule": "同一人物跨集必须复用同一张定妆参考图；不得因镜头变化改变脸型、年龄、发式、胡须、服装主色和体型。"
+  },
+  "character_reference_images": {
+    "张角": "public/character_refs/zhang-jiao_v1.png",
+    "张宝": "public/character_refs/zhang-bao_v1.png",
+    "张梁": "public/character_refs/zhang-liang_v1.png",
+    "马元义": "public/character_refs/ma-yuanyi_v1.png",
+    "封谞": "public/character_refs/feng-xu_v1.png",
+    "徐奉": "public/character_refs/xu-feng_v1.png",
+    "唐周": "public/character_refs/tang-zhou_v1.png",
+    "汉灵帝": "public/character_refs/han-lingdi_v1.png",
+    "何进": "public/character_refs/he-jin_v1.png",
+    "皇甫嵩": "public/character_refs/huangfu-song_v1.png",
+    "朱儁": "public/character_refs/zhu-jun_v1.png",
+    "刘备": "public/character_refs/liu-bei_v1.png",
+    "关羽": "public/character_refs/guan-yu_v1.png",
+    "张飞": "public/character_refs/zhang-fei_v1.png",
+    "张世平": "public/character_refs/zhang-shiping_v1.png",
+    "苏双": "public/character_refs/su-shuang_v1.png",
+    "邹靖": "public/character_refs/zou-jing_v1.png",
+    "波才": "public/character_refs/bo-cai_v1.png",
+    "曹操": "public/character_refs/cao-cao_v1.png"
+  },
+  "character_design_notes": {
+    "张角": "约四十余岁，清瘦、风尘、略有灰须，粗麻道袍而非仙侠华服，眼神沉静有号召力。",
+    "张宝": "约三十余岁，结实、谨慎，土黄深衣，行动干练。",
+    "张梁": "约三十岁，精悍、急烈，褐色短衣，绝不设计成玄幻法师。",
+    "马元义": "三十余岁，商旅外表，实际沉稳善组织，便于乔装往返。",
+    "唐周": "二十余岁，张角弟子，清瘦敏感，神情长期紧张；告密动机保持暧昧。",
+    "汉灵帝": "二十八岁左右，苍白疲惫，黑红冕服符合东汉帝王形制，不做昏君脸谱。",
+    "何进": "壮实、出身市井却已显贵，甲胄朴实厚重，兼具警觉与野心。",
+    "皇甫嵩": "四十余岁，克制沉着，深色汉军札甲，善观察、不怒自威。",
+    "朱儁": "四十余岁，刚毅果断，军人气质，战败时不丑化。",
+    "刘备": "二十三岁左右，较高、长臂但保持正常人体比例，布衣草鞋，面相温厚而有决断。",
+    "关羽": "青年亡命客，身材高大、长须初成、肤色自然略红润，绝非大红脸谱。",
+    "张飞": "青年壮士，雄壮威猛、肤色自然偏深，绝非黑脸戏曲造型。",
+    "曹操": "二十九岁左右，身形中等，目光敏锐，骑都尉军装利落，不做奸雄脸谱。"
+  },
+  "global_postproduction": {
+    "visual": "统一低饱和土褐、黛青、暗红色调；自然日光、油灯、火把为主；轻微胶片颗粒；避免过度慢动作。",
+    "sound": "视频画面生成后另配普通话旁白、同期动作声与汉代氛围音乐；重要台词建议后期配音和口型驱动，不依赖视频模型直接生成准确对白。",
+    "text": "模型画面内禁止生成字幕和水印；集名、年月、地名、史实说明均由后期叠加，避免乱码。"
+  },
+  "episodes": [
+    {
+      "episode_id": "E001",
+      "theme": "符水与饥民：张角如何获得第一批信众",
+      "historical_time": "约公元170年代后期至183年，冀州钜鹿及周边",
+      "key_characters": ["张角", "张宝"],
+      "historical_basis": {
+        "recorded": "《后汉书·皇甫嵩朱儁列传》载张角自称大贤良师，奉事黄老道，以跪拜首过、符水咒说疗病，遣八名弟子传播，十余年间信众遍及八州。",
+        "dramatized": "具体村落、病户、张角与张宝的对话为合理戏剧化；不表现超自然神迹。"
+      },
+      "total_duration_sec": 60,
+      "shots": [
+        {
+          "shot_id": "E001-S01",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["张角"],
+          "prompt": "竖屏9:16，东汉末年钜鹿乡野，阴冷清晨，泥泞村道两侧是低矮夯土屋，饥病村民倚门咳嗽。人物锁定：张角严格匹配参考图「public/character_refs/zhang-jiao_v1.png」，背药囊从远处走入，衣摆沾泥，镜头从破草席上的空碗低机位缓慢抬起跟到他的脸，风吹枯草，表演克制。人物、村落、天空和泥水全部真实真人实景质感，东汉服化道准确，皮肤毛孔、麻布、尘土自然；无卡通、无动漫、无游戏CG、无玄幻光效、无AI塑料感，无现代物件、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "大疫与饥荒之间，百姓先等来的，不是官粮。"
+        },
+        {
+          "shot_id": "E001-S02",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["张角"],
+          "prompt": "竖屏9:16，昏暗夯土民居内，人物锁定：张角严格匹配参考图「public/character_refs/zhang-jiao_v1.png」。他先查看病童额头和呼吸，再把符纸灰末少量混入清水，扶病童缓慢饮下；母亲在旁紧张注视。镜头以50mm手持近景从水碗移到张角专注的眼睛，再到病童逐渐平稳的呼吸，只呈现照护与偶然缓解，绝不出现发光、法术或瞬间治愈。真人演员、真实屋舍、真实油灯与皮肤质感，如严肃历史电影实拍；无卡通、无动漫、无游戏CG、无玄幻特效、无AI感，无现代医疗器械、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "史书说，他以符水咒说疗病；病者颇愈，百姓信向。"
+        },
+        {
+          "shot_id": "E001-S03",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["张角"],
+          "prompt": "竖屏9:16，村口老槐树下，人物锁定：张角严格匹配参考图「public/character_refs/zhang-jiao_v1.png」。一名病愈农夫跪坐坦白曾偷邻家粟米，张角与他同高蹲下安静倾听，随后示意他把粮归还；镜头绕人物轻微半弧运动，围观村民从怀疑转为沉默。所有人物和背景均为真实真人实景，东汉平民发髻与粗麻衣写实，阳光、树皮、尘埃自然；无卡通、无动漫、无CG、无宗教光环、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "他让病者跪拜首过，也让穷人第一次被人听见。"
+        },
+        {
+          "shot_id": "E001-S04",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["张角"],
+          "prompt": "竖屏9:16，暮色中的村外晒场，人物锁定：张角严格匹配参考图「public/character_refs/zhang-jiao_v1.png」。他把信众送来的粟米重新分给两户断炊人家，远处县吏催租的木车从大道驶过却不停。镜头先拍张角粗糙手掌称粮的特写，再拉到粮车与饥民形成前后景对比；张角没有煽情，只抬眼看向车辙。真人演员与真实乡村生产细节，粮袋重量、车轮扬尘、暮光均符合物理规律；无卡通、无动漫、无游戏CG、无玄幻、无AI感，无现代物件、无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "张角：能救一人，是医；若要救万人呢？"
+        },
+        {
+          "shot_id": "E001-S05",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["张角"],
+          "prompt": "竖屏9:16，夜晚简陋院落，人物锁定：张角严格匹配参考图「public/character_refs/zhang-jiao_v1.png」。八名弟子在地上摆开八只磨旧行囊，张角逐一放入药包和竹简，油灯被夜风吹得摇晃；俯拍转为贴近张角手部的特写，动作沉稳，弟子面孔作为非关键群像不抢镜。真实真人、真实院墙、竹简、麻绳和火光，严肃历史电影质感；无卡通、无动漫、无CG复制人、无玄幻法术、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "八名弟子，被派往四方。"
+        },
+        {
+          "shot_id": "E001-S06",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["张角"],
+          "prompt": "竖屏9:16，东汉驿道写实蒙太奇，以人物锁定的张角参考图「public/character_refs/zhang-jiao_v1.png」作为画面前景统一锚点：张角站在木案前用手指依次划过青、徐、幽、冀、荆、扬、兖、豫八州的简略绢地图；镜头每次掠过指尖就硬切到弟子徒步渡河、穿集市、进农舍的真实场景，最后回到张角沉思的脸。地图文字不要求模型生成清晰字，由后期标注。真人演员、真实山河道路和东汉旅具，无卡通、无动漫、无游戏CG、无魔法转场、无AI感，无现代地图、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "十余年间，信众连结八州。"
+        },
+        {
+          "shot_id": "E001-S07",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png", "public/character_refs/zhang-bao_v1.png"],
+          "characters": ["张角", "张宝"],
+          "prompt": "竖屏9:16，雨夜屋檐下，人物锁定：张角严格匹配「public/character_refs/zhang-jiao_v1.png」，张宝严格匹配「public/character_refs/zhang-bao_v1.png」。张宝把一串来自各地的打结麻绳放到案上，低声说人已太多；张角抬眼，外面雷声很远但无夸张闪电。双人近景固定镜头，以微表情制造压力。所有人物、雨水、木屋和油灯真实写实，无卡通、无动漫、无游戏CG、无玄幻异象、无AI塑料感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "张宝：兄长，他们不只来求药了。"
+        },
+        {
+          "shot_id": "E001-S08",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png", "public/character_refs/zhang-bao_v1.png"],
+          "characters": ["张角", "张宝"],
+          "prompt": "竖屏9:16，黎明薄雾中的河滩，人物锁定：张角匹配「public/character_refs/zhang-jiao_v1.png」，张宝匹配「public/character_refs/zhang-bao_v1.png」。二人走上土坡，坡下成百上千名来自不同郡县的信众安静等候，不整齐、不复制、服饰贫旧各异；镜头从二人背后缓慢升起，展示真实庞大人群和远处炊烟，张角并未施法，只是意识到信仰已成为组织。真人群演、真实自然雾气和地貌，电影实拍感；无卡通、无动漫、无游戏CG、无玄幻云光、无AI复制脸，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "求活的人一旦彼此看见，就不再只是病人。"
+        }
+      ]
+    },
+    {
+      "episode_id": "E002",
+      "theme": "三十六方：信众被改造成一张地下组织网",
+      "historical_time": "约公元183年，冀州及八州联络线",
+      "key_characters": ["张角", "张宝", "张梁", "马元义"],
+      "historical_basis": {
+        "recorded": "《后汉书》载张角设三十六方，大方万余人、小方六七千人，各置渠帅，并传播‘苍天已死，黄天当立，岁在甲子，天下大吉’，以白土书‘甲子’于京城寺门和州郡官府。",
+        "dramatized": "三兄弟分工、秘密集会的流程和口令传递细节为合理戏剧化。"
+      },
+      "total_duration_sec": 60,
+      "shots": [
+        {
+          "shot_id": "E002-S01",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png", "public/character_refs/zhang-bao_v1.png", "public/character_refs/zhang-liang_v1.png"],
+          "characters": ["张角", "张宝", "张梁"],
+          "prompt": "竖屏9:16，深夜谷仓内，人物锁定：张角匹配「public/character_refs/zhang-jiao_v1.png」、张宝匹配「public/character_refs/zhang-bao_v1.png」、张梁匹配「public/character_refs/zhang-liang_v1.png」。三人围在铺满木筹的粗木桌旁，把散乱木筹按区域分成三十六组；顶拍快速下降到三人严肃的脸，油灯烟真实。真人演员和东汉谷仓实景，木料、谷尘、服装纤维自然；无卡通、无动漫、无CG、无玄幻阵法、无AI感，无现代地图、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "张角把数十万信众，分成三十六方。"
+        },
+        {
+          "shot_id": "E002-S02",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png", "public/character_refs/zhang-bao_v1.png"],
+          "characters": ["张角", "张宝"],
+          "prompt": "竖屏9:16，偏僻河谷中的万人集会只展示可控局部与纵深，人物锁定：张角匹配「public/character_refs/zhang-jiao_v1.png」，张宝匹配「public/character_refs/zhang-bao_v1.png」。张宝沿队列点验各村木牌，张角在高处观察；镜头长焦压缩人群，群众衣着、年龄和动作各异，绝不整齐如现代阅兵。真实真人群演、真实河谷日光与尘土，东汉布衣和农具准确；无卡通、无动漫、无游戏CG、无复制人、无玄幻、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "大方万余人，小方也有六七千。"
+        },
+        {
+          "shot_id": "E002-S03",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-liang_v1.png"],
+          "characters": ["张梁"],
+          "prompt": "竖屏9:16，村中打谷场，人物锁定：张梁严格匹配参考图「public/character_refs/zhang-liang_v1.png」。他把一枚刻痕木牌交给新任渠帅，又指向分散站立的各村联络人；镜头在木牌、手指和警惕目光间快速切换，强调基层组织而非神秘仪式。真人实景、自然烈日、真实汗水和谷壳飞尘；无卡通、无动漫、无游戏CG、无玄幻符文发光、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "每一方，都有自己的渠帅。"
+        },
+        {
+          "shot_id": "E002-S04",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-bao_v1.png", "public/character_refs/zhang-liang_v1.png"],
+          "characters": ["张宝", "张梁"],
+          "prompt": "竖屏9:16，写实交叉蒙太奇，人物锁定：张宝匹配「public/character_refs/zhang-bao_v1.png」、张梁匹配「public/character_refs/zhang-liang_v1.png」。张宝教联络人用不同绳结表示人数与粮食，张梁检查藏在草车夹层的短兵器；镜头随草车轮转场到驿道，但不使用魔法特效。东汉运输工具、麻绳、铁器和服装真实可信，人物与环境如真人历史片；无卡通、无动漫、无游戏CG、无AI塑料感，无现代武器、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "药包、口信、粮食和兵器，沿同一张网流动。"
+        },
+        {
+          "shot_id": "E002-S05",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-liang_v1.png"],
+          "characters": ["张梁"],
+          "prompt": "竖屏9:16，月夜州郡官署外墙，人物锁定：张梁匹配参考图「public/character_refs/zhang-liang_v1.png」。他在街角阴影中警戒，一名弟子用白土在墙上写下两个古朴大字的位置，镜头只拍手、白土和张梁的侧脸；具体‘甲子’字样建议后期替换以保证准确。真实真人、真实夯土墙和月光，无卡通、无动漫、无CG、无发光文字、无玄幻、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "京城寺门、州郡官府，开始出现同两个字：甲子。"
+        },
+        {
+          "shot_id": "E002-S06",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["张角"],
+          "prompt": "竖屏9:16，废弃砖窑内的秘密集会，人物锁定：张角严格匹配参考图「public/character_refs/zhang-jiao_v1.png」。他没有高台和法器，只站在众人中间，低声说出关于苍天、黄天与甲子的口号，近处的人逐层向后复述；镜头从张角嘴角缓慢后退，让低语像真实人声传播，绝不表现声波或神光。真人群演、砖窑、火盆、烟雾均真实，严肃电影感；无卡通、无动漫、无游戏CG、无玄幻、无AI复制脸，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "张角：苍天已死，黄天当立。岁在甲子，天下大吉。"
+        },
+        {
+          "shot_id": "E002-S07",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png", "public/character_refs/zhang-bao_v1.png", "public/character_refs/zhang-liang_v1.png"],
+          "characters": ["张角", "张宝", "张梁"],
+          "prompt": "竖屏9:16，集会散尽后的砖窑，人物锁定：张角匹配「public/character_refs/zhang-jiao_v1.png」、张宝匹配「public/character_refs/zhang-bao_v1.png」、张梁匹配「public/character_refs/zhang-liang_v1.png」。三人沉默看着地上被踩灭的火星，张梁握拳，张宝皱眉，张角把最后一块木筹推向洛阳方向。特写表演真实克制，环境、余烟和火星符合物理规律；无卡通、无动漫、无游戏CG、无玄幻预兆、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "张角：要变天，先得有人打开雒阳的门。"
+        },
+        {
+          "shot_id": "E002-S08",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png", "public/character_refs/ma-yuanyi_v1.png"],
+          "characters": ["张角", "马元义"],
+          "prompt": "竖屏9:16，清晨河岸，人物锁定：张角匹配「public/character_refs/zhang-jiao_v1.png」，马元义匹配「public/character_refs/ma-yuanyi_v1.png」。张角把封好的竹简藏入马元义商旅鞍袋，马元义检查马蹄与货物后翻身上马；镜头贴地跟随马蹄启动，再摇回张角目送的脸，远处道路通向京师。人物、战马、河岸和晨雾均真实实拍，东汉鞍具准确；无卡通、无动漫、无游戏CG、无玄幻传送、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "张角：荆、扬的人，先在邺城会合。你去联络宫里。"
+        }
+      ]
+    },
+    {
+      "episode_id": "E003",
+      "theme": "洛阳内应：马元义把起事计划送进皇宫",
+      "historical_time": "公元183年末至184年初，荆州、扬州、邺城、雒阳",
+      "key_characters": ["马元义", "封谞", "徐奉", "唐周"],
+      "historical_basis": {
+        "recorded": "《后汉书》载大方马元义先收荆、扬数万人，约在邺会合，数次往来京师，以中常侍封谞、徐奉等为内应，约定三月五日内外俱起。",
+        "dramatized": "马元义的商旅伪装、三人的会面地点、唐周目睹密谈均为悬疑化处理；史书未载唐周告密动机。"
+      },
+      "total_duration_sec": 60,
+      "shots": [
+        {
+          "shot_id": "E003-S01",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/ma-yuanyi_v1.png"],
+          "characters": ["马元义"],
+          "prompt": "竖屏9:16，冬日荆州驿道，人物锁定：马元义严格匹配参考图「public/character_refs/ma-yuanyi_v1.png」。他装作贩布商人牵马穿过关卡，守卒用木简核验货物；镜头从布卷缝隙中隐藏的结绳信物移到马元义镇定的脸。真人演员、真实战马、关卡、冬雾与汉代服饰，如历史谍战电影实拍；无卡通、无动漫、无游戏CG、无玄幻、无AI感，无现代证件、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "马元义以商旅身份，往来荆、扬与京师。"
+        },
+        {
+          "shot_id": "E003-S02",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/ma-yuanyi_v1.png"],
+          "characters": ["马元义"],
+          "prompt": "竖屏9:16，沿江货栈内，人物锁定：马元义匹配「public/character_refs/ma-yuanyi_v1.png」。他一边与真正商人称布交易，一边依次与来自荆州、扬州的渠帅交换不同结绳；镜头以连续跟拍穿过布匹、陶罐和忙碌脚夫，最后停在木板下藏起的名册。人物动作自然，货栈、江雾、木船和物资均真实可信；无卡通、无动漫、无游戏CG、无特工夸张机关、无AI感，无现代货物、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "数万人被秘密登记，目标只有一个：邺城。"
+        },
+        {
+          "shot_id": "E003-S03",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/ma-yuanyi_v1.png"],
+          "characters": ["马元义"],
+          "prompt": "竖屏9:16，邺城外废弃货场，人物锁定：马元义匹配参考图「public/character_refs/ma-yuanyi_v1.png」。他登上木箱，看着各路人马分批进入不同仓棚，抬手命令不得同时点火；高位广角展示被刻意分散的队伍，不出现现代军阵。真人群演数量感真实、衣着不重复，泥地、牲畜与仓棚写实；无卡通、无动漫、无游戏CG、无复制人、无玄幻、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "马元义：分开住，分开走。等三月五日。"
+        },
+        {
+          "shot_id": "E003-S04",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/ma-yuanyi_v1.png"],
+          "characters": ["马元义"],
+          "prompt": "竖屏9:16，东汉雒阳城南门黄昏，人物锁定：马元义匹配「public/character_refs/ma-yuanyi_v1.png」。宏大的夯土城墙与门楼必须符合东汉，不用明清城门；马元义夹在商队中接受盘查，镜头从城门阴影向内跟拍，宫城轮廓远在暮霭中。他短暂看向巡逻甲士，再压低斗笠继续前行。真人实景、真实建筑尺度、马车和人流，无卡通、无动漫、无游戏CG、无AI感，无唐宋明清建筑、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "但真正危险的一步，是把日期送进雒阳宫。"
+        },
+        {
+          "shot_id": "E003-S05",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/ma-yuanyi_v1.png", "public/character_refs/feng-xu_v1.png"],
+          "characters": ["马元义", "封谞"],
+          "prompt": "竖屏9:16，宫城外署的狭窄库房，人物锁定：马元义匹配「public/character_refs/ma-yuanyi_v1.png」，封谞匹配「public/character_refs/feng-xu_v1.png」。封谞穿合乎东汉宦官身份的深色袍服，假装查验进宫布匹，手掌在布卷下接过一枚薄竹片；镜头只用手部特写和一次警惕对视。真人演员、真实库房和油灯，权谋片质感；无卡通、无动漫、无游戏CG、无夸张奸相脸谱、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "封谞：宫门换值那一刻，只有半刻。"
+        },
+        {
+          "shot_id": "E003-S06",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/ma-yuanyi_v1.png", "public/character_refs/feng-xu_v1.png", "public/character_refs/xu-feng_v1.png"],
+          "characters": ["马元义", "封谞", "徐奉"],
+          "prompt": "竖屏9:16，夜晚宫墙夹道，人物锁定：马元义匹配「public/character_refs/ma-yuanyi_v1.png」、封谞匹配「public/character_refs/feng-xu_v1.png」、徐奉匹配「public/character_refs/xu-feng_v1.png」。三人借搬运灯油短暂并行，徐奉低声确认内外同时起事，脚步与巡夜梆子声逼近后三人立即分开；镜头手持跟随，紧张但不晃乱。宫墙、灯笼、袍服和夜色真实写实；无卡通、无动漫、无游戏CG、无隐身特效、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "徐奉：三月五日，宫里与城外同时动。"
+        },
+        {
+          "shot_id": "E003-S07",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/ma-yuanyi_v1.png", "public/character_refs/tang-zhou_v1.png"],
+          "characters": ["马元义", "唐周"],
+          "prompt": "竖屏9:16，雒阳民宅密室，人物锁定：马元义匹配「public/character_refs/ma-yuanyi_v1.png」，唐周匹配「public/character_refs/tang-zhou_v1.png」。马元义把写有约期位置的竹简压在灯下，用刀刮掉外层伪装；门缝外唐周只露出一只紧张的眼睛。焦点从竹简上的刻痕位置拉到唐周，不要求模型生成准确文字，日期由后期叠加。真人实景、油灯与竹简真实；无卡通、无动漫、无游戏CG、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "三月五日。这个日期，被另一个人看见了。"
+        },
+        {
+          "shot_id": "E003-S08",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/tang-zhou_v1.png", "public/character_refs/ma-yuanyi_v1.png"],
+          "characters": ["唐周", "马元义"],
+          "prompt": "竖屏9:16，凌晨雒阳小巷，人物锁定：唐周匹配「public/character_refs/tang-zhou_v1.png」，马元义匹配「public/character_refs/ma-yuanyi_v1.png」。唐周在前景阴影里攥紧袖中的告发草稿，远处马元义毫无察觉地关门离开；镜头缓慢推近唐周苍白犹豫的脸，他听见更鼓后转身朝官署方向走。表演保持动机暧昧，不塑造成单纯反派。真人演员、真实湿石路与晨雾；无卡通、无动漫、无游戏CG、无心理幻象、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "史书只留下两个字：告发。没有留下唐周为何回头。"
+        }
+      ]
+    },
+    {
+      "episode_id": "E004",
+      "theme": "唐周告密：原定三月五日的计划一夜崩塌",
+      "historical_time": "公元184年二月前后，雒阳",
+      "key_characters": ["唐周", "马元义", "汉灵帝", "何进"],
+      "historical_basis": {
+        "recorded": "《后汉书》载济南唐周上书告发，马元义在雒阳被车裂；汉灵帝命查宫省卫士和信奉张角道术者，诛杀千余人，并追捕冀州张角等。",
+        "dramatized": "唐周递书流程、马元义受捕对白和何进现场部署为戏剧化；车裂仅用声音与物件暗示，不直接展示血腥。"
+      },
+      "total_duration_sec": 60,
+      "shots": [
+        {
+          "shot_id": "E004-S01",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/tang-zhou_v1.png"],
+          "characters": ["唐周"],
+          "prompt": "竖屏9:16，雒阳客舍破晓，人物锁定：唐周严格匹配参考图「public/character_refs/tang-zhou_v1.png」。他整夜未眠，案上油灯将尽，写好的告发竹简与张角所授药囊并排放着；唐周先碰药囊又缩手，最终拿起竹简。固定近景依靠微表情推进。真人演员、真实木案、油灯和冷晨光；无卡通、无动漫、无游戏CG、无梦境特效、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "唐周是张角的弟子，也是摧毁计划的人。"
+        },
+        {
+          "shot_id": "E004-S02",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/tang-zhou_v1.png"],
+          "characters": ["唐周"],
+          "prompt": "竖屏9:16，东汉官署长廊清晨，人物锁定：唐周匹配「public/character_refs/tang-zhou_v1.png」。他被两名小吏夹在中间快速穿过层层木门，双手捧着竹简，脚步越来越慢；镜头正向倒退跟拍，门一扇扇在身后关闭，最后他深吸气跨进内堂。建筑朴素符合汉代衙署，不用明清宫殿。真人实拍、自然脚步与晨光；无卡通、无动漫、无游戏CG、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "唐周：钜鹿张角谋反，京师亦有内应。"
+        },
+        {
+          "shot_id": "E004-S03",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/han-lingdi_v1.png"],
+          "characters": ["汉灵帝"],
+          "prompt": "竖屏9:16，雒阳宫中白日，人物锁定：汉灵帝严格匹配参考图「public/character_refs/han-lingdi_v1.png」。他在低矮御案后展开急递竹简，读到宫中内应时手指停住，抬头看向两侧近侍；镜头从竹简边缘迅速推近帝王疲惫却警觉的眼神，不生成可辨文字。真人演员、真实东汉宫室、漆器与冕服；无卡通、无动漫、无游戏CG、无金光龙气、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "汉灵帝：封城。先拿马元义。"
+        },
+        {
+          "shot_id": "E004-S04",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/he-jin_v1.png", "public/character_refs/han-lingdi_v1.png"],
+          "characters": ["何进", "汉灵帝"],
+          "prompt": "竖屏9:16，宫门军署，人物锁定：何进匹配「public/character_refs/he-jin_v1.png」，汉灵帝匹配「public/character_refs/han-lingdi_v1.png」并仅以远处御使传诏画面保持连续。何进摊开京师门禁木牌，迅速把羽林军分往城门、宫省和客舍，命令从内向外搜捕；镜头沿他的手指快速横移到整装士卒。甲胄、军械、木牌和空间符合东汉，真人历史片实拍；无卡通、无动漫、无游戏CG、无现代战术屏、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "何进：城门只许进，不许出。宫里的人，一个个查。"
+        },
+        {
+          "shot_id": "E004-S05",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/ma-yuanyi_v1.png", "public/character_refs/he-jin_v1.png"],
+          "characters": ["马元义", "何进"],
+          "prompt": "竖屏9:16，雒阳货栈突袭，人物锁定：马元义匹配「public/character_refs/ma-yuanyi_v1.png」，何进匹配「public/character_refs/he-jin_v1.png」并站在院门监督。羽林军撞开木门，马元义刚把竹简投入火盆便被按住手臂；镜头手持冲入，在火焰、马元义的脸和何进冷静目光间切换，不表现超人打斗。真人动作与物理碰撞真实，无卡通、无动漫、无游戏CG、无夸张武侠、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "马元义：已经晚了。"
+        },
+        {
+          "shot_id": "E004-S06",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/ma-yuanyi_v1.png", "public/character_refs/tang-zhou_v1.png"],
+          "characters": ["马元义", "唐周"],
+          "prompt": "竖屏9:16，雒阳刑场外阴天，人物锁定：马元义匹配「public/character_refs/ma-yuanyi_v1.png」，唐周匹配「public/character_refs/tang-zhou_v1.png」。避免直接血腥：先拍马元义被押过唐周面前，两人短暂认出彼此；随后只拍四辆战车的车轮、绷紧绳索、惊飞乌鸦和唐周闭眼的脸，画面在行刑前切黑。所有物件、马匹和群众真实，历史电影实拍感；无卡通、无动漫、无游戏CG、无血浆特写、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "马元义被车裂于雒阳。"
+        },
+        {
+          "shot_id": "E004-S07",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/han-lingdi_v1.png", "public/character_refs/he-jin_v1.png"],
+          "characters": ["汉灵帝", "何进"],
+          "prompt": "竖屏9:16，宫中案牍房，人物锁定：汉灵帝匹配「public/character_refs/han-lingdi_v1.png」，何进匹配「public/character_refs/he-jin_v1.png」。二人站在不断堆高的查验名册前，门外一队队嫌疑人被押过；灵帝下令追查冀州，何进看向宫中宦官所在方向，气氛相互猜疑。真实真人、真实竹简、宫室与阴冷天光；无卡通、无动漫、无CG、无夸张阴谋特效、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "宫省与百姓遭到大索，死者千余。追捕令直指冀州。"
+        },
+        {
+          "shot_id": "E004-S08",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/tang-zhou_v1.png", "public/character_refs/he-jin_v1.png"],
+          "characters": ["唐周", "何进"],
+          "prompt": "竖屏9:16，雒阳北门雨后，人物锁定：唐周匹配「public/character_refs/tang-zhou_v1.png」，何进匹配「public/character_refs/he-jin_v1.png」。何进的骑兵信使带着缉捕木牍冲出城门，马蹄溅泥；唐周独自站在城墙阴影下，看车队向冀州远去，神色并无获胜喜悦。长焦缓慢后拉，让他变得渺小。真人、战马、城门和泥水全部写实；无卡通、无动漫、无游戏CG、无AI感，无唐宋明清城楼、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "告密救了京师，却也逼张角提前举旗。"
+        }
+      ]
+    },
+    {
+      "episode_id": "E005",
+      "theme": "甲子提前：黄巾在追捕令到达前同时举事",
+      "historical_time": "公元184年二月，冀州及八州多地",
+      "key_characters": ["张角", "张宝", "张梁"],
+      "historical_basis": {
+        "recorded": "《后汉书》载事泄后张角晨夜驰敕诸方，一时俱起，众人以黄巾为标志；张角称天公将军、张宝称地公将军、张梁称人公将军，旬日之间天下响应、京师震动。",
+        "dramatized": "三兄弟接到消息、销毁原计划和具体攻取官署过程为合理戏剧化。"
+      },
+      "total_duration_sec": 60,
+      "shots": [
+        {
+          "shot_id": "E005-S01",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["张角"],
+          "prompt": "竖屏9:16，钜鹿夜雨中的院门，人物锁定：张角严格匹配参考图「public/character_refs/zhang-jiao_v1.png」。一名浑身泥水的信使跌进门内，把刻有马元义被捕消息的木牍交给张角；镜头从滴水木牍推到他骤然收紧的眼神，背景弟子立刻关门。真人表演、真实雨水、泥地和油灯；无卡通、无动漫、无游戏CG、无闪电预言、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "信使：雒阳事泄，马元义已死。"
+        },
+        {
+          "shot_id": "E005-S02",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png", "public/character_refs/zhang-bao_v1.png", "public/character_refs/zhang-liang_v1.png"],
+          "characters": ["张角", "张宝", "张梁"],
+          "prompt": "竖屏9:16，密室内，人物锁定：张角匹配「public/character_refs/zhang-jiao_v1.png」、张宝匹配「public/character_refs/zhang-bao_v1.png」、张梁匹配「public/character_refs/zhang-liang_v1.png」。张梁主张立刻动手，张宝指出各方尚未齐备，张角沉默片刻，将写着原约期位置的竹简掰断投入火盆；镜头围桌小幅环绕，在三张脸之间制造冲突，不要求显示清晰文字。真人历史片、真实火光和竹简断裂；无卡通、无动漫、无游戏CG、无玄幻火焰、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "张角：等到三月五日，等来的只会是官兵。今夜传令。"
+        },
+        {
+          "shot_id": "E005-S03",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["张角"],
+          "prompt": "竖屏9:16，钜鹿院落深夜，人物锁定：张角匹配参考图「public/character_refs/zhang-jiao_v1.png」。他把三十六枚木牌快速分给跪坐的信使，每人接牌即起身奔向不同院门；俯拍木牌散开形成真实调度感，但绝不排列成发光法阵。真人群演、战马嘶鸣、火把与夜雾真实；无卡通、无动漫、无游戏CG、无玄幻、无AI复制人，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "命令昼夜奔驰，传向三十六方。"
+        },
+        {
+          "shot_id": "E005-S04",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-bao_v1.png"],
+          "characters": ["张宝"],
+          "prompt": "竖屏9:16，天未亮的农家院，人物锁定：张宝严格匹配参考图「public/character_refs/zhang-bao_v1.png」。他把一条普通黄布撕成长带，亲手系在一名老农额头，随后院内众人各自取布结巾；镜头从黄布纤维近景后退到整院人群，黄色应为天然染料的暗黄土色，不鲜艳、不发光。真人实景、布料和晨雾自然；无卡通、无动漫、无游戏CG、无玄幻圣光、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "张宝：今日起，以黄巾相认。"
+        },
+        {
+          "shot_id": "E005-S05",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-liang_v1.png"],
+          "characters": ["张梁"],
+          "prompt": "竖屏9:16，清晨县署门前，人物锁定：张梁匹配参考图「public/character_refs/zhang-liang_v1.png」。他带领农民撞开无人敢守的木栅，不做飞檐走壁；县令从后门逃走，张梁抬手制止部众追杀一名放下武器的小吏，转而命人夺取兵库。真实真人动作、木门碰撞、尘土和东汉官署；无卡通、无动漫、无游戏CG、无武侠特效、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "张梁：取兵器，不杀降者！"
+        },
+        {
+          "shot_id": "E005-S06",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png", "public/character_refs/zhang-bao_v1.png", "public/character_refs/zhang-liang_v1.png"],
+          "characters": ["张角", "张宝", "张梁"],
+          "prompt": "竖屏9:16，写实三地交叉剪辑，人物锁定：张角匹配「public/character_refs/zhang-jiao_v1.png」、张宝匹配「public/character_refs/zhang-bao_v1.png」、张梁匹配「public/character_refs/zhang-liang_v1.png」。张角在钜鹿土台自称天公将军，张宝在另一处接过地公将军木牌，张梁在兵库前接过人公将军木牌；三处都只是人群、风和黄巾，没有天地异象。真人演员、真实场地与自然光，低饱和历史电影质感；无卡通、无动漫、无游戏CG、无雷电法术、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "张角号天公将军，张宝号地公将军，张梁号人公将军。"
+        },
+        {
+          "shot_id": "E005-S07",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhang-bao_v1.png"],
+          "characters": ["张宝"],
+          "prompt": "竖屏9:16，郡县官府外广场，人物锁定：张宝匹配参考图「public/character_refs/zhang-bao_v1.png」。张宝站在前景，身后部众把官府档案搬出而非焚烧整城，远处一座空置官署起火，居民携孩子避让；镜头横移展示秩序崩解与普通人恐惧。火势、烟尘、群众运动均真实物理效果；无卡通、无动漫、无游戏CG、无夸张爆炸、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "官府被焚，聚邑被夺，长吏纷纷逃亡。"
+        },
+        {
+          "shot_id": "E005-S08",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["张角"],
+          "prompt": "竖屏9:16，张角站在高坡前景，严格匹配参考图「public/character_refs/zhang-jiao_v1.png」。镜头以真实匹配剪辑呈现不同州郡黄巾人群从村道汇向县城、烽烟升起、驿骑飞驰，最后缓慢升高看见道路尽头通向雒阳；不要发光地图或数字特效，地名和‘旬日’由后期叠加。真人群演与中国北方地貌真实，电影实拍；无卡通、无动漫、无游戏CG、无AI复制脸、无玄幻天空，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "旬日之间，八州响应。雒阳震动。"
+        }
+      ]
+    },
+    {
+      "episode_id": "E006",
+      "theme": "京师震动：朝廷解党禁、出钱马、急组京师与征讨军",
+      "historical_time": "公元184年二月至三月，雒阳",
+      "key_characters": ["汉灵帝", "何进", "皇甫嵩", "朱儁"],
+      "historical_basis": {
+        "recorded": "《后汉书》载朝廷命州郡修守、在雒阳周边诸关置都尉；何进任大将军，率羽林五营屯都亭；皇甫嵩建议解除党禁、发中藏钱和西园厩马，灵帝采纳，并任皇甫嵩、朱儁率四万余人讨颍川黄巾。",
+        "dramatized": "朝会对白、何进与两将交接军令的具体场面为合理戏剧化。"
+      },
+      "total_duration_sec": 60,
+      "shots": [
+        {
+          "shot_id": "E006-S01",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/han-lingdi_v1.png"],
+          "characters": ["汉灵帝"],
+          "prompt": "竖屏9:16，雒阳宫中急朝，人物锁定：汉灵帝严格匹配参考图「public/character_refs/han-lingdi_v1.png」。各地急递木牍不断被放上御案，他展开一枚又落下一枚，殿外钟声和奔跑脚步交叠；镜头贴近案面快速横移后停在帝王强作镇定的脸。真人演员、真实东汉宫殿和竹木文书；无卡通、无动漫、无游戏CG、无飞舞文字、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "十日之内，告急文书塞满尚书台。"
+        },
+        {
+          "shot_id": "E006-S02",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/he-jin_v1.png"],
+          "characters": ["何进"],
+          "prompt": "竖屏9:16，雒阳都亭军营，人物锁定：何进严格匹配参考图「public/character_refs/he-jin_v1.png」。他穿朴实厚重的东汉札甲巡视左右羽林与五营士，检查弩机、箭簇和战马，发现一张腐坏弓弦后立即命军吏更换；镜头稳定跟拍，表现出身草莽者的实务能力。真人军营、真实甲胄、武器和马匹，无卡通、无动漫、无游戏CG、无后世板甲、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "何进被任为大将军，率京师兵屯驻都亭。"
+        },
+        {
+          "shot_id": "E006-S03",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/he-jin_v1.png"],
+          "characters": ["何进"],
+          "prompt": "竖屏9:16，军署地图案前，人物锁定：何进匹配参考图「public/character_refs/he-jin_v1.png」。他用八枚木筹依次压住函谷、大谷、广成、伊阙、轘辕、旋门、孟津、小平津的位置，命传令兵奔出；地图只需古朴轮廓，关名由后期准确标注。真人、真实漆案、木筹和军署光线；无卡通、无动漫、无游戏CG、无全息地图、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "雒阳四周八关设防，京师第一次像一座被围的城。"
+        },
+        {
+          "shot_id": "E006-S04",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/han-lingdi_v1.png"],
+          "characters": ["皇甫嵩", "汉灵帝"],
+          "prompt": "竖屏9:16，朝堂议事，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，汉灵帝匹配「public/character_refs/han-lingdi_v1.png」。群臣争论时皇甫嵩出列，指出应解除党禁、动用宫中钱财和西园厩马；镜头从侧面缓慢推近，灵帝在高处听完后敲案制止反对声。朝堂尺度、礼仪、袍服符合东汉，真人严肃表演；无卡通、无动漫、无游戏CG、无奸忠脸谱光效、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "皇甫嵩：党锢不解，士人不出；藏钱不发，军士无以死战。"
+        },
+        {
+          "shot_id": "E006-S05",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/han-lingdi_v1.png", "public/character_refs/huangfu-song_v1.png"],
+          "characters": ["汉灵帝", "皇甫嵩"],
+          "prompt": "竖屏9:16，延续同一朝堂，人物锁定：汉灵帝匹配「public/character_refs/han-lingdi_v1.png」，皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」。灵帝从御案旁取出令符交给近侍，皇甫嵩俯身接旨后抬眼，两人短暂对视；镜头用85mm近景压缩空间，表现帝王被迫让步。真人、真实令符与自然殿光；无卡通、无动漫、无游戏CG、无龙气金光、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "汉灵帝：解党禁。发中藏钱，出西园马。"
+        },
+        {
+          "shot_id": "E006-S06",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png"],
+          "characters": ["皇甫嵩", "朱儁"],
+          "prompt": "竖屏9:16，雒阳城外校场，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，朱儁匹配「public/character_refs/zhu-jun_v1.png」。二人分别接过左、右中郎将节杖，身后五校、三河骑士和新募勇士正在编队；镜头从节杖特写拉成高位广角，队伍规模宏大但排列符合古代军营，不是现代阅兵。真人群演、真实东汉军械甲胄和战马；无卡通、无动漫、无游戏CG、无复制军团、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "皇甫嵩、朱儁各领一军，合兵四万余人。"
+        },
+        {
+          "shot_id": "E006-S07",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/he-jin_v1.png", "public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png"],
+          "characters": ["何进", "皇甫嵩", "朱儁"],
+          "prompt": "竖屏9:16，城门内军令交接，人物锁定：何进匹配「public/character_refs/he-jin_v1.png」、皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」、朱儁匹配「public/character_refs/zhu-jun_v1.png」。何进将颍川急报递给两将，提醒黄巾渠帅波才已经聚众；朱儁先转身上马，皇甫嵩扫一眼地图后跟上。真人表演、真实城门与战马，无卡通、无动漫、无游戏CG、无AI感，无后世建筑、无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "何进：颍川不能再丢。"
+        },
+        {
+          "shot_id": "E006-S08",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png", "public/character_refs/he-jin_v1.png"],
+          "characters": ["皇甫嵩", "朱儁", "何进"],
+          "prompt": "竖屏9:16，雒阳南门清晨大军出发，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」、朱儁匹配「public/character_refs/zhu-jun_v1.png」、何进匹配「public/character_refs/he-jin_v1.png」。皇甫嵩与朱儁骑马率军穿门向颍川行进，何进留在城楼阴影中目送；镜头先跟随军旗出城，再反打何进独自面对京师。真人大场面、真实尘土、马步军比例和自然晨光；无卡通、无动漫、无游戏CG、无AI复制军队，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "一支军队南下颍川。与此同时，幽州涿郡也在募兵。"
+        }
+      ]
+    },
+    {
+      "episode_id": "E007",
+      "theme": "涿郡聚众：正史中的刘备、关羽、张飞如何走到一起",
+      "historical_time": "公元184年，幽州涿郡",
+      "key_characters": ["刘备", "关羽", "张飞", "张世平", "苏双", "邹靖"],
+      "historical_basis": {
+        "recorded": "《三国志·先主传》载中山大商张世平、苏双贩马至涿郡，见刘备而资助金财，刘备据此合徒众；黄巾起后刘备率属随校尉邹靖征讨。《关羽传》载关羽亡命至涿，刘备合徒众时关羽与张飞为其御侮；《张飞传》载张飞少与关羽俱事刘备。",
+        "dramatized": "刘关张首次见面、商人判断刘备可投和三人共议的对话为合理戏剧化；正史没有桃园结义，本集不设置桃园、祭告天地或结拜仪式。"
+      },
+      "total_duration_sec": 60,
+      "shots": [
+        {
+          "shot_id": "E007-S01",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/liu-bei_v1.png"],
+          "characters": ["刘备"],
+          "prompt": "竖屏9:16，涿郡集市早晨，人物锁定：二十三岁刘备严格匹配参考图「public/character_refs/liu-bei_v1.png」。他穿布衣草鞋，在草席上编织售卖履席，忽听官差敲鼓宣读募兵令；镜头从他手中编到一半的草席抬到平静却专注的脸，绝不穿帝王服饰。真人演员、真实汉代北方集市、摊贩和晨光；无卡通、无动漫、无游戏CG、无帝王光环、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "这一年，二十三岁的刘备仍以织席贩履为业。"
+        },
+        {
+          "shot_id": "E007-S02",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/liu-bei_v1.png", "public/character_refs/zou-jing_v1.png"],
+          "characters": ["刘备", "邹靖"],
+          "prompt": "竖屏9:16，涿郡县署外募兵台，人物锁定：刘备匹配「public/character_refs/liu-bei_v1.png」，邹靖匹配「public/character_refs/zou-jing_v1.png」。邹靖在台上说明黄巾逼近，台下百姓犹豫后退；刘备穿过人群查看兵器架，发现只有少量旧矛与破盾。镜头随他手指摸过缺口，转到邹靖看见他的瞬间。真人实景、东汉军械与百姓服饰准确；无卡通、无动漫、无游戏CG、无玄幻、无AI复制脸，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "邹靖：有人，无马；有勇，无兵。谁敢聚众来投？"
+        },
+        {
+          "shot_id": "E007-S03",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/liu-bei_v1.png", "public/character_refs/zhang-shiping_v1.png", "public/character_refs/su-shuang_v1.png"],
+          "characters": ["刘备", "张世平", "苏双"],
+          "prompt": "竖屏9:16，涿郡城外马市，人物锁定：刘备匹配「public/character_refs/liu-bei_v1.png」、张世平匹配「public/character_refs/zhang-shiping_v1.png」、苏双匹配「public/character_refs/su-shuang_v1.png」。两名中山马商正验马，刘备上前制止伙计殴打一名惊马少年，并熟练安抚马匹；张世平与苏双交换判断的眼神。真人演员、真实战马反应、尘土和汉代马市；无卡通、无动漫、无游戏CG、无超能力驯马、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "中山商人张世平、苏双，在马市注意到了他。"
+        },
+        {
+          "shot_id": "E007-S04",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/liu-bei_v1.png", "public/character_refs/zhang-shiping_v1.png", "public/character_refs/su-shuang_v1.png"],
+          "characters": ["刘备", "张世平", "苏双"],
+          "prompt": "竖屏9:16，马市账房，人物锁定：刘备匹配「public/character_refs/liu-bei_v1.png」、张世平匹配「public/character_refs/zhang-shiping_v1.png」、苏双匹配「public/character_refs/su-shuang_v1.png」。张世平推来装有钱币的木匣，苏双把数匹马的契券压在上面；刘备没有惊喜，先问要他拿什么偿还，两名商人回答要一条安全商路。镜头用三人中近景，钱币和契券符合汉代。真人实拍、自然表演；无卡通、无动漫、无游戏CG、无金钱发光、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "张世平：我们给金财和马。你若成事，让这条路还能走商。"
+        },
+        {
+          "shot_id": "E007-S05",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/liu-bei_v1.png", "public/character_refs/guan-yu_v1.png"],
+          "characters": ["刘备", "关羽"],
+          "prompt": "竖屏9:16，涿郡旅舍门口，人物锁定：刘备匹配「public/character_refs/liu-bei_v1.png」，青年关羽匹配「public/character_refs/guan-yu_v1.png」。几名地痞试图抢夺募兵钱匣，亡命至涿的关羽从柱边起身，仅用身体挡住去路；刘备按住自己拔刀的手，先让地痞离开。两人第一次对视，没有夸张英雄亮相。真人动作、自然肤色与真实旅舍；无卡通、无动漫、无戏曲红脸、无游戏CG、无武侠气浪、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "关羽亡命奔涿，恰逢刘备合聚徒众。"
+        },
+        {
+          "shot_id": "E007-S06",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/liu-bei_v1.png", "public/character_refs/guan-yu_v1.png", "public/character_refs/zhang-fei_v1.png"],
+          "characters": ["刘备", "关羽", "张飞"],
+          "prompt": "竖屏9:16，城外空地试募，人物锁定：刘备匹配「public/character_refs/liu-bei_v1.png」、关羽匹配「public/character_refs/guan-yu_v1.png」、壮士张飞匹配「public/character_refs/zhang-fei_v1.png」。张飞试举沉重木盾后指出队伍站位漏洞，关羽用木杆示范如何护住刘备侧后，刘备立刻重新分组；镜头手持穿行三人之间，表现能力互补。真人演员、真实负重与泥土地，无卡通、无动漫、无黑脸红脸戏曲妆、无游戏CG、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "张飞：你会聚人，他能护你。那我替你把这群人练成兵。"
+        },
+        {
+          "shot_id": "E007-S07",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/liu-bei_v1.png", "public/character_refs/guan-yu_v1.png", "public/character_refs/zhang-fei_v1.png"],
+          "characters": ["刘备", "关羽", "张飞"],
+          "prompt": "竖屏9:16，普通旅舍夜晚，人物锁定：刘备匹配「public/character_refs/liu-bei_v1.png」、关羽匹配「public/character_refs/guan-yu_v1.png」、张飞匹配「public/character_refs/zhang-fei_v1.png」。三人围着一张粗木案吃简单麦饭，把各自木牌并排放下，商定随邹靖出征；没有桃花、香案、祭天、血酒和结拜仪式。固定镜头如纪实历史片，油灯和表情真实；无卡通、无动漫、无游戏CG、无浪漫神光、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "正史没有桃园结义，只说他们从此共同周旋，不避艰险。"
+        },
+        {
+          "shot_id": "E007-S08",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/liu-bei_v1.png", "public/character_refs/guan-yu_v1.png", "public/character_refs/zhang-fei_v1.png", "public/character_refs/zou-jing_v1.png"],
+          "characters": ["刘备", "关羽", "张飞", "邹靖"],
+          "prompt": "竖屏9:16，涿郡城门外清晨，人物锁定：刘备匹配「public/character_refs/liu-bei_v1.png」、关羽匹配「public/character_refs/guan-yu_v1.png」、张飞匹配「public/character_refs/zhang-fei_v1.png」、邹靖匹配「public/character_refs/zou-jing_v1.png」。邹靖逐一验看张世平、苏双资助的马匹与新募士卒，向刘备点头；刘备带队出发，关羽、张飞一左一右护行。队伍规模有限、装备参差，绝非精锐大军。真人群演、真实马匹与北方道路；无卡通、无动漫、无游戏CG、无AI复制军团，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "刘备率其属，随校尉邹靖征讨黄巾。三个人的道路，从这里开始。"
+        }
+      ]
+    },
+    {
+      "episode_id": "E008",
+      "theme": "颍川初败：朱儁败退，皇甫嵩被迫进入长社",
+      "historical_time": "公元184年春末，颍川郡长社一带",
+      "key_characters": ["皇甫嵩", "朱儁", "波才"],
+      "historical_basis": {
+        "recorded": "《后汉书》载朱儁先与颍川黄巾渠帅波才交战而败，皇甫嵩遂进保长社，波才率大众围城，皇甫嵩兵少、军中皆恐。",
+        "dramatized": "初战地形、朱儁的具体战术失误、皇甫嵩接应败兵的细节为军事戏剧化，不虚构刘关张参与此战。"
+      },
+      "total_duration_sec": 60,
+      "shots": [
+        {
+          "shot_id": "E008-S01",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png"],
+          "characters": ["皇甫嵩", "朱儁"],
+          "prompt": "竖屏9:16，颍川平原春末，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，朱儁匹配「public/character_refs/zhu-jun_v1.png」。两支汉军在岔路短暂停下，朱儁指向前方村镇主张迅速推进，皇甫嵩提醒先探查两侧草泽；镜头贴近马首横移至两将不同表情。真人演员、真实东汉札甲、战马和潮湿原野；无卡通、无动漫、无游戏CG、无AI感，无现代军装、无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "朱儁：若让波才合众，颍川再无立足之地。"
+        },
+        {
+          "shot_id": "E008-S02",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/bo-cai_v1.png"],
+          "characters": ["波才"],
+          "prompt": "竖屏9:16，村庄与草泽之间，人物锁定：黄巾渠帅波才严格匹配参考图「public/character_refs/bo-cai_v1.png」。他不穿夸张盔甲，只以旧皮甲和暗黄巾辨识身份；波才让持农具者正面扬尘示弱，把少量有矛盾的精壮藏在高草与田埂后。镜头低位随他下压手掌，草丛中的人群同时伏低，动作不完全整齐。真人群演、真实草泽、泥土与农具；无卡通、无动漫、无游戏CG、无复制伏兵、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "波才：官军甲重，让他们自己走进泥里。"
+        },
+        {
+          "shot_id": "E008-S03",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhu-jun_v1.png", "public/character_refs/bo-cai_v1.png"],
+          "characters": ["朱儁", "波才"],
+          "prompt": "竖屏9:16，颍川田野接战，人物锁定：朱儁匹配「public/character_refs/zhu-jun_v1.png」，波才匹配「public/character_refs/bo-cai_v1.png」。朱儁率前军压向看似溃散的黄巾队伍，波才在远处边退边观察；镜头跟随汉军靴底陷入湿田，队形开始拉长，立刻切到波才抬手。真实人体运动、甲胄重量、泥水飞溅和战场烟尘；无卡通、无动漫、无游戏CG、无超高速冲锋、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "朱儁先战。波才把他引进了不利地形。"
+        },
+        {
+          "shot_id": "E008-S04",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/zhu-jun_v1.png", "public/character_refs/bo-cai_v1.png"],
+          "characters": ["朱儁", "波才"],
+          "prompt": "竖屏9:16，伏兵从田埂和高草后冲出，人物锁定：朱儁匹配「public/character_refs/zhu-jun_v1.png」，波才匹配「public/character_refs/bo-cai_v1.png」。波才击鼓夹击汉军侧面，朱儁在混乱中立即下马扶起倒旗、命弩手掩护撤退；镜头手持但主体清晰，近战只表现推撞、格挡和泥泞，不做夸张飞人或血浆。真人群演、真实战场物理与自然阴天；无卡通、无动漫、无游戏CG、无武侠特效、无AI复制脸，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "朱儁：后队结阵！伤者先走！"
+        },
+        {
+          "shot_id": "E008-S05",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/zhu-jun_v1.png"],
+          "characters": ["朱儁"],
+          "prompt": "竖屏9:16，战后撤退的土路，人物锁定：朱儁严格匹配参考图「public/character_refs/zhu-jun_v1.png」。他脸上有泥、头盔歪斜但未被丑化，亲自断后让残兵通过窄桥，回头看见军旗倒在远处；长焦轻微后退，压迫感真实。真人演员、真实疲惫、伤兵和东汉军械；无卡通、无动漫、无游戏CG、无英雄慢动作光环、无AI感，无血腥特写、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "朱儁败了。"
+        },
+        {
+          "shot_id": "E008-S06",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png"],
+          "characters": ["皇甫嵩", "朱儁"],
+          "prompt": "竖屏9:16，长社城外暮色，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，朱儁匹配「public/character_refs/zhu-jun_v1.png」。皇甫嵩打开侧门接应败军，先让朱儁伤兵入城，再命自己的后队面向追兵缓慢退却；朱儁要解释战败，皇甫嵩只把水囊递给他。镜头横向跟随队伍进入夯土城门。真人大场面、真实城防、尘土与疲态；无卡通、无动漫、无游戏CG、无后世城墙、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "皇甫嵩：先守住长社。活着，才有下一战。"
+        },
+        {
+          "shot_id": "E008-S07",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/bo-cai_v1.png", "public/character_refs/huangfu-song_v1.png"],
+          "characters": ["波才", "皇甫嵩"],
+          "prompt": "竖屏9:16，长社城墙日落，人物锁定：波才匹配「public/character_refs/bo-cai_v1.png」，皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」。皇甫嵩站在墙头，看见波才率黄巾部众从田野多面合围并依草扎营；镜头从皇甫嵩肩后缓慢拉远，黄巾营火逐点出现但不是数字特效。真人群演、真实营地规模、暮色与烟尘；无卡通、无动漫、无游戏CG、无复制军团、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "波才乘胜围城。皇甫嵩兵少，军中皆恐。"
+        },
+        {
+          "shot_id": "E008-S08",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png"],
+          "characters": ["皇甫嵩"],
+          "prompt": "竖屏9:16，长社城内军仓夜晚，人物锁定：皇甫嵩严格匹配参考图「public/character_refs/huangfu-song_v1.png」。兵卒争抢箭束、有人手抖，皇甫嵩独自走过人群，扶正一面倒靠的盾牌，随后召集军吏围到灯下；镜头从慌乱手持逐渐稳定，最后定格他的眼睛。真人表演、真实狭窄军仓和油灯，无卡通、无动漫、无游戏CG、无AI感，无夸张英雄光、无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "皇甫嵩：兵有奇变，不在众寡。"
+        }
+      ]
+    },
+    {
+      "episode_id": "E009",
+      "theme": "长社风起：皇甫嵩在草营与夜风之间看见战机",
+      "historical_time": "公元184年五月前后，长社",
+      "key_characters": ["皇甫嵩", "朱儁", "波才"],
+      "historical_basis": {
+        "recorded": "《后汉书》载皇甫嵩判断波才依草结营、易为风火，计划乘夜纵火、内外合击；当夜恰逢大风，遂命城上军士束苣、锐士潜出围外。",
+        "dramatized": "侦察方法、朱儁请战、波才对风势的误判和分秒调度为合理军事戏剧化。"
+      },
+      "total_duration_sec": 60,
+      "shots": [
+        {
+          "shot_id": "E009-S01",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/bo-cai_v1.png"],
+          "characters": ["皇甫嵩", "波才"],
+          "prompt": "竖屏9:16，长社黎明，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，波才匹配「public/character_refs/bo-cai_v1.png」。从皇甫嵩城头视角看，波才在围城营地巡视，帐棚大量搭在干草、芦苇和柴垛旁；长焦镜头穿过城垛压缩空间，突出可燃环境而非夸张军力。真人群演、真实营帐草料和晨雾；无卡通、无动漫、无游戏CG、无AI复制营地，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "波才人多，却把营寨扎进了草里。"
+        },
+        {
+          "shot_id": "E009-S02",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png"],
+          "characters": ["皇甫嵩"],
+          "prompt": "竖屏9:16，长社城墙白日，人物锁定：皇甫嵩匹配参考图「public/character_refs/huangfu-song_v1.png」。他把少量碎草抛出城垛，观察风向，又用湿指感受气流，随后沿城墙看向敌营草堆；镜头微距拍草屑被风带走，再焦点拉回他形成判断的神情。动作符合古代经验，不使用现代仪器。真人、真实风和石土城防；无卡通、无动漫、无游戏CG、无风元素特效、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "风从城里吹向城外。若夜里更大，围城会变成火圈。"
+        },
+        {
+          "shot_id": "E009-S03",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png"],
+          "characters": ["皇甫嵩", "朱儁"],
+          "prompt": "竖屏9:16，城楼军议，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，朱儁匹配「public/character_refs/zhu-jun_v1.png」。皇甫嵩把一小束干苇放在敌营模型旁，朱儁立刻明白并提出率败兵雪耻；皇甫嵩让他等火起再出。镜头俯拍模型后切双人近景，表演沉着。真人实景、真实木案和干苇；无卡通、无动漫、无游戏CG、无全息沙盘、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "皇甫嵩：火未起，谁也不许开门。"
+        },
+        {
+          "shot_id": "E009-S04",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png"],
+          "characters": ["皇甫嵩", "朱儁"],
+          "prompt": "竖屏9:16，连续作战准备蒙太奇，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，朱儁匹配「public/character_refs/zhu-jun_v1.png」。皇甫嵩把锐士分成数个小队，朱儁检查城门后集结骑步兵；士卒将苇杆紧束成火把、用湿布包裹备用火种。镜头以快速但清晰的手部特写连接，不出现现代燃料。真人演员、真实绳结、苇束、甲胄和油脂；无卡通、无动漫、无游戏CG、无AI感，无现代战术装备、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "城上束苣，城外藏火；一支锐士要先穿过包围。"
+        },
+        {
+          "shot_id": "E009-S05",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png"],
+          "characters": ["皇甫嵩"],
+          "prompt": "竖屏9:16，夜幕初降的长社城墙，人物锁定：皇甫嵩严格匹配参考图「public/character_refs/huangfu-song_v1.png」。他逐个检查城头士卒藏在垛口下的苇火把，用手压低火苗避免暴露；镜头沿一排紧张面孔移动，最后停在他安抚年轻兵卒颤抖肩膀的手。真人表演、真实低照度火光和夜风；无卡通、无动漫、无游戏CG、无火焰特效、无AI复制脸，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "皇甫嵩：怕，就盯着我的火。"
+        },
+        {
+          "shot_id": "E009-S06",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png"],
+          "characters": ["皇甫嵩"],
+          "prompt": "竖屏9:16，深夜城墙暗门，人物锁定：皇甫嵩匹配参考图「public/character_refs/huangfu-song_v1.png」。他亲手打开仅容一人的低矮水门，数名锐士伏身涉过浅沟、避开远处黄巾哨火，皇甫嵩在门内无声计数；镜头低位贴水跟出两步再回望他，水声与呼吸真实。真人演员、真实夜色、泥水和潜行节奏；无卡通、无动漫、无游戏CG、无隐身术、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "锐士从围中潜出，只等风来。"
+        },
+        {
+          "shot_id": "E009-S07",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/bo-cai_v1.png"],
+          "characters": ["波才"],
+          "prompt": "竖屏9:16，黄巾草营深夜，人物锁定：波才匹配参考图「public/character_refs/bo-cai_v1.png」。巡哨向他报告风势变大，波才看一眼坚闭的城门，认为官军不敢出，命众人休息；一阵风卷起帐边干草，他伸脚踩住后走入帐中。表演自信但不愚蠢脸谱。真人、真实营火、帐布和风力；无卡通、无动漫、无游戏CG、无反派阴光、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "波才：他们兵少，只会守。天亮再攻。"
+        },
+        {
+          "shot_id": "E009-S08",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png"],
+          "characters": ["皇甫嵩", "朱儁"],
+          "prompt": "竖屏9:16，午夜风骤起，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，朱儁匹配「public/character_refs/zhu-jun_v1.png」。城头军旗和两人的衣袍被真实大风同时吹向敌营方向，皇甫嵩抬手，朱儁握紧刀柄；切到城外锐士用火镰点燃一束细火，火星被风带向干草，画面在即将蔓延时切黑。真实风、火镰、火星和人物反应；无卡通、无动漫、无游戏CG、无爆燃特效、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "皇甫嵩：举火。"
+        }
+      ]
+    },
+    {
+      "episode_id": "E010",
+      "theme": "夜火破波才：长社之战与曹操第一次进入乱世主舞台",
+      "historical_time": "公元184年五月前后，长社",
+      "key_characters": ["皇甫嵩", "朱儁", "波才", "曹操", "张角"],
+      "historical_basis": {
+        "recorded": "《后汉书》载当夜大风，皇甫嵩令城上举苣、锐士于围外纵火大呼，继而鼓噪冲阵；恰逢骑都尉曹操率援军到达，皇甫嵩、曹操与朱儁合兵大破波才部。《三国志·武帝纪》亦载曹操拜骑都尉、讨颍川贼。",
+        "dramatized": "曹操抵达的视觉时点、四将短暂对视和具体追击调度为电影化；不让曹操独占长社火攻之功。"
+      },
+      "total_duration_sec": 60,
+      "shots": [
+        {
+          "shot_id": "E010-S01",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/bo-cai_v1.png"],
+          "characters": ["皇甫嵩", "波才"],
+          "prompt": "竖屏9:16，承接上集午夜长社，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，波才匹配「public/character_refs/bo-cai_v1.png」。城外锐士点燃第一片干草，火线被大风沿地面迅速推向波才草营；城头皇甫嵩从远处观察，营中波才被骤亮火光惊醒。火势必须遵循真实燃烧与风向，不瞬间爆炸。真人、真实火焰、烟与夜色；无卡通、无动漫、无游戏CG、无魔法火海、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "大风把一束火，变成了整座营寨的敌人。"
+        },
+        {
+          "shot_id": "E010-S02",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png"],
+          "characters": ["皇甫嵩", "朱儁"],
+          "prompt": "竖屏9:16，长社城墙与城门，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，朱儁匹配「public/character_refs/zhu-jun_v1.png」。城外火起后，皇甫嵩挥下手臂，城上一排苇火把同时举起回应；朱儁命人拉开沉重城门，鼓手开始击鼓。镜头从举火的城墙俯冲式摇到正在开启的门缝，但保持物理真实和主体清楚。真人群演、真实火把、城门机械与烟雾；无卡通、无动漫、无游戏CG、无AI复制士兵，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "城外纵火，城上举燎。内外信号终于合上。"
+        },
+        {
+          "shot_id": "E010-S03",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png"],
+          "characters": ["皇甫嵩", "朱儁"],
+          "prompt": "竖屏9:16，长社城门冲击，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」，朱儁匹配「public/character_refs/zhu-jun_v1.png」。皇甫嵩在前挥军鼓进，朱儁率整队士卒从门内冲出，不做单骑无双；镜头低位跟随盾墙迈出门槛，火光从盾面掠过。真人演员、真实队列速度、甲胄重量和烟尘；无卡通、无动漫、无游戏CG、无武侠轻功、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "皇甫嵩：击鼓！出城！"
+        },
+        {
+          "shot_id": "E010-S04",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/bo-cai_v1.png"],
+          "characters": ["波才"],
+          "prompt": "竖屏9:16，黄巾营地混乱撤退，人物锁定：波才严格匹配参考图「public/character_refs/bo-cai_v1.png」。他用刀割断一顶着火帐篷的绳索，试图打开无火退路，却被逆向奔跑的人群冲散；波才抓住一面倒下黄旗重整亲兵，随后发现四面喊杀。镜头手持穿越烟中，画面紧张但不展示尸山血海。真人群演、真实恐慌、火势和浓烟；无卡通、无动漫、无游戏CG、无夸张爆炸、无AI复制脸，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "波才：向无火处退！不要挤！"
+        },
+        {
+          "shot_id": "E010-S05",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/cao-cao_v1.png", "public/character_refs/huangfu-song_v1.png"],
+          "characters": ["曹操", "皇甫嵩"],
+          "prompt": "竖屏9:16，长社外围夜路，人物锁定：二十九岁曹操严格匹配「public/character_refs/cao-cao_v1.png」，远处皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」。曹操率骑都尉援军赶到坡顶，看见火营与城门汉军后立刻判断战势，拔刀指向黄巾退路而不是摆造型；镜头从马蹄急停摇到他敏锐的眼神，再随骑兵转向。真人演员、真实马术、甲胄、夜火反光；无卡通、无动漫、无游戏CG、无奸雄黑气、无AI感，无字幕、无水印。",
+          "audio_type": "对白",
+          "audio": "曹操：不是救城了。截住他们的退路！"
+        },
+        {
+          "shot_id": "E010-S06",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png", "public/character_refs/cao-cao_v1.png", "public/character_refs/bo-cai_v1.png"],
+          "characters": ["皇甫嵩", "朱儁", "曹操", "波才"],
+          "prompt": "竖屏9:16，长社决战高潮，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」、朱儁匹配「public/character_refs/zhu-jun_v1.png」、曹操匹配「public/character_refs/cao-cao_v1.png」、波才匹配「public/character_refs/bo-cai_v1.png」。以清晰交叉剪辑呈现皇甫嵩正面鼓进、朱儁从侧翼合兵、曹操骑兵封住开阔退路，波才带残部突围；强调三路协同，任何人都不表现一人斩百。真人大规模战场、真实烟尘、马匹避火与兵器碰撞；无卡通、无动漫、无游戏CG、无武侠特效、无AI复制军队，无血腥特写、无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "皇甫嵩、朱儁、曹操合兵，波才军终于崩溃。"
+        },
+        {
+          "shot_id": "E010-S07",
+          "duration_sec": 5,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/zhu-jun_v1.png", "public/character_refs/cao-cao_v1.png"],
+          "characters": ["皇甫嵩", "朱儁", "曹操"],
+          "prompt": "竖屏9:16，天亮后的长社战场，人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」、朱儁匹配「public/character_refs/zhu-jun_v1.png」、曹操匹配「public/character_refs/cao-cao_v1.png」。三人在熄灭的草营边短暂停马，士卒在远处救治伤者、收拢降者，地面焦黑但不展示尸体特写；朱儁望向皇甫嵩，曹操安静观察两位主将。自然晨光与余烟真实。无卡通、无动漫、无游戏CG、无英雄定格光环、无AI感，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "此战斩获数万。朝廷封皇甫嵩为都乡侯。"
+        },
+        {
+          "shot_id": "E010-S08",
+          "duration_sec": 10,
+          "reference_images": ["public/character_refs/huangfu-song_v1.png", "public/character_refs/cao-cao_v1.png", "public/character_refs/zhang-jiao_v1.png"],
+          "characters": ["皇甫嵩", "曹操", "张角"],
+          "prompt": "竖屏9:16，历史电影式收束与转场。人物锁定：皇甫嵩匹配「public/character_refs/huangfu-song_v1.png」、曹操匹配「public/character_refs/cao-cao_v1.png」、张角匹配「public/character_refs/zhang-jiao_v1.png」。前半镜皇甫嵩命人把军旗转向汝南，曹操骑马从焦土旁经过；随后硬切冀州广宗阴沉城头，张角接到波才败报，远处黄巾仍密布城外，他把木牍慢慢合上。两地均为真人实景、真实风尘与东汉建筑；无卡通、无动漫、无游戏CG、无乌云法术、无AI复制人，无字幕、无水印。",
+          "audio_type": "旁白",
+          "audio": "颍川火灭，北方的张角仍在广宗。真正的决战，尚未开始。"
+        }
+      ]
+    }
+  ]
+}
