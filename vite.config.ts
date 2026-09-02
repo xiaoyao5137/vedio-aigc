@@ -5,11 +5,12 @@ import { Readable } from 'node:stream'
 import { executeBuiltinNode } from './server/builtin-nodes.ts'
 import { executeCodeNode } from './server/code-node.ts'
 import { readKnowledgeStats } from './server/knowledge.ts'
-import { buildKlingVideoRequest, callKlingImage, callOpenAiImage, klingAuthorization, resolveKlingOmniVideoEndpoint, resolveKlingVideoEndpoint } from './server/model-adapters.ts'
+import { buildKlingVideoRequest, callKlingImage, callKlingVideo, callOpenAiImage, fetchModelEndpoint, klingAuthorization, resolveKlingOmniVideoEndpoint, resolveKlingVideoEndpoint } from './server/model-adapters.ts'
 import { retrieveInternetSources } from './server/web-sources.ts'
 import type { InternetSourceInput } from './server/web-sources.ts'
 import { runLocalModel } from './server/local-model.ts'
 import { readJson } from './server/request-json.ts'
+import { validateWorkflowMediaContract } from './server/workflow-contracts.ts'
 
 type ModelProvider = 'Anthropic' | 'OpenAI' | 'Ofox' | 'Kling' | 'Local' | 'Custom'
 type ModelCapability = 'text' | 'image' | 'video' | 'audio'
@@ -23,6 +24,11 @@ type ExecutionRecord = {
   runtimeInputs: Record<string, unknown>
   result: Record<string, unknown>
   createdAt?: string
+}
+type ExecutionRecordSummary = Omit<ExecutionRecord, 'runtimeInputs' | 'result'> & {
+  succeededCount: number
+  failedCount: number
+  totalCount: number
 }
 type ModelConfig = {
   id: string
@@ -135,8 +141,31 @@ function ensureSchema() {
         title text not null,
         runtime_inputs jsonb not null default '{}'::jsonb,
         result jsonb not null default '{}'::jsonb,
+        succeeded_count integer,
+        failed_count integer,
+        total_count integer,
         created_at timestamptz not null default now()
       );
+
+      alter table execution_records add column if not exists succeeded_count integer;
+      alter table execution_records add column if not exists failed_count integer;
+      alter table execution_records add column if not exists total_count integer;
+
+      update execution_records
+         set succeeded_count = coalesce(succeeded_count, (
+               select count(*) from jsonb_array_elements(coalesce(result -> 'nodeRuns', '[]'::jsonb)) run
+                where run ->> 'status' = 'success'
+             )),
+             failed_count = coalesce(failed_count, (
+               select count(*) from jsonb_array_elements(coalesce(result -> 'nodeRuns', '[]'::jsonb)) run
+                where run ->> 'status' = 'failed'
+             )),
+             total_count = coalesce(total_count, jsonb_array_length(coalesce(result -> 'nodeRuns', '[]'::jsonb)))
+       where succeeded_count is null or failed_count is null or total_count is null;
+
+      alter table execution_records alter column succeeded_count set default 0;
+      alter table execution_records alter column failed_count set default 0;
+      alter table execution_records alter column total_count set default 0;
 
       create index if not exists execution_records_workflow_created_idx
         on execution_records (workflow_id, created_at desc);
@@ -288,15 +317,36 @@ async function deleteCharacterAsset(id: string) {
   if (!result.rowCount) throw new Error('角色不存在或已被删除')
 }
 
-async function readExecutionRecords(workflowId?: string): Promise<ExecutionRecord[]> {
+async function readExecutionRecords(workflowId?: string): Promise<ExecutionRecordSummary[]> {
   await ensureSchema()
   const result = workflowId
     ? await pool.query(
-        'select id, workflow_id, workflow_name, mode, title, runtime_inputs, result, created_at from execution_records where workflow_id = $1 order by created_at desc limit 40',
+        'select id, workflow_id, workflow_name, mode, title, succeeded_count, failed_count, total_count, created_at from execution_records where workflow_id = $1 order by created_at desc limit 40',
         [workflowId],
       )
-    : await pool.query('select id, workflow_id, workflow_name, mode, title, runtime_inputs, result, created_at from execution_records order by created_at desc limit 40')
+    : await pool.query('select id, workflow_id, workflow_name, mode, title, succeeded_count, failed_count, total_count, created_at from execution_records order by created_at desc limit 40')
   return result.rows.map((row) => ({
+    id: row.id,
+    workflowId: row.workflow_id,
+    workflowName: row.workflow_name,
+    mode: row.mode,
+    title: row.title,
+    succeededCount: row.succeeded_count,
+    failedCount: row.failed_count,
+    totalCount: row.total_count,
+    createdAt: row.created_at,
+  }))
+}
+
+async function readExecutionRecord(id: string): Promise<ExecutionRecord | undefined> {
+  await ensureSchema()
+  const result = await pool.query(
+    'select id, workflow_id, workflow_name, mode, title, runtime_inputs, result, created_at from execution_records where id = $1',
+    [id],
+  )
+  const row = result.rows[0]
+  if (!row) return undefined
+  return {
     id: row.id,
     workflowId: row.workflow_id,
     workflowName: row.workflow_name,
@@ -305,24 +355,33 @@ async function readExecutionRecords(workflowId?: string): Promise<ExecutionRecor
     runtimeInputs: row.runtime_inputs,
     result: row.result,
     createdAt: row.created_at,
-  }))
+  }
 }
 
 async function saveExecutionRecord(record: ExecutionRecord) {
   await ensureSchema()
+  const nodeRuns = Array.isArray((record.result as { nodeRuns?: unknown[] }).nodeRuns)
+    ? (record.result as { nodeRuns: Array<{ status?: string }> }).nodeRuns
+    : []
+  const succeededCount = nodeRuns.filter((run) => run.status === 'success').length
+  const failedCount = nodeRuns.filter((run) => run.status === 'failed').length
   await pool.query(
     `
-      insert into execution_records (id, workflow_id, workflow_name, mode, title, runtime_inputs, result, created_at)
-      values ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, now())
+      insert into execution_records
+        (id, workflow_id, workflow_name, mode, title, runtime_inputs, result, succeeded_count, failed_count, total_count, created_at)
+      values ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8, $9, $10, now())
       on conflict (id) do update set
         workflow_id = excluded.workflow_id,
         workflow_name = excluded.workflow_name,
         mode = excluded.mode,
         title = excluded.title,
         runtime_inputs = excluded.runtime_inputs,
-        result = excluded.result
+        result = excluded.result,
+        succeeded_count = excluded.succeeded_count,
+        failed_count = excluded.failed_count,
+        total_count = excluded.total_count
     `,
-    [record.id, record.workflowId, record.workflowName, record.mode, record.title, JSON.stringify(record.runtimeInputs), JSON.stringify(record.result)],
+    [record.id, record.workflowId, record.workflowName, record.mode, record.title, JSON.stringify(record.runtimeInputs), JSON.stringify(record.result), succeededCount, failedCount, nodeRuns.length],
   )
 }
 
@@ -528,7 +587,7 @@ async function callExternal(model: ModelConfig, params: Record<string, unknown> 
 
   if (model.provider === 'Anthropic') {
     if (!settings.apiKey) throw new Error('缺少 Anthropic API Key')
-    const response = await fetch(settings.endpoint, {
+    const response = await fetchModelEndpoint(settings.endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -551,7 +610,7 @@ async function callExternal(model: ModelConfig, params: Record<string, unknown> 
 
   if (model.provider === 'OpenAI' && model.capability === 'audio') {
     if (!settings.apiKey) throw new Error('缺少 OpenAI API Key')
-    const response = await fetch(settings.endpoint, {
+    const response = await fetchModelEndpoint(settings.endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -581,7 +640,7 @@ async function callExternal(model: ModelConfig, params: Record<string, unknown> 
     const endpoint = Array.isArray(requestBody.image_list)
       ? resolveKlingOmniVideoEndpoint(settings.endpoint)
       : resolveKlingVideoEndpoint(settings.endpoint, Boolean(requestBody.image))
-    const response = await fetch(endpoint, {
+    const response = await fetchModelEndpoint(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -613,7 +672,7 @@ async function queryModelTestTask({ model, taskId, queryMode }: ModelTestStatusR
   ])]
   let lastResult: { status: number; body: unknown } = { status: 404, body: { error: '未找到任务' } }
   for (const endpoint of orderedEndpoints) {
-    const response = await fetch(`${endpoint}/${encodeURIComponent(taskId)}`, {
+    const response = await fetchModelEndpoint(`${endpoint}/${encodeURIComponent(taskId)}`, {
       method: 'GET',
       headers: { Authorization: klingAuthorization(model.settings) },
     })
@@ -634,7 +693,7 @@ async function callNodeExternalUntracked({ model, prompt, params, operation }: N
 
   if (model.provider === 'Anthropic') {
     if (!settings.apiKey) throw new Error('缺少 Anthropic API Key')
-    const response = await fetch(settings.endpoint, {
+    const response = await fetchModelEndpoint(settings.endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -660,7 +719,7 @@ async function callNodeExternalUntracked({ model, prompt, params, operation }: N
 
   if (model.provider === 'OpenAI' && model.capability === 'audio') {
     if (!settings.apiKey) throw new Error('缺少 OpenAI API Key')
-    const response = await fetch(settings.endpoint, {
+    const response = await fetchModelEndpoint(settings.endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -686,20 +745,7 @@ async function callNodeExternalUntracked({ model, prompt, params, operation }: N
   }
 
   if (model.provider === 'Kling') {
-    const requestBody = buildKlingVideoRequest(model, prompt, params)
-    const endpoint = Array.isArray(requestBody.image_list)
-      ? resolveKlingOmniVideoEndpoint(settings.endpoint)
-      : resolveKlingVideoEndpoint(settings.endpoint, Boolean(requestBody.image))
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: klingAuthorization(settings),
-      },
-      body: JSON.stringify(requestBody),
-    })
-    const body = await response.json().catch(() => response.text())
-    return { status: response.status, body }
+    return callKlingVideo(model, prompt, params)
   }
 
   throw new Error(`${model.provider} ${model.capability} 暂无真实节点适配器`)
@@ -709,6 +755,7 @@ async function callNodeExternal(request: NodeRunRequest) {
   const startedAt = Date.now()
   const id = `model-run-${startedAt.toString(36)}-${Math.random().toString(36).slice(2, 9)}`
   try {
+    validateWorkflowMediaContract(request)
     const result = await callNodeExternalUntracked(request)
     const task = executionTaskInfo(result.body)
     await saveModelExecutionRecord({
@@ -929,6 +976,11 @@ export default defineConfig({
           try {
             if (req.method === 'GET') {
               const url = new URL(req.url ?? '', 'http://localhost')
+              const id = url.pathname.split('/').filter(Boolean)[0]
+              if (id) {
+                const record = await readExecutionRecord(id)
+                return record ? jsonResponse(res, 200, { record }) : jsonResponse(res, 404, { error: '执行记录不存在' })
+              }
               return jsonResponse(res, 200, { records: await readExecutionRecords(url.searchParams.get('workflowId') ?? undefined) })
             }
             if (req.method === 'POST') {

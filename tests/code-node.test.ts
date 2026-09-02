@@ -77,8 +77,12 @@ test('character lookup code preserves cached assets and marks only new cast memb
   const result = await executeCodeNode({
     code: SANGUO_CHARACTER_LOOKUP_CODE,
     context: {
-      shot_script: { characters: ['张角', '张宝', '张角'] },
-      character_lookup_result: { items: [cached] },
+      shot_script: { characters: ['张角', '张宝', '张角'], firstFramePrompt: '张宝二十余岁，头戴黄巾。' },
+      character_lookup_result: {
+        characters: [{ name: '张角', continuityKey: '张角-eastern-han-v1' }, { name: '张宝', continuityKey: '张宝-eastern-han-v1' }],
+        items: [cached],
+        missingCharacters: [{ name: '张宝', continuityKey: '张宝-eastern-han-v1' }],
+      },
     },
   })
   assert.deepEqual(result.names, ['张角', '张宝'])
@@ -89,25 +93,46 @@ test('character lookup code preserves cached assets and marks only new cast memb
   assert.equal(result.foundCount, 1)
   assert.equal(result.missingCount, 1)
   assert.equal(result.shouldGenerate, true)
-  assert.equal(result.imageRequest.size, '1024x1024')
+  assert.equal(result.imageRequest.size, '1792x1024')
+  assert.equal(result.imageRequest.aspectRatio, '16:9')
   assert.equal(result.imageRequest.n, 1)
   assert.deepEqual(result.imageRequest.referenceImages, [])
   assert.match(String(result.imageRequest.prompt), /张宝/)
+  assert.match(String(result.imageRequest.prompt), /定妆三视图/)
+  assert.match(String(result.missingCharacters[0].designPrompt), /二十余岁/)
+  assert.deepEqual(result.imageRequest.requests.map((item: Record<string, unknown>) => item.n), [1])
 })
 
-test('first-frame branch routes to generation or previous-tail extraction exclusively', async () => {
-  const generated = await executeCodeNode({
+test('character lookup preserves a three-view master for derived identity references', async () => {
+  const result = await executeCodeNode({
+    code: SANGUO_CHARACTER_LOOKUP_CODE,
+    context: {
+      shot_script: { characters: ['张角'] },
+      character_lookup_result: {
+        characters: [{ name: '张角', continuityKey: '张角-eastern-han-v1' }],
+        items: [{ characterName: '张角', assetType: 'three-view', url: '/characters/zhangjiao-sheet.png' }],
+        missingCharacters: [],
+      },
+    },
+  })
+  assert.deepEqual(result.existingImages, ['/characters/zhangjiao-sheet.png'])
+  assert.equal(result.shouldGenerate, false)
+  assert.deepEqual(result.missingCharacters, [])
+})
+
+test('first-frame branch routes to character references or previous-tail extraction exclusively', async () => {
+  const referenced = await executeCodeNode({
     code: SANGUO_FIRST_FRAME_BRANCH_CODE,
     context: {
-      shot_script: { firstFrameMode: 'generate', firstFramePrompt: '' },
+      shot_script: { firstFrameMode: 'reference', firstFramePrompt: '' },
       loop: { previous: undefined },
       character_lookup: { existingImages: [] },
     },
   })
-  assert.equal(generated.shouldGenerate, true)
-  assert.equal(generated.shouldReusePreviousTail, false)
-  assert.equal(generated.route, 'generate')
-  assert.equal(generated.imageRequest.prompt, '')
+  assert.equal(referenced.shouldGenerate, false)
+  assert.equal(referenced.shouldReusePreviousTail, false)
+  assert.equal(referenced.route, 'reference')
+  assert.deepEqual(referenced.referenceRequest.referenceImages, [])
 
   const reused = await executeCodeNode({
     code: SANGUO_FIRST_FRAME_BRANCH_CODE,
@@ -128,31 +153,40 @@ test('first-frame branch routes to generation or previous-tail extraction exclus
   assert.equal(extracted.generated, false)
 })
 
-test('first-frame branch merges cached and generated images into a generic image request', async () => {
+test('first-frame branch merges cached and generated images into video character references', async () => {
   const result = await executeCodeNode({
     code: SANGUO_FIRST_FRAME_BRANCH_CODE,
     context: {
-      shot_script: { firstFrameMode: 'generate', firstFramePrompt: '竖屏历史电影首帧' },
+      shot_script: { firstFrameMode: 'reference', firstFramePrompt: '竖屏历史电影首帧' },
       loop: { previous: undefined },
-      character_lookup: { existingImages: ['/characters/zhangjiao.png'] },
+      character_lookup: {
+        names: ['张角', '张宝', '张良'],
+        existingAssets: [{ characterName: '张角', url: '/characters/zhangjiao.png', metadata: { continuityKey: '张角-v1' } }],
+      },
       character_assets: {
-        url: '/generated/zhangbao.png',
-        items: [{ url: '/generated/zhangbao.png' }, { url: 'https://cdn.example.com/zhangliang.png' }],
+        items: [
+          { characterName: '张宝', url: '/generated/zhangbao.png', metadata: { continuityKey: '张宝-v1' } },
+          { characterName: '张良', url: 'https://cdn.example.com/zhangliang.png', metadata: { continuityKey: '张良-v1' } },
+        ],
       },
     },
   })
-  assert.deepEqual(result.imageRequest, {
-    prompt: '竖屏历史电影首帧',
+  assert.deepEqual(result.referenceRequest, {
     referenceImages: [
       '/characters/zhangjiao.png',
       '/generated/zhangbao.png',
       'https://cdn.example.com/zhangliang.png',
     ],
-    size: '720x1280',
+    referenceBindings: [
+      { characterName: '张角', continuityKey: '张角-v1' },
+      { characterName: '张宝', continuityKey: '张宝-v1' },
+      { characterName: '张良', continuityKey: '张良-v1' },
+    ],
+    referenceMode: 'three-view-all',
   })
 })
 
-test('tail-frame code normalizes only an explicit video-model tail frame', async () => {
+test('tail-frame code prefers the actual model tail and falls back to the generated target tail', async () => {
   const available = await executeCodeNode({
     code: SANGUO_TAIL_FRAME_CODE,
     context: { video_shot: { raw: { data: { task_result: { last_frame_url: 'https://cdn.example.com/tail.png' } } } } },
@@ -161,16 +195,26 @@ test('tail-frame code normalizes only an explicit video-model tail frame', async
   assert.equal(available.available, true)
   assert.equal(available.source, 'video-model-output')
 
+  const targetFallback = await executeCodeNode({
+    code: SANGUO_TAIL_FRAME_CODE,
+    context: {
+      video_shot: { url: 'https://cdn.example.com/clip.mp4' },
+      end_frame: { url: 'https://cdn.example.com/target-tail.png' },
+    },
+  })
+  assert.equal(targetFallback.url, 'https://cdn.example.com/target-tail.png')
+  assert.equal(targetFallback.source, 'target-end-frame')
+
   const unavailable = await executeCodeNode({
     code: SANGUO_TAIL_FRAME_CODE,
     context: { video_shot: { url: 'https://cdn.example.com/clip.mp4', raw: { cover_url: 'https://cdn.example.com/cover.png' } } },
   })
   assert.equal(unavailable.url, '')
   assert.equal(unavailable.available, false)
-  assert.match(String(unavailable.warning), /下一镜将生成新首帧/)
+  assert.match(String(unavailable.warning), /目标尾帧不可用/)
 })
 
-test('first-frame branch falls back to generation when the requested previous tail is unavailable', async () => {
+test('first-frame branch falls back to character-reference video when the requested previous tail is unavailable', async () => {
   const result = await executeCodeNode({
     code: SANGUO_FIRST_FRAME_BRANCH_CODE,
     context: {
@@ -179,9 +223,10 @@ test('first-frame branch falls back to generation when the requested previous ta
       character_lookup: { existingImages: [] },
     },
   })
-  assert.equal(result.shouldGenerate, true)
+  assert.equal(result.shouldGenerate, false)
   assert.equal(result.shouldReusePreviousTail, false)
   assert.match(String(result.fallbackReason), /没有可用尾帧/)
+  assert.equal(result.route, 'reference')
 })
 
 test('code placeholders inject JSON literals and resolve missing paths as undefined', async () => {

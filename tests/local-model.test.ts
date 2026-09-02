@@ -13,8 +13,8 @@ test('local historical planner derives scene count and total duration from fetch
   assert.equal('totalDuration' in detailed, false)
   const normalized = deriveSceneOutlineMetrics(detailed)
   assert.equal(normalized.count, scenes.length)
-  assert.equal(normalized.totalDuration, scenes.reduce((total, scene) => total + Number(scene.targetDuration), 0))
-  assert(scenes.every((scene) => scene.targetDuration === 5 || scene.targetDuration === 10))
+  assert.equal(normalized.totalDuration, scenes.length * 15)
+  assert(scenes.every((scene) => scene.targetDuration === 15))
   assert(scenes.every((scene) => scene.historicalBasis && scene.adaptationBoundary))
   const purposes = scenes.map((scene) => String(scene.purpose)).join('\n')
   assert.match(purposes, /危机|反常|信息差/)
@@ -33,11 +33,11 @@ test('local historical planner reads scene-outline inputs directly from prompt p
 })
 
 test('storyboard emits the strict cast and frame-continuity contract', () => {
-  const shot = runLocalModel({ capability: 'text', operation: 'history.storyboard', prompt: '', params: { episodeTitle: '符水与饥民', scene: { id: 's1', sequence: 1, title: '入局', purpose: '张角为病者施治', targetDuration: 5, continuityFromPrevious: false, historicalBasis: '[史料1] 张角传道', adaptationBoundary: '对白拟制' } } }) as Record<string, unknown>
+  const shot = runLocalModel({ capability: 'text', operation: 'history.storyboard', prompt: '', params: { episodeTitle: '符水与饥民', scene: { id: 's1', sequence: 1, title: '入局', purpose: '张角为病者施治', targetDuration: 8, continuityFromPrevious: false, historicalBasis: '[史料1] 张角传道', adaptationBoundary: '对白拟制' } } }) as Record<string, unknown>
   assert.equal(shot.id, 's1')
   assert.deepEqual(shot.characters, ['张角'])
-  assert.equal(shot.duration, 5)
-  assert.equal(shot.firstFrameMode, 'generate')
+  assert.equal(shot.duration, 15)
+  assert.equal(shot.firstFrameMode, 'reference')
   assert.match(String(shot.lastFramePrompt), /代价|反应|威胁|悬念/)
   assert.match(String(shot.videoPrompt), /意图—阻力—反应—变化/)
   assert.match(String(shot.mood), /信息差|机锋|反差/)
@@ -47,12 +47,12 @@ test('storyboard emits the strict cast and frame-continuity contract', () => {
 })
 
 test('local storyboard can read workflow context directly from prompt placeholders', () => {
-  const scene = { id: 's2', sequence: 2, title: '试探', purpose: '张角观察来人', targetDuration: 10, continuityFromPrevious: true, historicalBasis: '[史料1] 张角传道', adaptationBoundary: '对白拟制' }
+  const scene = { id: 's2', sequence: 2, title: '试探', purpose: '张角观察来人', targetDuration: 15, continuityFromPrevious: true, historicalBasis: '[史料1] 张角传道', adaptationBoundary: '对白拟制' }
   const prompt = `把本集《符水与饥民》的当前场景改写为短分镜。\n\n当前场景：${JSON.stringify(scene)}\n\n史料原文：张角以符水疗病。`
   const shot = runLocalModel({ capability: 'text', operation: 'history.storyboard', prompt, params: {} }) as Record<string, unknown>
   assert.equal(shot.id, 's2')
   assert.equal(shot.title, '试探')
-  assert.equal(shot.duration, 10)
+  assert.equal(shot.duration, 15)
   assert.equal(shot.firstFrameMode, 'reuse_previous_tail')
 })
 

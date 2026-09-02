@@ -155,10 +155,7 @@ function buildSceneOutline(params: Record<string, unknown>, prompt: string) {
   const sourceSentenceCount = (sourceText.match(/[。！？；]/g) ?? []).length
   const sourceComplexity = citations.length + Math.ceil(sourceSentenceCount / 18)
   const count = Math.max(3, Math.min(12, 3 + sourceComplexity))
-  const durations = Array.from({ length: count }, (_, index) => {
-    const needsLongerBeat = sourceComplexity >= 4 && (index + sourceSentenceCount) % 3 === 1
-    return needsLongerBeat ? 10 : 5
-  })
+  const durations = Array.from({ length: count }, () => 15)
   const beats = [
     '用反常动作或迫近危机开场：核心人物想立即稳住局面，却被身份、资源或时势阻住；以可见选择暴露其史载性格，并留下未答问题',
     '关键人物以符合其身份与性格的试探或行动争取目标，对手从细节察觉意图并给出有压力的反应，形成信息差',
@@ -179,7 +176,7 @@ function buildSceneOutline(params: Record<string, unknown>, prompt: string) {
       : `[史料1] 依据本集挂载史料表现“${episodeTitle}”`,
     adaptationBoundary: '具体对白、微动作、人物反应与场面调度为合理戏剧化，用于强化性格碰撞、信息差和悬念；不新增改变历史因果、人物核心立场或胜负归属的事实。',
     targetDuration: durations[index],
-    continuityFromPrevious: index > 0 && index % 2 === 1,
+    continuityFromPrevious: false,
   }))
   return { episodeTitle, scenes }
 }
@@ -216,7 +213,7 @@ function buildStoryboard(params: Record<string, unknown>, prompt: string) {
     : inferCharacters({ ...params, episodeTitle }, `${title} ${purpose} ${JSON.stringify(scene)}`)
   const sequence = Math.max(1, Number(scene.sequence ?? String(scene.id ?? '').match(/\d+/)?.[0] ?? 1))
   const cast = (sequence >= 7 ? characters : characters.slice(0, 1)).slice(0, 4)
-  const duration = Number(scene.targetDuration ?? params.duration ?? 5)
+  const duration = 15
   const visualPrompt = `竖屏9:16，东汉末年，${title}。开镜即见冲突或异常：${purpose}。人物：${cast.join('、') || '无具名人物'}；用动作、目光与站位表现人物目的、阻力和性格差异，对手或旁观者必须有可见反应，结尾留下代价或悬念。真人实景、低饱和土褐黛青色调、自然光、服化道考据准确、无现代物件、无字幕、无水印。`
   return {
     id: String(scene.id ?? `shot-${createHash('sha1').update(title).digest('hex').slice(0, 8)}`),
@@ -226,10 +223,9 @@ function buildStoryboard(params: Record<string, unknown>, prompt: string) {
     visualPrompt,
     camera: '从关键道具或异常动作特写快速揭示冲突，再切人物目光与对手反应，随权力距离变化推进或后撤，结尾停在悬念构图',
     mood: '写实历史质感中带紧张信息差、人物机锋与处境反差，不做流水账式肃穆陈述',
-    firstFrameMode: scene.continuityFromPrevious === true ? 'reuse_previous_tail' : 'generate',
-    firstFramePrompt: `${visualPrompt} 画面处于本镜头动作开始前的稳定构图。`,
+    firstFrameMode: scene.continuityFromPrevious === true ? 'reuse_previous_tail' : 'reference',
     lastFramePrompt: `${visualPrompt} “${purpose}”完成后，不停在结果说明，而停在人物付出代价、对手意外反应或新威胁显现的稳定悬念构图。`,
-    videoPrompt: `保持首帧人物身份与服饰一致；围绕一个强动作完成“意图—阻力—反应—变化”：${purpose}。人物表现符合史载身份与性格，不贴标签、不站桩念史；动作符合真实物理，镜头随关系变化运动，无玄幻特效，无AI塑料感。`,
+    videoPrompt: `严格匹配人物资产参考附件中的身份、脸部与服饰，但由视频模型自由设计开场构图；围绕一个强动作完成“意图—阻力—反应—变化”：${purpose}。人物表现符合史载身份与性格，不贴标签、不站桩念史；动作符合真实物理，镜头随关系变化运动，无玄幻特效，无AI塑料感。`,
     audioType: '对白',
     audioText: `${cast[0] || '旁白'}：先别急着信眼前这一幕。`,
     historicalBasis: scene.historicalBasis ?? '',

@@ -8,6 +8,8 @@ export type InternetSourceInput = {
   maxSources?: number
   maxPassages?: number
   timeoutMs?: number
+  /** Restrict MediaWiki fallback results to canonical page prefixes such as 三國志/. */
+  titlePrefixes?: string[]
 }
 
 /** @deprecated Use InternetSourceInput. */
@@ -285,6 +287,7 @@ function sourceDetailQueries(input: InternetSourceInput) {
 
 async function searchMediaWiki(api: string, input: InternetSourceInput, fetcher: Fetcher, timeoutMs: number) {
   const queries = sourceDetailQueries(input)
+  const titlePrefixes = unique(input.titlePrefixes ?? [])
   const pageTitles: string[] = []
   const failedSearches: string[] = []
   let consecutiveNetworkFailures = 0
@@ -294,7 +297,7 @@ async function searchMediaWiki(api: string, input: InternetSourceInput, fetcher:
     url.searchParams.set('list', 'search')
     url.searchParams.set('format', 'json')
     url.searchParams.set('srnamespace', '0')
-    url.searchParams.set('srlimit', '2')
+    url.searchParams.set('srlimit', titlePrefixes.length ? '50' : '2')
     url.searchParams.set('srsearch', search)
     try {
       // A fallback host that cannot be reached should not multiply one connection
@@ -302,7 +305,8 @@ async function searchMediaWiki(api: string, input: InternetSourceInput, fetcher:
       // consecutive transport failures; successful empty searches may continue.
       const response = await fetchText(url.toString(), fetcher, timeoutMs, 1)
       const body = JSON.parse(response.text) as { query?: { search?: Array<{ title?: string }> } }
-      pageTitles.push(...(body.query?.search?.map((item) => String(item.title ?? '')).filter(Boolean) ?? []))
+      const matchedTitles = body.query?.search?.map((item) => String(item.title ?? '')).filter(Boolean) ?? []
+      pageTitles.push(...matchedTitles.filter((title) => !titlePrefixes.length || titlePrefixes.some((prefix) => title.startsWith(prefix))))
       consecutiveNetworkFailures = 0
       if (unique(pageTitles).length >= boundedNumber(input.maxSources, 3, 1, 4)) break
     } catch (error) {

@@ -33,6 +33,114 @@ export type NodeRunCondition = {
   equals: unknown
 }
 
+export type LoopRunSnapshot = {
+  node: { id: string }
+  loopGroupId?: string
+  loopIndex?: number
+  status?: StepRunStatus
+}
+
+/** Detects content migrations even when the number of stored records is unchanged. */
+export function serializedValuesDiffer(current: unknown, next: unknown) {
+  return JSON.stringify(current) !== JSON.stringify(next)
+}
+
+/** Identifies live runner snapshots that still contain nodes removed from the workflow definition. */
+export function hasRemovedExecutionNodes<Node extends GraphNode>(workflow: GraphWorkflow<Node>, runs: Array<{ node: { id: string } }>) {
+  const currentNodeIds = new Set(workflow.nodes.map((node) => node.id))
+  return runs.some((run) => !currentNodeIds.has(run.node.id))
+}
+
+function executionNodeContract(node: { id: string } & Record<string, unknown>) {
+  return {
+    id: node.id,
+    kind: node.kind,
+    modelId: node.modelId,
+    operation: node.operation,
+    resultVar: node.resultVar,
+    prompt: node.prompt,
+    code: node.code,
+    params: node.params,
+    parentId: node.parentId,
+    childIds: node.childIds,
+    runIf: node.runIf,
+  }
+}
+
+/** Invalidates live snapshots after nodes, parameters, prompts, or loop topology change. */
+export function hasExecutionPlanMismatch<Node extends GraphNode>(workflow: GraphWorkflow<Node>, runs: Array<{ node: Node }>) {
+  const currentById = new Map(workflow.nodes.map((node) => [node.id, node]))
+  const runNodeIds = new Set(runs.map((run) => run.node.id))
+  if (runNodeIds.size !== currentById.size || [...currentById.keys()].some((id) => !runNodeIds.has(id))) return true
+  return runs.some((run) => {
+    const current = currentById.get(run.node.id)
+    return !current || JSON.stringify(executionNodeContract(current as Node & Record<string, unknown>))
+      !== JSON.stringify(executionNodeContract(run.node as Node & Record<string, unknown>))
+  })
+}
+
+/** Prevents a direct retry from jumping over an idle or failed prerequisite. */
+export function firstBlockingRunIndex(
+  runs: Array<{ status?: StepRunStatus }>,
+  requestedIndex: number,
+) {
+  const boundedIndex = Math.max(0, Math.min(requestedIndex, runs.length - 1))
+  const blocker = runs.findIndex((run, index) => index <= boundedIndex && run.status !== 'success' && run.status !== 'skipped')
+  return blocker >= 0 ? blocker : boundedIndex
+}
+
+export function missingRequiredParamNames(
+  params: Array<{ name: string; englishName?: string; required: boolean }>,
+  values: Record<string, unknown>,
+) {
+  const missing = (value: unknown) => value === undefined
+    || value === null
+    || (typeof value === 'string' && !value.trim())
+    || (Array.isArray(value) && value.length === 0)
+  return params
+    .filter((param) => param.required && missing(values[param.englishName?.trim() || param.name]))
+    .map((param) => param.name)
+}
+
+/** Returns only loop rounds that have started, in display order. */
+export function availableLoopIterations(runs: LoopRunSnapshot[], loopGroupId: string) {
+  return [...new Set(runs
+    .filter((run) => run.loopGroupId === loopGroupId && run.loopIndex !== undefined && run.status !== 'idle')
+    .map((run) => run.loopIndex as number))]
+    .sort((a, b) => a - b)
+}
+
+/** Keeps the same node selected when possible while moving to another loop snapshot. */
+export function findLoopSnapshotRunIndex(runs: LoopRunSnapshot[], loopGroupId: string, loopIndex: number, preferredNodeId?: string) {
+  const candidates = runs
+    .map((run, index) => ({ run, index }))
+    .filter(({ run }) => run.loopGroupId === loopGroupId && run.loopIndex === loopIndex && run.status !== 'idle')
+  return candidates.find(({ run }) => run.node.id === preferredNodeId)?.index ?? candidates.at(-1)?.index ?? -1
+}
+
+/** Resolves the concrete run behind a DAG node click without leaking a loop snapshot to nodes outside that loop. */
+export function findInspectableNodeRunIndex(
+  runs: LoopRunSnapshot[],
+  nodeId: string,
+  fallbackRunIndex: number,
+  loopGroupId?: string,
+  loopIndex?: number,
+) {
+  if (loopGroupId && loopIndex !== undefined) {
+    const snapshotIndex = runs.findIndex((run) =>
+      run.node.id === nodeId && run.loopGroupId === loopGroupId && run.loopIndex === loopIndex)
+    if (snapshotIndex >= 0) return snapshotIndex
+  }
+  if (fallbackRunIndex >= 0 && runs[fallbackRunIndex]?.node.id === nodeId) return fallbackRunIndex
+  const matchingRuns = runs
+    .map((run, index) => ({ run, index }))
+    .filter(({ run }) => run.node.id === nodeId)
+  return matchingRuns.find(({ run }) => run.status === 'running')?.index
+    ?? matchingRuns.filter(({ run }) => run.status !== 'idle').at(-1)?.index
+    ?? matchingRuns[0]?.index
+    ?? -1
+}
+
 /** Detects text that has already been irreversibly replaced by a failed character decode. */
 export function containsUnicodeReplacementCharacter(value: unknown): boolean {
   if (typeof value === 'string') return value.includes('\uFFFD')
@@ -52,6 +160,15 @@ export function shouldRunNode(condition: NodeRunCondition | undefined, context: 
 
 export function canAdvanceStep(status: StepRunStatus | undefined, stepIndex: number, stepCount: number) {
   return (status === 'success' || status === 'skipped') && stepIndex >= 0 && stepIndex < stepCount - 1
+}
+
+/** Finds the next concrete run whose workflow node has a breakpoint. */
+export function findNextBreakpointIndex(
+  runs: Array<{ node: { id: string } }>,
+  breakpointNodeIds: ReadonlySet<string>,
+  afterIndex: number,
+) {
+  return runs.findIndex((run, index) => index > afterIndex && breakpointNodeIds.has(run.node.id))
 }
 
 export function shouldSkipStep(status: StepRunStatus | undefined, condition: NodeRunCondition | undefined, context: Record<string, unknown>) {
@@ -199,7 +316,27 @@ function repairUnescapedJsonStringQuotes(candidate: string) {
     let nextIndex = index + 1
     while (/\s/.test(candidate[nextIndex] ?? '')) nextIndex += 1
     const nextToken = candidate[nextIndex]
-    if (nextToken === ':' || nextToken === ',' || nextToken === '}' || nextToken === ']' || nextToken === undefined) {
+    let terminatesString = nextToken === ':' || nextToken === '}' || nextToken === ']' || nextToken === undefined
+    if (nextToken === ',') {
+      // A comma can be either JSON punctuation or ordinary prose inside a model
+      // generated string. Treat it as JSON punctuation only when the token after
+      // it can actually begin the next object property/array value. This avoids
+      // corrupting text such as: 高呼"党人何罪",县令面对……
+      let followingIndex = nextIndex + 1
+      while (/\s/.test(candidate[followingIndex] ?? '')) followingIndex += 1
+      const followingToken = candidate[followingIndex]
+      terminatesString = followingToken === '"'
+        || followingToken === '{'
+        || followingToken === '['
+        || followingToken === '}'
+        || followingToken === ']'
+        || followingToken === '-'
+        || followingToken === 't'
+        || followingToken === 'f'
+        || followingToken === 'n'
+        || /\d/.test(followingToken ?? '')
+    }
+    if (terminatesString) {
       repaired += character
       inString = false
     } else {
@@ -229,8 +366,11 @@ export function parseStructuredJson(value: unknown) {
 }
 
 export function deriveSceneOutlineMetrics(output: Record<string, unknown>) {
-  const scenes = output.scenes
-  if (!Array.isArray(scenes)) return output
+  const sourceScenes = output.scenes
+  if (!Array.isArray(sourceScenes)) return output
+  const scenes = sourceScenes.map((scene) => scene && typeof scene === 'object' && !Array.isArray(scene)
+    ? { ...(scene as Record<string, unknown>), targetDuration: 15 }
+    : scene)
   const totalDuration = scenes.reduce((total, scene) => {
     if (!scene || typeof scene !== 'object' || Array.isArray(scene)) return total
     const duration = Number((scene as Record<string, unknown>).targetDuration)
@@ -238,6 +378,7 @@ export function deriveSceneOutlineMetrics(output: Record<string, unknown>) {
   }, 0)
   return {
     ...output,
+    scenes,
     count: scenes.length,
     totalDuration,
   }
@@ -370,18 +511,70 @@ function normalizeStoryboardAudioType(value: unknown) {
   return value
 }
 
+const chineseDigitValues: Record<string, number> = {
+  '零': 0, '一': 1, '二': 2, '两': 2, '三': 3, '四': 4,
+  '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10,
+}
+
+function spokenText(audioText: string) {
+  return audioText
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^\s*[^\uff1a:，,。！？!?]{1,12}[\uff1a:]\s*/, '').trim())
+    .filter(Boolean)
+}
+
+function durationWordSeconds(value: string) {
+  if (/^\d+(?:\.\d+)?$/.test(value)) return Number(value)
+  if (value === '十') return 10
+  if (value.startsWith('十')) return 10 + (chineseDigitValues[value[1]] ?? 0)
+  if (value.endsWith('十')) return (chineseDigitValues[value[0]] ?? 0) * 10
+  if (value.includes('十')) {
+    const [tens, units] = value.split('十')
+    return (chineseDigitValues[tens] ?? 0) * 10 + (chineseDigitValues[units] ?? 0)
+  }
+  return [...value].reduce((total, digit) => total * 10 + (chineseDigitValues[digit] ?? 0), 0)
+}
+
+export function estimateStoryboardTiming(audioValue: unknown, videoPromptValue: unknown) {
+  const audioText = String(audioValue ?? '')
+  const videoPrompt = String(videoPromptValue ?? '')
+  const lines = spokenText(audioText)
+  const dialogue = lines.join('\n')
+  const speechCharacterCount = [...dialogue].filter((character) => /\p{Script=Han}/u.test(character)).length
+  const speechSeconds = speechCharacterCount / 4
+  const punctuationPauseSeconds = (dialogue.match(/[，,；;]/g) ?? []).length * 0.2
+    + (dialogue.match(/[。！？!?]/g) ?? []).length * 0.4
+  const speakerTurnPauseSeconds = Math.max(0, lines.length - 1) * 0.3
+  const explicitPauseSeconds = [...videoPrompt.matchAll(/(?:沉默|停顿|静默|凝视|停留)(\d+(?:\.\d+)?|[零一二两三四五六七八九十]+)秒/g)]
+    .reduce((total, match) => total + durationWordSeconds(match[1]), 0)
+  // Reserve non-overlapping time for the reaction after the final line and a
+  // stable ending composition. Establishing movement may overlap dialogue.
+  const actionAndEndHoldSeconds = 2.5
+  const rawRequiredSeconds = speechSeconds + punctuationPauseSeconds + speakerTurnPauseSeconds + explicitPauseSeconds + actionAndEndHoldSeconds
+  return {
+    speechCharacterCount,
+    speechSeconds: Number(speechSeconds.toFixed(2)),
+    punctuationPauseSeconds: Number(punctuationPauseSeconds.toFixed(2)),
+    speakerTurnPauseSeconds: Number(speakerTurnPauseSeconds.toFixed(2)),
+    explicitPauseSeconds: Number(explicitPauseSeconds.toFixed(2)),
+    actionAndEndHoldSeconds,
+    rawRequiredSeconds: Number(rawRequiredSeconds.toFixed(2)),
+    requiredDuration: Math.max(8, Math.ceil(rawRequiredSeconds)),
+  }
+}
+
 export function validateHistoricalStructuredOutput(operation: string | undefined, output: unknown, expected: Record<string, unknown> = {}) {
   if (operation !== 'history.scene-outline' && operation !== 'history.storyboard') return output
   const sourceRecord = structuredRecord(output, operation)
 
   if (operation === 'history.scene-outline') {
-    const record = sourceRecord
+    const record = deriveSceneOutlineMetrics(sourceRecord)
     rejectUnexpectedKeys(record, ['episodeTitle', 'count', 'totalDuration', 'scenes', 'text', 'raw', 'model'], 'history.scene-outline')
     requiredString(record, 'episodeTitle', 'history.scene-outline')
     const scenes = record.scenes
     if (!Array.isArray(scenes)) throw new Error('history.scene-outline.scenes 必须是数组')
     if (!scenes.length) throw new Error('history.scene-outline.scenes 至少需要一个场景')
-    const derived = deriveSceneOutlineMetrics(record)
+    const derived = record
     if (Number(derived.count) !== scenes.length) throw new Error('场景大纲 count 必须等于 scenes 数量')
     const ids = new Set<string>()
     let totalDuration = 0
@@ -398,7 +591,7 @@ export function validateHistoricalStructuredOutput(operation: string | undefined
       if (!/\[史料\d+\]/.test(historicalBasis)) throw new Error(`scenes[${index}].historicalBasis 必须包含 [史料N] 引用`)
       requiredString(scene, 'adaptationBoundary', `scenes[${index}]`)
       const duration = Number(scene.targetDuration)
-      if (duration !== 5 && duration !== 10) throw new Error(`scenes[${index}].targetDuration 只能是 5 或 10`)
+      if (duration !== 15) throw new Error(`scenes[${index}].targetDuration 必须固定为 15 秒`)
       if (typeof scene.continuityFromPrevious !== 'boolean') throw new Error(`scenes[${index}].continuityFromPrevious 必须是布尔值`)
       if (index === 0 && scene.continuityFromPrevious) throw new Error('第一镜 continuityFromPrevious 必须为 false')
       totalDuration += duration
@@ -410,7 +603,6 @@ export function validateHistoricalStructuredOutput(operation: string | undefined
   const scene = expected.scene && typeof expected.scene === 'object' && !Array.isArray(expected.scene)
     ? expected.scene as Record<string, unknown>
     : {}
-  const visualPrompt = typeof sourceRecord.visualPrompt === 'string' ? sourceRecord.visualPrompt.trim() : ''
   const record: Record<string, unknown> = {
     ...sourceRecord,
     audioType: normalizeStoryboardAudioType(sourceRecord.audioType),
@@ -420,34 +612,44 @@ export function validateHistoricalStructuredOutput(operation: string | undefined
     adaptationBoundary: typeof sourceRecord.adaptationBoundary === 'string' && sourceRecord.adaptationBoundary.trim()
       ? sourceRecord.adaptationBoundary
       : scene.adaptationBoundary,
-    firstFramePrompt: typeof sourceRecord.firstFramePrompt === 'string' && sourceRecord.firstFramePrompt.trim()
-      ? sourceRecord.firstFramePrompt
-      : visualPrompt
-        ? `${visualPrompt} 画面处于本镜头动作开始前的稳定构图。`
-        : sourceRecord.firstFramePrompt,
   }
-  rejectUnexpectedKeys(record, ['id', 'title', 'duration', 'characters', 'visualPrompt', 'camera', 'mood', 'firstFrameMode', 'firstFramePrompt', 'lastFramePrompt', 'videoPrompt', 'audioType', 'audioText', 'historicalBasis', 'adaptationBoundary'], 'history.storyboard')
+  rejectUnexpectedKeys(record, ['id', 'title', 'duration', 'characters', 'visualPrompt', 'camera', 'mood', 'firstFrameMode', 'lastFramePrompt', 'videoPrompt', 'audioType', 'audioText', 'historicalBasis', 'adaptationBoundary'], 'history.storyboard')
   requiredString(record, 'id', 'history.storyboard')
   requiredString(record, 'title', 'history.storyboard')
   const duration = Number(record.duration)
-  if (duration !== 5 && duration !== 10) throw new Error('history.storyboard.duration 只能是 5 或 10')
-  if (scene.targetDuration !== undefined && duration !== Number(scene.targetDuration)) throw new Error('短分镜 duration 必须等于当前场景 targetDuration')
+  if (!Number.isInteger(duration) || duration < 8 || duration > 15) throw new Error('history.storyboard.duration 必须是 8 到 15 之间的整数')
   if (!Array.isArray(record.characters) || record.characters.some((name) => typeof name !== 'string' || !name.trim())) throw new Error('history.storyboard.characters 必须是人物姓名字符串数组')
   requiredString(record, 'visualPrompt', 'history.storyboard')
   requiredString(record, 'camera', 'history.storyboard')
   requiredString(record, 'mood', 'history.storyboard')
   const firstFrameMode = requiredString(record, 'firstFrameMode', 'history.storyboard')
-  if (firstFrameMode !== 'generate' && firstFrameMode !== 'reuse_previous_tail') throw new Error('history.storyboard.firstFrameMode 只能是 generate 或 reuse_previous_tail')
+  if (firstFrameMode !== 'reference' && firstFrameMode !== 'reuse_previous_tail') throw new Error('history.storyboard.firstFrameMode 只能是 reference 或 reuse_previous_tail')
   if (firstFrameMode === 'reuse_previous_tail' && scene.continuityFromPrevious !== true) throw new Error('非连续镜头不得使用 reuse_previous_tail')
-  requiredString(record, 'firstFramePrompt', 'history.storyboard')
-  requiredString(record, 'lastFramePrompt', 'history.storyboard')
-  requiredString(record, 'videoPrompt', 'history.storyboard')
+  const lastFramePrompt = requiredString(record, 'lastFramePrompt', 'history.storyboard')
+  const stillFrameConstraint = '【静态尾帧】只呈现动作完成后的单一时间点与最终状态；单幅全画幅画面，禁止分镜、拼贴、分栏、上下三段、连环画、重复人物；画面内禁止字幕、水印、标题、标签及任何可读文字，榜文、竹简、牌匾等文字载体只能虚焦、背向镜头或呈现不可辨纹理。'
+  record.lastFramePrompt = lastFramePrompt.includes('【静态尾帧】')
+    ? lastFramePrompt
+    : `${lastFramePrompt}\n${stillFrameConstraint}`
+  const videoPrompt = requiredString(record, 'videoPrompt', 'history.storyboard')
   const audioType = requiredString(record, 'audioType', 'history.storyboard')
   if (audioType !== '旁白' && audioType !== '对白') throw new Error('history.storyboard.audioType 只能是旁白或对白')
-  requiredString(record, 'audioText', 'history.storyboard')
+  const audioText = requiredString(record, 'audioText', 'history.storyboard')
   const historicalBasis = requiredString(record, 'historicalBasis', 'history.storyboard')
   if (!/\[史料\d+\]/.test(historicalBasis)) throw new Error('history.storyboard.historicalBasis 必须包含 [史料N] 引用')
   requiredString(record, 'adaptationBoundary', 'history.storyboard')
+  const timingEstimate = estimateStoryboardTiming(audioText, videoPrompt)
+  if (timingEstimate.requiredDuration > 15) {
+    throw new Error(`STORYBOARD_TIMING_OVERFLOW: 当前对白、明示停顿与尾帧预留预计至少需要 ${timingEstimate.requiredDuration} 秒，超过 15 秒上限；请压缩台词/停顿或拆分镜头`)
+  }
+  const plannedDuration = Number(scene.targetDuration)
+  const selectedDuration = 15
+  record.duration = selectedDuration
+  record.timingEstimate = {
+    ...timingEstimate,
+    plannedDuration: Number.isFinite(plannedDuration) ? plannedDuration : undefined,
+    modelDuration: duration,
+    selectedDuration,
+  }
   return record
 }
 

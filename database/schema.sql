@@ -29,8 +29,34 @@ create table if not exists execution_records (
   title text not null,
   runtime_inputs jsonb not null default '{}'::jsonb,
   result jsonb not null default '{}'::jsonb,
+  succeeded_count integer not null default 0,
+  failed_count integer not null default 0,
+  total_count integer not null default 0,
   created_at timestamptz not null default now()
 );
+
+alter table execution_records add column if not exists succeeded_count integer;
+alter table execution_records add column if not exists failed_count integer;
+alter table execution_records add column if not exists total_count integer;
+
+update execution_records
+   set succeeded_count = coalesce(succeeded_count, (
+         select count(*) from jsonb_array_elements(coalesce(result -> 'nodeRuns', '[]'::jsonb)) run
+          where run ->> 'status' = 'success'
+       )),
+       failed_count = coalesce(failed_count, (
+         select count(*) from jsonb_array_elements(coalesce(result -> 'nodeRuns', '[]'::jsonb)) run
+          where run ->> 'status' = 'failed'
+       )),
+       total_count = coalesce(total_count, jsonb_array_length(coalesce(result -> 'nodeRuns', '[]'::jsonb)))
+ where succeeded_count is null or failed_count is null or total_count is null;
+
+alter table execution_records alter column succeeded_count set default 0;
+alter table execution_records alter column failed_count set default 0;
+alter table execution_records alter column total_count set default 0;
+alter table execution_records alter column succeeded_count set not null;
+alter table execution_records alter column failed_count set not null;
+alter table execution_records alter column total_count set not null;
 
 create index if not exists execution_records_workflow_created_idx
   on execution_records (workflow_id, created_at desc);

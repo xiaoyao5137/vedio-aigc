@@ -10,6 +10,8 @@ return {
 
 export const SANGUO_CHARACTER_LOOKUP_CODE = `// 通过占位符直接读取短分镜人物和系统人物库查询结果，不配置节点入参字段。
 const characters = \${shot_script.characters}
+const firstFramePrompt = String(\${shot_script.firstFramePrompt} || '')
+const visualPrompt = String(\${shot_script.visualPrompt} || '')
 const lookupResult = \${character_lookup_result}
 const names = Array.isArray(characters)
   ? [...new Set(characters.map((name) => String(name).trim()).filter(Boolean))]
@@ -20,22 +22,45 @@ const existingNames = new Set(existingAssets.map((item) => String(item.character
 const existingImages = existingAssets
   .map((item) => String(item.url || item.uri || '').trim())
   .filter(Boolean)
-const missingCharacters = names.filter((name) => !existingNames.has(name)).map((name) => ({
-  name,
-  continuityKey: name + '-eastern-han-v1',
-  designPrompt: '东汉末年人物定妆三视图，' + name + '，正面、侧面、背面，真人历史电影质感，服饰材质考据准确，中性站姿，纯色背景，无文字无水印',
-}))
+const lookupMissing = Array.isArray(lookup.missingCharacters) ? lookup.missingCharacters : []
+const promptSentences = (firstFramePrompt + '。' + visualPrompt).split(/[。！？\\n]+/).map((item) => item.trim()).filter(Boolean)
+const stableDescription = (name) => {
+  const index = promptSentences.findIndex((sentence) => sentence.includes(name))
+  if (index < 0) return ''
+  return promptSentences.slice(index, index + 2).join('；').slice(0, 320)
+}
+const missingCharacters = lookupMissing.map((item) => {
+  const name = String(item.name || item.characterName || '').trim()
+  const description = stableDescription(name)
+  return {
+    name,
+    continuityKey: String(item.continuityKey || name + '-eastern-han-v1'),
+    description,
+    designPrompt: [
+      '东汉末年人物定妆三视图，角色：' + name,
+      description ? '身份与稳定外观：' + description : '',
+      '同一个人物按正面、标准90度侧面、背面顺序各出现一次，三种角度必须保持同一张脸、相同年龄、发式、体型和整套服装',
+      '只输出一张16:9横向画布，只能单行三列水平排列：左侧正面、中间标准90度侧面、右侧背面；三个人物完整全身、等高等比例、互不遮挡',
+      '真人历史电影质感，服饰材质考据准确，中性站姿，纯色背景，无文字无水印；身份描述中的坐姿、桌案、室内陈设和镜头景别只用于辨认人物，不得带入三视图',
+      '严禁上下结构、上下两排、2×2宫格、九宫格、分镜板、重复视角、第二个正面、半身或坐姿',
+    ].filter(Boolean).join('。'),
+  }
+}).filter((item) => item.name)
 const shouldGenerate = missingCharacters.length > 0
 const imagePrompt = shouldGenerate
   ? [
       '为以下缺失人物生成可复用的东汉末年定妆三视图：',
       missingCharacters.map((item, index) => (index + 1) + '. ' + item.designPrompt).join('\\n'),
-      '每个人物都必须同时呈现正面、侧面和背面，角色之间清晰分隔；保持真人历史电影质感、考据准确、纯色背景，不生成文字或水印。',
+      '每个人物都必须按正面、侧面、背面顺序在一张16:9横向画布中单行三列呈现，绝不允许上下结构或宫格；三种角度保持同一身份、脸部、发式、体型和服装；保持真人历史电影质感、考据准确、纯色背景，不生成文字或水印。',
     ].join('\\n')
   : ''
 
 return {
-  characters: names.map((name) => ({ name })),
+  characters: names.map((name) => {
+    const generated = missingCharacters.find((item) => item.name === name)
+    const lookedUp = Array.isArray(lookup.characters) ? lookup.characters.find((item) => String(item.name || item.characterName || '') === name) : null
+    return generated || lookedUp || { name }
+  }),
   names,
   existingAssets,
   existingImages,
@@ -47,15 +72,18 @@ return {
   imageRequest: {
     prompt: imagePrompt,
     referenceImages: [],
-    size: '1024x1024',
+    size: '1792x1024',
+    aspectRatio: '16:9',
     n: Math.max(1, missingCharacters.length),
+    requests: missingCharacters.map((item) => ({ characterName: item.name, prompt: item.designPrompt, n: 1 })),
   },
 }`
 
-export const SANGUO_FIRST_FRAME_BRANCH_CODE = `// 通过占位符直接读取上下文，处理首帧路由并整理人物参考图。
-const requestedMode = String(\${shot_script.firstFrameMode} || 'generate')
+export const SANGUO_FIRST_FRAME_BRANCH_CODE = `// 普通镜头使用人物资产参考；仅在续接未完成镜头时复用前镜尾帧。
+const requestedMode = String(\${shot_script.firstFrameMode} || 'reference')
 const previousLastFrame = String(\${loop.previous.last_frame.url} || '').trim()
-const firstFramePrompt = \${shot_script.firstFramePrompt}
+const characterNames = \${character_lookup.names}
+const existingAssets = \${character_lookup.existingAssets}
 const existingImages = \${character_lookup.existingImages}
 const generatedImages = \${character_assets}
 const shouldReusePreviousTail = requestedMode === 'reuse_previous_tail' && Boolean(previousLastFrame)
@@ -70,23 +98,37 @@ const collectImageUrls = (value) => {
   const nested = ['items', 'urls', 'images'].flatMap((key) => collectImageUrls(value[key]))
   return [...direct, ...nested]
 }
-const referenceImages = [...new Set([
+const assetItems = [
+  ...(Array.isArray(existingAssets) ? existingAssets : []),
+  ...(generatedImages && Array.isArray(generatedImages.items) ? generatedImages.items : []),
+]
+const byCharacter = new Map(assetItems.map((item) => [String(item.characterName || item.name || ''), item]))
+const orderedNames = Array.isArray(characterNames) ? characterNames.map(String) : []
+const referenceBindings = orderedNames.map((name) => {
+  const asset = byCharacter.get(name)
+  const url = collectImageUrls(asset)[0] || ''
+  return url ? { characterName: name, url, continuityKey: String(asset.metadata?.continuityKey || '') } : null
+}).filter(Boolean)
+const fallbackReferenceImages = [...new Set([
   ...collectImageUrls(existingImages),
   ...collectImageUrls(generatedImages),
 ])]
+const referenceImages = referenceBindings.length
+  ? referenceBindings.map((binding) => binding.url)
+  : fallbackReferenceImages
 return {
   requestedMode,
   previousLastFrame,
-  shouldGenerate: !shouldReusePreviousTail,
+  shouldGenerate: false,
   shouldReusePreviousTail,
-  route: shouldReusePreviousTail ? 'reuse_previous_tail' : 'generate',
+  route: shouldReusePreviousTail ? 'reuse_previous_tail' : 'reference',
   fallbackReason: requestedMode === 'reuse_previous_tail' && !previousLastFrame
-    ? '前一镜没有可用尾帧，路由到首帧图生成'
+    ? '前一镜没有可用尾帧，回退为人物资产参考生视频'
     : '',
-  imageRequest: {
-    prompt: String(firstFramePrompt || '').trim(),
+  referenceRequest: {
     referenceImages,
-    size: '720x1280',
+    referenceBindings: referenceBindings.map(({ characterName, continuityKey }) => ({ characterName, continuityKey })),
+    referenceMode: referenceImages.length ? 'three-view-all' : '',
   },
 }`
 
@@ -101,9 +143,10 @@ return {
   source: 'previous-shot-tail',
 }`
 
-export const SANGUO_TAIL_FRAME_CODE = `// 通过占位符直接读取视频结果；只整理模型明确返回的尾帧。
+export const SANGUO_TAIL_FRAME_CODE = `// 优先使用视频模型的实际尾帧；未返回时使用视频生成时传入的目标尾帧。
 const videoResult = \${video_shot}
 const video = videoResult && typeof videoResult === 'object' ? videoResult : {}
+const targetEndFrame = String(\${end_frame.url} || '').trim()
 const imageUrl = (value) => {
   if (typeof value === 'string') {
     const url = value.trim()
@@ -135,12 +178,13 @@ const findTail = (value) => {
   }
   return ''
 }
-const url = findTail(video)
+const modelTail = findTail(video)
+const url = modelTail || targetEndFrame
 return {
   url,
   available: Boolean(url),
-  source: url ? 'video-model-output' : 'unavailable',
-  warning: url ? '' : '视频模型未返回独立尾帧；下一镜将生成新首帧。',
+  source: modelTail ? 'video-model-output' : targetEndFrame ? 'target-end-frame' : 'unavailable',
+  warning: url ? '' : '视频模型未返回独立尾帧，且目标尾帧不可用；下一镜将使用人物资产参考图自由生成开场。',
 }`
 
 export const SANGUO_CONTEXT_INIT_CODE = `// 1. 解析附件。excel.parse 是同步 API，不需要 await。

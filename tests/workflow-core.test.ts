@@ -1,11 +1,58 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { aggregateLoopOutputs, applyNodeOutputToContext, buildVariableMetadata, canAdvanceStep, containsUnicodeReplacementCharacter, deriveSceneOutlineMetrics, extractTextResponse, normalizeStructuredTextOutput, parseStructuredJson, resolveVariableMetadata, scopedLoopNodes, shouldRunNode, shouldSkipStep, validateHistoricalStructuredOutput } from '../src/workflow-core.ts'
+import { aggregateLoopOutputs, applyNodeOutputToContext, availableLoopIterations, buildVariableMetadata, canAdvanceStep, containsUnicodeReplacementCharacter, deriveSceneOutlineMetrics, estimateStoryboardTiming, extractTextResponse, findInspectableNodeRunIndex, findLoopSnapshotRunIndex, findNextBreakpointIndex, firstBlockingRunIndex, hasExecutionPlanMismatch, hasRemovedExecutionNodes, missingRequiredParamNames, normalizeStructuredTextOutput, parseStructuredJson, resolveVariableMetadata, scopedLoopNodes, serializedValuesDiffer, shouldRunNode, shouldSkipStep, validateHistoricalStructuredOutput } from '../src/workflow-core.ts'
 
 test('unicode replacement characters are detected in persisted workflow text', () => {
   assert.equal(containsUnicodeReplacementCharacter('你是兼具电视剧叙事能力的分镜师'), false)
   assert.equal(containsUnicodeReplacementCharacter('你是兼具电视剧叙事�力的分镜师'), true)
   assert.equal(containsUnicodeReplacementCharacter({ nodes: [{ prompt: '正常' }, { prompt: '人物塑��能力' }] }), true)
+})
+
+test('content migrations are detected even when collection lengths do not change', () => {
+  const stored = [{ id: 'wf', schemaVersion: 25, nodes: [{ id: 'target-tail' }] }]
+  const migrated = [{ id: 'wf', schemaVersion: 26, nodes: [{ id: 'video' }] }]
+  assert.equal(stored.length, migrated.length)
+  assert.equal(serializedValuesDiffer(stored, migrated), true)
+  assert.equal(serializedValuesDiffer(migrated, structuredClone(migrated)), false)
+})
+
+test('live execution snapshots detect nodes removed by a workflow migration', () => {
+  const workflow = { nodes: [{ id: 'branch', kind: 'code' }, { id: 'video', kind: 'video' }], edges: [{ from: 'branch', to: 'video' }] }
+  assert.equal(hasRemovedExecutionNodes(workflow, [{ node: { id: 'branch' } }, { node: { id: 'target-tail' } }]), true)
+  assert.equal(hasRemovedExecutionNodes(workflow, [{ node: { id: 'branch' } }, { node: { id: 'video' } }]), false)
+})
+
+test('live execution snapshots are invalidated when a required media input is added', () => {
+  const current = {
+    nodes: [{ id: 'video', kind: 'video', params: [{ name: '目标尾帧', englishName: 'endImage', required: true }] }],
+    edges: [],
+  }
+  const stale = [{ node: { id: 'video', kind: 'video', params: [] } }]
+  const matching = [{ node: structuredClone(current.nodes[0]) }]
+  assert.equal(hasExecutionPlanMismatch(current, stale), true)
+  assert.equal(hasExecutionPlanMismatch(current, matching), false)
+})
+
+test('direct retries restart at the earliest unfinished prerequisite', () => {
+  const runs = [
+    { status: 'success' as const },
+    { status: 'skipped' as const },
+    { status: 'idle' as const },
+    { status: 'success' as const },
+    { status: 'idle' as const },
+  ]
+  assert.equal(firstBlockingRunIndex(runs, 4), 2)
+  assert.equal(firstBlockingRunIndex(runs.slice(0, 2), 1), 1)
+})
+
+test('required media inputs reject empty resolved values', () => {
+  const params = [
+    { name: '首帧', englishName: 'referenceImage', required: true },
+    { name: '目标尾帧', englishName: 'endImage', required: true },
+    { name: '人物参考', englishName: 'referenceImages', required: false },
+  ]
+  assert.deepEqual(missingRequiredParamNames(params, { referenceImage: '/first.png', endImage: undefined }), ['目标尾帧'])
+  assert.deepEqual(missingRequiredParamNames(params, { referenceImage: '/first.png', endImage: '/end.png' }), [])
 })
 
 test('single-step debug only advances after the current step succeeds', () => {
@@ -17,6 +64,19 @@ test('single-step debug only advances after the current step succeeds', () => {
   assert.equal(canAdvanceStep('success', 2, 3), false)
   assert.equal(canAdvanceStep('skipped', 0, 3), true)
   assert.equal(canAdvanceStep('success', -1, 3), false)
+})
+
+test('single-step debug finds the next node breakpoint, including repeated loop runs', () => {
+  const runs = [
+    { node: { id: 'input' } },
+    { node: { id: 'shot' } },
+    { node: { id: 'video' } },
+    { node: { id: 'shot' } },
+  ]
+  const breakpoints = new Set(['shot'])
+  assert.equal(findNextBreakpointIndex(runs, breakpoints, -1), 1)
+  assert.equal(findNextBreakpointIndex(runs, breakpoints, 1), 3)
+  assert.equal(findNextBreakpointIndex(runs, breakpoints, 3), -1)
 })
 
 test('node run conditions select exactly one first-frame branch', () => {
@@ -100,10 +160,33 @@ test('structured output repairs literal quotes inside model-generated JSON strin
   assert.doesNotThrow(() => validateHistoricalStructuredOutput('history.scene-outline', parsed))
 })
 
+test('structured output does not mistake a prose comma after a literal quote for JSON punctuation', () => {
+  const modelText = `\`\`\`json
+{
+  "episodeTitle": "甘陵党议",
+  "scenes": [{
+    "id": "scene-01",
+    "sequence": 1,
+    "title": "郡中舆论发酵",
+    "purpose": "人群中有人高呼"党人何罪",县令面对民意压力，并质问"何罪之有",随后当场表态",
+    "historicalBasis": "[史料4] 党锢传载党人被捕",
+    "adaptationBoundary": "具体呼声为戏剧化处理",
+    "targetDuration": 10,
+    "continuityFromPrevious": false
+  }]
+}
+\`\`\``
+  const parsed = parseStructuredJson(modelText) as Record<string, unknown>
+  const scenes = parsed.scenes as Array<Record<string, unknown>>
+
+  assert.equal(scenes[0].purpose, '人群中有人高呼"党人何罪",县令面对民意压力，并质问"何罪之有",随后当场表态')
+  assert.doesNotThrow(() => validateHistoricalStructuredOutput('history.scene-outline', parsed))
+})
+
 test('structured output parses extracted model text before the provider response envelope', () => {
   const scene = {
     id: 'scene-01', sequence: 1, title: '入局', purpose: '张角入村', historicalBasis: '[史料1] 张角传道',
-    adaptationBoundary: '村落细节为拟制', targetDuration: 5, continuityFromPrevious: false,
+    adaptationBoundary: '村落细节为拟制', targetDuration: 8, continuityFromPrevious: false,
   }
   const modelText = JSON.stringify({ episodeTitle: '符水与饥民', scenes: [scene] })
   const anthropicEnvelope = {
@@ -116,14 +199,14 @@ test('structured output parses extracted model text before the provider response
 
   assert.equal(validated.episodeTitle, '符水与饥民')
   assert.equal(validated.count, 1)
-  assert.equal(validated.totalDuration, 5)
+  assert.equal(validated.totalDuration, 15)
   assert.deepEqual(validated.raw, anthropicEnvelope)
 })
 
 test('structured output unwraps provider content strings without validating the response envelope', () => {
   const scene = {
     id: 'scene-01', sequence: 1, title: '入局', purpose: '张角入村', historicalBasis: '[史料1] 张角传道',
-    adaptationBoundary: '村落细节为拟制', targetDuration: 5, continuityFromPrevious: false,
+    adaptationBoundary: '村落细节为拟制', targetDuration: 8, continuityFromPrevious: false,
   }
   const modelText = `\`\`\`json\n${JSON.stringify({ episodeTitle: '符水与饥民', scenes: [scene] })}\n\`\`\``
   const proxyEnvelope = {
@@ -161,20 +244,24 @@ test('structured output still accepts a direct JSON response when extracted text
 test('historical JSON contracts derive scene count and duration from the generated outline', () => {
   const scene = {
     id: 'scene-01', sequence: 1, title: '入局', purpose: '张角入村', historicalBasis: '[史料1] 张角传道',
-    adaptationBoundary: '村落细节为拟制', targetDuration: 5, continuityFromPrevious: false,
+    adaptationBoundary: '村落细节为拟制', targetDuration: 8, continuityFromPrevious: false,
   }
   const generated = {
-    episodeTitle: '符水与饥民', count: 99, totalDuration: 999, scenes: [scene, { ...scene, id: 'scene-02', sequence: 2, targetDuration: 10, continuityFromPrevious: true }],
+    episodeTitle: '符水与饥民', count: 99, totalDuration: 999, scenes: [scene, { ...scene, id: 'scene-02', sequence: 2, targetDuration: 15, continuityFromPrevious: true }],
   }
   const normalized = deriveSceneOutlineMetrics(generated)
   assert.equal(normalized.count, 2)
-  assert.equal(normalized.totalDuration, 15)
+  assert.equal(normalized.totalDuration, 30)
+  assert.deepEqual((normalized.scenes as Array<Record<string, unknown>>).map((item) => item.targetDuration), [15, 15])
   const validated = validateHistoricalStructuredOutput('history.scene-outline', normalized)
   assert.equal((validated as Record<string, unknown>).count, 2)
-  assert.equal((validated as Record<string, unknown>).totalDuration, 15)
-  assert.throws(() => validateHistoricalStructuredOutput('history.scene-outline', {
-    episodeTitle: '符水与饥民', scenes: [{ ...scene, targetDuration: 6 }],
-  }), /只能是 5 或 10/)
+  assert.equal((validated as Record<string, unknown>).totalDuration, 30)
+  for (const modelDuration of [6, 16, 8.5]) {
+    const fixed = validateHistoricalStructuredOutput('history.scene-outline', {
+      episodeTitle: '符水与饥民', scenes: [{ ...scene, targetDuration: modelDuration }],
+    }) as Record<string, unknown>
+    assert.equal(((fixed.scenes as Array<Record<string, unknown>>)[0]).targetDuration, 15)
+  }
   assert.throws(() => validateHistoricalStructuredOutput('history.scene-outline', {
     episodeTitle: '符水与饥民', scenes: [{ ...scene, note: '不在契约中' }],
   }), /未声明字段：note/)
@@ -183,11 +270,17 @@ test('historical JSON contracts derive scene count and duration from the generat
   }), /至少需要一个场景/)
 
   const storyboard = {
-    id: 'scene-01', title: '入局', duration: 5, characters: ['张角'], visualPrompt: '竖屏真人实景', camera: '50mm推进', mood: '克制',
-    firstFrameMode: 'generate', firstFramePrompt: '开始构图', lastFramePrompt: '结束构图', videoPrompt: '缓慢推进', audioType: '旁白',
+    id: 'scene-01', title: '入局', duration: 8, characters: ['张角'], visualPrompt: '竖屏真人实景', camera: '50mm推进', mood: '克制',
+    firstFrameMode: 'reference', lastFramePrompt: '结束构图', videoPrompt: '缓慢推进', audioType: '旁白',
     audioText: '百姓等待救济', historicalBasis: '[史料1] 张角传道', adaptationBoundary: '对白拟制',
   }
   assert.doesNotThrow(() => validateHistoricalStructuredOutput('history.storyboard', storyboard, { scene }))
+  const normalizedStoryboard = validateHistoricalStructuredOutput('history.storyboard', storyboard, { scene }) as Record<string, unknown>
+  assert.match(String(normalizedStoryboard.lastFramePrompt), /【静态尾帧】/)
+  assert.match(String(normalizedStoryboard.lastFramePrompt), /上下三段/)
+  assert.match(String(normalizedStoryboard.lastFramePrompt), /任何可读文字/)
+  assert.doesNotThrow(() => validateHistoricalStructuredOutput('history.storyboard', { ...storyboard, duration: 15 }, { scene: { ...scene, targetDuration: 15 } }))
+  assert.throws(() => validateHistoricalStructuredOutput('history.storyboard', { ...storyboard, duration: 7 }, { scene: { ...scene, targetDuration: 7 } }), /8 到 15 之间的整数/)
   const normalizedAmbientNarration = validateHistoricalStructuredOutput('history.storyboard', {
     ...storyboard,
     audioType: '旁白+环境音',
@@ -210,11 +303,9 @@ test('historical JSON contracts derive scene count and duration from the generat
     ...storyboard,
     historicalBasis: '',
     adaptationBoundary: '',
-    firstFramePrompt: '',
   }, { scene }) as Record<string, unknown>
   assert.equal(repairedStoryboard.historicalBasis, scene.historicalBasis)
   assert.equal(repairedStoryboard.adaptationBoundary, scene.adaptationBoundary)
-  assert.match(String(repairedStoryboard.firstFramePrompt), /竖屏真人实景/)
   assert.throws(() => validateHistoricalStructuredOutput('history.storyboard', {
     ...storyboard,
     historicalBasis: '',
@@ -223,10 +314,72 @@ test('historical JSON contracts derive scene count and duration from the generat
   assert.throws(() => validateHistoricalStructuredOutput('history.storyboard', { ...storyboard, shots: [] }, { scene }), /未声明字段：shots/)
 })
 
+test('storyboard timing keeps every valid shot at the fixed 15-second duration', () => {
+  const timing = estimateStoryboardTiming(
+    '求评者：劭公，我家三代盐铁，求公一评。\n许劭：家资非才望。月旦评人品行，不评财货。',
+    '许劭沉默两秒后回答，求评者起身，最后稳定停在许劭面部。',
+  )
+  assert.equal(timing.explicitPauseSeconds, 2)
+  assert.equal(timing.requiredDuration, 14)
+
+  const scene = { targetDuration: 12, continuityFromPrevious: false, historicalBasis: '[史料1] 清议', adaptationBoundary: '对白拟制' }
+  const storyboard = {
+    id: 'scene-01', title: '月旦评', duration: 12, characters: ['许劭'], visualPrompt: '竖屏真人实景', camera: '推至面部', mood: '克制',
+    firstFrameMode: 'reference', lastFramePrompt: '许劭面部特写',
+    videoPrompt: '许劭沉默两秒后回答，求评者起身，最后稳定停在许劭面部。', audioType: '对白',
+    audioText: '求评者：劭公，我家三代盐铁，求公一评。\n许劭：家资非才望。月旦评人品行，不评财货。',
+    historicalBasis: '[史料1] 清议', adaptationBoundary: '对白拟制',
+  }
+  const validated = validateHistoricalStructuredOutput('history.storyboard', storyboard, { scene }) as Record<string, unknown>
+  assert.equal(validated.duration, 15)
+  assert.equal((validated.timingEstimate as Record<string, unknown>).plannedDuration, 12)
+})
+
+test('storyboard timing rejects the latest Xu Shao script instead of forcing rushed speech', () => {
+  const longDialogue = '求评者：劭公，在下家中三代经营盐铁，今求一评，望劭公不吝赐教。\n许劭：足下家资虽厚，然不过贩夫之利。月旦评所评者，乃天下士人之品行才望，非富即可入品。'
+  const base = {
+    id: 'scene-01', title: '月旦评', duration: 12, characters: ['许劭'], visualPrompt: '竖屏真人实景', camera: '推至面部', mood: '克制',
+    firstFrameMode: 'reference', lastFramePrompt: '许劭面部特写',
+    videoPrompt: '许劭沉默三秒后回答，求评者起身离去，最后定格许劭面部。', audioType: '对白', audioText: longDialogue,
+    historicalBasis: '[史料1] 清议', adaptationBoundary: '对白拟制',
+  }
+  assert.throws(() => validateHistoricalStructuredOutput('history.storyboard', base, {
+    scene: { targetDuration: 12, continuityFromPrevious: false, historicalBasis: '[史料1] 清议', adaptationBoundary: '对白拟制' },
+  }), /STORYBOARD_TIMING_OVERFLOW/)
+})
+
 test('loop output aggregation exposes items and count per result variable', () => {
   const aggregated = aggregateLoopOutputs([{ shot: { id: 1 }, video: { id: 'v1' } }, { shot: { id: 2 }, video: { id: 'v2' } }])
   assert.equal(aggregated.shot.count, 2)
   assert.deepEqual(aggregated.video.items, [{ id: 'v1' }, { id: 'v2' }])
+})
+
+test('loop snapshot navigation exposes started rounds and preserves the selected child node', () => {
+  const runs = [
+    { node: { id: 'shot' }, loopGroupId: 'loop-a', loopIndex: 0, status: 'success' as const },
+    { node: { id: 'video' }, loopGroupId: 'loop-a', loopIndex: 0, status: 'success' as const },
+    { node: { id: 'shot' }, loopGroupId: 'loop-a', loopIndex: 1, status: 'running' as const },
+    { node: { id: 'video' }, loopGroupId: 'loop-a', loopIndex: 1, status: 'idle' as const },
+    { node: { id: 'shot' }, loopGroupId: 'loop-a', loopIndex: 2, status: 'idle' as const },
+  ]
+
+  assert.deepEqual(availableLoopIterations(runs, 'loop-a'), [0, 1])
+  assert.equal(findLoopSnapshotRunIndex(runs, 'loop-a', 0, 'video'), 1)
+  assert.equal(findLoopSnapshotRunIndex(runs, 'loop-a', 1, 'video'), 2)
+  assert.equal(findLoopSnapshotRunIndex(runs, 'missing', 0, 'shot'), -1)
+})
+
+test('node inspection leaves the loop snapshot when clicking a node outside the loop', () => {
+  const runs = [
+    { node: { id: 'before-loop' }, status: 'success' as const },
+    { node: { id: 'shot' }, loopGroupId: 'loop-a', loopIndex: 0, status: 'success' as const },
+    { node: { id: 'shot' }, loopGroupId: 'loop-a', loopIndex: 1, status: 'running' as const },
+    { node: { id: 'after-loop' }, status: 'idle' as const },
+  ]
+
+  assert.equal(findInspectableNodeRunIndex(runs, 'shot', 2, 'loop-a', 0), 1)
+  assert.equal(findInspectableNodeRunIndex(runs, 'before-loop', 0, 'loop-a', 1), 0)
+  assert.equal(findInspectableNodeRunIndex(runs, 'after-loop', 3, 'loop-a', 1), 3)
 })
 
 test('variable metadata exposes Chinese names and tracks runtime producer nodes', () => {
