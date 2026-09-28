@@ -1,0 +1,1849 @@
+{
+  "recordId": "record-93adhy",
+  "expected": {
+    "qualityMode": "principle-v1",
+    "timingPolicy": {
+      "speech": {
+        "chant": {
+          "maximumRate": 4.5,
+          "referenceRate": 3.3,
+          "startupAllowance": 0.25,
+          "minimumNaturalRate": 2.8
+        },
+        "singing": {
+          "maximumRate": 3.5,
+          "referenceRate": 2.8,
+          "startupAllowance": 0.35,
+          "minimumNaturalRate": 2
+        },
+        "dialogue": {
+          "maximumRate": 5,
+          "referenceRate": 4.5,
+          "startupAllowance": 0.25,
+          "minimumNaturalRate": 3.3
+        },
+        "narration": {
+          "maximumRate": 6.5,
+          "referenceRate": 5.8,
+          "startupAllowance": 0.25,
+          "minimumNaturalRate": 5.5
+        }
+      },
+      "version": "duration-policy-v2.2-brisk-narration",
+      "linePauseSeconds": 0.2,
+      "shortPauseSeconds": 0.15,
+      "minimumActionSeconds": 0.3,
+      "sentencePauseSeconds": 0.25,
+      "minimumReactionSeconds": 0.5,
+      "maximumProviderDuration": 15,
+      "minimumProviderDuration": 3,
+      "endingReadabilityReserve": 0.5,
+      "minimumVocalizationSeconds": 0.8,
+      "maxConservativeExtraSeconds": 1,
+      "measurementToleranceSeconds": 0.25
+    },
+    "pacingVersion": "duration-v2",
+    "qualityDisposition": "manual-review-v1",
+    "retryBudgetProfile": "manual-review-v1",
+    "maxGenerationAttempts": 2,
+    "primaryTransportAttempts": 1,
+    "transportFallbackModelId": "codex-local-vision",
+    "transportFallbackTimeoutMs": 240000,
+    "qualityStrictBudgetSnapshot": "{\"params\":[{\"key\":\"primaryTransportAttempts\",\"value\":\"5\"},{\"key\":\"maxGenerationAttempts\",\"value\":\"5\"}]}",
+    "primaryTransportAttemptTimeoutMs": 240000,
+    "transportFallbackReasoningEffort": "medium",
+    "scene": {
+      "id": "scene-02",
+      "sequence": 2,
+      "title": "张角以符水为病患施术",
+      "dramaticSceneId": "drama-02",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "cast": [
+        "张角"
+      ],
+      "purpose": "呈现张角以符水治病的实际场面,建立其大贤良师身份和符水仪式的基本流程,让观众看到病患如何被吸引",
+      "requiredBeats": [
+        {
+          "id": "beat-02",
+          "description": "张角站在简陋空地上,面对跪伏在地的病患,手持符水碗,开口劝诫",
+          "function": "建立张角施术场景",
+          "stateChange": "观众看到张角正在为病患施术",
+          "observable": {
+            "visual": [
+              "张角站立手持符水碗",
+              "病患跪伏在地"
+            ],
+            "audio": [
+              "你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救"
+            ]
+          },
+          "setting": "冀州某地简陋民居外的空地",
+          "mustShow": [
+            "张角站立手持符水碗",
+            "病患跪伏在地"
+          ]
+        },
+        {
+          "id": "beat-03",
+          "description": "病患依言叩首,张角口中念诵呪语,将符水递给病患",
+          "function": "呈现符水仪式过程",
+          "stateChange": "病患接受符水仪式",
+          "observable": {
+            "visual": [
+              "病患叩首",
+              "张角将符水碗递向病患"
+            ],
+            "audio": [
+              "天地有道,符水能医,饮下此水,病痛自消"
+            ]
+          },
+          "setting": "冀州某地简陋民居外的空地",
+          "mustShow": [
+            "病患叩首",
+            "张角将符水碗递向病患"
+          ]
+        },
+        {
+          "id": "beat-04",
+          "description": "病患饮下符水,暂时感到轻松,起身向张角道谢",
+          "function": "呈现符水的心理安慰效果",
+          "stateChange": "病患相信符水有效",
+          "observable": {
+            "visual": [
+              "病患饮下符水",
+              "病患起身向张角行礼"
+            ],
+            "audio": [
+              "多谢大贤良师"
+            ]
+          },
+          "setting": "冀州某地简陋民居外的空地",
+          "mustShow": [
+            "病患饮下符水",
+            "病患起身向张角行礼"
+          ]
+        },
+        {
+          "id": "beat-05",
+          "description": "围观的饥民和病患纷纷上前,请求张角也为自己施术",
+          "function": "呈现符水吸引力",
+          "stateChange": "更多百姓开始相信张角",
+          "observable": {
+            "visual": [
+              "围观人群向张角靠拢",
+              "多人跪下请求"
+            ],
+            "audio": []
+          },
+          "setting": "冀州某地简陋民居外的空地",
+          "mustShow": [
+            "围观人群向张角靠拢",
+            "多人跪下请求"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病病者颇愈百姓信向之",
+      "adaptationBoundary": "拟制张角施术时的具体劝诫话语和呪语内容,拟制病患跪拜和饮水的动作,拟制围观百姓的反应,但保留史料记载的跪拜首过符水呪说基本流程",
+      "targetDuration": 12,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "张角大贤良师身份已建立",
+        "符水治病的跪拜首过仪式已呈现",
+        "病患饮符水后的反应已展示",
+        "围观百姓的信任已可见"
+      ],
+      "contentContractVersion": "cinematic-v1",
+      "dramaticUnitId": "drama-02",
+      "settingId": "drama-02",
+      "closesUnit": false,
+      "continuityFromPrevious": false
+    },
+    "previousShot": {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-01",
+      "id": "scene-01",
+      "title": "历史地图沙盘标注冀州及八州位置",
+      "editorialRole": "episode_opening",
+      "visualTreatment": "animated",
+      "animationStyle": "historical_map",
+      "animationAesthetic": "cinematic_gongbi",
+      "duration": 8,
+      "pacing": {
+        "version": "duration-v2",
+        "timingPolicy": {
+          "version": "duration-policy-v2.2-brisk-narration",
+          "speech": {
+            "dialogue": {
+              "referenceRate": 4.5,
+              "minimumNaturalRate": 3.3,
+              "maximumRate": 5,
+              "startupAllowance": 0.25
+            },
+            "narration": {
+              "referenceRate": 5.8,
+              "minimumNaturalRate": 5.5,
+              "maximumRate": 6.5,
+              "startupAllowance": 0.25
+            },
+            "chant": {
+              "referenceRate": 3.3,
+              "minimumNaturalRate": 2.8,
+              "maximumRate": 4.5,
+              "startupAllowance": 0.25
+            },
+            "singing": {
+              "referenceRate": 2.8,
+              "minimumNaturalRate": 2,
+              "maximumRate": 3.5,
+              "startupAllowance": 0.35
+            }
+          },
+          "shortPauseSeconds": 0.15,
+          "sentencePauseSeconds": 0.25,
+          "linePauseSeconds": 0.2,
+          "measurementToleranceSeconds": 0.25,
+          "endingReadabilityReserve": 0.5,
+          "maxConservativeExtraSeconds": 1,
+          "minimumProviderDuration": 3,
+          "maximumProviderDuration": 15,
+          "minimumVocalizationSeconds": 0.8,
+          "minimumActionSeconds": 0.3,
+          "minimumReactionSeconds": 0.5
+        },
+        "actorGroups": [],
+        "beats": [
+          {
+            "id": "beat-01-action-map",
+            "sourceBeatId": "beat-01",
+            "actorIds": [],
+            "kind": "action",
+            "textOrVocalization": "历史地图沙盘标注冀州位置并标注青徐幽冀荆扬兖豫八州范围",
+            "dependsOn": [],
+            "overlapAllowedWith": [
+              "beat-01-speech-narration"
+            ],
+            "resources": [
+              "body",
+              "hands"
+            ],
+            "durationEstimate": {
+              "lower": 1.2,
+              "expected": 1.5,
+              "upper": 1.8,
+              "source": "历史地图标注显现估计",
+              "confidence": "medium"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "历史地图沙盘标注冀州位置并地图标注青徐幽冀荆扬兖豫八州范围已完整呈现",
+              "modality": "visual",
+              "evidenceAnchor": "历史地图沙盘标注冀州位置,地图标注青徐幽冀荆扬兖豫八州范围"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "id": "beat-01-speech-narration",
+            "sourceBeatId": "beat-01",
+            "actorIds": [
+              "旁白"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "narration",
+            "textOrVocalization": "东汉灵帝时代,天下屡遭大疫。冀州一带,张角自称大贤良师,以符水治病聚众。",
+            "dependsOn": [],
+            "overlapAllowedWith": [
+              "beat-01-action-map"
+            ],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 5.72,
+              "expected": 6.295,
+              "upper": 6.837,
+              "source": "31汉字旁白,按referenceRate 5.8字/秒加startupAllowance 0.25秒",
+              "confidence": "high"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "旁白完整讲出东汉灵帝时代大疫背景和张角符水治病聚众的基本史实",
+              "modality": "audio",
+              "evidenceAnchor": "东汉灵帝时代,天下屡遭大疫。冀州一带,张角自称大贤良师,以符水治病聚众。"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ],
+        "sourceBeatIds": [
+          "beat-01"
+        ],
+        "sourceBeatRequirements": [
+          {
+            "id": "beat-01",
+            "anchors": [
+              "历史地图沙盘标注冀州位置",
+              "地图标注青徐幽冀荆扬兖豫八州范围"
+            ],
+            "setting": "历史地图沙盘信息空间"
+          }
+        ],
+        "schedule": [
+          {
+            "beatId": "beat-01-action-map",
+            "sourceBeatId": "beat-01",
+            "actorIds": [],
+            "kind": "action",
+            "startSecond": 0,
+            "endSecond": 1.8,
+            "budgetSeconds": 1.8,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "beatId": "beat-01-speech-narration",
+            "sourceBeatId": "beat-01",
+            "actorIds": [
+              "旁白"
+            ],
+            "kind": "speech",
+            "startSecond": 0,
+            "endSecond": 6.837,
+            "budgetSeconds": 6.837,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ],
+        "timelineWindows": [
+          {
+            "startSecond": 0,
+            "endSecond": 6.837,
+            "beatIds": [
+              "beat-01-action-map",
+              "beat-01-speech-narration"
+            ],
+            "beatQuotes": [
+              {
+                "beatId": "beat-01-action-map",
+                "quote": "（节拍 beat-01-action-map，0至1.8秒，导演参考）场景：历史地图沙盘信息空间；历史地图沙盘标注冀州位置并标注青徐幽冀荆扬兖豫八州范围；完成态：历史地图沙盘标注冀州位置并地图标注青徐幽冀荆扬兖豫八州范围已完整呈现；动作依据：历史地图沙盘标注冀州位置,地图标注青徐幽冀荆扬兖豫八州范围。"
+              },
+              {
+                "beatId": "beat-01-speech-narration",
+                "quote": "（节拍 beat-01-speech-narration，0至6.837秒，导演参考）画外旁白自然朗读：东汉灵帝时代,天下屡遭大疫。冀州一带,张角自称大贤良师,以符水治病聚众。；完成态：旁白完整讲出东汉灵帝时代大疫背景和张角符水治病聚众的基本史实。"
+              }
+            ]
+          },
+          {
+            "startSecond": 6.837,
+            "endSecond": 8,
+            "beatIds": [],
+            "beatQuotes": []
+          }
+        ],
+        "speechWindows": [
+          {
+            "start": 0,
+            "end": 6.837,
+            "text": "东汉灵帝时代,天下屡遭大疫。冀州一带,张角自称大贤良师,以符水治病聚众。",
+            "beatId": "beat-01-speech-narration",
+            "sourceBeatId": "beat-01",
+            "actorIds": [
+              "旁白"
+            ],
+            "deliveryStyle": "narration"
+          }
+        ],
+        "sampleTimes": [
+          0,
+          0.9,
+          1.8,
+          3.419,
+          6.837,
+          7.92
+        ],
+        "compiledVideoPrompt": "0-6.837秒：（节拍 beat-01-action-map，0至1.8秒，导演参考）场景：历史地图沙盘信息空间；历史地图沙盘标注冀州位置并标注青徐幽冀荆扬兖豫八州范围；完成态：历史地图沙盘标注冀州位置并地图标注青徐幽冀荆扬兖豫八州范围已完整呈现；动作依据：历史地图沙盘标注冀州位置,地图标注青徐幽冀荆扬兖豫八州范围。同时，（节拍 beat-01-speech-narration，0至6.837秒，导演参考）画外旁白自然朗读：东汉灵帝时代,天下屡遭大疫。冀州一带,张角自称大贤良师,以符水治病聚众。；完成态：旁白完整讲出东汉灵帝时代大疫背景和张角符水治病聚众的基本史实。\n6.837-8秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+        "scheduleHash": "duration-v2-sha256-75f89d70561ddc8d8d0432f66d03f94681accef08e7ef31c9d7218cf4001aca6"
+      },
+      "shotIntent": {
+        "viewpointCharacter": "观众",
+        "purpose": "建立本集时代背景和地理语境,说明灵帝时代疫病流行与张角符水治病的历史事实",
+        "cameraReason": "使用历史地图沙盘信息空间呈现东汉八州地理位置与疫病背景,为后续弟子四方传道提供空间认知"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-01",
+          "function": "本集开场信息建立",
+          "stateChange": "观众从无上下文变为知道灵帝时代疫病背景和张角符水治病的基本事实",
+          "visual": [
+            "历史地图沙盘标注冀州位置",
+            "地图标注青徐幽冀荆扬兖豫八州范围"
+          ],
+          "audio": [
+            "东汉灵帝时代,天下屡遭大疫。冀州一带,张角自称大贤良师,以符水治病聚众。"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-01",
+        "status": "complete",
+        "actionResult": "观众知道灵帝时代疫病背景、八州地理位置和张角符水治病聚众的基本史实",
+        "response": "历史地图标注完成,旁白说明完整呈现",
+        "pendingActions": []
+      },
+      "characters": [],
+      "presentCharacters": [],
+      "initialCharacters": [],
+      "enteringCharacters": [],
+      "endCharacters": [],
+      "illustrationLayers": [],
+      "worldState": {
+        "settingId": "drama-01",
+        "characters": []
+      },
+      "continuity": {
+        "mode": "scene_cut",
+        "previousShotId": "",
+        "bridgeType": "opening",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-01"
+      ],
+      "visualPrompt": "东汉疆域历史地图沙盘俯视,电影工笔画风格,暖色调古旧纸质地图质感。历史地图沙盘标注冀州位置位于今河北南部区域,地图标注青徐幽冀荆扬兖豫八州范围分别在今山东、江苏北部、河北北部、河北南部、湖北、江苏南部、山东西部、河南一带,八州地名以古朴书法显现。冀州区域以柔和光晕突出标示。",
+      "camera": "俯视东汉疆域全图,镜头从整体地图逐渐推进至冀州及八州区域,展示地理空间关系",
+      "mood": "克制的历史信息呈现",
+      "firstFrameMode": "reference",
+      "lastFramePrompt": "东汉疆域历史地图沙盘俯视,历史地图沙盘标注冀州位置以光晕突出,地图标注青徐幽冀荆扬兖豫八州范围的八州地名清晰标注,电影工笔画风格。\n【静态尾帧】只呈现动作完成后的单一时间点与最终状态；单幅全画幅画面，禁止分镜、拼贴、分栏、上下三段、连环画、重复人物；画面内禁止字幕、水印、标题、标签及任何可读文字，榜文、竹简、牌匾等文字载体只能虚焦、背向镜头或呈现不可辨纹理。",
+      "videoPrompt": "0-6.837秒：（节拍 beat-01-action-map，0至1.8秒，导演参考）场景：历史地图沙盘信息空间；历史地图沙盘标注冀州位置并标注青徐幽冀荆扬兖豫八州范围；完成态：历史地图沙盘标注冀州位置并地图标注青徐幽冀荆扬兖豫八州范围已完整呈现；动作依据：历史地图沙盘标注冀州位置,地图标注青徐幽冀荆扬兖豫八州范围。同时，（节拍 beat-01-speech-narration，0至6.837秒，导演参考）画外旁白自然朗读：东汉灵帝时代,天下屡遭大疫。冀州一带,张角自称大贤良师,以符水治病聚众。；完成态：旁白完整讲出东汉灵帝时代大疫背景和张角符水治病聚众的基本史实。\n6.837-8秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.2-brisk-narration 和已编译节拍分别完成下列声部：[{\"beatId\":\"beat-01-speech-narration\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"东汉灵帝时代,天下屡遭大疫。冀州一带,张角自称大贤良师,以符水治病聚众。\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。",
+      "audioType": "旁白",
+      "audioText": "东汉灵帝时代,天下屡遭大疫。冀州一带,张角自称大贤良师,以符水治病聚众。",
+      "historicalBasis": "[史料2]记载张角自称大贤良师奉事黄老道以符水治病聚众;[史料2]记载十余年间众徒数十万连结郡国自八州之人莫不毕应;[史料5]记载灵帝时大疫使中谒者巡行致医药;[史料2]记载灵帝朝政日乱海内虚困",
+      "adaptationBoundary": "拟制历史地图沙盘的视觉呈现方式和旁白具体用语,地理位置与疫病背景依据史料,不新增史实",
+      "scheduleHash": "duration-v2-sha256-75f89d70561ddc8d8d0432f66d03f94681accef08e7ef31c9d7218cf4001aca6",
+      "completionCriteria": [
+        "灵帝时代与大疫背景已通过旁白说明",
+        "冀州及八州地理位置已在地图标注",
+        "张角以符水治病聚众的基本史实已呈现"
+      ],
+      "timingEstimate": {
+        "version": "duration-v2",
+        "policyVersion": "duration-policy-v2.2-brisk-narration",
+        "speechSeconds": 6.837,
+        "contentEndBudget": 6.837,
+        "safeEndBudget": 7.337,
+        "endingReadabilityReserve": 0.5,
+        "tailSeconds": 0.5,
+        "requiredDuration": 8,
+        "maximumDuration": 9,
+        "selectedDuration": 8,
+        "modelDuration": 8,
+        "rawRequiredSeconds": 7.337,
+        "conservativeExtraSeconds": 0.663,
+        "plannedDuration": 7,
+        "budgetBasis": "sum-of-constrained-upper-estimates",
+        "confidence": "medium",
+        "scheduleHash": "duration-v2-sha256-75f89d70561ddc8d8d0432f66d03f94681accef08e7ef31c9d7218cf4001aca6"
+      },
+      "qualityWarnings": [],
+      "scriptValidation": {
+        "passed": true,
+        "scope": "executable-structure",
+        "attempts": [],
+        "localRepair": true,
+        "localRepairs": [
+          {
+            "path": "pacing.beats[0].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[0].resources",
+            "before": [],
+            "after": [
+              "body",
+              "hands"
+            ],
+            "source": "writer-format"
+          },
+          {
+            "path": "pacing.beats[1].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[1].durationEstimate.lower",
+            "before": 4.8,
+            "after": 5.72,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "pacing.beats[1].durationEstimate.expected",
+            "before": 5.3,
+            "after": 6.295,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "pacing.beats[1].durationEstimate.upper",
+            "before": 5.8,
+            "after": 6.837,
+            "source": "shared-speech-policy"
+          }
+        ],
+        "policy": "executable-with-advice-v1",
+        "qualityDisposition": "manual-review-v1",
+        "qualityStatus": "needs_attention",
+        "warnings": [
+          {
+            "code": "STORYBOARD_SEGMENT_COUNT_ADVICE",
+            "path": "videoPrompt",
+            "message": "当前 2 个连续区间；3–6 段是编排建议，不要求为凑段数重写。"
+          }
+        ]
+      },
+      "repairProvenance": {
+        "scope": "initial",
+        "episodeRewriteCount": 0,
+        "candidateVersion": 1,
+        "parentCandidateVersion": 0,
+        "attempt": 1,
+        "generationAttempts": 1
+      },
+      "passed": true,
+      "issues": [],
+      "qualityPolicy": "principle-v1",
+      "qualityDisposition": "manual-review-v1",
+      "qualityReview": {
+        "status": "needs_attention",
+        "canProceed": true,
+        "principleIssues": [],
+        "warnings": [
+          {
+            "code": "AESTHETIC_SUGGESTION",
+            "message": "旁白用语「东汉灵帝时代,天下屡遭大疫」为拟制概括,符合史料记载的建宁四年、熹平二年等多次大疫记录;「冀州一带」、「符水治病聚众」为史料基础上的自然表述,无史实矛盾。历史地图沙盘呈现方式为合理的视觉拟制。"
+          },
+          {
+            "code": "NARRATIVE_ADVICE",
+            "message": "地图标注八州范围与史料「自青、徐、幽、冀、荊、楊、兗、豫八州之人,莫不畢應」吻合,用于空间认知建立合理。若后续场景需展示弟子传道轨迹,可自然衔接。"
+          },
+          {
+            "code": "manual_review_required",
+            "problem": "质量由用户自主验收；已报告的问题保留，不自动重写，可按需返回对应节点重做",
+            "reportedIssues": []
+          }
+        ],
+        "rawReport": {
+          "version": "principle-review-v1",
+          "decision": "pass",
+          "issues": [],
+          "warnings": [
+            {
+              "code": "AESTHETIC_SUGGESTION",
+              "message": "旁白用语「东汉灵帝时代,天下屡遭大疫」为拟制概括,符合史料记载的建宁四年、熹平二年等多次大疫记录;「冀州一带」、「符水治病聚众」为史料基础上的自然表述,无史实矛盾。历史地图沙盘呈现方式为合理的视觉拟制。"
+            },
+            {
+              "code": "NARRATIVE_ADVICE",
+              "message": "地图标注八州范围与史料「自青、徐、幽、冀、荊、楊、兗、豫八州之人,莫不畢應」吻合,用于空间认知建立合理。若后续场景需展示弟子传道轨迹,可自然衔接。"
+            }
+          ],
+          "text": "```json\n{\n  \"version\": \"principle-review-v1\",\n  \"decision\": \"pass\",\n  \"issues\": [],\n  \"warnings\": [\n    {\n      \"code\": \"AESTHETIC_SUGGESTION\",\n      \"message\": \"旁白用语「东汉灵帝时代,天下屡遭大疫」为拟制概括,符合史料记载的建宁四年、熹平二年等多次大疫记录;「冀州一带」、「符水治病聚众」为史料基础上的自然表述,无史实矛盾。历史地图沙盘呈现方式为合理的视觉拟制。\"\n    },\n    {\n      \"code\": \"NARRATIVE_ADVICE\",\n      \"message\": \"地图标注八州范围与史料「自青、徐、幽、冀、荊、楊、兗、豫八州之人,莫不畢應」吻合,用于空间认知建立合理。若后续场景需展示弟子传道轨迹,可自然衔接。\"\n    }\n  ]\n}\n```",
+          "raw": {
+            "content": [
+              {
+                "text": "```json\n{\n  \"version\": \"principle-review-v1\",\n  \"decision\": \"pass\",\n  \"issues\": [],\n  \"warnings\": [\n    {\n      \"code\": \"AESTHETIC_SUGGESTION\",\n      \"message\": \"旁白用语「东汉灵帝时代,天下屡遭大疫」为拟制概括,符合史料记载的建宁四年、熹平二年等多次大疫记录;「冀州一带」、「符水治病聚众」为史料基础上的自然表述,无史实矛盾。历史地图沙盘呈现方式为合理的视觉拟制。\"\n    },\n    {\n      \"code\": \"NARRATIVE_ADVICE\",\n      \"message\": \"地图标注八州范围与史料「自青、徐、幽、冀、荊、楊、兗、豫八州之人,莫不畢應」吻合,用于空间认知建立合理。若后续场景需展示弟子传道轨迹,可自然衔接。\"\n    }\n  ]\n}\n```",
+                "type": "text"
+              }
+            ],
+            "id": "msg_a913a89ece334dcc95cce3882475f9e7",
+            "model": "claude-opus-4-8",
+            "role": "assistant",
+            "stop_reason": "end_turn",
+            "stop_sequence": null,
+            "type": "message",
+            "usage": {
+              "cache_creation_input_tokens": 17268,
+              "cache_read_input_tokens": 0,
+              "input_tokens": 3,
+              "output_tokens": 223,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 17268,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "credit_unit": "credit",
+              "credit_unit_plural": "credits",
+              "credit_usage": 0.20487161036484244
+            }
+          },
+          "reviewTransport": {
+            "attempts": [
+              {
+                "attempt": 1,
+                "raw": {
+                  "content": [
+                    {
+                      "text": "```json\n{\n  \"version\": \"principle-review-v1\",\n  \"decision\": \"pass\",\n  \"issues\": [],\n  \"warnings\": [\n    {\n      \"code\": \"AESTHETIC_SUGGESTION\",\n      \"message\": \"旁白用语「东汉灵帝时代,天下屡遭大疫」为拟制概括,符合史料记载的建宁四年、熹平二年等多次大疫记录;「冀州一带」、「符水治病聚众」为史料基础上的自然表述,无史实矛盾。历史地图沙盘呈现方式为合理的视觉拟制。\"\n    },\n    {\n      \"code\": \"NARRATIVE_ADVICE\",\n      \"message\": \"地图标注八州范围与史料「自青、徐、幽、冀、荊、楊、兗、豫八州之人,莫不畢應」吻合,用于空间认知建立合理。若后续场景需展示弟子传道轨迹,可自然衔接。\"\n    }\n  ]\n}\n```",
+                      "type": "text"
+                    }
+                  ],
+                  "id": "msg_a913a89ece334dcc95cce3882475f9e7",
+                  "model": "claude-opus-4-8",
+                  "role": "assistant",
+                  "stop_reason": "end_turn",
+                  "stop_sequence": null,
+                  "type": "message",
+                  "usage": {
+                    "cache_creation_input_tokens": 17268,
+                    "cache_read_input_tokens": 0,
+                    "input_tokens": 3,
+                    "output_tokens": 223,
+                    "cache_creation": {
+                      "ephemeral_5m_input_tokens": 17268,
+                      "ephemeral_1h_input_tokens": 0
+                    },
+                    "credit_unit": "credit",
+                    "credit_unit_plural": "credits",
+                    "credit_usage": 0.20487161036484244
+                  }
+                }
+              }
+            ],
+            "recovered": false
+          },
+          "model": "claude-opus-4-8"
+        },
+        "manualReviewRequired": true,
+        "automaticRetakeAllowed": false
+      }
+    },
+    "requireContinuityContract": true,
+    "requireDynamicPacing": true,
+    "requireNarrativeClosure": true,
+    "requireDramaContract": true,
+    "productionSpeechRate": 4.5,
+    "aspectRatio": "16:9"
+  },
+  "candidates": [
+    {
+      "ledgerId": "model-run-muio8ar3-q7lub8a",
+      "requestKey": "record-93adhy:attempt-1:revision-0:sanguo-shot-script:1:scene-02:generation-1",
+      "candidate": {
+        "contentContractVersion": "cinematic-v1",
+        "dramaticSceneId": "drama-02",
+        "id": "shot-02-01",
+        "title": "张角为病患施符水术",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "duration": 14,
+        "pacing": {
+          "version": "duration-v2",
+          "timingPolicy": {
+            "version": "duration-policy-v2.2-brisk-narration",
+            "speech": {
+              "dialogue": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "narration": {
+                "referenceRate": 5.8,
+                "minimumNaturalRate": 5.5,
+                "maximumRate": 6.5,
+                "startupAllowance": 0.25
+              },
+              "chant": {
+                "referenceRate": 3.3,
+                "minimumNaturalRate": 2.8,
+                "maximumRate": 4.5,
+                "startupAllowance": 0.25
+              },
+              "singing": {
+                "referenceRate": 2.8,
+                "minimumNaturalRate": 2,
+                "maximumRate": 3.5,
+                "startupAllowance": 0.35
+              }
+            },
+            "shortPauseSeconds": 0.15,
+            "sentencePauseSeconds": 0.25,
+            "linePauseSeconds": 0.2,
+            "measurementToleranceSeconds": 0.25,
+            "endingReadabilityReserve": 0.5,
+            "maxConservativeExtraSeconds": 1,
+            "minimumProviderDuration": 3,
+            "maximumProviderDuration": 15,
+            "minimumVocalizationSeconds": 0.8,
+            "minimumActionSeconds": 0.3,
+            "minimumReactionSeconds": 0.5
+          },
+          "actorGroups": [
+            {
+              "id": "sick-petitioner",
+              "label": "病患",
+              "memberDescription": "一名面色憔悴、衣衫破旧的成年男性百姓，因病求医",
+              "voiceProfile": {
+                "description": "虚弱但恳切的成年男性声音",
+                "age": "成年",
+                "pitch": "中等偏低",
+                "resonance": "虚弱",
+                "texture": "略带沙哑",
+                "delivery": "恳切",
+                "genderPresentation": "男性",
+                "language": "汉语"
+              }
+            },
+            {
+              "id": "onlookers",
+              "label": "围观饥民与病患",
+              "memberDescription": "七八名衣衫褴褛的饥民和病患，围在空地边缘观看"
+            }
+          ],
+          "beats": [
+            {
+              "id": "beat-02-establish",
+              "sourceBeatId": "beat-02",
+              "actorIds": [
+                "张角",
+                "sick-petitioner"
+              ],
+              "kind": "action",
+              "textOrVocalization": "张角站立手持符水碗，病患跪伏在地",
+              "performanceInstruction": "冀州某地简陋民居外的空地，张角身穿深蓝黑色暗纹宽袖长袍站在空地中央，双手持一只盛有符水的粗陶碗，面对跪伏在地的病患；病患面色憔悴衣衫破旧，双膝跪地双手撑地头低垂",
+              "dependsOn": [],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 0.8,
+                "expected": 1.2,
+                "upper": 1.5,
+                "source": "建立画面需要的静止展示时间",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "张角站立手持符水碗和病患跪伏在地的场景已完整呈现",
+                "modality": "visual",
+                "evidenceAnchor": "张角站立手持符水碗，病患跪伏在地"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-02-speech",
+              "sourceBeatId": "beat-02",
+              "actorIds": [
+                "张角"
+              ],
+              "kind": "speech",
+              "deliveryStyle": "dialogue",
+              "textOrVocalization": "你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救",
+              "dependsOn": [
+                "beat-02-establish"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "voice"
+              ],
+              "durationEstimate": {
+                "lower": 3.5,
+                "expected": 4.2,
+                "upper": 5,
+                "source": "23字对白，按4.5字/秒参考语速加启动余量",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "张角完整说出劝诫病患的话语",
+                "modality": "audio-visual",
+                "evidenceAnchor": "你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-03-kowtow",
+              "sourceBeatId": "beat-03",
+              "actorIds": [
+                "sick-petitioner"
+              ],
+              "kind": "action",
+              "textOrVocalization": "病患叩首",
+              "performanceInstruction": "病患依言磕头，额头触地",
+              "dependsOn": [
+                "beat-02-speech"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 0.8,
+                "expected": 1.2,
+                "upper": 1.5,
+                "source": "完成叩首动作所需时间",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患叩首动作已完成",
+                "modality": "visual",
+                "evidenceAnchor": "病患叩首"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-03-chant",
+              "sourceBeatId": "beat-03",
+              "actorIds": [
+                "张角"
+              ],
+              "kind": "speech",
+              "deliveryStyle": "dialogue",
+              "textOrVocalization": "天地有道,符水能医,饮下此水,病痛自消",
+              "performanceInstruction": "张角口中念诵呪语",
+              "dependsOn": [
+                "beat-03-kowtow"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "voice"
+              ],
+              "durationEstimate": {
+                "lower": 3.5,
+                "expected": 4.2,
+                "upper": 5,
+                "source": "20字呪语对白，按4.5字/秒参考语速加启动余量",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "张角完整念诵呪语",
+                "modality": "audio-visual",
+                "evidenceAnchor": "天地有道,符水能医,饮下此水,病痛自消"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-03-hand-bowl",
+              "sourceBeatId": "beat-03",
+              "actorIds": [
+                "张角"
+              ],
+              "kind": "action",
+              "textOrVocalization": "张角将符水碗递向病患",
+              "performanceInstruction": "张角双手持碗向前伸出，递向病患",
+              "dependsOn": [
+                "beat-03-chant"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 0.8,
+                "expected": 1.2,
+                "upper": 1.5,
+                "source": "递碗动作所需时间",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "张角将符水碗递向病患的动作已完成",
+                "modality": "visual",
+                "evidenceAnchor": "张角将符水碗递向病患"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-04-drink",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "sick-petitioner"
+              ],
+              "kind": "action",
+              "textOrVocalization": "病患饮下符水",
+              "performanceInstruction": "病患双手接过符水碗，仰头饮下",
+              "dependsOn": [
+                "beat-03-hand-bowl"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1.5,
+                "expected": 2,
+                "upper": 2.5,
+                "source": "接碗并饮水的完整动作时间",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患饮下符水的动作已完成",
+                "modality": "visual",
+                "evidenceAnchor": "病患饮下符水"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-04-stand",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "sick-petitioner"
+              ],
+              "kind": "action",
+              "textOrVocalization": "病患起身向张角行礼",
+              "performanceInstruction": "病患放下碗从地上起身，向张角拱手作揖",
+              "dependsOn": [
+                "beat-04-drink"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1,
+                "expected": 1.5,
+                "upper": 2,
+                "source": "起身并行礼的动作时间",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患起身向张角行礼的动作已完成",
+                "modality": "visual",
+                "evidenceAnchor": "病患起身向张角行礼"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-04-thanks",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "sick-petitioner"
+              ],
+              "kind": "speech",
+              "deliveryStyle": "dialogue",
+              "textOrVocalization": "多谢大贤良师",
+              "dependsOn": [
+                "beat-04-stand"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "voice"
+              ],
+              "durationEstimate": {
+                "lower": 1.5,
+                "expected": 1.8,
+                "upper": 2.2,
+                "source": "7字对白，按4.5字/秒参考语速加启动余量",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患完整说出感谢的话",
+                "modality": "audio-visual",
+                "evidenceAnchor": "多谢大贤良师"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-05-crowd-approach",
+              "sourceBeatId": "beat-05",
+              "actorIds": [
+                "onlookers"
+              ],
+              "kind": "action",
+              "textOrVocalization": "围观人群向张角靠拢",
+              "performanceInstruction": "原本站在空地边缘观看的七八名饥民和病患向张角所在位置移动靠拢",
+              "dependsOn": [
+                "beat-04-thanks"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1.2,
+                "expected": 1.8,
+                "upper": 2.5,
+                "source": "群体移动靠拢的时间",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "围观人群向张角靠拢的动作已完成",
+                "modality": "visual",
+                "evidenceAnchor": "围观人群向张角靠拢"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-05-kneel",
+              "sourceBeatId": "beat-05",
+              "actorIds": [
+                "onlookers"
+              ],
+              "kind": "action",
+              "textOrVocalization": "多人跪下请求",
+              "performanceInstruction": "靠拢的饥民和病患纷纷双膝跪地，向张角伸出双手做出恳求姿态",
+              "dependsOn": [
+                "beat-05-crowd-approach"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1,
+                "expected": 1.5,
+                "upper": 2,
+                "source": "群体跪下的动作时间",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "多人跪下请求的场景已完整呈现",
+                "modality": "visual",
+                "evidenceAnchor": "多人跪下请求"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            }
+          ]
+        },
+        "shotIntent": {
+          "viewpointCharacter": "张角",
+          "purpose": "建立张角大贤良师身份，呈现符水治病的完整仪式流程和病患的信任反应",
+          "cameraReason": "使用中景能同时看清张角施术动作、病患跪拜反应和围观群众，完整呈现符水仪式的社会效应"
+        },
+        "beatDramaturgy": [
+          {
+            "beatId": "beat-02",
+            "function": "建立张角施术场景",
+            "stateChange": "观众看到张角正在为病患施术",
+            "visual": [
+              "张角站立手持符水碗",
+              "病患跪伏在地"
+            ],
+            "audio": [
+              "你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救"
+            ]
+          },
+          {
+            "beatId": "beat-03",
+            "function": "呈现符水仪式过程",
+            "stateChange": "病患接受符水仪式",
+            "visual": [
+              "病患叩首",
+              "张角将符水碗递向病患"
+            ],
+            "audio": [
+              "天地有道,符水能医,饮下此水,病痛自消"
+            ]
+          },
+          {
+            "beatId": "beat-04",
+            "function": "呈现符水的心理安慰效果",
+            "stateChange": "病患相信符水有效",
+            "visual": [
+              "病患饮下符水",
+              "病患起身向张角行礼"
+            ],
+            "audio": [
+              "多谢大贤良师"
+            ]
+          },
+          {
+            "beatId": "beat-05",
+            "function": "呈现符水吸引力",
+            "stateChange": "更多百姓开始相信张角",
+            "visual": [
+              "围观人群向张角靠拢",
+              "多人跪下请求"
+            ],
+            "audio": []
+          }
+        ],
+        "storyProgress": {
+          "unitId": "drama-02",
+          "status": "continuing",
+          "actionResult": "张角完成一次符水治病仪式，病患相信符水有效并道谢，围观群众受到吸引纷纷跪下请求",
+          "response": "围观百姓开始相信张角的符水能治病",
+          "pendingActions": [
+            "张角遣弟子八人使于四方传道",
+            "展示道众组织的扩张过程"
+          ]
+        },
+        "characters": [
+          "张角"
+        ],
+        "presentCharacters": [
+          "张角"
+        ],
+        "initialCharacters": [
+          "张角"
+        ],
+        "enteringCharacters": [],
+        "endCharacters": [
+          "张角"
+        ],
+        "illustrationLayers": [],
+        "worldState": {
+          "settingId": "drama-02",
+          "characters": [
+            {
+              "name": "张角",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            }
+          ]
+        },
+        "continuity": {
+          "mode": "scene_cut",
+          "previousShotId": "scene-01",
+          "bridgeType": "cut",
+          "bridgeAnchor": "从东汉疆域全景转入冀州地面，呈现张角符水治病的具体场景"
+        },
+        "coveredBeatIds": [
+          "beat-02",
+          "beat-03",
+          "beat-04",
+          "beat-05"
+        ],
+        "visualPrompt": "冀州某地简陋民居外的空地，东汉时代自然光，张角身穿深蓝黑色暗纹宽袖长袍灰橄榄色交领长衣站在空地中央双手持盛有符水的粗陶碗，面对跪伏在地的病患，病患面色憔悴衣衫破旧双膝跪地双手撑地头低垂，空地边缘围观人群向张角靠拢多人跪下请求，背景是简陋的夯土墙民居和泥土地面，七八名衣衫褴褛的饥民和病患围在空地边缘",
+        "camera": "中景，正面略偏侧拍摄，机位高度与张角视线平齐，固定机位，能同时看清张角、跪地病患和周围群众",
+        "mood": "庄重而带有期待感，病患恳切，围观者既好奇又渴望",
+        "firstFrameMode": "reference",
+        "lastFramePrompt": "冀州某地简陋民居外的空地，张角站立双手持空碗，第一名病患已起身站在一旁，七八名饥民和病患跪在张角周围地上双手做出恳求姿态",
+        "videoPrompt": "0-1.5秒：冀州某地简陋民居外的空地，张角站立手持符水碗，病患跪伏在地。1.5-5.7秒：张角开口说话：你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救。5.7-7.2秒：病患叩首，额头触地。7.2-11.4秒：张角口中念诵呪语：天地有道,符水能医,饮下此水,病痛自消。11.4-12.9秒：张角将符水碗递向病患，双手持碗向前伸出。12.9-14.9秒：病患双手接过符水碗仰头饮下，放下碗从地上起身向张角拱手作揖。14.9-17.2秒：病患说：多谢大贤良师。17.2-19秒：围观人群向张角靠拢，原本站在空地边缘观看的七八名饥民和病患向张角所在位置移动靠拢。19-21秒：多人跪下请求，靠拢的饥民和病患纷纷双膝跪地向张角伸出双手做出恳求姿态。21-21.5秒：张角站立双手持空碗面对跪地的群众。",
+        "audioType": "对白",
+        "audioText": "张角：你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救\n张角：天地有道,符水能医,饮下此水,病痛自消\n病患：多谢大贤良师",
+        "historicalBasis": "[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病病者颇愈百姓信向之",
+        "adaptationBoundary": "拟制张角劝诫病患跪拜忏悔的具体话语、符水呪语内容、病患叩首和饮水的动作、病患道谢的对白、围观百姓靠拢跪下的群体动作，保留史料记载的跪拜首过符水呪说基本仪式流程和百姓信向的结果"
+      }
+    },
+    {
+      "ledgerId": "model-run-muio9va6-mtojkil",
+      "requestKey": "record-93adhy:attempt-1:revision-0:sanguo-shot-script:1:scene-02:generation-2",
+      "candidate": {
+        "segments": [
+          {
+            "contentContractVersion": "cinematic-v1",
+            "dramaticSceneId": "drama-02",
+            "id": "scene-02-seg-01",
+            "title": "张角劝诫病患跪拜忏悔并念诵呪语",
+            "editorialRole": "story",
+            "visualTreatment": "live_action",
+            "duration": 14,
+            "pacing": {
+              "version": "duration-v2",
+              "timingPolicy": {
+                "version": "duration-policy-v2.2-brisk-narration",
+                "speech": {
+                  "dialogue": {
+                    "referenceRate": 4.5,
+                    "minimumNaturalRate": 3.3,
+                    "maximumRate": 5,
+                    "startupAllowance": 0.25
+                  },
+                  "narration": {
+                    "referenceRate": 5.8,
+                    "minimumNaturalRate": 5.5,
+                    "maximumRate": 6.5,
+                    "startupAllowance": 0.25
+                  },
+                  "chant": {
+                    "referenceRate": 3.3,
+                    "minimumNaturalRate": 2.8,
+                    "maximumRate": 4.5,
+                    "startupAllowance": 0.25
+                  },
+                  "singing": {
+                    "referenceRate": 2.8,
+                    "minimumNaturalRate": 2,
+                    "maximumRate": 3.5,
+                    "startupAllowance": 0.35
+                  }
+                },
+                "shortPauseSeconds": 0.15,
+                "sentencePauseSeconds": 0.25,
+                "linePauseSeconds": 0.2,
+                "measurementToleranceSeconds": 0.25,
+                "endingReadabilityReserve": 0.5,
+                "maxConservativeExtraSeconds": 1,
+                "minimumProviderDuration": 3,
+                "maximumProviderDuration": 15,
+                "minimumVocalizationSeconds": 0.8,
+                "minimumActionSeconds": 0.3,
+                "minimumReactionSeconds": 0.5
+              },
+              "actorGroups": [
+                {
+                  "id": "sick-petitioner",
+                  "label": "病患",
+                  "memberDescription": "一名面色憔悴、衣衫破旧的成年男性百姓，因病求医",
+                  "voiceProfile": {
+                    "description": "虚弱但恳切的成年男性声音",
+                    "age": "成年",
+                    "pitch": "中等偏低",
+                    "resonance": "虚弱",
+                    "texture": "略带沙哑",
+                    "delivery": "恳切",
+                    "genderPresentation": "男性",
+                    "language": "汉语"
+                  }
+                }
+              ],
+              "beats": [
+                {
+                  "id": "beat-02-establish",
+                  "sourceBeatId": "beat-02",
+                  "actorIds": [
+                    "张角",
+                    "sick-petitioner"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "张角站立手持符水碗，病患跪伏在地",
+                  "dependsOn": [],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 0.8,
+                    "expected": 1.2,
+                    "upper": 1.5,
+                    "source": "建立画面需要的静止展示时间",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "张角站立手持符水碗和病患跪伏在地的场景已完整呈现",
+                    "modality": "visual",
+                    "evidenceAnchor": "张角站立手持符水碗，病患跪伏在地"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-02-speech",
+                  "sourceBeatId": "beat-02",
+                  "actorIds": [
+                    "张角"
+                  ],
+                  "kind": "speech",
+                  "deliveryStyle": "dialogue",
+                  "textOrVocalization": "你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救",
+                  "dependsOn": [
+                    "beat-02-establish"
+                  ],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "voice"
+                  ],
+                  "durationEstimate": {
+                    "lower": 4.219,
+                    "expected": 5.117,
+                    "upper": 7.064,
+                    "source": "23字对白，按对话最低自然语速3.3字/秒计算23/3.3=6.970秒，加启动余量0.25秒，下界6.970-2.5=4.219秒，参考4.5字/秒为5.117秒，上界5.0字/秒为4.6+0.25+容差=7.064秒",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "张角完整说出劝诫病患的话语",
+                    "modality": "audio-visual",
+                    "evidenceAnchor": "你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-03-kowtow",
+                  "sourceBeatId": "beat-03",
+                  "actorIds": [
+                    "sick-petitioner"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "病患叩首",
+                  "dependsOn": [
+                    "beat-02-speech"
+                  ],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 0.8,
+                    "expected": 1.2,
+                    "upper": 1.5,
+                    "source": "完成叩首动作所需时间",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "病患叩首动作已完成",
+                    "modality": "visual",
+                    "evidenceAnchor": "病患叩首"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-03-chant",
+                  "sourceBeatId": "beat-03",
+                  "actorIds": [
+                    "张角"
+                  ],
+                  "kind": "speech",
+                  "deliveryStyle": "dialogue",
+                  "textOrVocalization": "天地有道,符水能医,饮下此水,病痛自消",
+                  "dependsOn": [
+                    "beat-03-kowtow"
+                  ],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "voice"
+                  ],
+                  "durationEstimate": {
+                    "lower": 3.682,
+                    "expected": 4.444,
+                    "upper": 5.549,
+                    "source": "20字呪语对白，按对话最低自然语速3.3字/秒计算20/3.3=6.061秒，加启动余量0.25秒，下界6.061-2.5=3.682秒，参考4.5字/秒为4.444秒，上界5.0字/秒为4.0+0.25+容差=5.549秒",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "张角完整念诵呪语",
+                    "modality": "audio-visual",
+                    "evidenceAnchor": "天地有道,符水能医,饮下此水,病痛自消"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-03-hand-bowl",
+                  "sourceBeatId": "beat-03",
+                  "actorIds": [
+                    "张角"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "张角将符水碗递向病患",
+                  "dependsOn": [
+                    "beat-03-chant"
+                  ],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 0.8,
+                    "expected": 1.2,
+                    "upper": 1.5,
+                    "source": "递碗动作所需时间",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "张角将符水碗递向病患的动作已完成",
+                    "modality": "visual",
+                    "evidenceAnchor": "张角将符水碗递向病患"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                }
+              ]
+            },
+            "shotIntent": {
+              "viewpointCharacter": "张角",
+              "purpose": "建立张角施术场景，呈现张角劝诫病患跪拜忏悔并念诵符水呪语的仪式过程",
+              "cameraReason": "使用中景能同时看清张角施术动作和病患跪拜反应，完整呈现符水仪式的核心流程"
+            },
+            "beatDramaturgy": [
+              {
+                "beatId": "beat-02",
+                "function": "建立张角施术场景",
+                "stateChange": "观众看到张角正在为病患施术",
+                "visual": [
+                  "张角站立手持符水碗",
+                  "病患跪伏在地"
+                ],
+                "audio": [
+                  "你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救"
+                ]
+              },
+              {
+                "beatId": "beat-03",
+                "function": "呈现符水仪式过程",
+                "stateChange": "病患接受符水仪式",
+                "visual": [
+                  "病患叩首",
+                  "张角将符水碗递向病患"
+                ],
+                "audio": [
+                  "天地有道,符水能医,饮下此水,病痛自消"
+                ]
+              }
+            ],
+            "beatCoverage": [
+              {
+                "beatId": "beat-02",
+                "anchors": [
+                  "张角站立手持符水碗",
+                  "病患跪伏在地"
+                ]
+              },
+              {
+                "beatId": "beat-03",
+                "anchors": [
+                  "病患叩首",
+                  "张角将符水碗递向病患"
+                ]
+              }
+            ],
+            "storyProgress": {
+              "unitId": "drama-02",
+              "status": "continuing",
+              "actionResult": "张角劝诫病患跪拜忏悔，病患叩首，张角念诵呪语并将符水碗递向病患",
+              "response": "病患接受张角的符水仪式指引",
+              "pendingActions": [
+                "病患饮下符水",
+                "病患起身道谢",
+                "围观群众上前请求"
+              ]
+            },
+            "characters": [
+              "张角"
+            ],
+            "presentCharacters": [
+              "张角"
+            ],
+            "initialCharacters": [
+              "张角"
+            ],
+            "enteringCharacters": [],
+            "endCharacters": [
+              "张角"
+            ],
+            "illustrationLayers": [],
+            "worldState": {
+              "settingId": "drama-02",
+              "characters": [
+                {
+                  "name": "张角",
+                  "position": {
+                    "status": "unknown"
+                  },
+                  "heldProps": {
+                    "status": "unknown"
+                  },
+                  "pendingAction": {
+                    "status": "unknown"
+                  }
+                }
+              ]
+            },
+            "continuity": {
+              "mode": "scene_cut",
+              "previousShotId": "scene-01",
+              "bridgeType": "cut",
+              "bridgeAnchor": "从东汉疆域全景转入冀州地面，呈现张角符水治病的具体场景"
+            },
+            "coveredBeatIds": [
+              "beat-02",
+              "beat-03"
+            ],
+            "visualPrompt": "冀州某地简陋民居外的空地，东汉时代自然光，张角身穿深蓝黑色暗纹宽袖长袍灰橄榄色交领长衣站在空地中央双手持盛有符水的粗陶碗，面对跪伏在地的病患，病患面色憔悴衣衫破旧双膝跪地双手撑地头低垂，背景是简陋的夯土墙民居和泥土地面，七八名衣衫褴褛的饥民和病患围在空地边缘",
+            "camera": "中景，正面略偏侧拍摄，机位高度与张角视线平齐，固定机位，能同时看清张角和跪地病患",
+            "mood": "庄重而带有期待感，病患恳切",
+            "firstFrameMode": "reference",
+            "lastFramePrompt": "冀州某地简陋民居外的空地，张角站立双手持符水碗向前伸出，病患跪在地上抬头望向张角",
+            "videoPrompt": "0-1.5秒：冀州某地简陋民居外的空地，张角站立手持符水碗，病患跪伏在地。1.5-7.7秒：张角开口说话：你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救。7.7-9.2秒：病患叩首，额头触地。9.2-13.8秒：张角口中念诵呪语：天地有道,符水能医,饮下此水,病痛自消。13.8-14秒：张角将符水碗递向病患，双手持碗向前伸出。",
+            "audioType": "对白",
+            "audioText": "张角：你这病,乃是前世罪孽所致,须先跪拜忏悔,方能得救\n张角：天地有道,符水能医,饮下此水,病痛自消",
+            "historicalBasis": "[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病病者颇愈百姓信向之",
+            "adaptationBoundary": "拟制张角劝诫病患跪拜忏悔的具体话语、符水呪语内容、病患叩首动作，保留史料记载的跪拜首过符水呪说基本仪式流程"
+          },
+          {
+            "contentContractVersion": "cinematic-v1",
+            "dramaticSceneId": "drama-02",
+            "id": "scene-02-seg-02",
+            "title": "病患饮符水道谢，围观群众上前请求",
+            "editorialRole": "story",
+            "visualTreatment": "live_action",
+            "duration": 11,
+            "pacing": {
+              "version": "duration-v2",
+              "timingPolicy": {
+                "version": "duration-policy-v2.2-brisk-narration",
+                "speech": {
+                  "dialogue": {
+                    "referenceRate": 4.5,
+                    "minimumNaturalRate": 3.3,
+                    "maximumRate": 5,
+                    "startupAllowance": 0.25
+                  },
+                  "narration": {
+                    "referenceRate": 5.8,
+                    "minimumNaturalRate": 5.5,
+                    "maximumRate": 6.5,
+                    "startupAllowance": 0.25
+                  },
+                  "chant": {
+                    "referenceRate": 3.3,
+                    "minimumNaturalRate": 2.8,
+                    "maximumRate": 4.5,
+                    "startupAllowance": 0.25
+                  },
+                  "singing": {
+                    "referenceRate": 2.8,
+                    "minimumNaturalRate": 2,
+                    "maximumRate": 3.5,
+                    "startupAllowance": 0.35
+                  }
+                },
+                "shortPauseSeconds": 0.15,
+                "sentencePauseSeconds": 0.25,
+                "linePauseSeconds": 0.2,
+                "measurementToleranceSeconds": 0.25,
+                "endingReadabilityReserve": 0.5,
+                "maxConservativeExtraSeconds": 1,
+                "minimumProviderDuration": 3,
+                "maximumProviderDuration": 15,
+                "minimumVocalizationSeconds": 0.8,
+                "minimumActionSeconds": 0.3,
+                "minimumReactionSeconds": 0.5
+              },
+              "actorGroups": [
+                {
+                  "id": "sick-petitioner",
+                  "label": "病患",
+                  "memberDescription": "一名面色憔悴、衣衫破旧的成年男性百姓，因病求医",
+                  "voiceProfile": {
+                    "description": "虚弱但恳切的成年男性声音",
+                    "age": "成年",
+                    "pitch": "中等偏低",
+                    "resonance": "虚弱",
+                    "texture": "略带沙哑",
+                    "delivery": "恳切",
+                    "genderPresentation": "男性",
+                    "language": "汉语"
+                  }
+                },
+                {
+                  "id": "onlookers",
+                  "label": "围观饥民与病患",
+                  "memberDescription": "七八名衣衫褴褛的饥民和病患，围在空地边缘观看"
+                }
+              ],
+              "beats": [
+                {
+                  "id": "beat-04-drink",
+                  "sourceBeatId": "beat-04",
+                  "actorIds": [
+                    "sick-petitioner"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "病患饮下符水",
+                  "dependsOn": [],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 1.5,
+                    "expected": 2,
+                    "upper": 2.5,
+                    "source": "接碗并饮水的完整动作时间",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "病患饮下符水的动作已完成",
+                    "modality": "visual",
+                    "evidenceAnchor": "病患饮下符水"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-04-stand",
+                  "sourceBeatId": "beat-04",
+                  "actorIds": [
+                    "sick-petitioner"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "病患起身向张角行礼",
+                  "dependsOn": [
+                    "beat-04-drink"
+                  ],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 1,
+                    "expected": 1.5,
+                    "upper": 2,
+                    "source": "起身并行礼的动作时间",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "病患起身向张角行礼的动作已完成",
+                    "modality": "visual",
+                    "evidenceAnchor": "病患起身向张角行礼"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-04-thanks",
+                  "sourceBeatId": "beat-04",
+                  "actorIds": [
+                    "sick-petitioner"
+                  ],
+                  "kind": "speech",
+                  "deliveryStyle": "dialogue",
+                  "textOrVocalization": "多谢大贤良师",
+                  "dependsOn": [
+                    "beat-04-stand"
+                  ],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "voice"
+                  ],
+                  "durationEstimate": {
+                    "lower": 1.369,
+                    "expected": 1.556,
+                    "upper": 2.2,
+                    "source": "7字对白，按对话最低自然语速3.3字/秒计算7/3.3=2.121秒，加启动余量0.25秒，下界2.121-1.0=1.369秒，参考4.5字/秒为1.556秒，上界5.0字/秒为1.4+0.25+容差=2.2秒",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "病患完整说出感谢的话",
+                    "modality": "audio-visual",
+                    "evidenceAnchor": "多谢大贤良师"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-05-crowd-approach",
+                  "sourceBeatId": "beat-05",
+                  "actorIds": [
+                    "onlookers"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "围观人群向张角靠拢",
+                  "dependsOn": [
+                    "beat-04-thanks"
+                  ],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 1.2,
+                    "expected": 1.8,
+                    "upper": 2.5,
+                    "source": "群体移动靠拢的时间",
+                    "confidence": "medium"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "围观人群向张角靠拢的动作已完成",
+                    "modality": "visual",
+                    "evidenceAnchor": "围观人群向张角靠拢"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-05-kneel",
+                  "sourceBeatId": "beat-05",
+                  "actorIds": [
+                    "onlookers"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "多人跪下请求",
+                  "dependsOn": [
+                    "beat-05-crowd-approach"
+                  ],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 1,
+                    "expected": 1.5,
+                    "upper": 2,
+                    "source": "群体跪下的动作时间",
+                    "confidence": "medium"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "多人跪下请求的场景已完整呈现",
+                    "modality": "visual",
+                    "evidenceAnchor": "多人跪下请求"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                }
+              ]
+            },
+            "shotIntent": {
+              "viewpointCharacter": "张角",
+              "purpose": "呈现符水的心理安慰效果和吸引力，病患饮水后道谢，围观群众受到感染上前请求",
+              "cameraReason": "使用中景能同时看清病患饮水起身道谢的完整过程，以及围观群众靠拢跪下的群体反应"
+            },
+            "beatDramaturgy": [
+              {
+                "beatId": "beat-04",
+                "function": "呈现符水的心理安慰效果",
+                "stateChange": "病患相信符水有效",
+                "visual": [
+                  "病患饮下符水",
+                  "病患起身向张角行礼"
+                ],
+                "audio": [
+                  "多谢大贤良师"
+                ]
+              },
+              {
+                "beatId": "beat-05",
+                "function": "呈现符水吸引力",
+                "stateChange": "更多百姓开始相信张角",
+                "visual": [
+                  "围观人群向张角靠拢",
+                  "多人跪下请求"
+                ],
+                "audio": []
+              }
+            ],
+            "beatCoverage": [
+              {
+                "beatId": "beat-04",
+                "anchors": [
+                  "病患饮下符水",
+                  "病患起身向张角行礼"
+                ]
+              },
+              {
+                "beatId": "beat-05",
+                "anchors": [
+                  "围观人群向张角靠拢",
+                  "多人跪下请求"
+                ]
+              }
+            ],
+            "storyProgress": {
+              "unitId": "drama-02",
+              "status": "continuing",
+              "actionResult": "病患饮下符水后道谢，围观的饥民和病患受到吸引纷纷上前跪下请求",
+              "response": "围观百姓开始相信张角的符水能治病",
+              "pendingActions": [
+                "张角遣弟子八人使于四方传道",
+                "展示道众组织的扩张过程"
+              ]
+            },
+            "characters": [
+              "张角"
+            ],
+            "presentCharacters": [
+              "张角"
+            ],
+            "initialCharacters": [
+              "张角"
+            ],
+            "enteringCharacters": [],
+            "endCharacters": [
+              "张角"
+            ],
+            "illustrationLayers": [],
+            "worldState": {
+              "settingId": "drama-02",
+              "characters": [
+                {
+                  "name": "张角",
+                  "position": {
+                    "status": "unknown"
+                  },
+                  "heldProps": {
+                    "status": "unknown"
+                  },
+                  "pendingAction": {
+                    "status": "unknown"
+                  }
+                }
+              ]
+            },
+            "continuity": {
+              "mode": "tail_continuation",
+              "previousShotId": "scene-02-seg-01",
+              "bridgeType": "same_frame",
+              "bridgeAnchor": ""
+            },
+            "coveredBeatIds": [
+              "beat-04",
+              "beat-05"
+            ],
+            "visualPrompt": "冀州某地简陋民居外的空地，张角站立双手持符水碗向前伸出，病患跪在地上抬头望向张角",
+            "camera": "中景，正面略偏侧拍摄，机位高度与张角视线平齐，固定机位，能同时看清病患动作和围观群众反应",
+            "mood": "病患感激，围观者既好奇又渴望",
+            "firstFrameMode": "reuse_previous_tail",
+            "lastFramePrompt": "冀州某地简陋民居外的空地，张角站立双手持空碗，第一名病患已起身站在一旁，七八名饥民和病患跪在张角周围地上双手做出恳求姿态",
+            "videoPrompt": "0-2.5秒：病患双手接过符水碗仰头饮下。2.5-4.5秒：病患放下碗从地上起身向张角拱手作揖。4.5-6.7秒：病患说：多谢大贤良师。6.7-9.2秒：围观人群向张角靠拢，原本站在空地边缘观看的七八名饥民和病患向张角所在位置移动靠拢。9.2-11秒：多人跪下请求，靠拢的饥民和病患纷纷双膝跪地向张角伸出双手做出恳求姿态。",
+            "audioType": "对白",
+            "audioText": "病患：多谢大贤良师",
+            "historicalBasis": "[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病病者颇愈百姓信向之",
+            "adaptationBoundary": "拟制病患饮水起身道谢的动作和对白，拟制围观百姓靠拢跪下的群体动作，保留史料记载的病者颇愈百姓信向之结果"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { Converter } from 'opencc-js/t2cn'
 
 export type InternetSourceInput = {
   query: string
@@ -40,6 +41,12 @@ export type InternetSourceResult = {
   fetchedAt: string
   attemptedUrls: string[]
   failures: Array<{ url: string; error: string }>
+  request?: InternetSourceInput
+  cacheRecovery?: {
+    executionRecordId: string
+    recoveredAt: string
+    onlineError: string
+  }
 }
 
 /** @deprecated Use InternetSourceResult. */
@@ -106,13 +113,68 @@ function htmlToText(html: string) {
       .replace(/<!--([\s\S]*?)-->/g, '')
       .replace(/<(script|style|noscript|svg|nav|footer|form)[^>]*>[\s\S]*?<\/\1>/gi, '')
       .replace(/<(br|\/p|\/div|\/li|\/tr|\/h[1-6]|\/section|\/article)[^>]*>/gi, '\n')
-      .replace(/<[^>]+>/g, ' '),
+      // Inline markup (names, dates, annotation spans) must not insert spaces
+      // into continuous classical prose: 張飛所拒 is one quoted source phrase.
+      .replace(/<[^>]+>/g, ''),
   )
     .replace(/[\t\f\v\u00a0]+/g, ' ')
     .replace(/ *\n */g, '\n')
     .replace(/ {2,}/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim()
+}
+
+function assertUsableSourcePage(text: string) {
+  const normalized = text.replace(/\s+/g, ' ').trim()
+  const challengeSignals = [
+    /please confirm that you are human/i,
+    /checking the security of your connection/i,
+    /attention (?:llms|robots|scrapers)/i,
+    /web scraping of this site is in violation/i,
+    /intentionally return corrupted data/i,
+    /not an automated (?:program|programme)/i,
+    /请输入.{0,12}(?:认证图案|驗證碼|验证码)/i,
+    /確認您是?真人/i,
+    /captcha/i,
+    /access denied/i,
+  ]
+  if (challengeSignals.some((pattern) => pattern.test(normalized))) {
+    throw new Error('页面返回人机验证或访问拦截，未取得史料正文')
+  }
+}
+
+/** A catalogue is a navigation aid, never evidence for a historical event. */
+export function isSourceCatalogue(text: string) {
+  if ((text.match(/Show source information/gi) ?? []).length >= 6) return true
+  const lines = text.split(/\n+/).map((line) => line.trim()).filter(Boolean)
+  const entries = lines.filter((line) => /(?:^\d+[.、]|卷[一二三四五六七八九十百\d]+|列[傳传]|Annals of|Biographies of)/i.test(line)
+    && (line.match(/[。！？；]/g) ?? []).length < 2)
+  const prose = lines.filter((line) => (line.match(/[。！？；]/g) ?? []).length >= 2).join('')
+  return entries.length >= 6 && prose.length < text.length / 3
+}
+
+const searchComparable = Converter({ from: 't', to: 'cn' })
+
+function catalogueLinks(html: string, base: string, input: InternetSourceInput) {
+  const query = searchComparable(`${input.query} ${input.sourceDetail ?? ''}`)
+  const declaredBase = html.match(/<base\b[^>]*href=["']([^"']+)["']/i)?.[1]
+  let linkBase = base
+  if (declaredBase) {
+    try { linkBase = new URL(decodeHtml(declaredBase), base).href } catch { /* use the document URL */ }
+  }
+  return [...html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)]
+    .map((match) => ({ label: searchComparable(htmlToText(match[2])), href: new URL(decodeHtml(match[1]), linkBase).href }))
+    .filter(({ label, href }) => label.length >= 3 && isPublicInternetUrl(href)
+      && new URL(href).origin === new URL(base).origin && href !== base
+      && (query.includes(label) || (() => {
+        // Episode topics often name a person/event rather than the catalogue's
+        // biography title. Match its complete subject, never a partial name.
+        const subject = label.match(/^([\p{Script=Han}]{2,}?)(?:列传|本纪|传|纪)$/u)?.[1]
+        return Boolean(subject && query.includes(subject))
+      })()))
+    .sort((a, b) => b.label.length - a.label.length)
+    .filter((item, i, all) => all.findIndex((other) => other.href === item.href) === i)
+    .slice(0, 2)
 }
 
 function sourceNameFromUrl(value: string) {
@@ -127,6 +189,11 @@ function textBlocks(text: string) {
     .split(/\n+|(?<=[。！？；])/)
     .map((item) => item.trim())
     .filter((item) => item.length >= 12)
+    // Classical source pages can contain a whole chapter without Chinese full
+    // stops. Split those physical lines as well, otherwise one "sentence" can
+    // silently bypass the 1,600-character passage budget and multiply every
+    // downstream writer/reviewer prompt.
+    .flatMap((item) => Array.from({ length: Math.ceil(item.length / 1_600) }, (_, index) => item.slice(index * 1_600, (index + 1) * 1_600)))
   const blocks: string[] = []
   let current = ''
   for (const sentence of sentences) {
@@ -152,12 +219,15 @@ function queryTerms(input: InternetSourceInput) {
 
 function selectPassages(text: string, input: InternetSourceInput) {
   const maxPassages = boundedNumber(input.maxPassages, 4, 1, 8)
-  const terms = queryTerms(input)
+  const terms = unique(queryTerms(input).map(searchComparable))
+  const topic = searchComparable(input.query.split(/\s+/)[0] ?? '')
+  const topicTerms = topic.length >= 4 && topic.length <= 12 ? Array.from({ length: topic.length - 1 }, (_, i) => topic.slice(i, i + 2)) : []
   return textBlocks(text)
     .map((content, index) => ({
       content,
       index,
-      score: terms.reduce((score, term) => score + (content.includes(term) ? Math.max(1, Math.min(4, term.length - 1)) : 0), 0),
+      score: terms.reduce((score, term) => score + (searchComparable(content).includes(term) ? Math.max(1, Math.min(4, term.length - 1)) : 0), 0)
+        + topicTerms.reduce((score, term) => score + (searchComparable(content).includes(term) ? 8 : 0), 0),
     }))
     .sort((left, right) => right.score - left.score || left.index - right.index)
     .slice(0, maxPassages)
@@ -285,10 +355,136 @@ function sourceDetailQueries(input: InternetSourceInput) {
   return unique([...focused, ...pairedTitles, ...quotedTitles, detail, input.query]).slice(0, 6)
 }
 
-async function searchMediaWiki(api: string, input: InternetSourceInput, fetcher: Fetcher, timeoutMs: number) {
+function chineseVolumeNumber(value: string) {
+  if (/^\d+$/.test(value)) return Number(value)
+  const digits: Record<string, number> = { '〇': 0, '零': 0, '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9 }
+  const units: Record<string, number> = { '十': 10, '百': 100, '千': 1000 }
+  let total = 0
+  let current = 0
+  for (const char of value) {
+    if (char in digits) current = digits[char]
+    else if (char in units) {
+      total += (current || 1) * units[char]
+      current = 0
+    } else return null
+  }
+  return total + current
+}
+
+function canonicalMediaWikiTitles(input: InternetSourceInput) {
+  const bookAliases: Record<string, string> = {
+    '后汉书': '後漢書',
+    '後漢書': '後漢書',
+    '三国志': '三國志',
+    '三國志': '三國志',
+    '资治通鉴': '資治通鑑',
+    '資治通鑑': '資治通鑑',
+  }
+  const titles: string[] = []
+  let inheritedBook = unique(input.sourceNames ?? [])[0] ?? ''
+  const searchableDetail = (input.sourceDetail ?? '').trim() || input.query
+  for (const section of searchableDetail.split(/[；;。\n]+/)) {
+    const firstVolumeIndex = section.search(/卷[〇零一二三四五六七八九十百千两\d]+/)
+    const leadingBook = section.match(/《([^》]{2,32})》(?=\s*卷)/)?.[1]
+    const plainBook = firstVolumeIndex > 0
+      ? Object.keys(bookAliases)
+          .filter((book) => section.lastIndexOf(book, firstVolumeIndex) >= 0)
+          .sort((left, right) => section.lastIndexOf(right, firstVolumeIndex) - section.lastIndexOf(left, firstVolumeIndex))[0]
+      : undefined
+    if (leadingBook || plainBook) inheritedBook = leadingBook ?? plainBook ?? inheritedBook
+    for (const match of section.matchAll(/卷([〇零一二三四五六七八九十百千两\d]+)/g)) {
+      const volume = chineseVolumeNumber(match[1])
+      const canonicalBook = bookAliases[inheritedBook]
+      if (canonicalBook && volume !== null) {
+        const formattedVolume = canonicalBook === '三國志'
+          ? String(volume).padStart(2, '0')
+          : canonicalBook === '資治通鑑'
+            ? String(volume).padStart(3, '0')
+            : String(volume)
+        titles.push(`${canonicalBook}/卷${formattedVolume}`)
+        if (formattedVolume !== String(volume)) titles.push(`${canonicalBook}/卷${volume}`)
+      }
+    }
+  }
+  return unique(titles)
+}
+
+/** Fetch the public article itself when the workbook names an exact volume.
+ * The MediaWiki API can be rate limited while the article remains available.
+ * Require a matching article title and a substantive prose body: a book index,
+ * error page or JSON response must never become a historical citation.
+ */
+function relevantWikiSection(html: string, query: string) {
+  const heading = /<div\b[^>]*class=["'][^"']*\bmw-heading2\b[^"']*["'][^>]*>\s*<h2\b[^>]*id=["']([^"']+)["']/gi
+  const headings = [...html.matchAll(heading)]
+    .map((match) => ({ at: match.index, title: decodeHtml(match[1]) }))
+  const normalizedQuery = searchComparable(query)
+  const relevant = headings
+    .filter((item) => item.title.length >= 2 && normalizedQuery.includes(searchComparable(item.title)))
+    .sort((left, right) => right.title.length - left.title.length || left.at - right.at)[0]
+  if (!relevant) return { html, section: '' }
+  const next = headings.find((item) => item.at > relevant.at)
+  return { html: html.slice(relevant.at, next?.at), section: relevant.title }
+}
+
+async function fetchCanonicalMediaWikiArticle(api: string, title: string, input: InternetSourceInput, fetcher: Fetcher, timeoutMs: number) {
+  const base = new URL(api)
+  const articleUrl = new URL(`/wiki/${title.split('/').map(encodeURIComponent).join('/')}`, base.origin).toString()
+  const response = await fetchText(articleUrl, fetcher, timeoutMs, 2)
+  const html = response.text
+  const contentStart = html.search(/<div\b[^>]*\bid=["']mw-content-text["']/i)
+  const proseStart = contentStart < 0 ? -1 : html.indexOf('mw-parser-output', contentStart)
+  const footerStart = proseStart < 0 ? -1 : html.search(/<div\b[^>]*\bclass=["'][^"']*\bprintfooter\b/i)
+  if (proseStart < 0 || footerStart <= proseStart) throw new Error('维基文库直达页未返回可定位的正文区域')
+  const actualTitle = extractTitle(html, '')
+  if (searchComparable(actualTitle) !== searchComparable(title)) throw new Error(`维基文库直达页标题不符：${actualTitle || '空标题'}`)
+  const focused = relevantWikiSection(html.slice(contentStart, footerStart), input.query)
+  const articleHtml = focused.html
+  const text = htmlToText(articleHtml)
+  assertUsableSourcePage(text)
+  if (isSourceCatalogue(text) || (text.match(/[\u3400-\u9fff]/g) ?? []).length < 80 || !/<p\b/i.test(articleHtml)) {
+    throw new Error('维基文库直达页只有目录或缺少足量篇章正文')
+  }
+  const citeUrl = focused.section ? `${response.url}#${encodeURIComponent(focused.section)}` : response.url
+  return { title: focused.section ? `${actualTitle}#${focused.section}` : actualTitle, source: sourceNameFromUrl(response.url), url: citeUrl, text } satisfies WebDocument
+}
+
+async function searchMediaWiki(api: string, input: InternetSourceInput, fetcher: Fetcher, timeoutMs: number, attemptedUrls: string[]) {
   const queries = sourceDetailQueries(input)
   const titlePrefixes = unique(input.titlePrefixes ?? [])
-  const pageTitles: string[] = []
+  // Exact book/volume article pages carry traceable source text and avoid the
+  // search/parse API rate limit. Use API search only for a missing article.
+  const canonicalTitles = canonicalMediaWikiTitles(input)
+    .filter((title) => !titlePrefixes.length || titlePrefixes.some((prefix) => title.startsWith(prefix)))
+  const maxSources = boundedNumber(input.maxSources, 3, 1, 4)
+  const titleGroups = new Map<string, string[]>()
+  for (const title of canonicalTitles) {
+    const key = title.replace(/\/卷0*(\d+)$/, (_, volume: string) => `/卷${Number(volume)}`)
+    titleGroups.set(key, [...(titleGroups.get(key) ?? []), title])
+  }
+  const canonicalDocuments: WebDocument[] = []
+  const missingTitles: string[] = []
+  const articleFailures: string[] = []
+  for (const variants of titleGroups.values()) {
+    let found = false
+    for (const title of variants) {
+      attemptedUrls.push(new URL(`/wiki/${title.split('/').map(encodeURIComponent).join('/')}`, new URL(api).origin).toString())
+      try {
+        canonicalDocuments.push(await fetchCanonicalMediaWikiArticle(api, title, input, fetcher, timeoutMs))
+        found = true
+        break
+      } catch (error) {
+        articleFailures.push(`${title}: ${error instanceof Error ? error.message : String(error)}`)
+      }
+    }
+    if (!found) missingTitles.push(...variants)
+    if (canonicalDocuments.length >= maxSources) break
+  }
+  if (canonicalDocuments.length >= maxSources || (titleGroups.size && !missingTitles.length)) {
+    return canonicalDocuments.slice(0, maxSources)
+  }
+  attemptedUrls.push(api)
+  const pageTitles: string[] = [...missingTitles]
   const failedSearches: string[] = []
   let consecutiveNetworkFailures = 0
   for (const search of queries) {
@@ -308,15 +504,16 @@ async function searchMediaWiki(api: string, input: InternetSourceInput, fetcher:
       const matchedTitles = body.query?.search?.map((item) => String(item.title ?? '')).filter(Boolean) ?? []
       pageTitles.push(...matchedTitles.filter((title) => !titlePrefixes.length || titlePrefixes.some((prefix) => title.startsWith(prefix))))
       consecutiveNetworkFailures = 0
-      if (unique(pageTitles).length >= boundedNumber(input.maxSources, 3, 1, 4)) break
+      if (canonicalDocuments.length + unique(pageTitles).length >= maxSources) break
     } catch (error) {
       failedSearches.push(`${search}: ${error instanceof Error ? error.message : String(error)}`)
       consecutiveNetworkFailures += 1
       if (consecutiveNetworkFailures >= 2) break
     }
   }
-  const uniquePageTitles = unique(pageTitles).slice(0, boundedNumber(input.maxSources, 3, 1, 4))
+  const uniquePageTitles = unique(pageTitles).slice(0, Math.max(maxSources, canonicalTitles.length + maxSources))
   if (!uniquePageTitles.length) {
+    if (canonicalDocuments.length) return canonicalDocuments.slice(0, maxSources)
     throw new Error(failedSearches.length ? `MediaWiki 检索失败（${failedSearches.join('；')}）` : `MediaWiki 未找到匹配页面（检索词：${queries.join('；')}）`)
   }
   const pages = await Promise.allSettled(uniquePageTitles.map(async (title) => {
@@ -329,19 +526,22 @@ async function searchMediaWiki(api: string, input: InternetSourceInput, fetcher:
     const body = JSON.parse(response.text) as { parse?: { displaytitle?: string; text?: { '*'?: string } } }
     const html = body.parse?.text?.['*']
     if (!html) throw new Error('MediaWiki 未返回页面正文')
+    const text = htmlToText(html)
+    assertUsableSourcePage(text)
+    if (isSourceCatalogue(text)) throw new Error('页面仅为目录，缺少史料正文')
     return {
       title: htmlToText(body.parse?.displaytitle ?? title),
       source: sourceNameFromUrl(api),
       url: response.url,
-      text: htmlToText(html),
+      text,
     } satisfies WebDocument
   }))
-  const documents = pages.flatMap((result) => result.status === 'fulfilled' ? [result.value] : [])
+  const documents = [...canonicalDocuments, ...pages.flatMap((result) => result.status === 'fulfilled' ? [result.value] : [])].slice(0, maxSources)
   if (!documents.length) {
     const failures = pages
       .map((result, index) => result.status === 'rejected' ? `${uniquePageTitles[index]}: ${result.reason instanceof Error ? result.reason.message : String(result.reason)}` : '')
       .filter(Boolean)
-    throw new Error(`MediaWiki 页面正文抓取失败${failures.length ? `（${failures.join('；')}）` : ''}`)
+    throw new Error(`MediaWiki 页面正文抓取失败${articleFailures.length + failures.length ? `（${[...articleFailures, ...failures].join('；')}）` : ''}`)
   }
   return documents
 }
@@ -364,12 +564,37 @@ export async function retrieveInternetSources(input: InternetSourceInput, fetche
   ])
 
   const directResults = await Promise.allSettled(directUrls.map(async (url) => {
-    const response = await fetchText(url, fetcher, timeoutMs)
+    let response = await fetchText(url, fetcher, timeoutMs)
+    let text = htmlToText(response.text)
+    assertUsableSourcePage(text)
+    const finalUrl = new URL(response.url)
+    if (finalUrl.hostname === 'ctext.org' && /^\/(?:zh|zhs|zht)?\/?$/.test(finalUrl.pathname)) throw new Error('史料页面重定向到网站首页，没有取得篇章正文')
+    if (isSourceCatalogue(text)) {
+      const links = catalogueLinks(response.text, response.url, input)
+      let chapterFound = false
+      for (const link of links) {
+        attemptedUrls.push(link.href)
+        try {
+          const chapter = await fetchText(link.href, fetcher, timeoutMs)
+          const chapterText = htmlToText(chapter.text)
+          assertUsableSourcePage(chapterText)
+          if (isSourceCatalogue(chapterText) || chapterText.length < 30) continue
+          response = chapter
+          text = chapterText
+          chapterFound = true
+          break
+        } catch (error) {
+          failures.push({ url: link.href, error: error instanceof Error ? error.message : String(error) })
+        }
+      }
+      if (!chapterFound) throw new Error('页面仅为目录，未取得匹配篇章正文；不能作为史料引用')
+    }
+    if (text.trim().length < 30) throw new Error('页面正文不足 30 字符，不能作为有效来源')
     return {
       title: extractTitle(response.text, sourceNameFromUrl(response.url)),
       source: sourceNameFromUrl(response.url),
       url: response.url,
-      text: htmlToText(response.text),
+      text,
     } satisfies WebDocument
   }))
 
@@ -383,8 +608,7 @@ export async function retrieveInternetSources(input: InternetSourceInput, fetche
   // already successful lookup wait on a second host that may be blocked locally.
   if (!documents.length) {
     const wikiResults = await Promise.allSettled(wikiApis.map((api) => {
-      attemptedUrls.push(api)
-      return searchMediaWiki(api, input, fetcher, timeoutMs)
+      return searchMediaWiki(api, input, fetcher, timeoutMs, attemptedUrls)
     }))
     wikiResults.forEach((result, index) => {
       if (result.status === 'fulfilled') documents.push(...result.value)
@@ -393,8 +617,10 @@ export async function retrieveInternetSources(input: InternetSourceInput, fetche
   }
 
   const fetchedAt = new Date().toISOString()
-  const citations = documents
-    .flatMap((document) => selectPassages(document.text, input).map((content) => ({ document, content })))
+  const passageGroups = documents.map((document) => selectPassages(document.text, input).map((content) => ({ document, content })))
+  const balancedPassages = Array.from({ length: Math.max(0, ...passageGroups.map((group) => group.length)) })
+    .flatMap((_, passageIndex) => passageGroups.flatMap((group) => group[passageIndex] ? [group[passageIndex]] : []))
+  const citations = balancedPassages
     .filter((item) => item.content.trim().length >= 30)
     .slice(0, boundedNumber(input.maxPassages, 6, 1, 12))
     .map((item, index) => ({
@@ -422,5 +648,15 @@ export async function retrieveInternetSources(input: InternetSourceInput, fetche
     fetchedAt,
     attemptedUrls,
     failures,
+    request: {
+      query: input.query,
+      sourceDetail: input.sourceDetail ?? '',
+      sourceNames: input.sourceNames ?? [],
+      urls: input.urls ?? [],
+      maxSources,
+      maxPassages: boundedNumber(input.maxPassages, 6, 1, 12),
+      timeoutMs,
+      titlePrefixes: input.titlePrefixes ?? [],
+    },
   }
 }

@@ -1,3 +1,4 @@
+import { bailianVoiceOptions } from './bailian-tts.ts'
 export type ExperienceValue = string | boolean | string[]
 
 export type ExperienceMediaKind = 'image' | 'video' | 'audio'
@@ -132,6 +133,15 @@ const option = (value: string, label = value) => ({ value, label })
 const optionalFields = (fields: Array<Omit<ExperienceField, 'required'>>): ExperienceField[] =>
   fields.map((field) => ({ ...field, required: false }))
 
+function reviewImageExperienceFields(): Array<Omit<ExperienceField, 'required'>> {
+  return [
+    { key: 'reviewImages', label: '审核原帧', apiName: 'reviewImages', group: 'input', control: 'json', defaultValue: '[]',
+      placeholder: '["/generated/frame-0.jpg", "/generated/frame-1.jpg"]', help: '按审核顺序填写本项目 /generated/ 下的 JPEG 帧地址数组；图片及局部附件合计最多 64 张。' },
+    { key: 'reviewImageDetail', label: '原帧局部细节', apiName: 'reviewImageDetail', group: 'advanced', control: 'json', defaultValue: '',
+      placeholder: '{"indices":[0],"columns":2,"rows":2,"overlap":0.1}', help: '可选；indices 为审核原帧从 0 开始的编号，局部图由原始像素裁剪，保留完整原帧供复核。' },
+  ]
+}
+
 export function modelExperienceFields(model: ExperienceModel): ExperienceField[] {
   const settings = model.settings
 
@@ -188,6 +198,19 @@ export function modelExperienceFields(model: ExperienceModel): ExperienceField[]
     ])
   }
 
+  if (model.provider === 'Bailian' && model.capability === 'audio') {
+    return optionalFields([
+      { key: 'characterName', label: '人物名称', apiName: 'characterName', group: 'input', control: 'text', defaultValue: '', help: '用于标记本次语音样本，正文仅填写人物要说的话。' },
+      { key: 'voice', label: '音色 ID', apiName: 'voice', group: 'generation', control: 'text', defaultValue: settings.voice || 'longanhuan_v3.6', options: bailianVoiceOptions(settings.model), help: '从建议列表选择系统音色，或填写与当前模型匹配的定制音色 ID。' },
+      { key: 'instruction', label: '人物声音 / 情绪指令', apiName: 'instruction', group: 'generation', control: 'textarea', defaultValue: settings.instruction || '', placeholder: '自然亲切、吐字清晰，或根据角色填写情绪' },
+      { key: 'rate', label: '语速', apiName: 'rate', group: 'generation', control: 'number', defaultValue: settings.rate || '1', min: 0.5, max: 2, step: 0.05 },
+      { key: 'pitch', label: '音调', apiName: 'pitch', group: 'generation', control: 'number', defaultValue: settings.pitch || '1', min: 0.5, max: 2, step: 0.05 },
+      { key: 'volume', label: '音量', apiName: 'volume', group: 'generation', control: 'number', defaultValue: settings.volume || '50', min: 0, max: 100, step: 1 },
+      { key: 'sampleRate', label: '采样率（WAV）', apiName: 'sample_rate', group: 'advanced', control: 'select', defaultValue: settings.sampleRate || '24000', options: [8000,16000,22050,24000,44100,48000].map(n => option(String(n))) },
+      { key: 'seed', label: '随机种子', apiName: 'seed', group: 'advanced', control: 'number', defaultValue: settings.seed || '0', min: 0, max: 65535, step: 1 },
+    ])
+  }
+
   if (model.provider === 'OpenAI' && model.capability === 'audio') {
     return optionalFields([
       { key: 'voice', label: '音色', apiName: 'voice', group: 'generation', control: 'text', defaultValue: settings.voice || 'alloy' },
@@ -196,10 +219,23 @@ export function modelExperienceFields(model: ExperienceModel): ExperienceField[]
     ])
   }
 
-  if (model.provider === 'Anthropic' && model.capability === 'text') {
+  if (model.capability === 'text' && (model.provider === 'Anthropic'
+    || ((model.provider === 'OpenAI' || model.provider === 'Custom') && settings.apiProtocol === 'anthropic-messages'))) {
     return optionalFields([
+      ...reviewImageExperienceFields(),
       { key: 'maxTokens', label: '最大输出 Token', apiName: 'max_tokens', group: 'generation', control: 'number', defaultValue: settings.maxTokens || '4096', min: 1, step: 1 },
       { key: 'temperature', label: '随机性', apiName: 'temperature', group: 'generation', control: 'number', defaultValue: settings.temperature || '0.3', min: 0, max: 1, step: 0.1 },
+      { key: 'stream', label: '流式响应', apiName: 'stream', group: 'advanced', control: 'select', defaultValue: '',
+        options: [option('', '沿用模型配置'), option('true', '开启'), option('false', '关闭')] },
+    ])
+  }
+
+  if (model.provider === 'Codex' && model.capability === 'text') {
+    return optionalFields([
+      ...reviewImageExperienceFields(),
+      { key: 'reasoningEffort', label: '推理强度', apiName: 'reasoningEffort', group: 'generation', control: 'select', defaultValue: settings.reasoningEffort || '',
+        options: [option('', '沿用模型配置'), ...['low', 'medium', 'high', 'xhigh', 'max', 'ultra'].map((effort) => option(effort))] },
+      { key: 'timeoutMs', label: '调用超时（ms）', apiName: 'timeoutMs', group: 'advanced', control: 'number', defaultValue: settings.timeoutMs || '180000', min: 1, max: 3600000, step: 1 },
     ])
   }
 
@@ -239,7 +275,8 @@ export function restoreModelExperienceRequest(model: ExperienceModel, requestDat
       values[field.key] = Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
     } else if (field.control === 'json') {
       values[field.key] = typeof value === 'string' ? value : JSON.stringify(value, null, 2)
-    } else if (typeof value === 'string' || typeof value === 'number') {
+    } else if (typeof value === 'string' || typeof value === 'number'
+      || (typeof value === 'boolean' && field.control === 'select' && field.options?.some(item => item.value === String(value)))) {
       values[field.key] = String(value)
     }
   }

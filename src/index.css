@@ -1,9 +1,33 @@
 :root {
+  color-scheme: dark;
+  --studio-bg: #141414;
+  --studio-nav: #161616;
+  --studio-surface: #1a1a1a;
+  --studio-raised: #242424;
+  --studio-hover: #303030;
+  --studio-line: #303030;
+  --studio-line-strong: #494949;
+  --studio-text: #f5f5f5;
+  --studio-muted: #b0b0b0;
+  --studio-subtle: #999999;
+  --studio-accent: #13d5ff;
+  --studio-accent-hover: #5ddcff;
+  --studio-accent-active: #05a3c5;
+  --studio-accent-ink: #071518;
+  --studio-accent-soft: #17343b;
+  --studio-danger: #ff969b;
+  --studio-danger-soft: #352124;
+  --studio-success: #9ddbba;
+  --studio-success-soft: #193329;
+  --studio-warning: #efca87;
+  --studio-warning-soft: #332b1d;
+  --studio-info: #a9c9ee;
+  --studio-info-soft: #202d3c;
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-  color: #1f2937;
-  background: #f6f7f9;
+  color: var(--studio-text);
+  background: var(--studio-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -24,4 +48,28 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+button, a, input, select, textarea, summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--studio-accent);
+  outline-offset: 3px;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--studio-subtle);
+  opacity: 1;
+}
+
+::selection {
+  color: var(--studio-accent-ink);
+  background: var(--studio-accent);
+}
+
+* {
+  scrollbar-color: var(--studio-line-strong) transparent;
+  scrollbar-width: thin;
 }

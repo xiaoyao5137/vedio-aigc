@@ -1,0 +1,2205 @@
+{
+  "recordId": "record-lrjfd9",
+  "step": 108,
+  "sourceLedgerIds": [
+    "model-run-muiq2i81-me8jngr",
+    "model-run-muiq3wvq-4i3dwka"
+  ],
+  "expected": {
+    "pacingVersion": "duration-v2",
+    "timingPolicy": {
+      "version": "duration-policy-v2.2-brisk-narration",
+      "speech": {
+        "dialogue": {
+          "referenceRate": 4.5,
+          "minimumNaturalRate": 3.3,
+          "maximumRate": 5,
+          "startupAllowance": 0.25
+        },
+        "narration": {
+          "referenceRate": 5.8,
+          "minimumNaturalRate": 5.5,
+          "maximumRate": 6.5,
+          "startupAllowance": 0.25
+        },
+        "chant": {
+          "referenceRate": 3.3,
+          "minimumNaturalRate": 2.8,
+          "maximumRate": 4.5,
+          "startupAllowance": 0.25
+        },
+        "singing": {
+          "referenceRate": 2.8,
+          "minimumNaturalRate": 2,
+          "maximumRate": 3.5,
+          "startupAllowance": 0.35
+        }
+      },
+      "shortPauseSeconds": 0.15,
+      "sentencePauseSeconds": 0.25,
+      "linePauseSeconds": 0.2,
+      "measurementToleranceSeconds": 0.25,
+      "endingReadabilityReserve": 0.5,
+      "maxConservativeExtraSeconds": 1,
+      "minimumProviderDuration": 3,
+      "maximumProviderDuration": 15,
+      "minimumVocalizationSeconds": 0.8,
+      "minimumActionSeconds": 0.3,
+      "minimumReactionSeconds": 0.5
+    },
+    "primaryTransportAttempts": 1,
+    "transportFallbackModelId": "codex-local-vision",
+    "transportFallbackTimeoutMs": 240000,
+    "transportFallbackReasoningEffort": "medium",
+    "primaryTransportAttemptTimeoutMs": 240000,
+    "qualityDisposition": "manual-review-v1",
+    "retryBudgetProfile": "manual-review-v1",
+    "qualityStrictBudgetSnapshot": "{\"params\":[{\"key\":\"primaryTransportAttempts\",\"value\":\"5\"},{\"key\":\"maxGenerationAttempts\",\"value\":\"5\"}]}",
+    "qualityMode": "principle-v1",
+    "maxGenerationAttempts": 2,
+    "scene": {
+      "id": "scene-02-seg-3",
+      "sequence": 4,
+      "title": "病患饮符水道谢围观百姓靠拢跪求",
+      "dramaticSceneId": "drama-02",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "cast": [
+        "张角"
+      ],
+      "purpose": "病患饮下符水,暂时感到轻松,起身向张角道谢；围观的饥民和病患纷纷上前,请求张角也为自己施术",
+      "requiredBeats": [
+        {
+          "id": "beat-04",
+          "description": "病患饮下符水,暂时感到轻松,起身向张角道谢",
+          "function": "呈现符水的心理安慰效果",
+          "stateChange": "病患相信符水有效",
+          "observable": {
+            "visual": [
+              "病患饮下符水",
+              "病患起身向张角行礼"
+            ],
+            "audio": [
+              "多谢大贤良师"
+            ]
+          },
+          "setting": "冀州某地简陋民居外的空地",
+          "mustShow": [
+            "病患饮下符水",
+            "病患起身向张角行礼"
+          ]
+        },
+        {
+          "id": "beat-05",
+          "description": "围观的饥民和病患纷纷上前,请求张角也为自己施术",
+          "function": "呈现符水吸引力",
+          "stateChange": "更多百姓开始相信张角",
+          "observable": {
+            "visual": [
+              "围观人群向张角靠拢",
+              "多人跪下请求"
+            ],
+            "audio": []
+          },
+          "setting": "冀州某地简陋民居外的空地",
+          "mustShow": [
+            "围观人群向张角靠拢",
+            "多人跪下请求"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病病者颇愈百姓信向之",
+      "adaptationBoundary": "拟制病患饮水、起身道谢的具体动作和感谢话语,拟制围观百姓靠拢跪求的群体反应,但保留史料记载的病者信服和百姓信向的结果",
+      "targetDuration": 11,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "原节拍表演：病患饮下符水,暂时感到轻松,起身向张角道谢",
+        "画面呈现：病患饮下符水",
+        "画面呈现：病患起身向张角行礼",
+        "完整听到：多谢大贤良师",
+        "原节拍表演：围观的饥民和病患纷纷上前,请求张角也为自己施术",
+        "画面呈现：围观人群向张角靠拢",
+        "画面呈现：多人跪下请求"
+      ],
+      "contentContractVersion": "cinematic-v1",
+      "dramaticUnitId": "drama-02",
+      "settingId": "drama-02",
+      "closesUnit": false,
+      "continuityFromPrevious": true,
+      "sourceSceneId": "scene-02"
+    },
+    "previousShot": {
+      "id": "scene-02-seg-2",
+      "raw": {
+        "id": "msg_4e09c9a9e4cf4157bc08b906bdb6d525",
+        "role": "assistant",
+        "type": "message",
+        "model": "claude-opus-4-8",
+        "usage": {
+          "credit_unit": "credit",
+          "credit_usage": 0.6592315388723051,
+          "input_tokens": 3,
+          "output_tokens": 2753,
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 0,
+            "ephemeral_5m_input_tokens": 68557
+          },
+          "credit_unit_plural": "credits",
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 68557
+        },
+        "content": [
+          {
+            "text": "```json\n{\n  \"contentContractVersion\": \"cinematic-v1\",\n  \"dramaticSceneId\": \"drama-02\",\n  \"id\": \"scene-02-seg-2\",\n  \"title\": \"病患叩首张角念诵呪语递符水\",\n  \"editorialRole\": \"story\",\n  \"visualTreatment\": \"live_action\",\n  \"duration\": 15,\n  \"pacing\": {\n    \"version\": \"duration-v2\",\n    \"timingPolicy\": {\n      \"version\": \"duration-policy-v2.2-brisk-narration\",\n      \"speech\": {\n        \"dialogue\": {\n          \"referenceRate\": 4.5,\n          \"minimumNaturalRate\": 3.3,\n          \"maximumRate\": 5,\n          \"startupAllowance\": 0.25\n        },\n        \"narration\": {\n          \"referenceRate\": 5.8,\n          \"minimumNaturalRate\": 5.5,\n          \"maximumRate\": 6.5,\n          \"startupAllowance\": 0.25\n        },\n        \"chant\": {\n          \"referenceRate\": 3.3,\n          \"minimumNaturalRate\": 2.8,\n          \"maximumRate\": 4.5,\n          \"startupAllowance\": 0.25\n        },\n        \"singing\": {\n          \"referenceRate\": 2.8,\n          \"minimumNaturalRate\": 2,\n          \"maximumRate\": 3.5,\n          \"startupAllowance\": 0.35\n        }\n      },\n      \"shortPauseSeconds\": 0.15,\n      \"sentencePauseSeconds\": 0.25,\n      \"linePauseSeconds\": 0.2,\n      \"measurementToleranceSeconds\": 0.25,\n      \"endingReadabilityReserve\": 0.5,\n      \"maxConservativeExtraSeconds\": 1,\n      \"minimumProviderDuration\": 3,\n      \"maximumProviderDuration\": 15,\n      \"minimumVocalizationSeconds\": 0.8,\n      \"minimumActionSeconds\": 0.3,\n      \"minimumReactionSeconds\": 0.5\n    },\n    \"actorGroups\": [\n      {\n        \"id\": \"sick-patient-group\",\n        \"label\": \"病患\",\n        \"memberDescription\": \"一名身患疾病的成年男性百姓，穿灰褐色粗布衣，面容憔悴，跪于空地\"\n      },\n      {\n        \"id\": \"onlooker-crowd\",\n        \"label\": \"围观百姓\",\n        \"memberDescription\": \"数十名各年龄段百姓，穿各色粗布衣，半圆形站立于空地后方，面向张角和病患\"\n      }\n    ],\n    \"beats\": [\n      {\n        \"id\": \"beat-03-action-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"sick-patient-group\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患叩首\",\n        \"performanceInstruction\": \"病患从跪姿俯身向前，额头触地，完成三次叩首动作\",\n        \"dependsOn\": [],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 2.5,\n          \"expected\": 3.2,\n          \"upper\": 3.8,\n          \"source\": \"叩首三次的实际身体动作时间\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成三次叩首，额头离地，保持跪姿\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患叩首\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-speech-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"张角\"],\n        \"kind\": \"speech\",\n        \"deliveryStyle\": \"chant\",\n        \"textOrVocalization\": \"天地有道，符水能医，饮下此水，病痛自消\",\n        \"performanceInstruction\": \"张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律\",\n        \"dependsOn\": [\"beat-03-action-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"voice\"],\n        \"durationEstimate\": {\n          \"lower\": 4.006,\n          \"expected\": 5.299,\n          \"upper\": 6.415,\n          \"source\": \"16字呪语按吟诵速率3.3字/秒加启动余量\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"张角念完呪语，声音结束\",\n          \"modality\": \"audio-visual\",\n          \"evidenceAnchor\": \"天地有道，符水能医，饮下此水，病痛自消\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-action-02\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"张角\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"张角将符水碗递向病患\",\n        \"performanceInstruction\": \"张角双手持符水碗，向前伸出，递向跪在地上的病患\",\n        \"dependsOn\": [\"beat-03-speech-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.8,\n          \"expected\": 2.3,\n          \"upper\": 2.8,\n          \"source\": \"递出符水碗并让病患接近的动作时间\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"张角双手将符水碗递到病患面前，病患可以触及\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"张角将符水碗递向病患\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-reaction-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"onlooker-crowd\"],\n        \"kind\": \"reaction\",\n        \"textOrVocalization\": \"围观百姓注视张角递符水\",\n        \"performanceInstruction\": \"围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注\",\n        \"dependsOn\": [\"beat-03-action-02\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 0.8,\n          \"expected\": 1,\n          \"upper\": 1.2,\n          \"source\": \"群体反应的最小可见时间\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"围观百姓保持注视，无人离开或转身\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"围观百姓注视\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      }\n    ]\n  },\n  \"shotIntent\": {\n    \"viewpointCharacter\": \"张角\",\n    \"purpose\": \"呈现张角以符水仪式为病患施术的完整过程，从病患叩首忏悔到张角念诵呪语并递出符水\",\n    \"cameraReason\": \"保持中景机位可以同时看清张角持符水碗的施术动作和跪地病患的叩首反应，展现仪式的庄重氛围\"\n  },\n  \"beatDramaturgy\": [\n    {\n      \"beatId\": \"beat-03\",\n      \"function\": \"呈现符水仪式过程\",\n      \"stateChange\": \"病患接受符水仪式\",\n      \"visual\": [\n        \"病患叩首\",\n        \"张角将符水碗递向病患\"\n      ],\n      \"audio\": [\n        \"天地有道，符水能医，饮下此水，病痛自消\"\n      ]\n    }\n  ],\n  \"storyProgress\": {\n    \"unitId\": \"drama-02\",\n    \"status\": \"continuing\",\n    \"actionResult\": \"病患完成叩首忏悔，张角念诵呪语并将符水递到病患面前\",\n    \"response\": \"病患接受符水仪式，围观百姓注视整个过程\",\n    \"pendingActions\": [\n      \"病患饮下符水\",\n      \"病患暂时感到缓解\",\n      \"围观百姓开始相信符水有效\"\n    ]\n  },\n  \"characters\": [\"张角\"],\n  \"presentCharacters\": [\"张角\"],\n  \"initialCharacters\": [\"张角\"],\n  \"enteringCharacters\": [],\n  \"endCharacters\": [\"张角\"],\n  \"illustrationLayers\": [],\n  \"worldState\": {\n    \"settingId\": \"drama-02\",\n    \"characters\": [\n      {\n        \"name\": \"张角\",\n        \"position\": {\n          \"status\": \"unknown\"\n        },\n        \"heldProps\": {\n          \"status\": \"unknown\"\n        },\n        \"pendingAction\": {\n          \"status\": \"unknown\"\n        }\n      }\n    ]\n  },\n  \"continuity\": {\n    \"mode\": \"tail_continuation\",\n    \"previousShotId\": \"scene-02-seg-1\",\n    \"bridgeType\": \"same_frame\",\n    \"bridgeAnchor\": \"\"\n  },\n  \"coveredBeatIds\": [\"beat-03\"],\n  \"visualPrompt\": \"冀州某地简陋民居外的空地，正午自然光，中景机位。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手持木碗装符水。一名病患跪于张角前方地面，穿灰褐色粗布衣，面容憔悴。数十名围观百姓呈半圆形站立于空地后方和两侧，穿各色粗布衣。背景可见低矮民居土墙和茅草屋顶，远处是绿色坡地。病患叩首，张角将符水碗递向病患。\",\n  \"camera\": \"中景，摄影机正面平视张角和病患，轴线保持在张角与病患连线的正面方向，稳定机位\",\n  \"mood\": \"庄重肃穆，带有宗教仪式的神秘氛围和百姓对符水治病的期待\",\n  \"firstFrameMode\": \"reuse_previous_tail\",\n  \"lastFramePrompt\": \"冀州某地简陋民居外的空地，中景。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手将木碗符水递向前方。病患跪于张角前方地面，穿灰褐色粗布衣，刚完成叩首动作，头部抬起。围观百姓半圆形站立于空地后方和两侧，目光注视张角和病患。\",\n  \"videoPrompt\": \"0.0-3.8秒：病患叩首，从跪姿俯身向前，额头触地，完成三次叩首动作，周围围观百姓保持站立注视。3.8-8.3秒：张角口中念诵呪语，语调庄重缓慢：天地有道，符水能医，饮下此水，病痛自消。8.3-10.0秒：张角双手持符水碗向前伸出，张角将符水碗递向病患，病患抬头，围观百姓群体注视。\",\n  \"audioType\": \"对白\",\n  \"audioText\": \"张角：天地有道，符水能医，饮下此水，病痛自消\",\n  \"pronunciationHints\": [],\n  \"historicalBasis\": \"[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病\",\n  \"adaptationBoundary\": \"拟制张角念诵呪语的具体内容和语调，拟制病患叩首和接符水的具体动作，但保留史料记载的符水呪说基本仪式\"\n}\n```",
+            "type": "text"
+          }
+        ],
+        "stop_reason": "end_turn",
+        "stop_sequence": null
+      },
+      "mood": "庄重肃穆，带有宗教仪式的神秘氛围和百姓对符水治病的期待",
+      "text": "```json\n{\n  \"contentContractVersion\": \"cinematic-v1\",\n  \"dramaticSceneId\": \"drama-02\",\n  \"id\": \"scene-02-seg-2\",\n  \"title\": \"病患叩首张角念诵呪语递符水\",\n  \"editorialRole\": \"story\",\n  \"visualTreatment\": \"live_action\",\n  \"duration\": 15,\n  \"pacing\": {\n    \"version\": \"duration-v2\",\n    \"timingPolicy\": {\n      \"version\": \"duration-policy-v2.2-brisk-narration\",\n      \"speech\": {\n        \"dialogue\": {\n          \"referenceRate\": 4.5,\n          \"minimumNaturalRate\": 3.3,\n          \"maximumRate\": 5,\n          \"startupAllowance\": 0.25\n        },\n        \"narration\": {\n          \"referenceRate\": 5.8,\n          \"minimumNaturalRate\": 5.5,\n          \"maximumRate\": 6.5,\n          \"startupAllowance\": 0.25\n        },\n        \"chant\": {\n          \"referenceRate\": 3.3,\n          \"minimumNaturalRate\": 2.8,\n          \"maximumRate\": 4.5,\n          \"startupAllowance\": 0.25\n        },\n        \"singing\": {\n          \"referenceRate\": 2.8,\n          \"minimumNaturalRate\": 2,\n          \"maximumRate\": 3.5,\n          \"startupAllowance\": 0.35\n        }\n      },\n      \"shortPauseSeconds\": 0.15,\n      \"sentencePauseSeconds\": 0.25,\n      \"linePauseSeconds\": 0.2,\n      \"measurementToleranceSeconds\": 0.25,\n      \"endingReadabilityReserve\": 0.5,\n      \"maxConservativeExtraSeconds\": 1,\n      \"minimumProviderDuration\": 3,\n      \"maximumProviderDuration\": 15,\n      \"minimumVocalizationSeconds\": 0.8,\n      \"minimumActionSeconds\": 0.3,\n      \"minimumReactionSeconds\": 0.5\n    },\n    \"actorGroups\": [\n      {\n        \"id\": \"sick-patient-group\",\n        \"label\": \"病患\",\n        \"memberDescription\": \"一名身患疾病的成年男性百姓，穿灰褐色粗布衣，面容憔悴，跪于空地\"\n      },\n      {\n        \"id\": \"onlooker-crowd\",\n        \"label\": \"围观百姓\",\n        \"memberDescription\": \"数十名各年龄段百姓，穿各色粗布衣，半圆形站立于空地后方，面向张角和病患\"\n      }\n    ],\n    \"beats\": [\n      {\n        \"id\": \"beat-03-action-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"sick-patient-group\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患叩首\",\n        \"performanceInstruction\": \"病患从跪姿俯身向前，额头触地，完成三次叩首动作\",\n        \"dependsOn\": [],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 2.5,\n          \"expected\": 3.2,\n          \"upper\": 3.8,\n          \"source\": \"叩首三次的实际身体动作时间\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成三次叩首，额头离地，保持跪姿\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患叩首\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-speech-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"张角\"],\n        \"kind\": \"speech\",\n        \"deliveryStyle\": \"chant\",\n        \"textOrVocalization\": \"天地有道，符水能医，饮下此水，病痛自消\",\n        \"performanceInstruction\": \"张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律\",\n        \"dependsOn\": [\"beat-03-action-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"voice\"],\n        \"durationEstimate\": {\n          \"lower\": 4.006,\n          \"expected\": 5.299,\n          \"upper\": 6.415,\n          \"source\": \"16字呪语按吟诵速率3.3字/秒加启动余量\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"张角念完呪语，声音结束\",\n          \"modality\": \"audio-visual\",\n          \"evidenceAnchor\": \"天地有道，符水能医，饮下此水，病痛自消\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-action-02\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"张角\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"张角将符水碗递向病患\",\n        \"performanceInstruction\": \"张角双手持符水碗，向前伸出，递向跪在地上的病患\",\n        \"dependsOn\": [\"beat-03-speech-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.8,\n          \"expected\": 2.3,\n          \"upper\": 2.8,\n          \"source\": \"递出符水碗并让病患接近的动作时间\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"张角双手将符水碗递到病患面前，病患可以触及\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"张角将符水碗递向病患\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-reaction-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"onlooker-crowd\"],\n        \"kind\": \"reaction\",\n        \"textOrVocalization\": \"围观百姓注视张角递符水\",\n        \"performanceInstruction\": \"围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注\",\n        \"dependsOn\": [\"beat-03-action-02\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 0.8,\n          \"expected\": 1,\n          \"upper\": 1.2,\n          \"source\": \"群体反应的最小可见时间\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"围观百姓保持注视，无人离开或转身\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"围观百姓注视\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      }\n    ]\n  },\n  \"shotIntent\": {\n    \"viewpointCharacter\": \"张角\",\n    \"purpose\": \"呈现张角以符水仪式为病患施术的完整过程，从病患叩首忏悔到张角念诵呪语并递出符水\",\n    \"cameraReason\": \"保持中景机位可以同时看清张角持符水碗的施术动作和跪地病患的叩首反应，展现仪式的庄重氛围\"\n  },\n  \"beatDramaturgy\": [\n    {\n      \"beatId\": \"beat-03\",\n      \"function\": \"呈现符水仪式过程\",\n      \"stateChange\": \"病患接受符水仪式\",\n      \"visual\": [\n        \"病患叩首\",\n        \"张角将符水碗递向病患\"\n      ],\n      \"audio\": [\n        \"天地有道，符水能医，饮下此水，病痛自消\"\n      ]\n    }\n  ],\n  \"storyProgress\": {\n    \"unitId\": \"drama-02\",\n    \"status\": \"continuing\",\n    \"actionResult\": \"病患完成叩首忏悔，张角念诵呪语并将符水递到病患面前\",\n    \"response\": \"病患接受符水仪式，围观百姓注视整个过程\",\n    \"pendingActions\": [\n      \"病患饮下符水\",\n      \"病患暂时感到缓解\",\n      \"围观百姓开始相信符水有效\"\n    ]\n  },\n  \"characters\": [\"张角\"],\n  \"presentCharacters\": [\"张角\"],\n  \"initialCharacters\": [\"张角\"],\n  \"enteringCharacters\": [],\n  \"endCharacters\": [\"张角\"],\n  \"illustrationLayers\": [],\n  \"worldState\": {\n    \"settingId\": \"drama-02\",\n    \"characters\": [\n      {\n        \"name\": \"张角\",\n        \"position\": {\n          \"status\": \"unknown\"\n        },\n        \"heldProps\": {\n          \"status\": \"unknown\"\n        },\n        \"pendingAction\": {\n          \"status\": \"unknown\"\n        }\n      }\n    ]\n  },\n  \"continuity\": {\n    \"mode\": \"tail_continuation\",\n    \"previousShotId\": \"scene-02-seg-1\",\n    \"bridgeType\": \"same_frame\",\n    \"bridgeAnchor\": \"\"\n  },\n  \"coveredBeatIds\": [\"beat-03\"],\n  \"visualPrompt\": \"冀州某地简陋民居外的空地，正午自然光，中景机位。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手持木碗装符水。一名病患跪于张角前方地面，穿灰褐色粗布衣，面容憔悴。数十名围观百姓呈半圆形站立于空地后方和两侧，穿各色粗布衣。背景可见低矮民居土墙和茅草屋顶，远处是绿色坡地。病患叩首，张角将符水碗递向病患。\",\n  \"camera\": \"中景，摄影机正面平视张角和病患，轴线保持在张角与病患连线的正面方向，稳定机位\",\n  \"mood\": \"庄重肃穆，带有宗教仪式的神秘氛围和百姓对符水治病的期待\",\n  \"firstFrameMode\": \"reuse_previous_tail\",\n  \"lastFramePrompt\": \"冀州某地简陋民居外的空地，中景。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手将木碗符水递向前方。病患跪于张角前方地面，穿灰褐色粗布衣，刚完成叩首动作，头部抬起。围观百姓半圆形站立于空地后方和两侧，目光注视张角和病患。\",\n  \"videoPrompt\": \"0.0-3.8秒：病患叩首，从跪姿俯身向前，额头触地，完成三次叩首动作，周围围观百姓保持站立注视。3.8-8.3秒：张角口中念诵呪语，语调庄重缓慢：天地有道，符水能医，饮下此水，病痛自消。8.3-10.0秒：张角双手持符水碗向前伸出，张角将符水碗递向病患，病患抬头，围观百姓群体注视。\",\n  \"audioType\": \"对白\",\n  \"audioText\": \"张角：天地有道，符水能医，饮下此水，病痛自消\",\n  \"pronunciationHints\": [],\n  \"historicalBasis\": \"[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病\",\n  \"adaptationBoundary\": \"拟制张角念诵呪语的具体内容和语调，拟制病患叩首和接符水的具体动作，但保留史料记载的符水呪说基本仪式\"\n}\n```",
+      "title": "病患叩首张角念诵呪语递符水",
+      "camera": "中景，摄影机正面平视张角和病患，轴线保持在张角与病患连线的正面方向，稳定机位",
+      "issues": [],
+      "pacing": {
+        "beats": [
+          {
+            "id": "beat-03-action-01",
+            "kind": "action",
+            "actorIds": [
+              "sick-patient-group"
+            ],
+            "dependsOn": [],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "病患完成三次叩首，额头离地，保持跪姿",
+              "evidenceAnchor": "病患叩首",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-03",
+            "durationEstimate": {
+              "lower": 2.5,
+              "upper": 3.8,
+              "source": "叩首三次的实际身体动作时间",
+              "expected": 3.2,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [],
+            "textOrVocalization": "病患叩首",
+            "performanceInstruction": "病患从跪姿俯身向前，额头触地，完成三次叩首动作"
+          },
+          {
+            "id": "beat-03-speech-01",
+            "kind": "speech",
+            "actorIds": [
+              "张角"
+            ],
+            "dependsOn": [
+              "beat-03-action-01"
+            ],
+            "resources": [
+              "voice"
+            ],
+            "completion": {
+              "modality": "audio-visual",
+              "finalState": "张角念完呪语，声音结束",
+              "evidenceAnchor": "天地有道，符水能医，饮下此水，病痛自消",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-03",
+            "deliveryStyle": "chant",
+            "durationEstimate": {
+              "lower": 4.006,
+              "upper": 6.415,
+              "source": "16字呪语按吟诵速率3.3字/秒加启动余量",
+              "expected": 5.299,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [],
+            "textOrVocalization": "天地有道，符水能医，饮下此水，病痛自消",
+            "performanceInstruction": "张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律"
+          },
+          {
+            "id": "beat-03-action-02",
+            "kind": "action",
+            "actorIds": [
+              "张角"
+            ],
+            "dependsOn": [
+              "beat-03-speech-01"
+            ],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "张角双手将符水碗递到病患面前，病患可以触及",
+              "evidenceAnchor": "张角将符水碗递向病患",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-03",
+            "durationEstimate": {
+              "lower": 1.8,
+              "upper": 2.8,
+              "source": "递出符水碗并让病患接近的动作时间",
+              "expected": 2.3,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [],
+            "textOrVocalization": "张角将符水碗递向病患",
+            "performanceInstruction": "张角双手持符水碗，向前伸出，递向跪在地上的病患"
+          },
+          {
+            "id": "beat-03-reaction-01",
+            "kind": "reaction",
+            "actorIds": [
+              "onlooker-crowd"
+            ],
+            "dependsOn": [
+              "beat-03-action-02"
+            ],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "围观百姓保持注视，无人离开或转身",
+              "evidenceAnchor": "围观百姓注视",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-03",
+            "durationEstimate": {
+              "lower": 0.8,
+              "upper": 1.2,
+              "source": "群体反应的最小可见时间",
+              "expected": 1,
+              "confidence": "medium"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [],
+            "textOrVocalization": "围观百姓注视张角递符水",
+            "performanceInstruction": "围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注"
+          }
+        ],
+        "version": "duration-v2",
+        "schedule": [
+          {
+            "kind": "action",
+            "beatId": "beat-03-action-01",
+            "actorIds": [
+              "sick-patient-group"
+            ],
+            "endSecond": 3.8,
+            "startSecond": 0,
+            "sourceBeatId": "beat-03",
+            "budgetSeconds": 3.8,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "speech",
+            "beatId": "beat-03-speech-01",
+            "actorIds": [
+              "张角"
+            ],
+            "endSecond": 10.215,
+            "startSecond": 3.8,
+            "sourceBeatId": "beat-03",
+            "budgetSeconds": 6.415,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "action",
+            "beatId": "beat-03-action-02",
+            "actorIds": [
+              "张角"
+            ],
+            "endSecond": 13.015,
+            "startSecond": 10.215,
+            "sourceBeatId": "beat-03",
+            "budgetSeconds": 2.8,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "reaction",
+            "beatId": "beat-03-reaction-01",
+            "actorIds": [
+              "onlooker-crowd"
+            ],
+            "endSecond": 14.215,
+            "startSecond": 13.015,
+            "sourceBeatId": "beat-03",
+            "budgetSeconds": 1.2,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ],
+        "actorGroups": [
+          {
+            "id": "sick-patient-group",
+            "label": "病患",
+            "memberDescription": "一名身患疾病的成年男性百姓，穿灰褐色粗布衣，面容憔悴，跪于空地"
+          },
+          {
+            "id": "onlooker-crowd",
+            "label": "围观百姓",
+            "memberDescription": "数十名各年龄段百姓，穿各色粗布衣，半圆形站立于空地后方，面向张角和病患"
+          }
+        ],
+        "sampleTimes": [
+          0,
+          1.9,
+          3.8,
+          7.008,
+          10.215,
+          11.615,
+          13.015,
+          13.615,
+          14.215,
+          14.92
+        ],
+        "scheduleHash": "duration-v2-sha256-7627e59f40ef0cac0ddbb48ca4987ba0460d4a5450b1f22bb7df8a1ec3dfe898",
+        "timingPolicy": {
+          "speech": {
+            "chant": {
+              "maximumRate": 4.5,
+              "referenceRate": 3.3,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 2.8
+            },
+            "singing": {
+              "maximumRate": 3.5,
+              "referenceRate": 2.8,
+              "startupAllowance": 0.35,
+              "minimumNaturalRate": 2
+            },
+            "dialogue": {
+              "maximumRate": 5,
+              "referenceRate": 4.5,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 3.3
+            },
+            "narration": {
+              "maximumRate": 6.5,
+              "referenceRate": 5.8,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 5.5
+            }
+          },
+          "version": "duration-policy-v2.2-brisk-narration",
+          "linePauseSeconds": 0.2,
+          "shortPauseSeconds": 0.15,
+          "minimumActionSeconds": 0.3,
+          "sentencePauseSeconds": 0.25,
+          "minimumReactionSeconds": 0.5,
+          "maximumProviderDuration": 15,
+          "minimumProviderDuration": 3,
+          "endingReadabilityReserve": 0.5,
+          "minimumVocalizationSeconds": 0.8,
+          "maxConservativeExtraSeconds": 1,
+          "measurementToleranceSeconds": 0.25
+        },
+        "sourceBeatIds": [
+          "beat-03"
+        ],
+        "speechWindows": [
+          {
+            "end": 10.215,
+            "text": "天地有道，符水能医，饮下此水，病痛自消",
+            "start": 3.8,
+            "beatId": "beat-03-speech-01",
+            "actorIds": [
+              "张角"
+            ],
+            "sourceBeatId": "beat-03",
+            "deliveryStyle": "chant"
+          }
+        ],
+        "timelineWindows": [
+          {
+            "beatIds": [
+              "beat-03-action-01"
+            ],
+            "endSecond": 3.8,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-03-action-01，0至3.8秒，导演参考）场景：冀州某地简陋民居外的空地；病患从跪姿俯身向前，额头触地，完成三次叩首动作；病患叩首；完成态：病患完成三次叩首，额头离地，保持跪姿。",
+                "beatId": "beat-03-action-01"
+              }
+            ],
+            "startSecond": 0
+          },
+          {
+            "beatIds": [
+              "beat-03-speech-01"
+            ],
+            "endSecond": 10.215,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-03-speech-01，3.8至10.215秒，导演参考）张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律；张角哼唱歌谣，按歌谣节奏吟唱并完整唱出：天地有道，符水能医，饮下此水，病痛自消；完成态：张角念完呪语，声音结束。",
+                "beatId": "beat-03-speech-01"
+              }
+            ],
+            "startSecond": 3.8
+          },
+          {
+            "beatIds": [
+              "beat-03-action-02"
+            ],
+            "endSecond": 13.015,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-03-action-02，10.215至13.015秒，导演参考）张角双手持符水碗，向前伸出，递向跪在地上的病患；张角将符水碗递向病患；完成态：张角双手将符水碗递到病患面前，病患可以触及。",
+                "beatId": "beat-03-action-02"
+              }
+            ],
+            "startSecond": 10.215
+          },
+          {
+            "beatIds": [
+              "beat-03-reaction-01"
+            ],
+            "endSecond": 14.215,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-03-reaction-01，13.015至14.215秒，导演参考）围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注；围观百姓注视张角递符水；完成态：围观百姓保持注视，无人离开或转身。",
+                "beatId": "beat-03-reaction-01"
+              }
+            ],
+            "startSecond": 13.015
+          },
+          {
+            "beatIds": [],
+            "endSecond": 15,
+            "beatQuotes": [],
+            "startSecond": 14.215
+          }
+        ],
+        "compiledVideoPrompt": "0-3.8秒：（节拍 beat-03-action-01，0至3.8秒，导演参考）场景：冀州某地简陋民居外的空地；病患从跪姿俯身向前，额头触地，完成三次叩首动作；病患叩首；完成态：病患完成三次叩首，额头离地，保持跪姿。\n3.8-10.215秒：（节拍 beat-03-speech-01，3.8至10.215秒，导演参考）张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律；张角哼唱歌谣，按歌谣节奏吟唱并完整唱出：天地有道，符水能医，饮下此水，病痛自消；完成态：张角念完呪语，声音结束。\n10.215-13.015秒：（节拍 beat-03-action-02，10.215至13.015秒，导演参考）张角双手持符水碗，向前伸出，递向跪在地上的病患；张角将符水碗递向病患；完成态：张角双手将符水碗递到病患面前，病患可以触及。\n13.015-14.215秒：（节拍 beat-03-reaction-01，13.015至14.215秒，导演参考）围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注；围观百姓注视张角递符水；完成态：围观百姓保持注视，无人离开或转身。\n14.215-15秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+        "sourceBeatRequirements": [
+          {
+            "id": "beat-03",
+            "anchors": [
+              "病患叩首",
+              "张角将符水碗递向病患"
+            ],
+            "setting": "冀州某地简陋民居外的空地"
+          }
+        ]
+      },
+      "passed": true,
+      "duration": 15,
+      "audioText": "张角：天地有道，符水能医，饮下此水，病痛自消",
+      "audioType": "对白",
+      "characters": [
+        "张角"
+      ],
+      "continuity": {
+        "mode": "tail_continuation",
+        "bridgeType": "same_frame",
+        "bridgeAnchor": "",
+        "previousShotId": "scene-02-seg-1"
+      },
+      "shotIntent": {
+        "purpose": "呈现张角以符水仪式为病患施术的完整过程，从病患叩首忏悔到张角念诵呪语并递出符水",
+        "cameraReason": "保持中景机位可以同时看清张角持符水碗的施术动作和跪地病患的叩首反应，展现仪式的庄重氛围",
+        "viewpointCharacter": "张角"
+      },
+      "worldState": {
+        "settingId": "drama-02",
+        "characters": [
+          {
+            "name": "张角",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "videoPrompt": "上一镜批准的台词：张角：天地有道，符水能医，饮下此水，病痛自消。以实际尾帧图片续接；尾帧报告原文（未确认部分保持未知）：末帧7（14.96秒）：张角站在画面左侧，朝向右侧跪坐的病患，持木碗向病患伸出，碗仍在张角手中。病患头部抬起、视线下垂，双手放在腿部附近；围观百姓在后方站立观看。。原则通行不代表每项动作或人声已实测通过。",
+      "scheduleHash": "duration-v2-sha256-7627e59f40ef0cac0ddbb48ca4987ba0460d4a5450b1f22bb7df8a1ec3dfe898",
+      "visualPrompt": "冀州某地简陋民居外的空地，正午自然光，中景机位。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手持木碗装符水。一名病患跪于张角前方地面，穿灰褐色粗布衣，面容憔悴。数十名围观百姓呈半圆形站立于空地后方和两侧，穿各色粗布衣。背景可见低矮民居土墙和茅草屋顶，远处是绿色坡地。病患叩首，张角将符水碗递向病患。",
+      "editorialRole": "story",
+      "endCharacters": [
+        "张角"
+      ],
+      "executionLogs": [],
+      "qualityPolicy": "principle-v1",
+      "qualityReview": {
+        "status": "needs_attention",
+        "warnings": [
+          {
+            "details": "候选中张角念诵的呪语\"天地有道，符水能医，饮下此水，病痛自消\"为拟制内容。史料2仅记载\"符水呪說以療病\"，未记载具体呪语文字。该拟制符合adaptationBoundary声明\"拟制张角念诵呪语的具体内容和语调\"，属于允许范围内的戏剧创作，不构成historical_causality错误。",
+            "category": "dialogue_fabrication"
+          },
+          {
+            "details": "候选中病患\"从跪姿俯身向前，额头触地，完成三次叩首动作\"为具体化拟制。史料2仅记载\"跪拜首過\"，未明确叩首次数和具体动作细节。该拟制符合adaptationBoundary声明\"拟制病患叩首和接符水的具体动作\"，属于合理的场面调度，不构成原则错误。",
+            "category": "performance_detail"
+          },
+          {
+            "details": "候选将张角念诵呪语的deliveryStyle标注为\"chant\"（吟诵），并在performanceInstruction中要求\"语调庄重缓慢，带有道家诵念韵律\"。史料2未记载张角念诵呪语的具体方式和语调。该拟制属于表演风格选择，符合道家符水仪式的合理推断，不构成原则错误，但属于戏剧化处理。",
+            "category": "delivery_style"
+          },
+          {
+            "code": "manual_review_required",
+            "problem": "质量由用户自主验收；已报告的问题保留，不自动重写，可按需返回对应节点重做",
+            "reportedIssues": []
+          }
+        ],
+        "rawReport": {
+          "raw": {
+            "id": "msg_3acb8a6d03864e019d55681c99e3e9a3",
+            "role": "assistant",
+            "type": "message",
+            "model": "claude-opus-4-8",
+            "usage": {
+              "credit_unit": "credit",
+              "credit_usage": 0.23678641892205635,
+              "input_tokens": 3,
+              "output_tokens": 394,
+              "cache_creation": {
+                "ephemeral_1h_input_tokens": 0,
+                "ephemeral_5m_input_tokens": 18009
+              },
+              "credit_unit_plural": "credits",
+              "cache_read_input_tokens": 0,
+              "cache_creation_input_tokens": 18009
+            },
+            "content": [
+              {
+                "text": "```json\n{\n  \"version\": \"principle-review-v1\",\n  \"decision\": \"pass\",\n  \"issues\": [],\n  \"warnings\": [\n    {\n      \"category\": \"dialogue_fabrication\",\n      \"details\": \"候选中张角念诵的呪语\"天地有道，符水能医，饮下此水，病痛自消\"为拟制内容。史料2仅记载\"符水呪說以療病\"，未记载具体呪语文字。该拟制符合adaptationBoundary声明\"拟制张角念诵呪语的具体内容和语调\"，属于允许范围内的戏剧创作，不构成historical_causality错误。\"\n    },\n    {\n      \"category\": \"performance_detail\",\n      \"details\": \"候选中病患\"从跪姿俯身向前，额头触地，完成三次叩首动作\"为具体化拟制。史料2仅记载\"跪拜首過\"，未明确叩首次数和具体动作细节。该拟制符合adaptationBoundary声明\"拟制病患叩首和接符水的具体动作\"，属于合理的场面调度，不构成原则错误。\"\n    },\n    {\n      \"category\": \"delivery_style\",\n      \"details\": \"候选将张角念诵呪语的deliveryStyle标注为\"chant\"（吟诵），并在performanceInstruction中要求\"语调庄重缓慢，带有道家诵念韵律\"。史料2未记载张角念诵呪语的具体方式和语调。该拟制属于表演风格选择，符合道家符水仪式的合理推断，不构成原则错误，但属于戏剧化处理。\"\n    }\n  ]\n}\n```",
+                "type": "text"
+              }
+            ],
+            "stop_reason": "end_turn",
+            "stop_sequence": null
+          },
+          "text": "```json\n{\n  \"version\": \"principle-review-v1\",\n  \"decision\": \"pass\",\n  \"issues\": [],\n  \"warnings\": [\n    {\n      \"category\": \"dialogue_fabrication\",\n      \"details\": \"候选中张角念诵的呪语\"天地有道，符水能医，饮下此水，病痛自消\"为拟制内容。史料2仅记载\"符水呪說以療病\"，未记载具体呪语文字。该拟制符合adaptationBoundary声明\"拟制张角念诵呪语的具体内容和语调\"，属于允许范围内的戏剧创作，不构成historical_causality错误。\"\n    },\n    {\n      \"category\": \"performance_detail\",\n      \"details\": \"候选中病患\"从跪姿俯身向前，额头触地，完成三次叩首动作\"为具体化拟制。史料2仅记载\"跪拜首過\"，未明确叩首次数和具体动作细节。该拟制符合adaptationBoundary声明\"拟制病患叩首和接符水的具体动作\"，属于合理的场面调度，不构成原则错误。\"\n    },\n    {\n      \"category\": \"delivery_style\",\n      \"details\": \"候选将张角念诵呪语的deliveryStyle标注为\"chant\"（吟诵），并在performanceInstruction中要求\"语调庄重缓慢，带有道家诵念韵律\"。史料2未记载张角念诵呪语的具体方式和语调。该拟制属于表演风格选择，符合道家符水仪式的合理推断，不构成原则错误，但属于戏剧化处理。\"\n    }\n  ]\n}\n```",
+          "model": "claude-opus-4-8",
+          "issues": [],
+          "version": "principle-review-v1",
+          "decision": "pass",
+          "warnings": [
+            {
+              "details": "候选中张角念诵的呪语\"天地有道，符水能医，饮下此水，病痛自消\"为拟制内容。史料2仅记载\"符水呪說以療病\"，未记载具体呪语文字。该拟制符合adaptationBoundary声明\"拟制张角念诵呪语的具体内容和语调\"，属于允许范围内的戏剧创作，不构成historical_causality错误。",
+              "category": "dialogue_fabrication"
+            },
+            {
+              "details": "候选中病患\"从跪姿俯身向前，额头触地，完成三次叩首动作\"为具体化拟制。史料2仅记载\"跪拜首過\"，未明确叩首次数和具体动作细节。该拟制符合adaptationBoundary声明\"拟制病患叩首和接符水的具体动作\"，属于合理的场面调度，不构成原则错误。",
+              "category": "performance_detail"
+            },
+            {
+              "details": "候选将张角念诵呪语的deliveryStyle标注为\"chant\"（吟诵），并在performanceInstruction中要求\"语调庄重缓慢，带有道家诵念韵律\"。史料2未记载张角念诵呪语的具体方式和语调。该拟制属于表演风格选择，符合道家符水仪式的合理推断，不构成原则错误，但属于戏剧化处理。",
+              "category": "delivery_style"
+            }
+          ],
+          "reviewTransport": {
+            "attempts": [
+              {
+                "raw": {
+                  "id": "msg_3acb8a6d03864e019d55681c99e3e9a3",
+                  "role": "assistant",
+                  "type": "message",
+                  "model": "claude-opus-4-8",
+                  "usage": {
+                    "credit_unit": "credit",
+                    "credit_usage": 0.23678641892205635,
+                    "input_tokens": 3,
+                    "output_tokens": 394,
+                    "cache_creation": {
+                      "ephemeral_1h_input_tokens": 0,
+                      "ephemeral_5m_input_tokens": 18009
+                    },
+                    "credit_unit_plural": "credits",
+                    "cache_read_input_tokens": 0,
+                    "cache_creation_input_tokens": 18009
+                  },
+                  "content": [
+                    {
+                      "text": "```json\n{\n  \"version\": \"principle-review-v1\",\n  \"decision\": \"pass\",\n  \"issues\": [],\n  \"warnings\": [\n    {\n      \"category\": \"dialogue_fabrication\",\n      \"details\": \"候选中张角念诵的呪语\"天地有道，符水能医，饮下此水，病痛自消\"为拟制内容。史料2仅记载\"符水呪說以療病\"，未记载具体呪语文字。该拟制符合adaptationBoundary声明\"拟制张角念诵呪语的具体内容和语调\"，属于允许范围内的戏剧创作，不构成historical_causality错误。\"\n    },\n    {\n      \"category\": \"performance_detail\",\n      \"details\": \"候选中病患\"从跪姿俯身向前，额头触地，完成三次叩首动作\"为具体化拟制。史料2仅记载\"跪拜首過\"，未明确叩首次数和具体动作细节。该拟制符合adaptationBoundary声明\"拟制病患叩首和接符水的具体动作\"，属于合理的场面调度，不构成原则错误。\"\n    },\n    {\n      \"category\": \"delivery_style\",\n      \"details\": \"候选将张角念诵呪语的deliveryStyle标注为\"chant\"（吟诵），并在performanceInstruction中要求\"语调庄重缓慢，带有道家诵念韵律\"。史料2未记载张角念诵呪语的具体方式和语调。该拟制属于表演风格选择，符合道家符水仪式的合理推断，不构成原则错误，但属于戏剧化处理。\"\n    }\n  ]\n}\n```",
+                      "type": "text"
+                    }
+                  ],
+                  "stop_reason": "end_turn",
+                  "stop_sequence": null
+                },
+                "attempt": 1
+              }
+            ],
+            "recovered": false
+          }
+        },
+        "canProceed": true,
+        "principleIssues": [],
+        "manualReviewRequired": true,
+        "automaticRetakeAllowed": false
+      },
+      "repairContext": {
+        "scope": "scene",
+        "issues": [],
+        "repairScope": "scene",
+        "historicalLocks": [],
+        "candidateVersion": 2,
+        "previousCandidate": {
+          "id": "scene-02-seg-2",
+          "raw": {
+            "id": "msg_4e09c9a9e4cf4157bc08b906bdb6d525",
+            "role": "assistant",
+            "type": "message",
+            "model": "claude-opus-4-8",
+            "usage": {
+              "credit_unit": "credit",
+              "credit_usage": 0.6592315388723051,
+              "input_tokens": 3,
+              "output_tokens": 2753,
+              "cache_creation": {
+                "ephemeral_1h_input_tokens": 0,
+                "ephemeral_5m_input_tokens": 68557
+              },
+              "credit_unit_plural": "credits",
+              "cache_read_input_tokens": 0,
+              "cache_creation_input_tokens": 68557
+            },
+            "content": [
+              {
+                "text": "```json\n{\n  \"contentContractVersion\": \"cinematic-v1\",\n  \"dramaticSceneId\": \"drama-02\",\n  \"id\": \"scene-02-seg-2\",\n  \"title\": \"病患叩首张角念诵呪语递符水\",\n  \"editorialRole\": \"story\",\n  \"visualTreatment\": \"live_action\",\n  \"duration\": 15,\n  \"pacing\": {\n    \"version\": \"duration-v2\",\n    \"timingPolicy\": {\n      \"version\": \"duration-policy-v2.2-brisk-narration\",\n      \"speech\": {\n        \"dialogue\": {\n          \"referenceRate\": 4.5,\n          \"minimumNaturalRate\": 3.3,\n          \"maximumRate\": 5,\n          \"startupAllowance\": 0.25\n        },\n        \"narration\": {\n          \"referenceRate\": 5.8,\n          \"minimumNaturalRate\": 5.5,\n          \"maximumRate\": 6.5,\n          \"startupAllowance\": 0.25\n        },\n        \"chant\": {\n          \"referenceRate\": 3.3,\n          \"minimumNaturalRate\": 2.8,\n          \"maximumRate\": 4.5,\n          \"startupAllowance\": 0.25\n        },\n        \"singing\": {\n          \"referenceRate\": 2.8,\n          \"minimumNaturalRate\": 2,\n          \"maximumRate\": 3.5,\n          \"startupAllowance\": 0.35\n        }\n      },\n      \"shortPauseSeconds\": 0.15,\n      \"sentencePauseSeconds\": 0.25,\n      \"linePauseSeconds\": 0.2,\n      \"measurementToleranceSeconds\": 0.25,\n      \"endingReadabilityReserve\": 0.5,\n      \"maxConservativeExtraSeconds\": 1,\n      \"minimumProviderDuration\": 3,\n      \"maximumProviderDuration\": 15,\n      \"minimumVocalizationSeconds\": 0.8,\n      \"minimumActionSeconds\": 0.3,\n      \"minimumReactionSeconds\": 0.5\n    },\n    \"actorGroups\": [\n      {\n        \"id\": \"sick-patient-group\",\n        \"label\": \"病患\",\n        \"memberDescription\": \"一名身患疾病的成年男性百姓，穿灰褐色粗布衣，面容憔悴，跪于空地\"\n      },\n      {\n        \"id\": \"onlooker-crowd\",\n        \"label\": \"围观百姓\",\n        \"memberDescription\": \"数十名各年龄段百姓，穿各色粗布衣，半圆形站立于空地后方，面向张角和病患\"\n      }\n    ],\n    \"beats\": [\n      {\n        \"id\": \"beat-03-action-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"sick-patient-group\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患叩首\",\n        \"performanceInstruction\": \"病患从跪姿俯身向前，额头触地，完成三次叩首动作\",\n        \"dependsOn\": [],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 2.5,\n          \"expected\": 3.2,\n          \"upper\": 3.8,\n          \"source\": \"叩首三次的实际身体动作时间\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成三次叩首，额头离地，保持跪姿\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患叩首\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-speech-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"张角\"],\n        \"kind\": \"speech\",\n        \"deliveryStyle\": \"chant\",\n        \"textOrVocalization\": \"天地有道，符水能医，饮下此水，病痛自消\",\n        \"performanceInstruction\": \"张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律\",\n        \"dependsOn\": [\"beat-03-action-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"voice\"],\n        \"durationEstimate\": {\n          \"lower\": 4.006,\n          \"expected\": 5.299,\n          \"upper\": 6.415,\n          \"source\": \"16字呪语按吟诵速率3.3字/秒加启动余量\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"张角念完呪语，声音结束\",\n          \"modality\": \"audio-visual\",\n          \"evidenceAnchor\": \"天地有道，符水能医，饮下此水，病痛自消\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-action-02\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"张角\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"张角将符水碗递向病患\",\n        \"performanceInstruction\": \"张角双手持符水碗，向前伸出，递向跪在地上的病患\",\n        \"dependsOn\": [\"beat-03-speech-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.8,\n          \"expected\": 2.3,\n          \"upper\": 2.8,\n          \"source\": \"递出符水碗并让病患接近的动作时间\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"张角双手将符水碗递到病患面前，病患可以触及\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"张角将符水碗递向病患\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-reaction-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"onlooker-crowd\"],\n        \"kind\": \"reaction\",\n        \"textOrVocalization\": \"围观百姓注视张角递符水\",\n        \"performanceInstruction\": \"围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注\",\n        \"dependsOn\": [\"beat-03-action-02\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 0.8,\n          \"expected\": 1,\n          \"upper\": 1.2,\n          \"source\": \"群体反应的最小可见时间\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"围观百姓保持注视，无人离开或转身\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"围观百姓注视\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      }\n    ]\n  },\n  \"shotIntent\": {\n    \"viewpointCharacter\": \"张角\",\n    \"purpose\": \"呈现张角以符水仪式为病患施术的完整过程，从病患叩首忏悔到张角念诵呪语并递出符水\",\n    \"cameraReason\": \"保持中景机位可以同时看清张角持符水碗的施术动作和跪地病患的叩首反应，展现仪式的庄重氛围\"\n  },\n  \"beatDramaturgy\": [\n    {\n      \"beatId\": \"beat-03\",\n      \"function\": \"呈现符水仪式过程\",\n      \"stateChange\": \"病患接受符水仪式\",\n      \"visual\": [\n        \"病患叩首\",\n        \"张角将符水碗递向病患\"\n      ],\n      \"audio\": [\n        \"天地有道，符水能医，饮下此水，病痛自消\"\n      ]\n    }\n  ],\n  \"storyProgress\": {\n    \"unitId\": \"drama-02\",\n    \"status\": \"continuing\",\n    \"actionResult\": \"病患完成叩首忏悔，张角念诵呪语并将符水递到病患面前\",\n    \"response\": \"病患接受符水仪式，围观百姓注视整个过程\",\n    \"pendingActions\": [\n      \"病患饮下符水\",\n      \"病患暂时感到缓解\",\n      \"围观百姓开始相信符水有效\"\n    ]\n  },\n  \"characters\": [\"张角\"],\n  \"presentCharacters\": [\"张角\"],\n  \"initialCharacters\": [\"张角\"],\n  \"enteringCharacters\": [],\n  \"endCharacters\": [\"张角\"],\n  \"illustrationLayers\": [],\n  \"worldState\": {\n    \"settingId\": \"drama-02\",\n    \"characters\": [\n      {\n        \"name\": \"张角\",\n        \"position\": {\n          \"status\": \"unknown\"\n        },\n        \"heldProps\": {\n          \"status\": \"unknown\"\n        },\n        \"pendingAction\": {\n          \"status\": \"unknown\"\n        }\n      }\n    ]\n  },\n  \"continuity\": {\n    \"mode\": \"tail_continuation\",\n    \"previousShotId\": \"scene-02-seg-1\",\n    \"bridgeType\": \"same_frame\",\n    \"bridgeAnchor\": \"\"\n  },\n  \"coveredBeatIds\": [\"beat-03\"],\n  \"visualPrompt\": \"冀州某地简陋民居外的空地，正午自然光，中景机位。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手持木碗装符水。一名病患跪于张角前方地面，穿灰褐色粗布衣，面容憔悴。数十名围观百姓呈半圆形站立于空地后方和两侧，穿各色粗布衣。背景可见低矮民居土墙和茅草屋顶，远处是绿色坡地。病患叩首，张角将符水碗递向病患。\",\n  \"camera\": \"中景，摄影机正面平视张角和病患，轴线保持在张角与病患连线的正面方向，稳定机位\",\n  \"mood\": \"庄重肃穆，带有宗教仪式的神秘氛围和百姓对符水治病的期待\",\n  \"firstFrameMode\": \"reuse_previous_tail\",\n  \"lastFramePrompt\": \"冀州某地简陋民居外的空地，中景。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手将木碗符水递向前方。病患跪于张角前方地面，穿灰褐色粗布衣，刚完成叩首动作，头部抬起。围观百姓半圆形站立于空地后方和两侧，目光注视张角和病患。\",\n  \"videoPrompt\": \"0.0-3.8秒：病患叩首，从跪姿俯身向前，额头触地，完成三次叩首动作，周围围观百姓保持站立注视。3.8-8.3秒：张角口中念诵呪语，语调庄重缓慢：天地有道，符水能医，饮下此水，病痛自消。8.3-10.0秒：张角双手持符水碗向前伸出，张角将符水碗递向病患，病患抬头，围观百姓群体注视。\",\n  \"audioType\": \"对白\",\n  \"audioText\": \"张角：天地有道，符水能医，饮下此水，病痛自消\",\n  \"pronunciationHints\": [],\n  \"historicalBasis\": \"[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病\",\n  \"adaptationBoundary\": \"拟制张角念诵呪语的具体内容和语调，拟制病患叩首和接符水的具体动作，但保留史料记载的符水呪说基本仪式\"\n}\n```",
+                "type": "text"
+              }
+            ],
+            "stop_reason": "end_turn",
+            "stop_sequence": null
+          },
+          "mood": "庄重肃穆，带有宗教仪式的神秘氛围和百姓对符水治病的期待",
+          "text": "```json\n{\n  \"contentContractVersion\": \"cinematic-v1\",\n  \"dramaticSceneId\": \"drama-02\",\n  \"id\": \"scene-02-seg-2\",\n  \"title\": \"病患叩首张角念诵呪语递符水\",\n  \"editorialRole\": \"story\",\n  \"visualTreatment\": \"live_action\",\n  \"duration\": 15,\n  \"pacing\": {\n    \"version\": \"duration-v2\",\n    \"timingPolicy\": {\n      \"version\": \"duration-policy-v2.2-brisk-narration\",\n      \"speech\": {\n        \"dialogue\": {\n          \"referenceRate\": 4.5,\n          \"minimumNaturalRate\": 3.3,\n          \"maximumRate\": 5,\n          \"startupAllowance\": 0.25\n        },\n        \"narration\": {\n          \"referenceRate\": 5.8,\n          \"minimumNaturalRate\": 5.5,\n          \"maximumRate\": 6.5,\n          \"startupAllowance\": 0.25\n        },\n        \"chant\": {\n          \"referenceRate\": 3.3,\n          \"minimumNaturalRate\": 2.8,\n          \"maximumRate\": 4.5,\n          \"startupAllowance\": 0.25\n        },\n        \"singing\": {\n          \"referenceRate\": 2.8,\n          \"minimumNaturalRate\": 2,\n          \"maximumRate\": 3.5,\n          \"startupAllowance\": 0.35\n        }\n      },\n      \"shortPauseSeconds\": 0.15,\n      \"sentencePauseSeconds\": 0.25,\n      \"linePauseSeconds\": 0.2,\n      \"measurementToleranceSeconds\": 0.25,\n      \"endingReadabilityReserve\": 0.5,\n      \"maxConservativeExtraSeconds\": 1,\n      \"minimumProviderDuration\": 3,\n      \"maximumProviderDuration\": 15,\n      \"minimumVocalizationSeconds\": 0.8,\n      \"minimumActionSeconds\": 0.3,\n      \"minimumReactionSeconds\": 0.5\n    },\n    \"actorGroups\": [\n      {\n        \"id\": \"sick-patient-group\",\n        \"label\": \"病患\",\n        \"memberDescription\": \"一名身患疾病的成年男性百姓，穿灰褐色粗布衣，面容憔悴，跪于空地\"\n      },\n      {\n        \"id\": \"onlooker-crowd\",\n        \"label\": \"围观百姓\",\n        \"memberDescription\": \"数十名各年龄段百姓，穿各色粗布衣，半圆形站立于空地后方，面向张角和病患\"\n      }\n    ],\n    \"beats\": [\n      {\n        \"id\": \"beat-03-action-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"sick-patient-group\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患叩首\",\n        \"performanceInstruction\": \"病患从跪姿俯身向前，额头触地，完成三次叩首动作\",\n        \"dependsOn\": [],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 2.5,\n          \"expected\": 3.2,\n          \"upper\": 3.8,\n          \"source\": \"叩首三次的实际身体动作时间\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成三次叩首，额头离地，保持跪姿\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患叩首\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-speech-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"张角\"],\n        \"kind\": \"speech\",\n        \"deliveryStyle\": \"chant\",\n        \"textOrVocalization\": \"天地有道，符水能医，饮下此水，病痛自消\",\n        \"performanceInstruction\": \"张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律\",\n        \"dependsOn\": [\"beat-03-action-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"voice\"],\n        \"durationEstimate\": {\n          \"lower\": 4.006,\n          \"expected\": 5.299,\n          \"upper\": 6.415,\n          \"source\": \"16字呪语按吟诵速率3.3字/秒加启动余量\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"张角念完呪语，声音结束\",\n          \"modality\": \"audio-visual\",\n          \"evidenceAnchor\": \"天地有道，符水能医，饮下此水，病痛自消\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-action-02\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"张角\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"张角将符水碗递向病患\",\n        \"performanceInstruction\": \"张角双手持符水碗，向前伸出，递向跪在地上的病患\",\n        \"dependsOn\": [\"beat-03-speech-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.8,\n          \"expected\": 2.3,\n          \"upper\": 2.8,\n          \"source\": \"递出符水碗并让病患接近的动作时间\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"张角双手将符水碗递到病患面前，病患可以触及\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"张角将符水碗递向病患\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-03-reaction-01\",\n        \"sourceBeatId\": \"beat-03\",\n        \"actorIds\": [\"onlooker-crowd\"],\n        \"kind\": \"reaction\",\n        \"textOrVocalization\": \"围观百姓注视张角递符水\",\n        \"performanceInstruction\": \"围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注\",\n        \"dependsOn\": [\"beat-03-action-02\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 0.8,\n          \"expected\": 1,\n          \"upper\": 1.2,\n          \"source\": \"群体反应的最小可见时间\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"围观百姓保持注视，无人离开或转身\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"围观百姓注视\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      }\n    ]\n  },\n  \"shotIntent\": {\n    \"viewpointCharacter\": \"张角\",\n    \"purpose\": \"呈现张角以符水仪式为病患施术的完整过程，从病患叩首忏悔到张角念诵呪语并递出符水\",\n    \"cameraReason\": \"保持中景机位可以同时看清张角持符水碗的施术动作和跪地病患的叩首反应，展现仪式的庄重氛围\"\n  },\n  \"beatDramaturgy\": [\n    {\n      \"beatId\": \"beat-03\",\n      \"function\": \"呈现符水仪式过程\",\n      \"stateChange\": \"病患接受符水仪式\",\n      \"visual\": [\n        \"病患叩首\",\n        \"张角将符水碗递向病患\"\n      ],\n      \"audio\": [\n        \"天地有道，符水能医，饮下此水，病痛自消\"\n      ]\n    }\n  ],\n  \"storyProgress\": {\n    \"unitId\": \"drama-02\",\n    \"status\": \"continuing\",\n    \"actionResult\": \"病患完成叩首忏悔，张角念诵呪语并将符水递到病患面前\",\n    \"response\": \"病患接受符水仪式，围观百姓注视整个过程\",\n    \"pendingActions\": [\n      \"病患饮下符水\",\n      \"病患暂时感到缓解\",\n      \"围观百姓开始相信符水有效\"\n    ]\n  },\n  \"characters\": [\"张角\"],\n  \"presentCharacters\": [\"张角\"],\n  \"initialCharacters\": [\"张角\"],\n  \"enteringCharacters\": [],\n  \"endCharacters\": [\"张角\"],\n  \"illustrationLayers\": [],\n  \"worldState\": {\n    \"settingId\": \"drama-02\",\n    \"characters\": [\n      {\n        \"name\": \"张角\",\n        \"position\": {\n          \"status\": \"unknown\"\n        },\n        \"heldProps\": {\n          \"status\": \"unknown\"\n        },\n        \"pendingAction\": {\n          \"status\": \"unknown\"\n        }\n      }\n    ]\n  },\n  \"continuity\": {\n    \"mode\": \"tail_continuation\",\n    \"previousShotId\": \"scene-02-seg-1\",\n    \"bridgeType\": \"same_frame\",\n    \"bridgeAnchor\": \"\"\n  },\n  \"coveredBeatIds\": [\"beat-03\"],\n  \"visualPrompt\": \"冀州某地简陋民居外的空地，正午自然光，中景机位。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手持木碗装符水。一名病患跪于张角前方地面，穿灰褐色粗布衣，面容憔悴。数十名围观百姓呈半圆形站立于空地后方和两侧，穿各色粗布衣。背景可见低矮民居土墙和茅草屋顶，远处是绿色坡地。病患叩首，张角将符水碗递向病患。\",\n  \"camera\": \"中景，摄影机正面平视张角和病患，轴线保持在张角与病患连线的正面方向，稳定机位\",\n  \"mood\": \"庄重肃穆，带有宗教仪式的神秘氛围和百姓对符水治病的期待\",\n  \"firstFrameMode\": \"reuse_previous_tail\",\n  \"lastFramePrompt\": \"冀州某地简陋民居外的空地，中景。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手将木碗符水递向前方。病患跪于张角前方地面，穿灰褐色粗布衣，刚完成叩首动作，头部抬起。围观百姓半圆形站立于空地后方和两侧，目光注视张角和病患。\",\n  \"videoPrompt\": \"0.0-3.8秒：病患叩首，从跪姿俯身向前，额头触地，完成三次叩首动作，周围围观百姓保持站立注视。3.8-8.3秒：张角口中念诵呪语，语调庄重缓慢：天地有道，符水能医，饮下此水，病痛自消。8.3-10.0秒：张角双手持符水碗向前伸出，张角将符水碗递向病患，病患抬头，围观百姓群体注视。\",\n  \"audioType\": \"对白\",\n  \"audioText\": \"张角：天地有道，符水能医，饮下此水，病痛自消\",\n  \"pronunciationHints\": [],\n  \"historicalBasis\": \"[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病\",\n  \"adaptationBoundary\": \"拟制张角念诵呪语的具体内容和语调，拟制病患叩首和接符水的具体动作，但保留史料记载的符水呪说基本仪式\"\n}\n```",
+          "title": "病患叩首张角念诵呪语递符水",
+          "camera": "中景，摄影机正面平视张角和病患，轴线保持在张角与病患连线的正面方向，稳定机位",
+          "pacing": {
+            "beats": [
+              {
+                "id": "beat-03-action-01",
+                "kind": "action",
+                "actorIds": [
+                  "sick-patient-group"
+                ],
+                "dependsOn": [],
+                "resources": [
+                  "body"
+                ],
+                "completion": {
+                  "modality": "visual",
+                  "finalState": "病患完成三次叩首，额头离地，保持跪姿",
+                  "evidenceAnchor": "病患叩首",
+                  "requiredThisClip": true
+                },
+                "sourceBeatId": "beat-03",
+                "durationEstimate": {
+                  "lower": 2.5,
+                  "upper": 3.8,
+                  "source": "叩首三次的实际身体动作时间",
+                  "expected": 3.2,
+                  "confidence": "high"
+                },
+                "timingConstraint": {
+                  "mode": "reference"
+                },
+                "overlapAllowedWith": [],
+                "textOrVocalization": "病患叩首",
+                "performanceInstruction": "病患从跪姿俯身向前，额头触地，完成三次叩首动作"
+              },
+              {
+                "id": "beat-03-speech-01",
+                "kind": "speech",
+                "actorIds": [
+                  "张角"
+                ],
+                "dependsOn": [
+                  "beat-03-action-01"
+                ],
+                "resources": [
+                  "voice"
+                ],
+                "completion": {
+                  "modality": "audio-visual",
+                  "finalState": "张角念完呪语，声音结束",
+                  "evidenceAnchor": "天地有道，符水能医，饮下此水，病痛自消",
+                  "requiredThisClip": true
+                },
+                "sourceBeatId": "beat-03",
+                "deliveryStyle": "chant",
+                "durationEstimate": {
+                  "lower": 4.006,
+                  "upper": 6.415,
+                  "source": "16字呪语按吟诵速率3.3字/秒加启动余量",
+                  "expected": 5.299,
+                  "confidence": "high"
+                },
+                "timingConstraint": {
+                  "mode": "reference"
+                },
+                "overlapAllowedWith": [],
+                "textOrVocalization": "天地有道，符水能医，饮下此水，病痛自消",
+                "performanceInstruction": "张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律"
+              },
+              {
+                "id": "beat-03-action-02",
+                "kind": "action",
+                "actorIds": [
+                  "张角"
+                ],
+                "dependsOn": [
+                  "beat-03-speech-01"
+                ],
+                "resources": [
+                  "body"
+                ],
+                "completion": {
+                  "modality": "visual",
+                  "finalState": "张角双手将符水碗递到病患面前，病患可以触及",
+                  "evidenceAnchor": "张角将符水碗递向病患",
+                  "requiredThisClip": true
+                },
+                "sourceBeatId": "beat-03",
+                "durationEstimate": {
+                  "lower": 1.8,
+                  "upper": 2.8,
+                  "source": "递出符水碗并让病患接近的动作时间",
+                  "expected": 2.3,
+                  "confidence": "high"
+                },
+                "timingConstraint": {
+                  "mode": "reference"
+                },
+                "overlapAllowedWith": [],
+                "textOrVocalization": "张角将符水碗递向病患",
+                "performanceInstruction": "张角双手持符水碗，向前伸出，递向跪在地上的病患"
+              },
+              {
+                "id": "beat-03-reaction-01",
+                "kind": "reaction",
+                "actorIds": [
+                  "onlooker-crowd"
+                ],
+                "dependsOn": [
+                  "beat-03-action-02"
+                ],
+                "resources": [
+                  "body"
+                ],
+                "completion": {
+                  "modality": "visual",
+                  "finalState": "围观百姓保持注视，无人离开或转身",
+                  "evidenceAnchor": "围观百姓注视",
+                  "requiredThisClip": true
+                },
+                "sourceBeatId": "beat-03",
+                "durationEstimate": {
+                  "lower": 0.8,
+                  "upper": 1.2,
+                  "source": "群体反应的最小可见时间",
+                  "expected": 1,
+                  "confidence": "medium"
+                },
+                "timingConstraint": {
+                  "mode": "reference"
+                },
+                "overlapAllowedWith": [],
+                "textOrVocalization": "围观百姓注视张角递符水",
+                "performanceInstruction": "围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注"
+              }
+            ],
+            "version": "duration-v2",
+            "schedule": [
+              {
+                "kind": "action",
+                "beatId": "beat-03-action-01",
+                "actorIds": [
+                  "sick-patient-group"
+                ],
+                "endSecond": 3.8,
+                "startSecond": 0,
+                "sourceBeatId": "beat-03",
+                "budgetSeconds": 3.8,
+                "timingConstraint": {
+                  "mode": "reference"
+                }
+              },
+              {
+                "kind": "speech",
+                "beatId": "beat-03-speech-01",
+                "actorIds": [
+                  "张角"
+                ],
+                "endSecond": 10.215,
+                "startSecond": 3.8,
+                "sourceBeatId": "beat-03",
+                "budgetSeconds": 6.415,
+                "timingConstraint": {
+                  "mode": "reference"
+                }
+              },
+              {
+                "kind": "action",
+                "beatId": "beat-03-action-02",
+                "actorIds": [
+                  "张角"
+                ],
+                "endSecond": 13.015,
+                "startSecond": 10.215,
+                "sourceBeatId": "beat-03",
+                "budgetSeconds": 2.8,
+                "timingConstraint": {
+                  "mode": "reference"
+                }
+              },
+              {
+                "kind": "reaction",
+                "beatId": "beat-03-reaction-01",
+                "actorIds": [
+                  "onlooker-crowd"
+                ],
+                "endSecond": 14.215,
+                "startSecond": 13.015,
+                "sourceBeatId": "beat-03",
+                "budgetSeconds": 1.2,
+                "timingConstraint": {
+                  "mode": "reference"
+                }
+              }
+            ],
+            "actorGroups": [
+              {
+                "id": "sick-patient-group",
+                "label": "病患",
+                "memberDescription": "一名身患疾病的成年男性百姓，穿灰褐色粗布衣，面容憔悴，跪于空地"
+              },
+              {
+                "id": "onlooker-crowd",
+                "label": "围观百姓",
+                "memberDescription": "数十名各年龄段百姓，穿各色粗布衣，半圆形站立于空地后方，面向张角和病患"
+              }
+            ],
+            "sampleTimes": [
+              0,
+              1.9,
+              3.8,
+              7.008,
+              10.215,
+              11.615,
+              13.015,
+              13.615,
+              14.215,
+              14.92
+            ],
+            "scheduleHash": "duration-v2-sha256-7627e59f40ef0cac0ddbb48ca4987ba0460d4a5450b1f22bb7df8a1ec3dfe898",
+            "timingPolicy": {
+              "speech": {
+                "chant": {
+                  "maximumRate": 4.5,
+                  "referenceRate": 3.3,
+                  "startupAllowance": 0.25,
+                  "minimumNaturalRate": 2.8
+                },
+                "singing": {
+                  "maximumRate": 3.5,
+                  "referenceRate": 2.8,
+                  "startupAllowance": 0.35,
+                  "minimumNaturalRate": 2
+                },
+                "dialogue": {
+                  "maximumRate": 5,
+                  "referenceRate": 4.5,
+                  "startupAllowance": 0.25,
+                  "minimumNaturalRate": 3.3
+                },
+                "narration": {
+                  "maximumRate": 6.5,
+                  "referenceRate": 5.8,
+                  "startupAllowance": 0.25,
+                  "minimumNaturalRate": 5.5
+                }
+              },
+              "version": "duration-policy-v2.2-brisk-narration",
+              "linePauseSeconds": 0.2,
+              "shortPauseSeconds": 0.15,
+              "minimumActionSeconds": 0.3,
+              "sentencePauseSeconds": 0.25,
+              "minimumReactionSeconds": 0.5,
+              "maximumProviderDuration": 15,
+              "minimumProviderDuration": 3,
+              "endingReadabilityReserve": 0.5,
+              "minimumVocalizationSeconds": 0.8,
+              "maxConservativeExtraSeconds": 1,
+              "measurementToleranceSeconds": 0.25
+            },
+            "sourceBeatIds": [
+              "beat-03"
+            ],
+            "speechWindows": [
+              {
+                "end": 10.215,
+                "text": "天地有道，符水能医，饮下此水，病痛自消",
+                "start": 3.8,
+                "beatId": "beat-03-speech-01",
+                "actorIds": [
+                  "张角"
+                ],
+                "sourceBeatId": "beat-03",
+                "deliveryStyle": "chant"
+              }
+            ],
+            "timelineWindows": [
+              {
+                "beatIds": [
+                  "beat-03-action-01"
+                ],
+                "endSecond": 3.8,
+                "beatQuotes": [
+                  {
+                    "quote": "（节拍 beat-03-action-01，0至3.8秒，导演参考）场景：冀州某地简陋民居外的空地；病患从跪姿俯身向前，额头触地，完成三次叩首动作；病患叩首；完成态：病患完成三次叩首，额头离地，保持跪姿。",
+                    "beatId": "beat-03-action-01"
+                  }
+                ],
+                "startSecond": 0
+              },
+              {
+                "beatIds": [
+                  "beat-03-speech-01"
+                ],
+                "endSecond": 10.215,
+                "beatQuotes": [
+                  {
+                    "quote": "（节拍 beat-03-speech-01，3.8至10.215秒，导演参考）张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律；张角哼唱歌谣，按歌谣节奏吟唱并完整唱出：天地有道，符水能医，饮下此水，病痛自消；完成态：张角念完呪语，声音结束。",
+                    "beatId": "beat-03-speech-01"
+                  }
+                ],
+                "startSecond": 3.8
+              },
+              {
+                "beatIds": [
+                  "beat-03-action-02"
+                ],
+                "endSecond": 13.015,
+                "beatQuotes": [
+                  {
+                    "quote": "（节拍 beat-03-action-02，10.215至13.015秒，导演参考）张角双手持符水碗，向前伸出，递向跪在地上的病患；张角将符水碗递向病患；完成态：张角双手将符水碗递到病患面前，病患可以触及。",
+                    "beatId": "beat-03-action-02"
+                  }
+                ],
+                "startSecond": 10.215
+              },
+              {
+                "beatIds": [
+                  "beat-03-reaction-01"
+                ],
+                "endSecond": 14.215,
+                "beatQuotes": [
+                  {
+                    "quote": "（节拍 beat-03-reaction-01，13.015至14.215秒，导演参考）围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注；围观百姓注视张角递符水；完成态：围观百姓保持注视，无人离开或转身。",
+                    "beatId": "beat-03-reaction-01"
+                  }
+                ],
+                "startSecond": 13.015
+              },
+              {
+                "beatIds": [],
+                "endSecond": 15,
+                "beatQuotes": [],
+                "startSecond": 14.215
+              }
+            ],
+            "compiledVideoPrompt": "0-3.8秒：（节拍 beat-03-action-01，0至3.8秒，导演参考）场景：冀州某地简陋民居外的空地；病患从跪姿俯身向前，额头触地，完成三次叩首动作；病患叩首；完成态：病患完成三次叩首，额头离地，保持跪姿。\n3.8-10.215秒：（节拍 beat-03-speech-01，3.8至10.215秒，导演参考）张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律；张角哼唱歌谣，按歌谣节奏吟唱并完整唱出：天地有道，符水能医，饮下此水，病痛自消；完成态：张角念完呪语，声音结束。\n10.215-13.015秒：（节拍 beat-03-action-02，10.215至13.015秒，导演参考）张角双手持符水碗，向前伸出，递向跪在地上的病患；张角将符水碗递向病患；完成态：张角双手将符水碗递到病患面前，病患可以触及。\n13.015-14.215秒：（节拍 beat-03-reaction-01，13.015至14.215秒，导演参考）围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注；围观百姓注视张角递符水；完成态：围观百姓保持注视，无人离开或转身。\n14.215-15秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+            "sourceBeatRequirements": [
+              {
+                "id": "beat-03",
+                "anchors": [
+                  "病患叩首",
+                  "张角将符水碗递向病患"
+                ],
+                "setting": "冀州某地简陋民居外的空地"
+              }
+            ]
+          },
+          "duration": 15,
+          "audioText": "张角：天地有道，符水能医，饮下此水，病痛自消",
+          "audioType": "对白",
+          "characters": [
+            "张角"
+          ],
+          "continuity": {
+            "mode": "tail_continuation",
+            "bridgeType": "same_frame",
+            "bridgeAnchor": "",
+            "previousShotId": "scene-02-seg-1"
+          },
+          "shotIntent": {
+            "purpose": "呈现张角以符水仪式为病患施术的完整过程，从病患叩首忏悔到张角念诵呪语并递出符水",
+            "cameraReason": "保持中景机位可以同时看清张角持符水碗的施术动作和跪地病患的叩首反应，展现仪式的庄重氛围",
+            "viewpointCharacter": "张角"
+          },
+          "worldState": {
+            "settingId": "drama-02",
+            "characters": [
+              {
+                "name": "张角",
+                "position": {
+                  "status": "unknown"
+                },
+                "heldProps": {
+                  "status": "unknown"
+                },
+                "pendingAction": {
+                  "status": "unknown"
+                }
+              }
+            ]
+          },
+          "videoPrompt": "0-3.8秒：（节拍 beat-03-action-01，0至3.8秒，导演参考）场景：冀州某地简陋民居外的空地；病患从跪姿俯身向前，额头触地，完成三次叩首动作；病患叩首；完成态：病患完成三次叩首，额头离地，保持跪姿。\n3.8-10.215秒：（节拍 beat-03-speech-01，3.8至10.215秒，导演参考）张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律；张角哼唱歌谣，按歌谣节奏吟唱并完整唱出：天地有道，符水能医，饮下此水，病痛自消；完成态：张角念完呪语，声音结束。\n10.215-13.015秒：（节拍 beat-03-action-02，10.215至13.015秒，导演参考）张角双手持符水碗，向前伸出，递向跪在地上的病患；张角将符水碗递向病患；完成态：张角双手将符水碗递到病患面前，病患可以触及。\n13.015-14.215秒：（节拍 beat-03-reaction-01，13.015至14.215秒，导演参考）围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注；围观百姓注视张角递符水；完成态：围观百姓保持注视，无人离开或转身。\n14.215-15秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.2-brisk-narration 和已编译节拍分别完成下列声部：[{\"beatId\":\"beat-03-speech-01\",\"actorIds\":[\"张角\"],\"kind\":\"speech\",\"deliveryStyle\":\"chant\",\"textOrVocalization\":\"天地有道，符水能医，饮下此水，病痛自消\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。",
+          "scheduleHash": "duration-v2-sha256-7627e59f40ef0cac0ddbb48ca4987ba0460d4a5450b1f22bb7df8a1ec3dfe898",
+          "visualPrompt": "冀州某地简陋民居外的空地，正午自然光，中景机位。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手持木碗装符水。一名病患跪于张角前方地面，穿灰褐色粗布衣，面容憔悴。数十名围观百姓呈半圆形站立于空地后方和两侧，穿各色粗布衣。背景可见低矮民居土墙和茅草屋顶，远处是绿色坡地。病患叩首，张角将符水碗递向病患。",
+          "editorialRole": "story",
+          "endCharacters": [
+            "张角"
+          ],
+          "storyProgress": {
+            "status": "continuing",
+            "unitId": "drama-02",
+            "response": "病患接受符水仪式，围观百姓注视整个过程",
+            "actionResult": "病患完成叩首忏悔，张角念诵呪语并将符水递到病患面前",
+            "pendingActions": [
+              "病患饮下符水",
+              "病患暂时感到缓解",
+              "围观百姓开始相信符水有效"
+            ]
+          },
+          "beatDramaturgy": [
+            {
+              "audio": [
+                "天地有道，符水能医，饮下此水，病痛自消"
+              ],
+              "beatId": "beat-03",
+              "visual": [
+                "病患叩首",
+                "张角将符水碗递向病患"
+              ],
+              "function": "呈现符水仪式过程",
+              "stateChange": "病患接受符水仪式"
+            }
+          ],
+          "coveredBeatIds": [
+            "beat-03"
+          ],
+          "firstFrameMode": "reuse_previous_tail",
+          "timingEstimate": {
+            "version": "duration-v2",
+            "confidence": "medium",
+            "budgetBasis": "sum-of-constrained-upper-estimates",
+            "tailSeconds": 0.5,
+            "scheduleHash": "duration-v2-sha256-7627e59f40ef0cac0ddbb48ca4987ba0460d4a5450b1f22bb7df8a1ec3dfe898",
+            "modelDuration": 15,
+            "policyVersion": "duration-policy-v2.2-brisk-narration",
+            "safeEndBudget": 14.715,
+            "speechSeconds": 6.415,
+            "maximumDuration": 15,
+            "plannedDuration": 12,
+            "contentEndBudget": 14.215,
+            "requiredDuration": 15,
+            "selectedDuration": 15,
+            "rawRequiredSeconds": 14.715,
+            "conservativeExtraSeconds": 0.285,
+            "endingReadabilityReserve": 0.5
+          },
+          "dramaticSceneId": "drama-02",
+          "historicalBasis": "[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病",
+          "lastFramePrompt": "冀州某地简陋民居外的空地，中景。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手将木碗符水递向前方。病患跪于张角前方地面，穿灰褐色粗布衣，刚完成叩首动作，头部抬起。围观百姓半圆形站立于空地后方和两侧，目光注视张角和病患。\n【静态尾帧】只呈现动作完成后的单一时间点与最终状态；单幅全画幅画面，禁止分镜、拼贴、分栏、上下三段、连环画、重复人物；画面内禁止字幕、水印、标题、标签及任何可读文字，榜文、竹简、牌匾等文字载体只能虚焦、背向镜头或呈现不可辨纹理。",
+          "qualityWarnings": [],
+          "visualTreatment": "live_action",
+          "repairProvenance": {
+            "scope": "initial",
+            "attempt": 1,
+            "candidateVersion": 1,
+            "generationAttempts": 2,
+            "episodeRewriteCount": 0,
+            "parentCandidateVersion": 0
+          },
+          "scriptValidation": {
+            "scope": "executable-structure",
+            "passed": true,
+            "policy": "executable-with-advice-v1",
+            "attempts": [
+              {
+                "mode": "repair",
+                "errors": [
+                  "PRONUNCIATION_HINT_INVALID: 第1项须对应原台词中的唯一词条、逐字带1–5声调拼音、语境义项与来源；不能换字、补台词或伪称听审"
+                ],
+                "attempt": 1
+              }
+            ],
+            "warnings": [],
+            "localRepair": true,
+            "localRepairs": [
+              {
+                "path": "pacing.beats[1].durationEstimate.lower",
+                "after": 4.006,
+                "before": 3.8,
+                "source": "shared-speech-policy"
+              },
+              {
+                "path": "pacing.beats[1].durationEstimate.expected",
+                "after": 5.299,
+                "before": 4.5,
+                "source": "shared-speech-policy"
+              },
+              {
+                "path": "pacing.beats[1].durationEstimate.upper",
+                "after": 6.415,
+                "before": 5.2,
+                "source": "shared-speech-policy"
+              },
+              {
+                "path": "duration",
+                "after": 15,
+                "before": 10,
+                "source": "compiled-duration-range"
+              }
+            ],
+            "qualityStatus": "needs_attention",
+            "qualityDisposition": "manual-review-v1"
+          },
+          "initialCharacters": [
+            "张角"
+          ],
+          "presentCharacters": [
+            "张角"
+          ],
+          "adaptationBoundary": "拟制张角念诵呪语的具体内容和语调，拟制病患叩首和接符水的具体动作，但保留史料记载的符水呪说基本仪式",
+          "completionCriteria": [
+            "原节拍表演：病患依言叩首,张角口中念诵呪语,将符水递给病患",
+            "画面呈现：病患叩首",
+            "画面呈现：张角将符水碗递向病患",
+            "完整听到：天地有道,符水能医,饮下此水,病痛自消"
+          ],
+          "enteringCharacters": [],
+          "illustrationLayers": [],
+          "pronunciationHints": [],
+          "contentContractVersion": "cinematic-v1"
+        },
+        "generationAttempts": 2,
+        "episodeRewriteCount": 0,
+        "parentCandidateVersion": 1
+      },
+      "storyProgress": {
+        "status": "continuing",
+        "unitId": "drama-02",
+        "response": "病患接受符水仪式，围观百姓注视整个过程",
+        "actionResult": "病患完成叩首忏悔，张角念诵呪语并将符水递到病患面前",
+        "pendingActions": [
+          "病患饮下符水",
+          "病患暂时感到缓解",
+          "围观百姓开始相信符水有效"
+        ]
+      },
+      "beatDramaturgy": [
+        {
+          "audio": [
+            "天地有道，符水能医，饮下此水，病痛自消"
+          ],
+          "beatId": "beat-03",
+          "visual": [
+            "病患叩首",
+            "张角将符水碗递向病患"
+          ],
+          "function": "呈现符水仪式过程",
+          "stateChange": "病患接受符水仪式"
+        }
+      ],
+      "coveredBeatIds": [
+        "beat-03"
+      ],
+      "firstFrameMode": "reuse_previous_tail",
+      "timingEstimate": {
+        "version": "duration-v2",
+        "confidence": "medium",
+        "budgetBasis": "sum-of-constrained-upper-estimates",
+        "tailSeconds": 0.5,
+        "scheduleHash": "duration-v2-sha256-7627e59f40ef0cac0ddbb48ca4987ba0460d4a5450b1f22bb7df8a1ec3dfe898",
+        "modelDuration": 15,
+        "policyVersion": "duration-policy-v2.2-brisk-narration",
+        "safeEndBudget": 14.715,
+        "speechSeconds": 6.415,
+        "maximumDuration": 15,
+        "plannedDuration": 12,
+        "contentEndBudget": 14.215,
+        "requiredDuration": 15,
+        "selectedDuration": 15,
+        "rawRequiredSeconds": 14.715,
+        "conservativeExtraSeconds": 0.285,
+        "endingReadabilityReserve": 0.5
+      },
+      "dramaticSceneId": "drama-02",
+      "historicalBasis": "[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病",
+      "lastFramePrompt": "末帧7（14.96秒）：张角站在画面左侧，朝向右侧跪坐的病患，持木碗向病患伸出，碗仍在张角手中。病患头部抬起、视线下垂，双手放在腿部附近；围观百姓在后方站立观看。",
+      "qualityWarnings": [],
+      "visualTreatment": "live_action",
+      "repairProvenance": {
+        "scope": "initial",
+        "attempt": 1,
+        "candidateVersion": 1,
+        "generationAttempts": 2,
+        "episodeRewriteCount": 0,
+        "parentCandidateVersion": 0
+      },
+      "scriptValidation": {
+        "scope": "executable-structure",
+        "passed": true,
+        "policy": "executable-with-advice-v1",
+        "attempts": [
+          {
+            "mode": "repair",
+            "errors": [
+              "PRONUNCIATION_HINT_INVALID: 第1项须对应原台词中的唯一词条、逐字带1–5声调拼音、语境义项与来源；不能换字、补台词或伪称听审"
+            ],
+            "attempt": 1
+          }
+        ],
+        "warnings": [],
+        "localRepair": true,
+        "localRepairs": [
+          {
+            "path": "pacing.beats[1].durationEstimate.lower",
+            "after": 4.006,
+            "before": 3.8,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "pacing.beats[1].durationEstimate.expected",
+            "after": 5.299,
+            "before": 4.5,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "pacing.beats[1].durationEstimate.upper",
+            "after": 6.415,
+            "before": 5.2,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "duration",
+            "after": 15,
+            "before": 10,
+            "source": "compiled-duration-range"
+          }
+        ],
+        "qualityStatus": "needs_attention",
+        "qualityDisposition": "manual-review-v1"
+      },
+      "initialCharacters": [
+        "张角"
+      ],
+      "presentCharacters": [
+        "张角"
+      ],
+      "adaptationBoundary": "拟制张角念诵呪语的具体内容和语调，拟制病患叩首和接符水的具体动作，但保留史料记载的符水呪说基本仪式",
+      "completionCriteria": [
+        "原节拍表演：病患依言叩首,张角口中念诵呪语,将符水递给病患",
+        "画面呈现：病患叩首",
+        "画面呈现：张角将符水碗递向病患",
+        "完整听到：天地有道,符水能医,饮下此水,病痛自消"
+      ],
+      "enteringCharacters": [],
+      "illustrationLayers": [],
+      "pronunciationHints": [],
+      "qualityDisposition": "manual-review-v1",
+      "contentContractVersion": "cinematic-v1",
+      "worldStateEvidence": {
+        "method": "actual-tail-image",
+        "frame": "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-7.jpg",
+        "qualityPolicy": "principle-v1"
+      }
+    },
+    "requireContinuityContract": true,
+    "requireDynamicPacing": true,
+    "requireNarrativeClosure": true,
+    "requireDramaContract": true,
+    "productionSpeechRate": 4.5,
+    "aspectRatio": "16:9"
+  },
+  "candidates": [
+    {
+      "id": "model-run-muiq2i81-me8jngr",
+      "raw": {
+        "id": "msg_1230d0356c6f458fa80ce8e79ca36b3a",
+        "role": "assistant",
+        "type": "message",
+        "model": "claude-opus-4-8",
+        "usage": {
+          "credit_unit": "credit",
+          "credit_usage": 0.7312841095854064,
+          "input_tokens": 3,
+          "output_tokens": 3223,
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 0,
+            "ephemeral_5m_input_tokens": 77530
+          },
+          "credit_unit_plural": "credits",
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 77530
+        },
+        "content": [
+          {
+            "text": "```json\n{\n  \"contentContractVersion\": \"cinematic-v1\",\n  \"dramaticSceneId\": \"drama-02\",\n  \"id\": \"scene-02-seg-3\",\n  \"title\": \"病患饮符水道谢围观百姓靠拢跪求\",\n  \"editorialRole\": \"story\",\n  \"visualTreatment\": \"live_action\",\n  \"duration\": 11,\n  \"pacing\": {\n    \"version\": \"duration-v2\",\n    \"timingPolicy\": {\n      \"version\": \"duration-policy-v2.2-brisk-narration\",\n      \"speech\": {\n        \"dialogue\": {\n          \"referenceRate\": 4.5,\n          \"minimumNaturalRate\": 3.3,\n          \"maximumRate\": 5,\n          \"startupAllowance\": 0.25\n        },\n        \"narration\": {\n          \"referenceRate\": 5.8,\n          \"minimumNaturalRate\": 5.5,\n          \"maximumRate\": 6.5,\n          \"startupAllowance\": 0.25\n        },\n        \"chant\": {\n          \"referenceRate\": 3.3,\n          \"minimumNaturalRate\": 2.8,\n          \"maximumRate\": 4.5,\n          \"startupAllowance\": 0.25\n        },\n        \"singing\": {\n          \"referenceRate\": 2.8,\n          \"minimumNaturalRate\": 2,\n          \"maximumRate\": 3.5,\n          \"startupAllowance\": 0.35\n        }\n      },\n      \"shortPauseSeconds\": 0.15,\n      \"sentencePauseSeconds\": 0.25,\n      \"linePauseSeconds\": 0.2,\n      \"measurementToleranceSeconds\": 0.25,\n      \"endingReadabilityReserve\": 0.5,\n      \"maxConservativeExtraSeconds\": 1,\n      \"minimumProviderDuration\": 3,\n      \"maximumProviderDuration\": 15,\n      \"minimumVocalizationSeconds\": 0.8,\n      \"minimumActionSeconds\": 0.3,\n      \"minimumReactionSeconds\": 0.5\n    },\n    \"actorGroups\": [\n      {\n        \"id\": \"onlookers\",\n        \"label\": \"围观百姓\",\n        \"memberDescription\": \"十余名饥民和病患，穿东汉平民衣物，面带期待与困苦\"\n      }\n    ],\n    \"beats\": [\n      {\n        \"id\": \"beat-04-01\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患双手接过木碗，饮下符水\",\n        \"dependsOn\": [],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 2.0,\n          \"expected\": 2.5,\n          \"upper\": 3.0,\n          \"source\": \"接碗、抬碗至口、饮水动作序列\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成饮水动作\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患饮下符水\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-02\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"reaction\",\n        \"textOrVocalization\": \"病患放下木碗，缓缓起身\",\n        \"dependsOn\": [\"beat-04-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2.0,\n          \"upper\": 2.5,\n          \"source\": \"放碗、从跪姿站起的动作时长\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患已站立\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-03\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患向张角行礼\",\n        \"dependsOn\": [\"beat-04-02\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.0,\n          \"expected\": 1.5,\n          \"upper\": 2.0,\n          \"source\": \"躬身作揖或叩首动作\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成向张角行礼\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身向张角行礼\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-04\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"speech\",\n        \"deliveryStyle\": \"dialogue\",\n        \"textOrVocalization\": \"多谢大贤良师\",\n        \"dependsOn\": [\"beat-04-03\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"voice\"],\n        \"durationEstimate\": {\n          \"lower\": 1.2,\n          \"expected\": 1.5,\n          \"upper\": 2.0,\n          \"source\": \"6字对白，4.5字/秒参考速率加启动余量\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患说完感谢话语\",\n          \"modality\": \"audio-visual\",\n          \"evidenceAnchor\": \"多谢大贤良师\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-01\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"围观人群向张角靠拢，从后方和两侧上前数步\",\n        \"dependsOn\": [\"beat-04-04\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2.0,\n          \"upper\": 2.5,\n          \"source\": \"群体移动数步、缩小围观距离\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"围观百姓已向张角靠近\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"围观人群向张角靠拢\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-02\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"多人跪下请求\",\n        \"dependsOn\": [\"beat-05-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2.0,\n          \"upper\": 2.5,\n          \"source\": \"群体下跪动作，不同步但连续\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"多名百姓已跪下\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"多人跪下请求\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      }\n    ]\n  },\n  \"shotIntent\": {\n    \"viewpointCharacter\": \"张角\",\n    \"purpose\": \"呈现符水仪式的初步效果：病患饮水后感到缓解并道谢，围观百姓被吸引而靠拢跪求\",\n    \"cameraReason\": \"延续前镜中景机位，保持张角与病患在画面中的相对位置，能看清病患饮水、起身、行礼动作，同时在背景看到围观群众的靠拢和跪下反应\"\n  },\n  \"beatDramaturgy\": [\n    {\n      \"beatId\": \"beat-04\",\n      \"function\": \"呈现符水的心理安慰效果\",\n      \"stateChange\": \"病患相信符水有效\",\n      \"visual\": [\n        \"病患饮下符水\",\n        \"病患起身向张角行礼\"\n      ],\n      \"audio\": [\n        \"多谢大贤良师\"\n      ]\n    },\n    {\n      \"beatId\": \"beat-05\",\n      \"function\": \"呈现符水吸引力\",\n      \"stateChange\": \"更多百姓开始相信张角\",\n      \"visual\": [\n        \"围观人群向张角靠拢\",\n        \"多人跪下请求\"\n      ],\n      \"audio\": []\n    }\n  ],\n  \"storyProgress\": {\n    \"unitId\": \"drama-02\",\n    \"status\": \"continuing\",\n    \"actionResult\": \"病患饮下符水后感到轻松并道谢，围观百姓被吸引纷纷上前跪求\",\n    \"pendingActions\": [\n      \"张角遣弟子四方传道\",\n      \"道众规模扩大至数十万\",\n      \"最终引发天下大乱\"\n    ]\n  },\n  \"characters\": [\"张角\"],\n  \"presentCharacters\": [\"张角\"],\n  \"initialCharacters\": [\"张角\"],\n  \"enteringCharacters\": [],\n  \"endCharacters\": [\"张角\"],\n  \"illustrationLayers\": [],\n  \"worldState\": {\n    \"settingId\": \"drama-02\",\n    \"characters\": [\n      {\n        \"name\": \"张角\",\n        \"position\": {\n          \"status\": \"unknown\"\n        },\n        \"heldProps\": {\n          \"status\": \"unknown\"\n        },\n        \"pendingAction\": {\n          \"status\": \"unknown\"\n        }\n      }\n    ]\n  },\n  \"continuity\": {\n    \"mode\": \"tail_continuation\",\n    \"previousShotId\": \"scene-02-seg-2\",\n    \"bridgeType\": \"same_frame\",\n    \"bridgeAnchor\": \"\"\n  },\n  \"coveredBeatIds\": [\"beat-04\", \"beat-05\"],\n  \"visualPrompt\": \"冀州某地简陋民居外的空地，日间自然光。张角站在画面左侧，身穿灰橄榄色交领长衣，外罩深蓝黑色暗纹宽袖长袍，黑发束髻、戴深色小冠并横插簪，留短髭及颏须。右侧地面上，病患跪坐，穿灰褐色粗布交领短衣，面容憔悴，头部抬起、视线下垂，双手放在腿部附近。张角持木碗向病患伸出，碗仍在张角手中。背景围观百姓十余人站立，穿东汉平民衣物，面带期待。泥土地面，民居茅屋、木栅栏和树木在后方。中景，略低机位，视线平视张角与病患。\",\n  \"camera\": \"中景，机位略低于张角站立高度，平视张角与病患，能看清病患饮水、起身、行礼的完整动作，背景包含围观百姓的移动和跪下。保持前镜视线轴线，张角在画面左侧，病患在右侧，围观群众在后方。固定镜头，无运镜。\",\n  \"mood\": \"期待与信服，病患的感激和百姓的渴望\",\n  \"firstFrameMode\": \"reuse_previous_tail\",\n  \"lastFramePrompt\": \"末帧：张角站在画面左侧，保持站立姿态，朝向右侧。病患已起身并站立，面向张角。背景中多名围观百姓已向张角靠拢，其中数人已跪下，姿态呈请求状。地面仍为泥土空地，民居和木栅栏在后方。\",\n  \"videoPrompt\": \"0–3秒：病患双手接过张角手中的木碗，将碗抬至口边，饮下符水，动作连贯。张角保持站立，目光注视病患。背景围观百姓静立观看。3–5.5秒：病患放下木碗，双手撑地，缓缓从跪姿站起，面向张角。张角保持姿态。围观百姓开始向前移动。5.5–7秒：病患站立后，向张角躬身作揖行礼，双手抱拳前伸。张角微微点头回应。围观百姓继续靠拢。7–8.5秒：病患保持行礼姿态，开口说话：\"多谢大贤良师\"，口型清晰，声音恭敬。张角面露平静。围观百姓已靠近数步。8.5–10.5秒：围观人群向张角靠拢，从后方和两侧上前，缩小与张角的距离。病患退至一旁。10.5秒至末尾：多名围观百姓先后跪下，双手前伸或抱拳，姿态呈请求状，面向张角。张角站立于中央，周围已有数人跪下。\",\n  \"audioType\": \"对白\",\n  \"audioText\": \"病患：多谢大贤良师\",\n  \"pronunciationHints\": [],\n  \"historicalBasis\": \"[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病，病者颇愈，百姓信向之\",\n  \"adaptationBoundary\": \"拟制病患双手接碗、饮下符水、放下碗、起身、向张角行礼的具体动作序列，拟制病患道谢的完整话语\"多谢大贤良师\"，拟制围观百姓从后方和两侧靠拢、多人跪下请求的群体动作，但保留史料记载的病者颇愈、百姓信向的结果\"\n}\n```",
+            "type": "text"
+          }
+        ],
+        "transport": {
+          "attempts": [
+            {
+              "status": 200,
+              "attempt": 1,
+              "durationMs": 65436
+            }
+          ],
+          "streaming": true
+        },
+        "stop_reason": "end_turn",
+        "stop_sequence": null
+      },
+      "candidate": {
+        "contentContractVersion": "cinematic-v1",
+        "dramaticSceneId": "drama-02",
+        "id": "scene-02-seg-3",
+        "title": "病患饮符水道谢围观百姓靠拢跪求",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "duration": 11,
+        "pacing": {
+          "version": "duration-v2",
+          "timingPolicy": {
+            "version": "duration-policy-v2.2-brisk-narration",
+            "speech": {
+              "dialogue": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "narration": {
+                "referenceRate": 5.8,
+                "minimumNaturalRate": 5.5,
+                "maximumRate": 6.5,
+                "startupAllowance": 0.25
+              },
+              "chant": {
+                "referenceRate": 3.3,
+                "minimumNaturalRate": 2.8,
+                "maximumRate": 4.5,
+                "startupAllowance": 0.25
+              },
+              "singing": {
+                "referenceRate": 2.8,
+                "minimumNaturalRate": 2,
+                "maximumRate": 3.5,
+                "startupAllowance": 0.35
+              }
+            },
+            "shortPauseSeconds": 0.15,
+            "sentencePauseSeconds": 0.25,
+            "linePauseSeconds": 0.2,
+            "measurementToleranceSeconds": 0.25,
+            "endingReadabilityReserve": 0.5,
+            "maxConservativeExtraSeconds": 1,
+            "minimumProviderDuration": 3,
+            "maximumProviderDuration": 15,
+            "minimumVocalizationSeconds": 0.8,
+            "minimumActionSeconds": 0.3,
+            "minimumReactionSeconds": 0.5
+          },
+          "actorGroups": [
+            {
+              "id": "onlookers",
+              "label": "围观百姓",
+              "memberDescription": "十余名饥民和病患，穿东汉平民衣物，面带期待与困苦"
+            }
+          ],
+          "beats": [
+            {
+              "id": "beat-04-01",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "病患"
+              ],
+              "kind": "action",
+              "textOrVocalization": "病患双手接过木碗，饮下符水",
+              "dependsOn": [],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2,
+                "expected": 2.5,
+                "upper": 3,
+                "source": "接碗、抬碗至口、饮水动作序列",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患完成饮水动作",
+                "modality": "visual",
+                "evidenceAnchor": "病患饮下符水"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-04-02",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "病患"
+              ],
+              "kind": "reaction",
+              "textOrVocalization": "病患放下木碗，缓缓起身",
+              "dependsOn": [
+                "beat-04-01"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1.5,
+                "expected": 2,
+                "upper": 2.5,
+                "source": "放碗、从跪姿站起的动作时长",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患已站立",
+                "modality": "visual",
+                "evidenceAnchor": "病患起身"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-04-03",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "病患"
+              ],
+              "kind": "action",
+              "textOrVocalization": "病患向张角行礼",
+              "dependsOn": [
+                "beat-04-02"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1,
+                "expected": 1.5,
+                "upper": 2,
+                "source": "躬身作揖或叩首动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患完成向张角行礼",
+                "modality": "visual",
+                "evidenceAnchor": "病患起身向张角行礼"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-04-04",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "病患"
+              ],
+              "kind": "speech",
+              "deliveryStyle": "dialogue",
+              "textOrVocalization": "多谢大贤良师",
+              "dependsOn": [
+                "beat-04-03"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "voice"
+              ],
+              "durationEstimate": {
+                "lower": 1.2,
+                "expected": 1.5,
+                "upper": 2,
+                "source": "6字对白，4.5字/秒参考速率加启动余量",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患说完感谢话语",
+                "modality": "audio-visual",
+                "evidenceAnchor": "多谢大贤良师"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-05-01",
+              "sourceBeatId": "beat-05",
+              "actorIds": [
+                "onlookers"
+              ],
+              "kind": "action",
+              "textOrVocalization": "围观人群向张角靠拢，从后方和两侧上前数步",
+              "dependsOn": [
+                "beat-04-04"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1.5,
+                "expected": 2,
+                "upper": 2.5,
+                "source": "群体移动数步、缩小围观距离",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "围观百姓已向张角靠近",
+                "modality": "visual",
+                "evidenceAnchor": "围观人群向张角靠拢"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-05-02",
+              "sourceBeatId": "beat-05",
+              "actorIds": [
+                "onlookers"
+              ],
+              "kind": "action",
+              "textOrVocalization": "多人跪下请求",
+              "dependsOn": [
+                "beat-05-01"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1.5,
+                "expected": 2,
+                "upper": 2.5,
+                "source": "群体下跪动作，不同步但连续",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "多名百姓已跪下",
+                "modality": "visual",
+                "evidenceAnchor": "多人跪下请求"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            }
+          ]
+        },
+        "shotIntent": {
+          "viewpointCharacter": "张角",
+          "purpose": "呈现符水仪式的初步效果：病患饮水后感到缓解并道谢，围观百姓被吸引而靠拢跪求",
+          "cameraReason": "延续前镜中景机位，保持张角与病患在画面中的相对位置，能看清病患饮水、起身、行礼动作，同时在背景看到围观群众的靠拢和跪下反应"
+        },
+        "beatDramaturgy": [
+          {
+            "beatId": "beat-04",
+            "function": "呈现符水的心理安慰效果",
+            "stateChange": "病患相信符水有效",
+            "visual": [
+              "病患饮下符水",
+              "病患起身向张角行礼"
+            ],
+            "audio": [
+              "多谢大贤良师"
+            ]
+          },
+          {
+            "beatId": "beat-05",
+            "function": "呈现符水吸引力",
+            "stateChange": "更多百姓开始相信张角",
+            "visual": [
+              "围观人群向张角靠拢",
+              "多人跪下请求"
+            ],
+            "audio": []
+          }
+        ],
+        "storyProgress": {
+          "unitId": "drama-02",
+          "status": "continuing",
+          "actionResult": "病患饮下符水后感到轻松并道谢，围观百姓被吸引纷纷上前跪求",
+          "pendingActions": [
+            "张角遣弟子四方传道",
+            "道众规模扩大至数十万",
+            "最终引发天下大乱"
+          ]
+        },
+        "characters": [
+          "张角"
+        ],
+        "presentCharacters": [
+          "张角"
+        ],
+        "initialCharacters": [
+          "张角"
+        ],
+        "enteringCharacters": [],
+        "endCharacters": [
+          "张角"
+        ],
+        "illustrationLayers": [],
+        "worldState": {
+          "settingId": "drama-02",
+          "characters": [
+            {
+              "name": "张角",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            }
+          ]
+        },
+        "continuity": {
+          "mode": "tail_continuation",
+          "previousShotId": "scene-02-seg-2",
+          "bridgeType": "same_frame",
+          "bridgeAnchor": ""
+        },
+        "coveredBeatIds": [
+          "beat-04",
+          "beat-05"
+        ],
+        "visualPrompt": "冀州某地简陋民居外的空地，日间自然光。张角站在画面左侧，身穿灰橄榄色交领长衣，外罩深蓝黑色暗纹宽袖长袍，黑发束髻、戴深色小冠并横插簪，留短髭及颏须。右侧地面上，病患跪坐，穿灰褐色粗布交领短衣，面容憔悴，头部抬起、视线下垂，双手放在腿部附近。张角持木碗向病患伸出，碗仍在张角手中。背景围观百姓十余人站立，穿东汉平民衣物，面带期待。泥土地面，民居茅屋、木栅栏和树木在后方。中景，略低机位，视线平视张角与病患。",
+        "camera": "中景，机位略低于张角站立高度，平视张角与病患，能看清病患饮水、起身、行礼的完整动作，背景包含围观百姓的移动和跪下。保持前镜视线轴线，张角在画面左侧，病患在右侧，围观群众在后方。固定镜头，无运镜。",
+        "mood": "期待与信服，病患的感激和百姓的渴望",
+        "firstFrameMode": "reuse_previous_tail",
+        "lastFramePrompt": "末帧：张角站在画面左侧，保持站立姿态，朝向右侧。病患已起身并站立，面向张角。背景中多名围观百姓已向张角靠拢，其中数人已跪下，姿态呈请求状。地面仍为泥土空地，民居和木栅栏在后方。",
+        "videoPrompt": "0–3秒：病患双手接过张角手中的木碗，将碗抬至口边，饮下符水，动作连贯。张角保持站立，目光注视病患。背景围观百姓静立观看。3–5.5秒：病患放下木碗，双手撑地，缓缓从跪姿站起，面向张角。张角保持姿态。围观百姓开始向前移动。5.5–7秒：病患站立后，向张角躬身作揖行礼，双手抱拳前伸。张角微微点头回应。围观百姓继续靠拢。7–8.5秒：病患保持行礼姿态，开口说话：\"多谢大贤良师\"，口型清晰，声音恭敬。张角面露平静。围观百姓已靠近数步。8.5–10.5秒：围观人群向张角靠拢，从后方和两侧上前，缩小与张角的距离。病患退至一旁。10.5秒至末尾：多名围观百姓先后跪下，双手前伸或抱拳，姿态呈请求状，面向张角。张角站立于中央，周围已有数人跪下。",
+        "audioType": "对白",
+        "audioText": "病患：多谢大贤良师",
+        "pronunciationHints": [],
+        "historicalBasis": "[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病，病者颇愈，百姓信向之",
+        "adaptationBoundary": "拟制病患双手接碗、饮下符水、放下碗、起身、向张角行礼的具体动作序列，拟制病患道谢的完整话语\"多谢大贤良师\"，拟制围观百姓从后方和两侧靠拢、多人跪下请求的群体动作，但保留史料记载的病者颇愈、百姓信向的结果",
+        "text": "```json\n{\n  \"contentContractVersion\": \"cinematic-v1\",\n  \"dramaticSceneId\": \"drama-02\",\n  \"id\": \"scene-02-seg-3\",\n  \"title\": \"病患饮符水道谢围观百姓靠拢跪求\",\n  \"editorialRole\": \"story\",\n  \"visualTreatment\": \"live_action\",\n  \"duration\": 11,\n  \"pacing\": {\n    \"version\": \"duration-v2\",\n    \"timingPolicy\": {\n      \"version\": \"duration-policy-v2.2-brisk-narration\",\n      \"speech\": {\n        \"dialogue\": {\n          \"referenceRate\": 4.5,\n          \"minimumNaturalRate\": 3.3,\n          \"maximumRate\": 5,\n          \"startupAllowance\": 0.25\n        },\n        \"narration\": {\n          \"referenceRate\": 5.8,\n          \"minimumNaturalRate\": 5.5,\n          \"maximumRate\": 6.5,\n          \"startupAllowance\": 0.25\n        },\n        \"chant\": {\n          \"referenceRate\": 3.3,\n          \"minimumNaturalRate\": 2.8,\n          \"maximumRate\": 4.5,\n          \"startupAllowance\": 0.25\n        },\n        \"singing\": {\n          \"referenceRate\": 2.8,\n          \"minimumNaturalRate\": 2,\n          \"maximumRate\": 3.5,\n          \"startupAllowance\": 0.35\n        }\n      },\n      \"shortPauseSeconds\": 0.15,\n      \"sentencePauseSeconds\": 0.25,\n      \"linePauseSeconds\": 0.2,\n      \"measurementToleranceSeconds\": 0.25,\n      \"endingReadabilityReserve\": 0.5,\n      \"maxConservativeExtraSeconds\": 1,\n      \"minimumProviderDuration\": 3,\n      \"maximumProviderDuration\": 15,\n      \"minimumVocalizationSeconds\": 0.8,\n      \"minimumActionSeconds\": 0.3,\n      \"minimumReactionSeconds\": 0.5\n    },\n    \"actorGroups\": [\n      {\n        \"id\": \"onlookers\",\n        \"label\": \"围观百姓\",\n        \"memberDescription\": \"十余名饥民和病患，穿东汉平民衣物，面带期待与困苦\"\n      }\n    ],\n    \"beats\": [\n      {\n        \"id\": \"beat-04-01\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患双手接过木碗，饮下符水\",\n        \"dependsOn\": [],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 2.0,\n          \"expected\": 2.5,\n          \"upper\": 3.0,\n          \"source\": \"接碗、抬碗至口、饮水动作序列\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成饮水动作\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患饮下符水\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-02\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"reaction\",\n        \"textOrVocalization\": \"病患放下木碗，缓缓起身\",\n        \"dependsOn\": [\"beat-04-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2.0,\n          \"upper\": 2.5,\n          \"source\": \"放碗、从跪姿站起的动作时长\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患已站立\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-03\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患向张角行礼\",\n        \"dependsOn\": [\"beat-04-02\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.0,\n          \"expected\": 1.5,\n          \"upper\": 2.0,\n          \"source\": \"躬身作揖或叩首动作\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成向张角行礼\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身向张角行礼\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-04\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"speech\",\n        \"deliveryStyle\": \"dialogue\",\n        \"textOrVocalization\": \"多谢大贤良师\",\n        \"dependsOn\": [\"beat-04-03\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"voice\"],\n        \"durationEstimate\": {\n          \"lower\": 1.2,\n          \"expected\": 1.5,\n          \"upper\": 2.0,\n          \"source\": \"6字对白，4.5字/秒参考速率加启动余量\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患说完感谢话语\",\n          \"modality\": \"audio-visual\",\n          \"evidenceAnchor\": \"多谢大贤良师\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-01\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"围观人群向张角靠拢，从后方和两侧上前数步\",\n        \"dependsOn\": [\"beat-04-04\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2.0,\n          \"upper\": 2.5,\n          \"source\": \"群体移动数步、缩小围观距离\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"围观百姓已向张角靠近\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"围观人群向张角靠拢\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-02\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"多人跪下请求\",\n        \"dependsOn\": [\"beat-05-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2.0,\n          \"upper\": 2.5,\n          \"source\": \"群体下跪动作，不同步但连续\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"多名百姓已跪下\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"多人跪下请求\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      }\n    ]\n  },\n  \"shotIntent\": {\n    \"viewpointCharacter\": \"张角\",\n    \"purpose\": \"呈现符水仪式的初步效果：病患饮水后感到缓解并道谢，围观百姓被吸引而靠拢跪求\",\n    \"cameraReason\": \"延续前镜中景机位，保持张角与病患在画面中的相对位置，能看清病患饮水、起身、行礼动作，同时在背景看到围观群众的靠拢和跪下反应\"\n  },\n  \"beatDramaturgy\": [\n    {\n      \"beatId\": \"beat-04\",\n      \"function\": \"呈现符水的心理安慰效果\",\n      \"stateChange\": \"病患相信符水有效\",\n      \"visual\": [\n        \"病患饮下符水\",\n        \"病患起身向张角行礼\"\n      ],\n      \"audio\": [\n        \"多谢大贤良师\"\n      ]\n    },\n    {\n      \"beatId\": \"beat-05\",\n      \"function\": \"呈现符水吸引力\",\n      \"stateChange\": \"更多百姓开始相信张角\",\n      \"visual\": [\n        \"围观人群向张角靠拢\",\n        \"多人跪下请求\"\n      ],\n      \"audio\": []\n    }\n  ],\n  \"storyProgress\": {\n    \"unitId\": \"drama-02\",\n    \"status\": \"continuing\",\n    \"actionResult\": \"病患饮下符水后感到轻松并道谢，围观百姓被吸引纷纷上前跪求\",\n    \"pendingActions\": [\n      \"张角遣弟子四方传道\",\n      \"道众规模扩大至数十万\",\n      \"最终引发天下大乱\"\n    ]\n  },\n  \"characters\": [\"张角\"],\n  \"presentCharacters\": [\"张角\"],\n  \"initialCharacters\": [\"张角\"],\n  \"enteringCharacters\": [],\n  \"endCharacters\": [\"张角\"],\n  \"illustrationLayers\": [],\n  \"worldState\": {\n    \"settingId\": \"drama-02\",\n    \"characters\": [\n      {\n        \"name\": \"张角\",\n        \"position\": {\n          \"status\": \"unknown\"\n        },\n        \"heldProps\": {\n          \"status\": \"unknown\"\n        },\n        \"pendingAction\": {\n          \"status\": \"unknown\"\n        }\n      }\n    ]\n  },\n  \"continuity\": {\n    \"mode\": \"tail_continuation\",\n    \"previousShotId\": \"scene-02-seg-2\",\n    \"bridgeType\": \"same_frame\",\n    \"bridgeAnchor\": \"\"\n  },\n  \"coveredBeatIds\": [\"beat-04\", \"beat-05\"],\n  \"visualPrompt\": \"冀州某地简陋民居外的空地，日间自然光。张角站在画面左侧，身穿灰橄榄色交领长衣，外罩深蓝黑色暗纹宽袖长袍，黑发束髻、戴深色小冠并横插簪，留短髭及颏须。右侧地面上，病患跪坐，穿灰褐色粗布交领短衣，面容憔悴，头部抬起、视线下垂，双手放在腿部附近。张角持木碗向病患伸出，碗仍在张角手中。背景围观百姓十余人站立，穿东汉平民衣物，面带期待。泥土地面，民居茅屋、木栅栏和树木在后方。中景，略低机位，视线平视张角与病患。\",\n  \"camera\": \"中景，机位略低于张角站立高度，平视张角与病患，能看清病患饮水、起身、行礼的完整动作，背景包含围观百姓的移动和跪下。保持前镜视线轴线，张角在画面左侧，病患在右侧，围观群众在后方。固定镜头，无运镜。\",\n  \"mood\": \"期待与信服，病患的感激和百姓的渴望\",\n  \"firstFrameMode\": \"reuse_previous_tail\",\n  \"lastFramePrompt\": \"末帧：张角站在画面左侧，保持站立姿态，朝向右侧。病患已起身并站立，面向张角。背景中多名围观百姓已向张角靠拢，其中数人已跪下，姿态呈请求状。地面仍为泥土空地，民居和木栅栏在后方。\",\n  \"videoPrompt\": \"0–3秒：病患双手接过张角手中的木碗，将碗抬至口边，饮下符水，动作连贯。张角保持站立，目光注视病患。背景围观百姓静立观看。3–5.5秒：病患放下木碗，双手撑地，缓缓从跪姿站起，面向张角。张角保持姿态。围观百姓开始向前移动。5.5–7秒：病患站立后，向张角躬身作揖行礼，双手抱拳前伸。张角微微点头回应。围观百姓继续靠拢。7–8.5秒：病患保持行礼姿态，开口说话：\"多谢大贤良师\"，口型清晰，声音恭敬。张角面露平静。围观百姓已靠近数步。8.5–10.5秒：围观人群向张角靠拢，从后方和两侧上前，缩小与张角的距离。病患退至一旁。10.5秒至末尾：多名围观百姓先后跪下，双手前伸或抱拳，姿态呈请求状，面向张角。张角站立于中央，周围已有数人跪下。\",\n  \"audioType\": \"对白\",\n  \"audioText\": \"病患：多谢大贤良师\",\n  \"pronunciationHints\": [],\n  \"historicalBasis\": \"[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病，病者颇愈，百姓信向之\",\n  \"adaptationBoundary\": \"拟制病患双手接碗、饮下符水、放下碗、起身、向张角行礼的具体动作序列，拟制病患道谢的完整话语\"多谢大贤良师\"，拟制围观百姓从后方和两侧靠拢、多人跪下请求的群体动作，但保留史料记载的病者颇愈、百姓信向的结果\"\n}\n```",
+        "raw": {
+          "id": "msg_1230d0356c6f458fa80ce8e79ca36b3a",
+          "role": "assistant",
+          "type": "message",
+          "model": "claude-opus-4-8",
+          "usage": {
+            "credit_unit": "credit",
+            "credit_usage": 0.7312841095854064,
+            "input_tokens": 3,
+            "output_tokens": 3223,
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 0,
+              "ephemeral_5m_input_tokens": 77530
+            },
+            "credit_unit_plural": "credits",
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 77530
+          },
+          "content": [
+            {
+              "text": "```json\n{\n  \"contentContractVersion\": \"cinematic-v1\",\n  \"dramaticSceneId\": \"drama-02\",\n  \"id\": \"scene-02-seg-3\",\n  \"title\": \"病患饮符水道谢围观百姓靠拢跪求\",\n  \"editorialRole\": \"story\",\n  \"visualTreatment\": \"live_action\",\n  \"duration\": 11,\n  \"pacing\": {\n    \"version\": \"duration-v2\",\n    \"timingPolicy\": {\n      \"version\": \"duration-policy-v2.2-brisk-narration\",\n      \"speech\": {\n        \"dialogue\": {\n          \"referenceRate\": 4.5,\n          \"minimumNaturalRate\": 3.3,\n          \"maximumRate\": 5,\n          \"startupAllowance\": 0.25\n        },\n        \"narration\": {\n          \"referenceRate\": 5.8,\n          \"minimumNaturalRate\": 5.5,\n          \"maximumRate\": 6.5,\n          \"startupAllowance\": 0.25\n        },\n        \"chant\": {\n          \"referenceRate\": 3.3,\n          \"minimumNaturalRate\": 2.8,\n          \"maximumRate\": 4.5,\n          \"startupAllowance\": 0.25\n        },\n        \"singing\": {\n          \"referenceRate\": 2.8,\n          \"minimumNaturalRate\": 2,\n          \"maximumRate\": 3.5,\n          \"startupAllowance\": 0.35\n        }\n      },\n      \"shortPauseSeconds\": 0.15,\n      \"sentencePauseSeconds\": 0.25,\n      \"linePauseSeconds\": 0.2,\n      \"measurementToleranceSeconds\": 0.25,\n      \"endingReadabilityReserve\": 0.5,\n      \"maxConservativeExtraSeconds\": 1,\n      \"minimumProviderDuration\": 3,\n      \"maximumProviderDuration\": 15,\n      \"minimumVocalizationSeconds\": 0.8,\n      \"minimumActionSeconds\": 0.3,\n      \"minimumReactionSeconds\": 0.5\n    },\n    \"actorGroups\": [\n      {\n        \"id\": \"onlookers\",\n        \"label\": \"围观百姓\",\n        \"memberDescription\": \"十余名饥民和病患，穿东汉平民衣物，面带期待与困苦\"\n      }\n    ],\n    \"beats\": [\n      {\n        \"id\": \"beat-04-01\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患双手接过木碗，饮下符水\",\n        \"dependsOn\": [],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 2.0,\n          \"expected\": 2.5,\n          \"upper\": 3.0,\n          \"source\": \"接碗、抬碗至口、饮水动作序列\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成饮水动作\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患饮下符水\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-02\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"reaction\",\n        \"textOrVocalization\": \"病患放下木碗，缓缓起身\",\n        \"dependsOn\": [\"beat-04-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2.0,\n          \"upper\": 2.5,\n          \"source\": \"放碗、从跪姿站起的动作时长\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患已站立\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-03\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患向张角行礼\",\n        \"dependsOn\": [\"beat-04-02\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.0,\n          \"expected\": 1.5,\n          \"upper\": 2.0,\n          \"source\": \"躬身作揖或叩首动作\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成向张角行礼\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身向张角行礼\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-04\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"病患\"],\n        \"kind\": \"speech\",\n        \"deliveryStyle\": \"dialogue\",\n        \"textOrVocalization\": \"多谢大贤良师\",\n        \"dependsOn\": [\"beat-04-03\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"voice\"],\n        \"durationEstimate\": {\n          \"lower\": 1.2,\n          \"expected\": 1.5,\n          \"upper\": 2.0,\n          \"source\": \"6字对白，4.5字/秒参考速率加启动余量\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患说完感谢话语\",\n          \"modality\": \"audio-visual\",\n          \"evidenceAnchor\": \"多谢大贤良师\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-01\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"围观人群向张角靠拢，从后方和两侧上前数步\",\n        \"dependsOn\": [\"beat-04-04\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2.0,\n          \"upper\": 2.5,\n          \"source\": \"群体移动数步、缩小围观距离\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"围观百姓已向张角靠近\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"围观人群向张角靠拢\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-02\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"多人跪下请求\",\n        \"dependsOn\": [\"beat-05-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2.0,\n          \"upper\": 2.5,\n          \"source\": \"群体下跪动作，不同步但连续\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"多名百姓已跪下\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"多人跪下请求\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      }\n    ]\n  },\n  \"shotIntent\": {\n    \"viewpointCharacter\": \"张角\",\n    \"purpose\": \"呈现符水仪式的初步效果：病患饮水后感到缓解并道谢，围观百姓被吸引而靠拢跪求\",\n    \"cameraReason\": \"延续前镜中景机位，保持张角与病患在画面中的相对位置，能看清病患饮水、起身、行礼动作，同时在背景看到围观群众的靠拢和跪下反应\"\n  },\n  \"beatDramaturgy\": [\n    {\n      \"beatId\": \"beat-04\",\n      \"function\": \"呈现符水的心理安慰效果\",\n      \"stateChange\": \"病患相信符水有效\",\n      \"visual\": [\n        \"病患饮下符水\",\n        \"病患起身向张角行礼\"\n      ],\n      \"audio\": [\n        \"多谢大贤良师\"\n      ]\n    },\n    {\n      \"beatId\": \"beat-05\",\n      \"function\": \"呈现符水吸引力\",\n      \"stateChange\": \"更多百姓开始相信张角\",\n      \"visual\": [\n        \"围观人群向张角靠拢\",\n        \"多人跪下请求\"\n      ],\n      \"audio\": []\n    }\n  ],\n  \"storyProgress\": {\n    \"unitId\": \"drama-02\",\n    \"status\": \"continuing\",\n    \"actionResult\": \"病患饮下符水后感到轻松并道谢，围观百姓被吸引纷纷上前跪求\",\n    \"pendingActions\": [\n      \"张角遣弟子四方传道\",\n      \"道众规模扩大至数十万\",\n      \"最终引发天下大乱\"\n    ]\n  },\n  \"characters\": [\"张角\"],\n  \"presentCharacters\": [\"张角\"],\n  \"initialCharacters\": [\"张角\"],\n  \"enteringCharacters\": [],\n  \"endCharacters\": [\"张角\"],\n  \"illustrationLayers\": [],\n  \"worldState\": {\n    \"settingId\": \"drama-02\",\n    \"characters\": [\n      {\n        \"name\": \"张角\",\n        \"position\": {\n          \"status\": \"unknown\"\n        },\n        \"heldProps\": {\n          \"status\": \"unknown\"\n        },\n        \"pendingAction\": {\n          \"status\": \"unknown\"\n        }\n      }\n    ]\n  },\n  \"continuity\": {\n    \"mode\": \"tail_continuation\",\n    \"previousShotId\": \"scene-02-seg-2\",\n    \"bridgeType\": \"same_frame\",\n    \"bridgeAnchor\": \"\"\n  },\n  \"coveredBeatIds\": [\"beat-04\", \"beat-05\"],\n  \"visualPrompt\": \"冀州某地简陋民居外的空地，日间自然光。张角站在画面左侧，身穿灰橄榄色交领长衣，外罩深蓝黑色暗纹宽袖长袍，黑发束髻、戴深色小冠并横插簪，留短髭及颏须。右侧地面上，病患跪坐，穿灰褐色粗布交领短衣，面容憔悴，头部抬起、视线下垂，双手放在腿部附近。张角持木碗向病患伸出，碗仍在张角手中。背景围观百姓十余人站立，穿东汉平民衣物，面带期待。泥土地面，民居茅屋、木栅栏和树木在后方。中景，略低机位，视线平视张角与病患。\",\n  \"camera\": \"中景，机位略低于张角站立高度，平视张角与病患，能看清病患饮水、起身、行礼的完整动作，背景包含围观百姓的移动和跪下。保持前镜视线轴线，张角在画面左侧，病患在右侧，围观群众在后方。固定镜头，无运镜。\",\n  \"mood\": \"期待与信服，病患的感激和百姓的渴望\",\n  \"firstFrameMode\": \"reuse_previous_tail\",\n  \"lastFramePrompt\": \"末帧：张角站在画面左侧，保持站立姿态，朝向右侧。病患已起身并站立，面向张角。背景中多名围观百姓已向张角靠拢，其中数人已跪下，姿态呈请求状。地面仍为泥土空地，民居和木栅栏在后方。\",\n  \"videoPrompt\": \"0–3秒：病患双手接过张角手中的木碗，将碗抬至口边，饮下符水，动作连贯。张角保持站立，目光注视病患。背景围观百姓静立观看。3–5.5秒：病患放下木碗，双手撑地，缓缓从跪姿站起，面向张角。张角保持姿态。围观百姓开始向前移动。5.5–7秒：病患站立后，向张角躬身作揖行礼，双手抱拳前伸。张角微微点头回应。围观百姓继续靠拢。7–8.5秒：病患保持行礼姿态，开口说话：\"多谢大贤良师\"，口型清晰，声音恭敬。张角面露平静。围观百姓已靠近数步。8.5–10.5秒：围观人群向张角靠拢，从后方和两侧上前，缩小与张角的距离。病患退至一旁。10.5秒至末尾：多名围观百姓先后跪下，双手前伸或抱拳，姿态呈请求状，面向张角。张角站立于中央，周围已有数人跪下。\",\n  \"audioType\": \"对白\",\n  \"audioText\": \"病患：多谢大贤良师\",\n  \"pronunciationHints\": [],\n  \"historicalBasis\": \"[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病，病者颇愈，百姓信向之\",\n  \"adaptationBoundary\": \"拟制病患双手接碗、饮下符水、放下碗、起身、向张角行礼的具体动作序列，拟制病患道谢的完整话语\"多谢大贤良师\"，拟制围观百姓从后方和两侧靠拢、多人跪下请求的群体动作，但保留史料记载的病者颇愈、百姓信向的结果\"\n}\n```",
+              "type": "text"
+            }
+          ],
+          "transport": {
+            "attempts": [
+              {
+                "status": 200,
+                "attempt": 1,
+                "durationMs": 65436
+              }
+            ],
+            "streaming": true
+          },
+          "stop_reason": "end_turn",
+          "stop_sequence": null
+        }
+      },
+      "requestKey": "record-lrjfd9:attempt-1:revision-1:sanguo-shot-script:3:scene-02-seg-3:generation-1"
+    },
+    {
+      "id": "model-run-muiq3wvq-4i3dwka",
+      "raw": {
+        "id": "msg_5bb7214096164dc084f73b0fd5967df4",
+        "role": "assistant",
+        "type": "message",
+        "model": "claude-opus-4-8",
+        "usage": {
+          "credit_unit": "credit",
+          "credit_usage": 0.7605799357711442,
+          "input_tokens": 3,
+          "output_tokens": 3300,
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 0,
+            "ephemeral_5m_input_tokens": 80688
+          },
+          "credit_unit_plural": "credits",
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 80688
+        },
+        "content": [
+          {
+            "text": "```json\n{\n  \"contentContractVersion\": \"cinematic-v1\",\n  \"dramaticSceneId\": \"drama-02\",\n  \"id\": \"scene-02-seg-3\",\n  \"title\": \"病患饮符水道谢围观百姓靠拢跪求\",\n  \"editorialRole\": \"story\",\n  \"visualTreatment\": \"live_action\",\n  \"duration\": 11,\n  \"pacing\": {\n    \"version\": \"duration-v2\",\n    \"timingPolicy\": {\n      \"version\": \"duration-policy-v2.2-brisk-narration\",\n      \"speech\": {\n        \"dialogue\": {\n          \"referenceRate\": 4.5,\n          \"minimumNaturalRate\": 3.3,\n          \"maximumRate\": 5,\n          \"startupAllowance\": 0.25\n        },\n        \"narration\": {\n          \"referenceRate\": 5.8,\n          \"minimumNaturalRate\": 5.5,\n          \"maximumRate\": 6.5,\n          \"startupAllowance\": 0.25\n        },\n        \"chant\": {\n          \"referenceRate\": 3.3,\n          \"minimumNaturalRate\": 2.8,\n          \"maximumRate\": 4.5,\n          \"startupAllowance\": 0.25\n        },\n        \"singing\": {\n          \"referenceRate\": 2.8,\n          \"minimumNaturalRate\": 2,\n          \"maximumRate\": 3.5,\n          \"startupAllowance\": 0.35\n        }\n      },\n      \"shortPauseSeconds\": 0.15,\n      \"sentencePauseSeconds\": 0.25,\n      \"linePauseSeconds\": 0.2,\n      \"measurementToleranceSeconds\": 0.25,\n      \"endingReadabilityReserve\": 0.5,\n      \"maxConservativeExtraSeconds\": 1,\n      \"minimumProviderDuration\": 3,\n      \"maximumProviderDuration\": 15,\n      \"minimumVocalizationSeconds\": 0.8,\n      \"minimumActionSeconds\": 0.3,\n      \"minimumReactionSeconds\": 0.5\n    },\n    \"actorGroups\": [\n      {\n        \"id\": \"sick-person\",\n        \"label\": \"病患\",\n        \"memberDescription\": \"一名中年男性病患，穿灰褐色粗布交领短衣，面容憔悴，跪坐地上\"\n      },\n      {\n        \"id\": \"onlookers\",\n        \"label\": \"围观百姓\",\n        \"memberDescription\": \"十余名饥民和病患，穿东汉平民衣物，面带期待与困苦\"\n      }\n    ],\n    \"beats\": [\n      {\n        \"id\": \"beat-04-01\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患双手接过木碗，饮下符水\",\n        \"dependsOn\": [],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 2,\n          \"expected\": 2.5,\n          \"upper\": 3,\n          \"source\": \"接碗、抬碗至口、饮水动作序列\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成饮水动作\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患饮下符水\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-02\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"reaction\",\n        \"textOrVocalization\": \"病患放下木碗，缓缓起身\",\n        \"dependsOn\": [\"beat-04-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2,\n          \"upper\": 2.5,\n          \"source\": \"放碗、从跪姿站起的动作时长\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患已站立\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-03\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患起身向张角行礼\",\n        \"dependsOn\": [\"beat-04-02\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1,\n          \"expected\": 1.5,\n          \"upper\": 2,\n          \"source\": \"躬身作揖或叩首动作\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成向张角行礼\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身向张角行礼\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-04\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"speech\",\n        \"deliveryStyle\": \"dialogue\",\n        \"textOrVocalization\": \"多谢大贤良师\",\n        \"dependsOn\": [\"beat-04-03\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"voice\"],\n        \"durationEstimate\": {\n          \"lower\": 1.2,\n          \"expected\": 1.5,\n          \"upper\": 2.069,\n          \"source\": \"6字对白，4.5字/秒参考速率加启动余量\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患说完感谢话语\",\n          \"modality\": \"audio-visual\",\n          \"evidenceAnchor\": \"多谢大贤良师\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-01\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"围观人群向张角靠拢，从后方和两侧上前数步\",\n        \"dependsOn\": [\"beat-04-04\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2,\n          \"upper\": 2.5,\n          \"source\": \"群体移动数步、缩小围观距离\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"围观百姓已向张角靠近\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"围观人群向张角靠拢\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-02\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"多人跪下请求\",\n        \"dependsOn\": [\"beat-05-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2,\n          \"upper\": 2.5,\n          \"source\": \"群体下跪动作，不同步但连续\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"多名百姓已跪下\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"多人跪下请求\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      }\n    ]\n  },\n  \"shotIntent\": {\n    \"viewpointCharacter\": \"张角\",\n    \"purpose\": \"呈现符水仪式的初步效果：病患饮水后感到缓解并道谢，围观百姓被吸引而靠拢跪求\",\n    \"cameraReason\": \"延续前镜中景机位，保持张角与病患在画面中的相对位置，能看清病患饮水、起身、行礼动作，同时在背景看到围观群众的靠拢和跪下反应\"\n  },\n  \"beatDramaturgy\": [\n    {\n      \"beatId\": \"beat-04\",\n      \"function\": \"呈现符水的心理安慰效果\",\n      \"stateChange\": \"病患相信符水有效\",\n      \"visual\": [\"病患饮下符水\", \"病患起身向张角行礼\"],\n      \"audio\": [\"多谢大贤良师\"]\n    },\n    {\n      \"beatId\": \"beat-05\",\n      \"function\": \"呈现符水吸引力\",\n      \"stateChange\": \"更多百姓开始相信张角\",\n      \"visual\": [\"围观人群向张角靠拢\", \"多人跪下请求\"],\n      \"audio\": []\n    }\n  ],\n  \"storyProgress\": {\n    \"unitId\": \"drama-02\",\n    \"status\": \"continuing\",\n    \"actionResult\": \"病患饮下符水后感到轻松并向张角道谢，围观百姓被吸引纷纷上前跪求\",\n    \"response\": \"病患说出\\\"多谢大贤良师\\\"表达信服，围观群众以靠拢和跪下回应符水效果\",\n    \"pendingActions\": [\"张角遣弟子四方传道\", \"道众规模扩大至数十万\", \"引发天下大乱\"]\n  },\n  \"characters\": [\"张角\"],\n  \"presentCharacters\": [\"张角\"],\n  \"initialCharacters\": [\"张角\"],\n  \"enteringCharacters\": [],\n  \"endCharacters\": [\"张角\"],\n  \"illustrationLayers\": [],\n  \"worldState\": {\n    \"settingId\": \"drama-02\",\n    \"characters\": [\n      {\n        \"name\": \"张角\",\n        \"position\": {\n          \"status\": \"unknown\"\n        },\n        \"heldProps\": {\n          \"status\": \"unknown\"\n        },\n        \"pendingAction\": {\n          \"status\": \"unknown\"\n        }\n      }\n    ]\n  },\n  \"continuity\": {\n    \"mode\": \"tail_continuation\",\n    \"previousShotId\": \"scene-02-seg-2\",\n    \"bridgeType\": \"same_frame\",\n    \"bridgeAnchor\": \"\"\n  },\n  \"coveredBeatIds\": [\"beat-04\", \"beat-05\"],\n  \"visualPrompt\": \"冀州某地简陋民居外的空地，日间自然光。张角站在画面左侧，身穿灰橄榄色交领长衣，外罩深蓝黑色暗纹宽袖长袍，黑发束髻、戴深色小冠并横插簪，留短髭及颏须，持木碗向右侧伸出。右侧地面上，病患跪坐，穿灰褐色粗布交领短衣，头部白布裹头，面容憔悴，双手放在腿部附近，准备接碗。背景围观百姓十余人站立成弧形，穿东汉平民衣物，面带期待。泥土地面，茅草民居、木栅栏和树木在后方。中景，略低机位，平视张角与病患。\",\n  \"camera\": \"中景，机位略低于张角站立高度，平视张角与病患，能看清病患饮水、起身、行礼的完整动作，背景包含围观百姓的移动和跪下。保持前镜视线轴线，张角在画面左侧，病患在右侧，围观群众在后方。固定镜头，无运镜。\",\n  \"mood\": \"期待与信服，病患的感激和百姓的渴望\",\n  \"firstFrameMode\": \"reuse_previous_tail\",\n  \"lastFramePrompt\": \"末帧：张角站在画面左侧，保持站立姿态，朝向右侧。病患已起身并站立，面向张角。背景中多名围观百姓已向张角靠拢，其中数人已跪下，姿态呈请求状。地面仍为泥土空地，茅草民居和木栅栏在后方。\",\n  \"videoPrompt\": \"0–3秒：病患双手接过张角手中的木碗，将碗抬至口边，饮下符水，动作连贯。张角保持站立，目光注视病患。背景围观百姓静立观看。3–5.5秒：病患放下木碗，双手撑地，缓缓从跪姿站起，面向张角。张角保持姿态。围观百姓开始向前移动。5.5–7秒：病患站立后，病患起身向张角行礼，躬身作揖，双手抱拳前伸。张角微微点头回应。围观百姓继续靠拢。7–8.5秒：病患保持行礼姿态，开口说话：\\\"多谢大贤良师\\\"，口型清晰，声音恭敬。张角面露平静。围观百姓已靠近数步。8.5–10.5秒：围观人群向张角靠拢，从后方和两侧上前，缩小与张角的距离。病患退至一旁。10.5秒至末尾：多人跪下请求，先后跪下，双手前伸或抱拳，姿态呈请求状，面向张角。张角站立于中央，周围已有数人跪下。\",\n  \"audioType\": \"对白\",\n  \"audioText\": \"病患：多谢大贤良师\",\n  \"pronunciationHints\": [],\n  \"historicalBasis\": \"[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病，病者颇愈，百姓信向之\",\n  \"adaptationBoundary\": \"拟制病患双手接碗、饮下符水、放下碗、起身、向张角行礼的具体动作序列，拟制病患道谢的完整话语\\\"多谢大贤良师\\\"，拟制围观百姓从后方和两侧靠拢、多人跪下请求的群体动作，但保留史料记载的病者颇愈、百姓信向的结果\"\n}\n```",
+            "type": "text"
+          }
+        ],
+        "transport": {
+          "attempts": [
+            {
+              "status": 200,
+              "attempt": 1,
+              "durationMs": 69015
+            }
+          ],
+          "streaming": true
+        },
+        "stop_reason": "end_turn",
+        "stop_sequence": null
+      },
+      "candidate": {
+        "contentContractVersion": "cinematic-v1",
+        "dramaticSceneId": "drama-02",
+        "id": "scene-02-seg-3",
+        "title": "病患饮符水道谢围观百姓靠拢跪求",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "duration": 11,
+        "pacing": {
+          "version": "duration-v2",
+          "timingPolicy": {
+            "version": "duration-policy-v2.2-brisk-narration",
+            "speech": {
+              "dialogue": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "narration": {
+                "referenceRate": 5.8,
+                "minimumNaturalRate": 5.5,
+                "maximumRate": 6.5,
+                "startupAllowance": 0.25
+              },
+              "chant": {
+                "referenceRate": 3.3,
+                "minimumNaturalRate": 2.8,
+                "maximumRate": 4.5,
+                "startupAllowance": 0.25
+              },
+              "singing": {
+                "referenceRate": 2.8,
+                "minimumNaturalRate": 2,
+                "maximumRate": 3.5,
+                "startupAllowance": 0.35
+              }
+            },
+            "shortPauseSeconds": 0.15,
+            "sentencePauseSeconds": 0.25,
+            "linePauseSeconds": 0.2,
+            "measurementToleranceSeconds": 0.25,
+            "endingReadabilityReserve": 0.5,
+            "maxConservativeExtraSeconds": 1,
+            "minimumProviderDuration": 3,
+            "maximumProviderDuration": 15,
+            "minimumVocalizationSeconds": 0.8,
+            "minimumActionSeconds": 0.3,
+            "minimumReactionSeconds": 0.5
+          },
+          "actorGroups": [
+            {
+              "id": "sick-person",
+              "label": "病患",
+              "memberDescription": "一名中年男性病患，穿灰褐色粗布交领短衣，面容憔悴，跪坐地上"
+            },
+            {
+              "id": "onlookers",
+              "label": "围观百姓",
+              "memberDescription": "十余名饥民和病患，穿东汉平民衣物，面带期待与困苦"
+            }
+          ],
+          "beats": [
+            {
+              "id": "beat-04-01",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "sick-person"
+              ],
+              "kind": "action",
+              "textOrVocalization": "病患双手接过木碗，饮下符水",
+              "dependsOn": [],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2,
+                "expected": 2.5,
+                "upper": 3,
+                "source": "接碗、抬碗至口、饮水动作序列",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患完成饮水动作",
+                "modality": "visual",
+                "evidenceAnchor": "病患饮下符水"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-04-02",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "sick-person"
+              ],
+              "kind": "reaction",
+              "textOrVocalization": "病患放下木碗，缓缓起身",
+              "dependsOn": [
+                "beat-04-01"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1.5,
+                "expected": 2,
+                "upper": 2.5,
+                "source": "放碗、从跪姿站起的动作时长",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患已站立",
+                "modality": "visual",
+                "evidenceAnchor": "病患起身"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-04-03",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "sick-person"
+              ],
+              "kind": "action",
+              "textOrVocalization": "病患起身向张角行礼",
+              "dependsOn": [
+                "beat-04-02"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1,
+                "expected": 1.5,
+                "upper": 2,
+                "source": "躬身作揖或叩首动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患完成向张角行礼",
+                "modality": "visual",
+                "evidenceAnchor": "病患起身向张角行礼"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-04-04",
+              "sourceBeatId": "beat-04",
+              "actorIds": [
+                "sick-person"
+              ],
+              "kind": "speech",
+              "deliveryStyle": "dialogue",
+              "textOrVocalization": "多谢大贤良师",
+              "dependsOn": [
+                "beat-04-03"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "voice"
+              ],
+              "durationEstimate": {
+                "lower": 1.2,
+                "expected": 1.5,
+                "upper": 2.069,
+                "source": "6字对白，4.5字/秒参考速率加启动余量",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "病患说完感谢话语",
+                "modality": "audio-visual",
+                "evidenceAnchor": "多谢大贤良师"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-05-01",
+              "sourceBeatId": "beat-05",
+              "actorIds": [
+                "onlookers"
+              ],
+              "kind": "action",
+              "textOrVocalization": "围观人群向张角靠拢，从后方和两侧上前数步",
+              "dependsOn": [
+                "beat-04-04"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1.5,
+                "expected": 2,
+                "upper": 2.5,
+                "source": "群体移动数步、缩小围观距离",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "围观百姓已向张角靠近",
+                "modality": "visual",
+                "evidenceAnchor": "围观人群向张角靠拢"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-05-02",
+              "sourceBeatId": "beat-05",
+              "actorIds": [
+                "onlookers"
+              ],
+              "kind": "action",
+              "textOrVocalization": "多人跪下请求",
+              "dependsOn": [
+                "beat-05-01"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1.5,
+                "expected": 2,
+                "upper": 2.5,
+                "source": "群体下跪动作，不同步但连续",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "多名百姓已跪下",
+                "modality": "visual",
+                "evidenceAnchor": "多人跪下请求"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            }
+          ]
+        },
+        "shotIntent": {
+          "viewpointCharacter": "张角",
+          "purpose": "呈现符水仪式的初步效果：病患饮水后感到缓解并道谢，围观百姓被吸引而靠拢跪求",
+          "cameraReason": "延续前镜中景机位，保持张角与病患在画面中的相对位置，能看清病患饮水、起身、行礼动作，同时在背景看到围观群众的靠拢和跪下反应"
+        },
+        "beatDramaturgy": [
+          {
+            "beatId": "beat-04",
+            "function": "呈现符水的心理安慰效果",
+            "stateChange": "病患相信符水有效",
+            "visual": [
+              "病患饮下符水",
+              "病患起身向张角行礼"
+            ],
+            "audio": [
+              "多谢大贤良师"
+            ]
+          },
+          {
+            "beatId": "beat-05",
+            "function": "呈现符水吸引力",
+            "stateChange": "更多百姓开始相信张角",
+            "visual": [
+              "围观人群向张角靠拢",
+              "多人跪下请求"
+            ],
+            "audio": []
+          }
+        ],
+        "storyProgress": {
+          "unitId": "drama-02",
+          "status": "continuing",
+          "actionResult": "病患饮下符水后感到轻松并向张角道谢，围观百姓被吸引纷纷上前跪求",
+          "response": "病患说出\"多谢大贤良师\"表达信服，围观群众以靠拢和跪下回应符水效果",
+          "pendingActions": [
+            "张角遣弟子四方传道",
+            "道众规模扩大至数十万",
+            "引发天下大乱"
+          ]
+        },
+        "characters": [
+          "张角"
+        ],
+        "presentCharacters": [
+          "张角"
+        ],
+        "initialCharacters": [
+          "张角"
+        ],
+        "enteringCharacters": [],
+        "endCharacters": [
+          "张角"
+        ],
+        "illustrationLayers": [],
+        "worldState": {
+          "settingId": "drama-02",
+          "characters": [
+            {
+              "name": "张角",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            }
+          ]
+        },
+        "continuity": {
+          "mode": "tail_continuation",
+          "previousShotId": "scene-02-seg-2",
+          "bridgeType": "same_frame",
+          "bridgeAnchor": ""
+        },
+        "coveredBeatIds": [
+          "beat-04",
+          "beat-05"
+        ],
+        "visualPrompt": "冀州某地简陋民居外的空地，日间自然光。张角站在画面左侧，身穿灰橄榄色交领长衣，外罩深蓝黑色暗纹宽袖长袍，黑发束髻、戴深色小冠并横插簪，留短髭及颏须，持木碗向右侧伸出。右侧地面上，病患跪坐，穿灰褐色粗布交领短衣，头部白布裹头，面容憔悴，双手放在腿部附近，准备接碗。背景围观百姓十余人站立成弧形，穿东汉平民衣物，面带期待。泥土地面，茅草民居、木栅栏和树木在后方。中景，略低机位，平视张角与病患。",
+        "camera": "中景，机位略低于张角站立高度，平视张角与病患，能看清病患饮水、起身、行礼的完整动作，背景包含围观百姓的移动和跪下。保持前镜视线轴线，张角在画面左侧，病患在右侧，围观群众在后方。固定镜头，无运镜。",
+        "mood": "期待与信服，病患的感激和百姓的渴望",
+        "firstFrameMode": "reuse_previous_tail",
+        "lastFramePrompt": "末帧：张角站在画面左侧，保持站立姿态，朝向右侧。病患已起身并站立，面向张角。背景中多名围观百姓已向张角靠拢，其中数人已跪下，姿态呈请求状。地面仍为泥土空地，茅草民居和木栅栏在后方。",
+        "videoPrompt": "0–3秒：病患双手接过张角手中的木碗，将碗抬至口边，饮下符水，动作连贯。张角保持站立，目光注视病患。背景围观百姓静立观看。3–5.5秒：病患放下木碗，双手撑地，缓缓从跪姿站起，面向张角。张角保持姿态。围观百姓开始向前移动。5.5–7秒：病患站立后，病患起身向张角行礼，躬身作揖，双手抱拳前伸。张角微微点头回应。围观百姓继续靠拢。7–8.5秒：病患保持行礼姿态，开口说话：\"多谢大贤良师\"，口型清晰，声音恭敬。张角面露平静。围观百姓已靠近数步。8.5–10.5秒：围观人群向张角靠拢，从后方和两侧上前，缩小与张角的距离。病患退至一旁。10.5秒至末尾：多人跪下请求，先后跪下，双手前伸或抱拳，姿态呈请求状，面向张角。张角站立于中央，周围已有数人跪下。",
+        "audioType": "对白",
+        "audioText": "病患：多谢大贤良师",
+        "pronunciationHints": [],
+        "historicalBasis": "[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病，病者颇愈，百姓信向之",
+        "adaptationBoundary": "拟制病患双手接碗、饮下符水、放下碗、起身、向张角行礼的具体动作序列，拟制病患道谢的完整话语\"多谢大贤良师\"，拟制围观百姓从后方和两侧靠拢、多人跪下请求的群体动作，但保留史料记载的病者颇愈、百姓信向的结果",
+        "text": "```json\n{\n  \"contentContractVersion\": \"cinematic-v1\",\n  \"dramaticSceneId\": \"drama-02\",\n  \"id\": \"scene-02-seg-3\",\n  \"title\": \"病患饮符水道谢围观百姓靠拢跪求\",\n  \"editorialRole\": \"story\",\n  \"visualTreatment\": \"live_action\",\n  \"duration\": 11,\n  \"pacing\": {\n    \"version\": \"duration-v2\",\n    \"timingPolicy\": {\n      \"version\": \"duration-policy-v2.2-brisk-narration\",\n      \"speech\": {\n        \"dialogue\": {\n          \"referenceRate\": 4.5,\n          \"minimumNaturalRate\": 3.3,\n          \"maximumRate\": 5,\n          \"startupAllowance\": 0.25\n        },\n        \"narration\": {\n          \"referenceRate\": 5.8,\n          \"minimumNaturalRate\": 5.5,\n          \"maximumRate\": 6.5,\n          \"startupAllowance\": 0.25\n        },\n        \"chant\": {\n          \"referenceRate\": 3.3,\n          \"minimumNaturalRate\": 2.8,\n          \"maximumRate\": 4.5,\n          \"startupAllowance\": 0.25\n        },\n        \"singing\": {\n          \"referenceRate\": 2.8,\n          \"minimumNaturalRate\": 2,\n          \"maximumRate\": 3.5,\n          \"startupAllowance\": 0.35\n        }\n      },\n      \"shortPauseSeconds\": 0.15,\n      \"sentencePauseSeconds\": 0.25,\n      \"linePauseSeconds\": 0.2,\n      \"measurementToleranceSeconds\": 0.25,\n      \"endingReadabilityReserve\": 0.5,\n      \"maxConservativeExtraSeconds\": 1,\n      \"minimumProviderDuration\": 3,\n      \"maximumProviderDuration\": 15,\n      \"minimumVocalizationSeconds\": 0.8,\n      \"minimumActionSeconds\": 0.3,\n      \"minimumReactionSeconds\": 0.5\n    },\n    \"actorGroups\": [\n      {\n        \"id\": \"sick-person\",\n        \"label\": \"病患\",\n        \"memberDescription\": \"一名中年男性病患，穿灰褐色粗布交领短衣，面容憔悴，跪坐地上\"\n      },\n      {\n        \"id\": \"onlookers\",\n        \"label\": \"围观百姓\",\n        \"memberDescription\": \"十余名饥民和病患，穿东汉平民衣物，面带期待与困苦\"\n      }\n    ],\n    \"beats\": [\n      {\n        \"id\": \"beat-04-01\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患双手接过木碗，饮下符水\",\n        \"dependsOn\": [],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 2,\n          \"expected\": 2.5,\n          \"upper\": 3,\n          \"source\": \"接碗、抬碗至口、饮水动作序列\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成饮水动作\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患饮下符水\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-02\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"reaction\",\n        \"textOrVocalization\": \"病患放下木碗，缓缓起身\",\n        \"dependsOn\": [\"beat-04-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2,\n          \"upper\": 2.5,\n          \"source\": \"放碗、从跪姿站起的动作时长\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患已站立\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-03\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患起身向张角行礼\",\n        \"dependsOn\": [\"beat-04-02\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1,\n          \"expected\": 1.5,\n          \"upper\": 2,\n          \"source\": \"躬身作揖或叩首动作\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成向张角行礼\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身向张角行礼\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-04\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"speech\",\n        \"deliveryStyle\": \"dialogue\",\n        \"textOrVocalization\": \"多谢大贤良师\",\n        \"dependsOn\": [\"beat-04-03\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"voice\"],\n        \"durationEstimate\": {\n          \"lower\": 1.2,\n          \"expected\": 1.5,\n          \"upper\": 2.069,\n          \"source\": \"6字对白，4.5字/秒参考速率加启动余量\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患说完感谢话语\",\n          \"modality\": \"audio-visual\",\n          \"evidenceAnchor\": \"多谢大贤良师\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-01\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"围观人群向张角靠拢，从后方和两侧上前数步\",\n        \"dependsOn\": [\"beat-04-04\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2,\n          \"upper\": 2.5,\n          \"source\": \"群体移动数步、缩小围观距离\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"围观百姓已向张角靠近\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"围观人群向张角靠拢\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-02\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"多人跪下请求\",\n        \"dependsOn\": [\"beat-05-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2,\n          \"upper\": 2.5,\n          \"source\": \"群体下跪动作，不同步但连续\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"多名百姓已跪下\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"多人跪下请求\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      }\n    ]\n  },\n  \"shotIntent\": {\n    \"viewpointCharacter\": \"张角\",\n    \"purpose\": \"呈现符水仪式的初步效果：病患饮水后感到缓解并道谢，围观百姓被吸引而靠拢跪求\",\n    \"cameraReason\": \"延续前镜中景机位，保持张角与病患在画面中的相对位置，能看清病患饮水、起身、行礼动作，同时在背景看到围观群众的靠拢和跪下反应\"\n  },\n  \"beatDramaturgy\": [\n    {\n      \"beatId\": \"beat-04\",\n      \"function\": \"呈现符水的心理安慰效果\",\n      \"stateChange\": \"病患相信符水有效\",\n      \"visual\": [\"病患饮下符水\", \"病患起身向张角行礼\"],\n      \"audio\": [\"多谢大贤良师\"]\n    },\n    {\n      \"beatId\": \"beat-05\",\n      \"function\": \"呈现符水吸引力\",\n      \"stateChange\": \"更多百姓开始相信张角\",\n      \"visual\": [\"围观人群向张角靠拢\", \"多人跪下请求\"],\n      \"audio\": []\n    }\n  ],\n  \"storyProgress\": {\n    \"unitId\": \"drama-02\",\n    \"status\": \"continuing\",\n    \"actionResult\": \"病患饮下符水后感到轻松并向张角道谢，围观百姓被吸引纷纷上前跪求\",\n    \"response\": \"病患说出\\\"多谢大贤良师\\\"表达信服，围观群众以靠拢和跪下回应符水效果\",\n    \"pendingActions\": [\"张角遣弟子四方传道\", \"道众规模扩大至数十万\", \"引发天下大乱\"]\n  },\n  \"characters\": [\"张角\"],\n  \"presentCharacters\": [\"张角\"],\n  \"initialCharacters\": [\"张角\"],\n  \"enteringCharacters\": [],\n  \"endCharacters\": [\"张角\"],\n  \"illustrationLayers\": [],\n  \"worldState\": {\n    \"settingId\": \"drama-02\",\n    \"characters\": [\n      {\n        \"name\": \"张角\",\n        \"position\": {\n          \"status\": \"unknown\"\n        },\n        \"heldProps\": {\n          \"status\": \"unknown\"\n        },\n        \"pendingAction\": {\n          \"status\": \"unknown\"\n        }\n      }\n    ]\n  },\n  \"continuity\": {\n    \"mode\": \"tail_continuation\",\n    \"previousShotId\": \"scene-02-seg-2\",\n    \"bridgeType\": \"same_frame\",\n    \"bridgeAnchor\": \"\"\n  },\n  \"coveredBeatIds\": [\"beat-04\", \"beat-05\"],\n  \"visualPrompt\": \"冀州某地简陋民居外的空地，日间自然光。张角站在画面左侧，身穿灰橄榄色交领长衣，外罩深蓝黑色暗纹宽袖长袍，黑发束髻、戴深色小冠并横插簪，留短髭及颏须，持木碗向右侧伸出。右侧地面上，病患跪坐，穿灰褐色粗布交领短衣，头部白布裹头，面容憔悴，双手放在腿部附近，准备接碗。背景围观百姓十余人站立成弧形，穿东汉平民衣物，面带期待。泥土地面，茅草民居、木栅栏和树木在后方。中景，略低机位，平视张角与病患。\",\n  \"camera\": \"中景，机位略低于张角站立高度，平视张角与病患，能看清病患饮水、起身、行礼的完整动作，背景包含围观百姓的移动和跪下。保持前镜视线轴线，张角在画面左侧，病患在右侧，围观群众在后方。固定镜头，无运镜。\",\n  \"mood\": \"期待与信服，病患的感激和百姓的渴望\",\n  \"firstFrameMode\": \"reuse_previous_tail\",\n  \"lastFramePrompt\": \"末帧：张角站在画面左侧，保持站立姿态，朝向右侧。病患已起身并站立，面向张角。背景中多名围观百姓已向张角靠拢，其中数人已跪下，姿态呈请求状。地面仍为泥土空地，茅草民居和木栅栏在后方。\",\n  \"videoPrompt\": \"0–3秒：病患双手接过张角手中的木碗，将碗抬至口边，饮下符水，动作连贯。张角保持站立，目光注视病患。背景围观百姓静立观看。3–5.5秒：病患放下木碗，双手撑地，缓缓从跪姿站起，面向张角。张角保持姿态。围观百姓开始向前移动。5.5–7秒：病患站立后，病患起身向张角行礼，躬身作揖，双手抱拳前伸。张角微微点头回应。围观百姓继续靠拢。7–8.5秒：病患保持行礼姿态，开口说话：\\\"多谢大贤良师\\\"，口型清晰，声音恭敬。张角面露平静。围观百姓已靠近数步。8.5–10.5秒：围观人群向张角靠拢，从后方和两侧上前，缩小与张角的距离。病患退至一旁。10.5秒至末尾：多人跪下请求，先后跪下，双手前伸或抱拳，姿态呈请求状，面向张角。张角站立于中央，周围已有数人跪下。\",\n  \"audioType\": \"对白\",\n  \"audioText\": \"病患：多谢大贤良师\",\n  \"pronunciationHints\": [],\n  \"historicalBasis\": \"[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病，病者颇愈，百姓信向之\",\n  \"adaptationBoundary\": \"拟制病患双手接碗、饮下符水、放下碗、起身、向张角行礼的具体动作序列，拟制病患道谢的完整话语\\\"多谢大贤良师\\\"，拟制围观百姓从后方和两侧靠拢、多人跪下请求的群体动作，但保留史料记载的病者颇愈、百姓信向的结果\"\n}\n```",
+        "raw": {
+          "id": "msg_5bb7214096164dc084f73b0fd5967df4",
+          "role": "assistant",
+          "type": "message",
+          "model": "claude-opus-4-8",
+          "usage": {
+            "credit_unit": "credit",
+            "credit_usage": 0.7605799357711442,
+            "input_tokens": 3,
+            "output_tokens": 3300,
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 0,
+              "ephemeral_5m_input_tokens": 80688
+            },
+            "credit_unit_plural": "credits",
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 80688
+          },
+          "content": [
+            {
+              "text": "```json\n{\n  \"contentContractVersion\": \"cinematic-v1\",\n  \"dramaticSceneId\": \"drama-02\",\n  \"id\": \"scene-02-seg-3\",\n  \"title\": \"病患饮符水道谢围观百姓靠拢跪求\",\n  \"editorialRole\": \"story\",\n  \"visualTreatment\": \"live_action\",\n  \"duration\": 11,\n  \"pacing\": {\n    \"version\": \"duration-v2\",\n    \"timingPolicy\": {\n      \"version\": \"duration-policy-v2.2-brisk-narration\",\n      \"speech\": {\n        \"dialogue\": {\n          \"referenceRate\": 4.5,\n          \"minimumNaturalRate\": 3.3,\n          \"maximumRate\": 5,\n          \"startupAllowance\": 0.25\n        },\n        \"narration\": {\n          \"referenceRate\": 5.8,\n          \"minimumNaturalRate\": 5.5,\n          \"maximumRate\": 6.5,\n          \"startupAllowance\": 0.25\n        },\n        \"chant\": {\n          \"referenceRate\": 3.3,\n          \"minimumNaturalRate\": 2.8,\n          \"maximumRate\": 4.5,\n          \"startupAllowance\": 0.25\n        },\n        \"singing\": {\n          \"referenceRate\": 2.8,\n          \"minimumNaturalRate\": 2,\n          \"maximumRate\": 3.5,\n          \"startupAllowance\": 0.35\n        }\n      },\n      \"shortPauseSeconds\": 0.15,\n      \"sentencePauseSeconds\": 0.25,\n      \"linePauseSeconds\": 0.2,\n      \"measurementToleranceSeconds\": 0.25,\n      \"endingReadabilityReserve\": 0.5,\n      \"maxConservativeExtraSeconds\": 1,\n      \"minimumProviderDuration\": 3,\n      \"maximumProviderDuration\": 15,\n      \"minimumVocalizationSeconds\": 0.8,\n      \"minimumActionSeconds\": 0.3,\n      \"minimumReactionSeconds\": 0.5\n    },\n    \"actorGroups\": [\n      {\n        \"id\": \"sick-person\",\n        \"label\": \"病患\",\n        \"memberDescription\": \"一名中年男性病患，穿灰褐色粗布交领短衣，面容憔悴，跪坐地上\"\n      },\n      {\n        \"id\": \"onlookers\",\n        \"label\": \"围观百姓\",\n        \"memberDescription\": \"十余名饥民和病患，穿东汉平民衣物，面带期待与困苦\"\n      }\n    ],\n    \"beats\": [\n      {\n        \"id\": \"beat-04-01\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患双手接过木碗，饮下符水\",\n        \"dependsOn\": [],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 2,\n          \"expected\": 2.5,\n          \"upper\": 3,\n          \"source\": \"接碗、抬碗至口、饮水动作序列\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成饮水动作\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患饮下符水\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-02\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"reaction\",\n        \"textOrVocalization\": \"病患放下木碗，缓缓起身\",\n        \"dependsOn\": [\"beat-04-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2,\n          \"upper\": 2.5,\n          \"source\": \"放碗、从跪姿站起的动作时长\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患已站立\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-03\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"病患起身向张角行礼\",\n        \"dependsOn\": [\"beat-04-02\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1,\n          \"expected\": 1.5,\n          \"upper\": 2,\n          \"source\": \"躬身作揖或叩首动作\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患完成向张角行礼\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"病患起身向张角行礼\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-04-04\",\n        \"sourceBeatId\": \"beat-04\",\n        \"actorIds\": [\"sick-person\"],\n        \"kind\": \"speech\",\n        \"deliveryStyle\": \"dialogue\",\n        \"textOrVocalization\": \"多谢大贤良师\",\n        \"dependsOn\": [\"beat-04-03\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"voice\"],\n        \"durationEstimate\": {\n          \"lower\": 1.2,\n          \"expected\": 1.5,\n          \"upper\": 2.069,\n          \"source\": \"6字对白，4.5字/秒参考速率加启动余量\",\n          \"confidence\": \"high\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"病患说完感谢话语\",\n          \"modality\": \"audio-visual\",\n          \"evidenceAnchor\": \"多谢大贤良师\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-01\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"围观人群向张角靠拢，从后方和两侧上前数步\",\n        \"dependsOn\": [\"beat-04-04\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2,\n          \"upper\": 2.5,\n          \"source\": \"群体移动数步、缩小围观距离\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"围观百姓已向张角靠近\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"围观人群向张角靠拢\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      },\n      {\n        \"id\": \"beat-05-02\",\n        \"sourceBeatId\": \"beat-05\",\n        \"actorIds\": [\"onlookers\"],\n        \"kind\": \"action\",\n        \"textOrVocalization\": \"多人跪下请求\",\n        \"dependsOn\": [\"beat-05-01\"],\n        \"overlapAllowedWith\": [],\n        \"resources\": [\"body\"],\n        \"durationEstimate\": {\n          \"lower\": 1.5,\n          \"expected\": 2,\n          \"upper\": 2.5,\n          \"source\": \"群体下跪动作，不同步但连续\",\n          \"confidence\": \"medium\"\n        },\n        \"completion\": {\n          \"requiredThisClip\": true,\n          \"finalState\": \"多名百姓已跪下\",\n          \"modality\": \"visual\",\n          \"evidenceAnchor\": \"多人跪下请求\"\n        },\n        \"timingConstraint\": {\n          \"mode\": \"reference\"\n        }\n      }\n    ]\n  },\n  \"shotIntent\": {\n    \"viewpointCharacter\": \"张角\",\n    \"purpose\": \"呈现符水仪式的初步效果：病患饮水后感到缓解并道谢，围观百姓被吸引而靠拢跪求\",\n    \"cameraReason\": \"延续前镜中景机位，保持张角与病患在画面中的相对位置，能看清病患饮水、起身、行礼动作，同时在背景看到围观群众的靠拢和跪下反应\"\n  },\n  \"beatDramaturgy\": [\n    {\n      \"beatId\": \"beat-04\",\n      \"function\": \"呈现符水的心理安慰效果\",\n      \"stateChange\": \"病患相信符水有效\",\n      \"visual\": [\"病患饮下符水\", \"病患起身向张角行礼\"],\n      \"audio\": [\"多谢大贤良师\"]\n    },\n    {\n      \"beatId\": \"beat-05\",\n      \"function\": \"呈现符水吸引力\",\n      \"stateChange\": \"更多百姓开始相信张角\",\n      \"visual\": [\"围观人群向张角靠拢\", \"多人跪下请求\"],\n      \"audio\": []\n    }\n  ],\n  \"storyProgress\": {\n    \"unitId\": \"drama-02\",\n    \"status\": \"continuing\",\n    \"actionResult\": \"病患饮下符水后感到轻松并向张角道谢，围观百姓被吸引纷纷上前跪求\",\n    \"response\": \"病患说出\\\"多谢大贤良师\\\"表达信服，围观群众以靠拢和跪下回应符水效果\",\n    \"pendingActions\": [\"张角遣弟子四方传道\", \"道众规模扩大至数十万\", \"引发天下大乱\"]\n  },\n  \"characters\": [\"张角\"],\n  \"presentCharacters\": [\"张角\"],\n  \"initialCharacters\": [\"张角\"],\n  \"enteringCharacters\": [],\n  \"endCharacters\": [\"张角\"],\n  \"illustrationLayers\": [],\n  \"worldState\": {\n    \"settingId\": \"drama-02\",\n    \"characters\": [\n      {\n        \"name\": \"张角\",\n        \"position\": {\n          \"status\": \"unknown\"\n        },\n        \"heldProps\": {\n          \"status\": \"unknown\"\n        },\n        \"pendingAction\": {\n          \"status\": \"unknown\"\n        }\n      }\n    ]\n  },\n  \"continuity\": {\n    \"mode\": \"tail_continuation\",\n    \"previousShotId\": \"scene-02-seg-2\",\n    \"bridgeType\": \"same_frame\",\n    \"bridgeAnchor\": \"\"\n  },\n  \"coveredBeatIds\": [\"beat-04\", \"beat-05\"],\n  \"visualPrompt\": \"冀州某地简陋民居外的空地，日间自然光。张角站在画面左侧，身穿灰橄榄色交领长衣，外罩深蓝黑色暗纹宽袖长袍，黑发束髻、戴深色小冠并横插簪，留短髭及颏须，持木碗向右侧伸出。右侧地面上，病患跪坐，穿灰褐色粗布交领短衣，头部白布裹头，面容憔悴，双手放在腿部附近，准备接碗。背景围观百姓十余人站立成弧形，穿东汉平民衣物，面带期待。泥土地面，茅草民居、木栅栏和树木在后方。中景，略低机位，平视张角与病患。\",\n  \"camera\": \"中景，机位略低于张角站立高度，平视张角与病患，能看清病患饮水、起身、行礼的完整动作，背景包含围观百姓的移动和跪下。保持前镜视线轴线，张角在画面左侧，病患在右侧，围观群众在后方。固定镜头，无运镜。\",\n  \"mood\": \"期待与信服，病患的感激和百姓的渴望\",\n  \"firstFrameMode\": \"reuse_previous_tail\",\n  \"lastFramePrompt\": \"末帧：张角站在画面左侧，保持站立姿态，朝向右侧。病患已起身并站立，面向张角。背景中多名围观百姓已向张角靠拢，其中数人已跪下，姿态呈请求状。地面仍为泥土空地，茅草民居和木栅栏在后方。\",\n  \"videoPrompt\": \"0–3秒：病患双手接过张角手中的木碗，将碗抬至口边，饮下符水，动作连贯。张角保持站立，目光注视病患。背景围观百姓静立观看。3–5.5秒：病患放下木碗，双手撑地，缓缓从跪姿站起，面向张角。张角保持姿态。围观百姓开始向前移动。5.5–7秒：病患站立后，病患起身向张角行礼，躬身作揖，双手抱拳前伸。张角微微点头回应。围观百姓继续靠拢。7–8.5秒：病患保持行礼姿态，开口说话：\\\"多谢大贤良师\\\"，口型清晰，声音恭敬。张角面露平静。围观百姓已靠近数步。8.5–10.5秒：围观人群向张角靠拢，从后方和两侧上前，缩小与张角的距离。病患退至一旁。10.5秒至末尾：多人跪下请求，先后跪下，双手前伸或抱拳，姿态呈请求状，面向张角。张角站立于中央，周围已有数人跪下。\",\n  \"audioType\": \"对白\",\n  \"audioText\": \"病患：多谢大贤良师\",\n  \"pronunciationHints\": [],\n  \"historicalBasis\": \"[史料2]记载张角畜养弟子跪拜首过符水呪说以疗病，病者颇愈，百姓信向之\",\n  \"adaptationBoundary\": \"拟制病患双手接碗、饮下符水、放下碗、起身、向张角行礼的具体动作序列，拟制病患道谢的完整话语\\\"多谢大贤良师\\\"，拟制围观百姓从后方和两侧靠拢、多人跪下请求的群体动作，但保留史料记载的病者颇愈、百姓信向的结果\"\n}\n```",
+              "type": "text"
+            }
+          ],
+          "transport": {
+            "attempts": [
+              {
+                "status": 200,
+                "attempt": 1,
+                "durationMs": 69015
+              }
+            ],
+            "streaming": true
+          },
+          "stop_reason": "end_turn",
+          "stop_sequence": null
+        }
+      },
+      "requestKey": "record-lrjfd9:attempt-1:revision-1:sanguo-shot-script:3:scene-02-seg-3:generation-2"
+    }
+  ]
+}

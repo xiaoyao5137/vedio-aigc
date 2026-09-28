@@ -1,0 +1,1693 @@
+[
+  {
+    "recordId": "record-seyh0t",
+    "scene": {
+      "id": "scene-01",
+      "sequence": 1,
+      "title": "周福受印",
+      "dramaticSceneId": "drama-01",
+      "cast": [
+        "周福"
+      ],
+      "purpose": "建立周福因桓帝旧恩获任尚书的背景，使观众理解歌谣中因师获印的由来",
+      "requiredBeats": [
+        {
+          "id": "beat-01",
+          "description": "周福立于尚书台前，双手接过桓帝所赐尚书印绶，躬身致谢。旁白：桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位，擢福为尚书。",
+          "function": "建立周福因师获印的史实",
+          "stateChange": "从甘陵士人变为朝廷尚书，通过接印动作体现",
+          "observable": {
+            "visual": [
+              "双手接印",
+              "躬身致谢"
+            ],
+            "audio": [
+              "桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位，擢福为尚书。"
+            ]
+          },
+          "setting": "洛阳尚书台",
+          "mustShow": [
+            "周福",
+            "印绶",
+            "接印"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 桓帝为蠡吾侯，受学于甘陵周福，及即帝位，擢福为尚书",
+      "adaptationBoundary": "周福接印的具体动作与致谢为合理拟制",
+      "targetDuration": 10,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "周福接受印绶",
+        "旁白说明桓帝旧恩与擢升事实"
+      ],
+      "contentContractVersion": "cinematic-v1",
+      "dramaticUnitId": "drama-01",
+      "settingId": "drama-01",
+      "closesUnit": true,
+      "continuityFromPrevious": false
+    },
+    "output": {
+      "id": "scene-01",
+      "mood": "庄重恭谨",
+      "title": "周福受印",
+      "camera": "正面中景，机位与周福视线等高，相机固定，焦点对准周福上半身与印绶，保持接印与躬身动作完整可见",
+      "pacing": {
+        "beats": [
+          {
+            "id": "beat-01-action-1",
+            "kind": "action",
+            "actorIds": [
+              "周福"
+            ],
+            "dependsOn": [],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "周福双手握持印绶",
+              "evidenceAnchor": "双手接印",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "durationEstimate": {
+              "lower": 2.5,
+              "upper": 3.5,
+              "source": "双手接印动作：身体调整站位0.5秒+伸手接印1.5秒+握稳印绶1秒",
+              "expected": 3,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [
+              "beat-01-narration"
+            ],
+            "textOrVocalization": "周福立于尚书台前，双手接过桓帝所赐尚书印绶，接印"
+          },
+          {
+            "id": "beat-01-action-2",
+            "kind": "action",
+            "actorIds": [
+              "周福"
+            ],
+            "dependsOn": [
+              "beat-01-action-1"
+            ],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "周福完成躬身礼仪，恢复站立",
+              "evidenceAnchor": "躬身致谢",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "durationEstimate": {
+              "lower": 1.2,
+              "upper": 1.8,
+              "source": "躬身动作：弯腰下俯0.8秒+维持姿态0.4秒+起身0.6秒",
+              "expected": 1.5,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [
+              "beat-01-narration"
+            ],
+            "textOrVocalization": "躬身致谢"
+          },
+          {
+            "id": "beat-01-narration",
+            "kind": "speech",
+            "actorIds": [
+              "旁白"
+            ],
+            "dependsOn": [],
+            "resources": [
+              "voice"
+            ],
+            "completion": {
+              "modality": "audio",
+              "finalState": "旁白完整说明桓帝旧恩与擢升事实",
+              "evidenceAnchor": "桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位，擢福为尚书。",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "deliveryStyle": "narration",
+            "durationEstimate": {
+              "lower": 7.5,
+              "upper": 9.685,
+              "source": "旁白34字÷4.5字/秒=7.56秒+启动0.25秒+句间停顿0.5秒",
+              "expected": 8.2,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [
+              "beat-01-action-1",
+              "beat-01-action-2"
+            ],
+            "textOrVocalization": "桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位,擢福为尚书。"
+          }
+        ],
+        "version": "duration-v2",
+        "schedule": [
+          {
+            "kind": "action",
+            "beatId": "beat-01-action-1",
+            "actorIds": [
+              "周福"
+            ],
+            "endSecond": 3.5,
+            "startSecond": 0,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 3.5,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "action",
+            "beatId": "beat-01-action-2",
+            "actorIds": [
+              "周福"
+            ],
+            "endSecond": 5.3,
+            "startSecond": 3.5,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 1.8,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "speech",
+            "beatId": "beat-01-narration",
+            "actorIds": [
+              "旁白"
+            ],
+            "endSecond": 9.685,
+            "startSecond": 0,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 9.685,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ],
+        "actorGroups": [],
+        "sampleTimes": [
+          0,
+          1.75,
+          3.5,
+          4.4,
+          4.843,
+          5.3,
+          9.685,
+          10.92
+        ],
+        "scheduleHash": "duration-v2-sha256-f78bc7cb02a749efaae0d8de04c5bb1387efe7ee4038c5c30aa10e482e86f450",
+        "timingPolicy": {
+          "speech": {
+            "chant": {
+              "maximumRate": 4.5,
+              "referenceRate": 3.3,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 2.8
+            },
+            "singing": {
+              "maximumRate": 3.5,
+              "referenceRate": 2.8,
+              "startupAllowance": 0.35,
+              "minimumNaturalRate": 2
+            },
+            "dialogue": {
+              "maximumRate": 5,
+              "referenceRate": 4.5,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 3.3
+            },
+            "narration": {
+              "maximumRate": 5,
+              "referenceRate": 4.5,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 3.3
+            }
+          },
+          "version": "duration-policy-v2.1",
+          "linePauseSeconds": 0.2,
+          "shortPauseSeconds": 0.15,
+          "minimumActionSeconds": 0.3,
+          "sentencePauseSeconds": 0.25,
+          "minimumReactionSeconds": 0.5,
+          "maximumProviderDuration": 15,
+          "minimumProviderDuration": 3,
+          "endingReadabilityReserve": 0.5,
+          "minimumVocalizationSeconds": 0.8,
+          "maxConservativeExtraSeconds": 1,
+          "measurementToleranceSeconds": 0.25
+        },
+        "sourceBeatIds": [
+          "beat-01"
+        ],
+        "speechWindows": [
+          {
+            "end": 9.685,
+            "text": "桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位,擢福为尚书。",
+            "start": 0,
+            "beatId": "beat-01-narration",
+            "actorIds": [
+              "旁白"
+            ],
+            "sourceBeatId": "beat-01",
+            "deliveryStyle": "narration"
+          }
+        ],
+        "timelineWindows": [
+          {
+            "beatIds": [
+              "beat-01-action-1",
+              "beat-01-narration",
+              "beat-01-action-2"
+            ],
+            "endSecond": 9.685,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-01-action-1，0至3.5秒，导演参考）场景：洛阳尚书台；周福立于尚书台前，双手接过桓帝所赐尚书印绶，接印；完成态：周福双手握持印绶；动作依据：双手接印。",
+                "beatId": "beat-01-action-1"
+              },
+              {
+                "quote": "（节拍 beat-01-narration，0至9.685秒，导演参考）画外旁白自然朗读：桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位,擢福为尚书。；完成态：旁白完整说明桓帝旧恩与擢升事实。",
+                "beatId": "beat-01-narration"
+              },
+              {
+                "quote": "（节拍 beat-01-action-2，3.5至5.3秒，导演参考）周福躬身致谢；完成态：周福完成躬身礼仪，恢复站立。",
+                "beatId": "beat-01-action-2"
+              }
+            ],
+            "startSecond": 0
+          },
+          {
+            "beatIds": [],
+            "endSecond": 11,
+            "beatQuotes": [],
+            "startSecond": 9.685
+          }
+        ],
+        "compiledVideoPrompt": "0-9.685秒：（节拍 beat-01-action-1，0至3.5秒，导演参考）场景：洛阳尚书台；周福立于尚书台前，双手接过桓帝所赐尚书印绶，接印；完成态：周福双手握持印绶；动作依据：双手接印。同时，（节拍 beat-01-narration，0至9.685秒，导演参考）画外旁白自然朗读：桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位,擢福为尚书。；完成态：旁白完整说明桓帝旧恩与擢升事实。同时，（节拍 beat-01-action-2，3.5至5.3秒，导演参考）周福躬身致谢；完成态：周福完成躬身礼仪，恢复站立。\n9.685-11秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+        "sourceBeatRequirements": [
+          {
+            "id": "beat-01",
+            "anchors": [
+              "周福",
+              "印绶",
+              "接印"
+            ],
+            "setting": "洛阳尚书台"
+          }
+        ]
+      },
+      "duration": 11,
+      "audioText": "桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位，擢福为尚书。",
+      "audioType": "旁白",
+      "characters": [
+        "周福"
+      ],
+      "continuity": {
+        "mode": "scene_cut",
+        "bridgeType": "opening",
+        "bridgeAnchor": "",
+        "previousShotId": ""
+      },
+      "shotIntent": {
+        "purpose": "建立周福因桓帝旧恩获任尚书的史实背景",
+        "cameraReason": "正面中景捕捉接印与致谢的完整身体动作，使观众清楚看到印绶交接与躬身礼仪的完整过程",
+        "viewpointCharacter": "周福"
+      },
+      "worldState": {
+        "settingId": "drama-01",
+        "characters": [
+          {
+            "name": "周福",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "videoPrompt": "0-9.685秒：（节拍 beat-01-action-1，0至3.5秒，导演参考）场景：洛阳尚书台；周福立于尚书台前，双手接过桓帝所赐尚书印绶，接印；完成态：周福双手握持印绶；动作依据：双手接印。同时，（节拍 beat-01-narration，0至9.685秒，导演参考）画外旁白自然朗读：桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位,擢福为尚书。；完成态：旁白完整说明桓帝旧恩与擢升事实。同时，（节拍 beat-01-action-2，3.5至5.3秒，导演参考）周福躬身致谢；完成态：周福完成躬身礼仪，恢复站立。\n9.685-11秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.1 和已编译节拍分别完成下列声部：[{\"beatId\":\"beat-01-narration\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位,擢福为尚书。\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。",
+      "scheduleHash": "duration-v2-sha256-f78bc7cb02a749efaae0d8de04c5bb1387efe7ee4038c5c30aa10e482e86f450",
+      "visualPrompt": "东汉洛阳尚书台内，木质梁柱与青砖地面。周福立于尚书台前，方形脸，留有短须，黑色高冠，冠顶有横向装饰。穿深灰色交领长袍，外罩黑色对襟外袍，胸前有灰色云纹刺绣。立领为浅灰色。腰系黑色宽腰带。内层为深青灰色长衫，下摆露出多层叠穿效果。身前案几上摆放尚书印绶，印绶为玉质印章与丝质绶带。自然光从侧窗透入。",
+      "endCharacters": [
+        "周福"
+      ],
+      "storyProgress": {
+        "status": "complete",
+        "unitId": "drama-01",
+        "response": "通过旁白说明桓帝旧恩与擢升因果",
+        "actionResult": "周福接受尚书印绶，完成官职任命",
+        "pendingActions": []
+      },
+      "beatDramaturgy": [
+        {
+          "audio": [
+            "桓帝为蠡吾侯时，曾受学于甘陵周福。延熹八年，桓帝即位，擢福为尚书。"
+          ],
+          "beatId": "beat-01",
+          "visual": [
+            "双手接印",
+            "躬身致谢"
+          ],
+          "function": "建立周福因师获印的史实",
+          "stateChange": "从甘陵士人变为朝廷尚书，通过接印动作体现"
+        }
+      ],
+      "coveredBeatIds": [
+        "beat-01"
+      ],
+      "firstFrameMode": "reference",
+      "timingEstimate": {
+        "version": "duration-v2",
+        "confidence": "medium",
+        "budgetBasis": "sum-of-constrained-upper-estimates",
+        "tailSeconds": 0.5,
+        "scheduleHash": "duration-v2-sha256-f78bc7cb02a749efaae0d8de04c5bb1387efe7ee4038c5c30aa10e482e86f450",
+        "modelDuration": 11,
+        "policyVersion": "duration-policy-v2.1",
+        "safeEndBudget": 10.185,
+        "speechSeconds": 9.685,
+        "maximumDuration": 12,
+        "plannedDuration": 10,
+        "contentEndBudget": 9.685,
+        "requiredDuration": 11,
+        "selectedDuration": 11,
+        "rawRequiredSeconds": 10.185,
+        "conservativeExtraSeconds": 0.815,
+        "endingReadabilityReserve": 0.5
+      },
+      "dramaticSceneId": "drama-01",
+      "historicalBasis": "[史料2] 桓帝为蠡吾侯，受学于甘陵周福，及即帝位，擢福为尚书",
+      "lastFramePrompt": "周福站立于尚书台前，双手握持印绶置于胸前，已完成躬身致谢动作恢复站立姿态，面向前方\n【静态尾帧】只呈现动作完成后的单一时间点与最终状态；单幅全画幅画面，禁止分镜、拼贴、分栏、上下三段、连环画、重复人物；画面内禁止字幕、水印、标题、标签及任何可读文字，榜文、竹简、牌匾等文字载体只能虚焦、背向镜头或呈现不可辨纹理。",
+      "repairProvenance": {
+        "scope": "initial",
+        "attempt": 1,
+        "candidateVersion": 1,
+        "generationAttempts": 2,
+        "episodeRewriteCount": 0,
+        "parentCandidateVersion": 0
+      },
+      "scriptValidation": {
+        "scope": "script-contract",
+        "passed": true,
+        "policy": "executable-with-advice-v1",
+        "attempts": [
+          {
+            "mode": "repair",
+            "errors": [
+              "STORYBOARD_COVERAGE_INCOMPLETE: 原节拍 beat-01 的可执行正文缺少原锚点 接印；不能只在完成声明中声称覆盖"
+            ],
+            "attempt": 1
+          }
+        ],
+        "warnings": [
+          {
+            "code": "STORYBOARD_SEGMENT_COUNT_ADVICE",
+            "path": "videoPrompt",
+            "message": "当前 2 个连续区间；3–6 段是编排建议，不要求为凑段数重写。"
+          }
+        ],
+        "localRepair": true,
+        "localRepairs": [
+          {
+            "path": "pacing.beats[0].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[1].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[2].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[2].durationEstimate.upper",
+            "after": 9.685,
+            "before": 9,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "duration",
+            "after": 11,
+            "before": 10,
+            "source": "compiled-duration-range"
+          }
+        ]
+      },
+      "initialCharacters": [
+        "周福"
+      ],
+      "presentCharacters": [
+        "周福"
+      ],
+      "adaptationBoundary": "周福接印的具体动作（双手接过、躬身致谢）与接印场景为合理拟制，符合东汉官员受任礼仪；桓帝擢升周福为尚书的因果关系与时间节点（延熹八年）严格遵循史料记载",
+      "completionCriteria": [
+        "周福接受印绶",
+        "旁白说明桓帝旧恩与擢升事实"
+      ],
+      "enteringCharacters": [],
+      "contentContractVersion": "cinematic-v1"
+    }
+  },
+  {
+    "recordId": "record-gjikz7",
+    "scene": {
+      "id": "scene-01",
+      "sequence": 1,
+      "title": "街市传谣",
+      "dramaticSceneId": "drama-01",
+      "cast": [
+        "房植门客甲"
+      ],
+      "purpose": "建立时空背景和歌谣内容，让观众知道甘陵有两位朝中人物及乡人对他们的评价，为后续冲突提供起因",
+      "requiredBeats": [
+        {
+          "id": "beat-01",
+          "description": "房植门客在甘陵城街市行走，街边传来乡人哼唱的歌谣声：天下规矩房伯武，因师获印周仲进",
+          "function": "建立时空与歌谣信息",
+          "stateChange": "从无背景到观众知晓甘陵两家及歌谣内容",
+          "observable": {
+            "visual": [
+              "房植门客在街市行走"
+            ],
+            "audio": [
+              "天下规矩房伯武，因师获印周仲进"
+            ]
+          },
+          "setting": "甘陵城街市",
+          "mustShow": [
+            "街市",
+            "房植门客",
+            "歌谣"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 记载乡人为房植、周福作歌谣：天下规矩房伯武，因师获印周仲进",
+      "adaptationBoundary": "歌谣在街市传唱的具体场景为合理拟制，歌谣内容据史呈现",
+      "targetDuration": 8,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "歌谣完整唱出",
+        "房植门客出现在街市"
+      ],
+      "contentContractVersion": "cinematic-v1",
+      "dramaticUnitId": "drama-01",
+      "settingId": "drama-01",
+      "closesUnit": false,
+      "continuityFromPrevious": false
+    },
+    "output": {
+      "id": "scene-01",
+      "mood": "日常街市的平静氛围",
+      "title": "街市传谣",
+      "camera": "固定机位，中景，视线平视，横向构图，跟随房植门客甲行进方向",
+      "pacing": {
+        "beats": [
+          {
+            "id": "beat-01-action-01",
+            "kind": "action",
+            "actorIds": [
+              "房植门客甲"
+            ],
+            "dependsOn": [],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "房植门客已进入街市画面中部",
+              "evidenceAnchor": "房植门客在街市行走",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "durationEstimate": {
+              "lower": 2,
+              "upper": 3,
+              "source": "正常行走进入画面至中景位置所需时间",
+              "expected": 2.5,
+              "confidence": "medium"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [],
+            "textOrVocalization": "从街市左侧沿街道向右行走进入画面",
+            "performanceInstruction": "房植门客在街市行走，稳步进入画面至中景位置"
+          },
+          {
+            "id": "beat-01-vocalization-01",
+            "kind": "vocalization",
+            "actorIds": [
+              "group-xiangrenA"
+            ],
+            "dependsOn": [
+              "beat-01-action-01"
+            ],
+            "resources": [
+              "voice"
+            ],
+            "completion": {
+              "modality": "audio",
+              "finalState": "乡人哼唱声部已完整发声",
+              "evidenceAnchor": "街边传来乡人哼唱的歌谣声",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "vocalization": {
+              "actorGroup": "group-xiangrenA",
+              "completionCue": "哼唱声淡出，随即转为完整歌词",
+              "melodyRelation": "introduces_main_melody",
+              "vocalizationType": "humming",
+              "expectedAudibility": "clear"
+            },
+            "durationEstimate": {
+              "lower": 1.2,
+              "upper": 2,
+              "source": "无词哼唱引入歌谣旋律的声部",
+              "expected": 1.5,
+              "confidence": "medium"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [],
+            "textOrVocalization": "哼唱歌谣旋律",
+            "performanceInstruction": "街边传来乡人哼唱的歌谣声"
+          },
+          {
+            "id": "beat-01-speech-01",
+            "kind": "speech",
+            "actorIds": [
+              "group-xiangrenA"
+            ],
+            "dependsOn": [
+              "beat-01-vocalization-01"
+            ],
+            "resources": [
+              "voice"
+            ],
+            "completion": {
+              "modality": "audio",
+              "finalState": "歌谣完整唱出",
+              "evidenceAnchor": "天下规矩房伯武，因师获印周仲进",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "deliveryStyle": "chant",
+            "durationEstimate": {
+              "lower": 3.5,
+              "upper": 5.4,
+              "source": "16字歌谣按chant类型referenceRate 3.3字/秒加启动余量0.25秒计算",
+              "expected": 4.393,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [],
+            "textOrVocalization": "天下规矩房伯武，因师获印周仲进",
+            "performanceInstruction": "以吟唱方式唱出完整歌谣"
+          }
+        ],
+        "version": "duration-v2",
+        "schedule": [
+          {
+            "kind": "action",
+            "beatId": "beat-01-action-01",
+            "actorIds": [
+              "房植门客甲"
+            ],
+            "endSecond": 3,
+            "startSecond": 0,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 3,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "vocalization",
+            "beatId": "beat-01-vocalization-01",
+            "actorIds": [
+              "group-xiangrenA"
+            ],
+            "endSecond": 5,
+            "startSecond": 3,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 2,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "speech",
+            "beatId": "beat-01-speech-01",
+            "actorIds": [
+              "group-xiangrenA"
+            ],
+            "endSecond": 10.4,
+            "startSecond": 5,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 5.4,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ],
+        "actorGroups": [
+          {
+            "id": "group-xiangrenA",
+            "label": "街边乡人甲",
+            "memberDescription": "甘陵街市中哼唱歌谣的普通乡人，男性，身着素色短褐，头戴布巾"
+          }
+        ],
+        "sampleTimes": [
+          0,
+          1.5,
+          3,
+          4,
+          5,
+          7.7,
+          10.4,
+          10.92
+        ],
+        "scheduleHash": "duration-v2-sha256-3c3bb5e9825519f218a9f64fdd574422ceb49c87bf2e273788c053abadf5f497",
+        "timingPolicy": {
+          "speech": {
+            "chant": {
+              "maximumRate": 4.5,
+              "referenceRate": 3.3,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 2.8
+            },
+            "singing": {
+              "maximumRate": 3.5,
+              "referenceRate": 2.8,
+              "startupAllowance": 0.35,
+              "minimumNaturalRate": 2
+            },
+            "dialogue": {
+              "maximumRate": 5,
+              "referenceRate": 4.5,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 3.3
+            },
+            "narration": {
+              "maximumRate": 5,
+              "referenceRate": 4.5,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 3.3
+            }
+          },
+          "version": "duration-policy-v2.1",
+          "linePauseSeconds": 0.2,
+          "shortPauseSeconds": 0.15,
+          "minimumActionSeconds": 0.3,
+          "sentencePauseSeconds": 0.25,
+          "minimumReactionSeconds": 0.5,
+          "maximumProviderDuration": 15,
+          "minimumProviderDuration": 3,
+          "endingReadabilityReserve": 0.5,
+          "minimumVocalizationSeconds": 0.8,
+          "maxConservativeExtraSeconds": 1,
+          "measurementToleranceSeconds": 0.25
+        },
+        "sourceBeatIds": [
+          "beat-01"
+        ],
+        "speechWindows": [
+          {
+            "end": 10.4,
+            "text": "天下规矩房伯武，因师获印周仲进",
+            "start": 5,
+            "beatId": "beat-01-speech-01",
+            "actorIds": [
+              "group-xiangrenA"
+            ],
+            "sourceBeatId": "beat-01",
+            "deliveryStyle": "chant"
+          }
+        ],
+        "timelineWindows": [
+          {
+            "beatIds": [
+              "beat-01-action-01"
+            ],
+            "endSecond": 3,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-01-action-01，0至3秒，导演参考）场景：甘陵城街市；房植门客在街市行走，稳步进入画面至中景位置；房植门客甲从街市左侧沿街道向右行走进入画面；完成态：房植门客已进入街市画面中部。",
+                "beatId": "beat-01-action-01"
+              }
+            ],
+            "startSecond": 0
+          },
+          {
+            "beatIds": [
+              "beat-01-vocalization-01"
+            ],
+            "endSecond": 5,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-01-vocalization-01，3至5秒，导演参考）街边传来乡人哼唱的歌谣声；街边乡人甲发出可听的无词humming，哼唱歌谣旋律；曲调关系：introduces_main_melody；完成态：乡人哼唱声部已完整发声。",
+                "beatId": "beat-01-vocalization-01"
+              }
+            ],
+            "startSecond": 3
+          },
+          {
+            "beatIds": [
+              "beat-01-speech-01"
+            ],
+            "endSecond": 10.4,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-01-speech-01，5至10.4秒，导演参考）以吟唱方式唱出完整歌谣；街边乡人甲哼唱歌谣，按歌谣节奏吟唱并完整唱出：天下规矩房伯武，因师获印周仲进；完成态：歌谣完整唱出。",
+                "beatId": "beat-01-speech-01"
+              }
+            ],
+            "startSecond": 5
+          },
+          {
+            "beatIds": [],
+            "endSecond": 11,
+            "beatQuotes": [],
+            "startSecond": 10.4
+          }
+        ],
+        "compiledVideoPrompt": "0-3秒：（节拍 beat-01-action-01，0至3秒，导演参考）场景：甘陵城街市；房植门客在街市行走，稳步进入画面至中景位置；房植门客甲从街市左侧沿街道向右行走进入画面；完成态：房植门客已进入街市画面中部。\n3-5秒：（节拍 beat-01-vocalization-01，3至5秒，导演参考）街边传来乡人哼唱的歌谣声；街边乡人甲发出可听的无词humming，哼唱歌谣旋律；曲调关系：introduces_main_melody；完成态：乡人哼唱声部已完整发声。\n5-10.4秒：（节拍 beat-01-speech-01，5至10.4秒，导演参考）以吟唱方式唱出完整歌谣；街边乡人甲哼唱歌谣，按歌谣节奏吟唱并完整唱出：天下规矩房伯武，因师获印周仲进；完成态：歌谣完整唱出。\n10.4-11秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+        "sourceBeatRequirements": [
+          {
+            "id": "beat-01",
+            "anchors": [
+              "街市",
+              "房植门客",
+              "歌谣"
+            ],
+            "setting": "甘陵城街市"
+          }
+        ]
+      },
+      "duration": 11,
+      "audioText": "街边乡人甲：天下规矩房伯武，因师获印周仲进",
+      "audioType": "对白",
+      "characters": [
+        "房植门客甲"
+      ],
+      "continuity": {
+        "mode": "scene_cut",
+        "bridgeType": "opening",
+        "bridgeAnchor": "",
+        "previousShotId": ""
+      },
+      "shotIntent": {
+        "purpose": "建立甘陵街市场景，通过歌谣传唱让观众知晓房植与周福两家在地方的声望对比",
+        "cameraReason": "采用中景跟随房植门客行进，呈现街市环境，能清晰捕捉听到歌谣时的神态变化",
+        "viewpointCharacter": "房植门客甲"
+      },
+      "worldState": {
+        "settingId": "drama-01",
+        "characters": [
+          {
+            "name": "房植门客甲",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "videoPrompt": "0-3秒：（节拍 beat-01-action-01，0至3秒，导演参考）场景：甘陵城街市；房植门客在街市行走，稳步进入画面至中景位置；房植门客甲从街市左侧沿街道向右行走进入画面；完成态：房植门客已进入街市画面中部。\n3-5秒：（节拍 beat-01-vocalization-01，3至5秒，导演参考）街边传来乡人哼唱的歌谣声；街边乡人甲发出可听的无词humming，哼唱歌谣旋律；曲调关系：introduces_main_melody；完成态：乡人哼唱声部已完整发声。\n5-10.4秒：（节拍 beat-01-speech-01，5至10.4秒，导演参考）以吟唱方式唱出完整歌谣；街边乡人甲哼唱歌谣，按歌谣节奏吟唱并完整唱出：天下规矩房伯武，因师获印周仲进；完成态：歌谣完整唱出。\n10.4-11秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.1 和已编译节拍分别完成下列声部：[{\"beatId\":\"beat-01-vocalization-01\",\"actorIds\":[\"group-xiangrenA\"],\"kind\":\"vocalization\",\"textOrVocalization\":\"哼唱歌谣旋律\",\"vocalization\":{\"vocalizationType\":\"humming\",\"actorGroup\":\"group-xiangrenA\",\"expectedAudibility\":\"clear\",\"melodyRelation\":\"introduces_main_melody\",\"completionCue\":\"哼唱声淡出，随即转为完整歌词\"}},{\"beatId\":\"beat-01-speech-01\",\"actorIds\":[\"group-xiangrenA\"],\"kind\":\"speech\",\"deliveryStyle\":\"chant\",\"textOrVocalization\":\"天下规矩房伯武，因师获印周仲进\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。",
+      "scheduleHash": "duration-v2-sha256-3c3bb5e9825519f218a9f64fdd574422ceb49c87bf2e273788c053abadf5f497",
+      "visualPrompt": "东汉甘陵城街市，街道两侧木质摊位陈列布匹与陶器，数名乡人着短褐往来，自然日光。房植门客甲，中年男子，青色直裾深衣，腰束革带，头戴进贤冠，神态从容。中景构图，房植门客甲从画面左侧入画行至中部。",
+      "endCharacters": [
+        "房植门客甲"
+      ],
+      "storyProgress": {
+        "status": "continuing",
+        "unitId": "drama-01",
+        "response": "场景已建立，歌谣内容已完整呈现：房植为天下规矩，周福因师恩获印",
+        "actionResult": "房植门客出现在甘陵街市，歌谣完整传唱",
+        "pendingActions": [
+          "周福门客的出场",
+          "两家门客因歌谣引发的直接冲突"
+        ]
+      },
+      "beatDramaturgy": [
+        {
+          "audio": [
+            "天下规矩房伯武，因师获印周仲进"
+          ],
+          "beatId": "beat-01",
+          "visual": [
+            "房植门客在街市行走"
+          ],
+          "function": "建立时空与歌谣信息",
+          "stateChange": "从无背景到观众知晓甘陵两家及歌谣内容"
+        }
+      ],
+      "coveredBeatIds": [
+        "beat-01"
+      ],
+      "firstFrameMode": "reference",
+      "timingEstimate": {
+        "version": "duration-v2",
+        "confidence": "medium",
+        "budgetBasis": "sum-of-constrained-upper-estimates",
+        "tailSeconds": 0.5,
+        "scheduleHash": "duration-v2-sha256-3c3bb5e9825519f218a9f64fdd574422ceb49c87bf2e273788c053abadf5f497",
+        "modelDuration": 11,
+        "policyVersion": "duration-policy-v2.1",
+        "safeEndBudget": 10.9,
+        "speechSeconds": 5.4,
+        "maximumDuration": 12,
+        "plannedDuration": 8,
+        "contentEndBudget": 10.4,
+        "requiredDuration": 11,
+        "selectedDuration": 11,
+        "entranceProjection": {
+          "changes": [
+            {
+              "path": "从街市左侧沿街道向右行走进入画面",
+              "beatId": "beat-01-action-01",
+              "declared": {
+                "endSecond": 2.5,
+                "startSecond": 0
+              },
+              "scheduled": {
+                "endSecond": 3,
+                "startSecond": 0
+              },
+              "characterName": "房植门客甲"
+            }
+          ],
+          "version": "duration-v2-entrance-v1",
+          "scheduleHash": "duration-v2-sha256-3c3bb5e9825519f218a9f64fdd574422ceb49c87bf2e273788c053abadf5f497"
+        },
+        "rawRequiredSeconds": 10.9,
+        "conservativeExtraSeconds": 0.1,
+        "endingReadabilityReserve": 0.5
+      },
+      "dramaticSceneId": "drama-01",
+      "historicalBasis": "[史料2]记载乡人为房植、周福作歌谣：天下规矩房伯武，因师获印周仲进",
+      "lastFramePrompt": "房植门客甲立于街市中部，微侧头倾听。街市摊位与行人构成东汉城镇街景。\n【静态尾帧】只呈现动作完成后的单一时间点与最终状态；单幅全画幅画面，禁止分镜、拼贴、分栏、上下三段、连环画、重复人物；画面内禁止字幕、水印、标题、标签及任何可读文字，榜文、竹简、牌匾等文字载体只能虚焦、背向镜头或呈现不可辨纹理。",
+      "repairProvenance": {
+        "scope": "initial",
+        "attempt": 1,
+        "candidateVersion": 1,
+        "generationAttempts": 4,
+        "episodeRewriteCount": 0,
+        "parentCandidateVersion": 0
+      },
+      "scriptValidation": {
+        "scope": "script-contract",
+        "passed": true,
+        "policy": "executable-with-advice-v1",
+        "attempts": [
+          {
+            "mode": "repair",
+            "errors": [
+              "STORYBOARD_PACING_INVALID: duration-v2 需要明确 对白/旁白/环境声 音轨类型"
+            ],
+            "attempt": 1
+          },
+          {
+            "mode": "repair",
+            "errors": [
+              "HISTORY_DRAMA_INVALID: 拆段 beat-01.visual 义务“房植门客在街市行走”必须恰好分配一次，实际 2 次"
+            ],
+            "attempt": 2
+          },
+          {
+            "mode": "repair",
+            "errors": [
+              "STORYBOARD_PROMPT_OVERLOAD: 入场人物“房植门客甲”的路径“从街市左侧沿街道向右行走进入画面”匹配 0 个可执行入场动作，必须唯一匹配；完整 path 须写在该人物 action 的 textOrVocalization 或 performanceInstruction，不能只写在手工 videoPrompt 或完成声明中"
+            ],
+            "attempt": 3
+          }
+        ],
+        "warnings": [],
+        "localRepair": true,
+        "localRepairs": [
+          {
+            "path": "pacing.beats[2].durationEstimate.expected",
+            "after": 4.393,
+            "before": 4.2,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "pacing.beats[2].durationEstimate.upper",
+            "after": 5.4,
+            "before": 5,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "segments[0].pacing.beats[1].durationEstimate.lower",
+            "after": 4.7,
+            "before": 4.2,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "segments[0].pacing.beats[1].durationEstimate.upper",
+            "after": 7.217,
+            "before": 6.7,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "duration",
+            "after": 11,
+            "before": 8,
+            "source": "compiled-duration-range"
+          }
+        ]
+      },
+      "initialCharacters": [],
+      "presentCharacters": [
+        "房植门客甲"
+      ],
+      "adaptationBoundary": "歌谣在街市传唱的具体场景、房植门客听闻时的反应为合理拟制，歌谣内容与传唱者为乡人据史呈现",
+      "completionCriteria": [
+        "歌谣完整唱出",
+        "房植门客出现在街市"
+      ],
+      "enteringCharacters": [
+        {
+          "name": "房植门客甲",
+          "path": "从街市左侧沿街道向右行走进入画面",
+          "endSecond": 3,
+          "startSecond": 0
+        }
+      ],
+      "contentContractVersion": "cinematic-v1"
+    }
+  },
+  {
+    "recordId": "record-3oxmcc",
+    "scene": {
+      "id": "scene-01",
+      "sequence": 1,
+      "title": "周福受任尚书",
+      "dramaticSceneId": "drama-01",
+      "cast": [
+        "周福"
+      ],
+      "purpose": "建立桓帝即位后擢升昔日老师周福为尚书的背景,为后续歌谣引发的争议做铺垫",
+      "requiredBeats": [
+        {
+          "id": "beat-01",
+          "description": "洛阳宫中尚书台,周福立于殿中,内侍宣读诏书:'桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书。'周福上前接过印绶,行礼称谢",
+          "function": "建立周福因师生关系被擢升的史实背景",
+          "stateChange": "从普通士人到尚书,通过接受印绶与行礼体现",
+          "observable": {
+            "visual": [
+              "周福上前",
+              "接过印绶",
+              "行礼"
+            ],
+            "audio": [
+              "桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书"
+            ]
+          },
+          "setting": "洛阳宫中尚书台",
+          "mustShow": [
+            "周福",
+            "印绶",
+            "行礼"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]桓帝为蠡吾侯时受学于甘陵周福,及即帝位,擢福为尚书",
+      "adaptationBoundary": "诏书宣读的具体措辞、周福接受印绶的动作与称谢为合理拟制",
+      "targetDuration": 10,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "周福接受印绶",
+        "宣读诏书内容清晰呈现"
+      ],
+      "contentContractVersion": "cinematic-v1",
+      "dramaticUnitId": "drama-01",
+      "settingId": "drama-01",
+      "closesUnit": true,
+      "continuityFromPrevious": false
+    },
+    "output": {
+      "id": "scene-01",
+      "mood": "庄重",
+      "title": "周福受任尚书",
+      "camera": "中景,正面平视机位,视线轴线水平,固定镜头",
+      "pacing": {
+        "beats": [
+          {
+            "id": "beat-01-stand",
+            "kind": "action",
+            "actorIds": [
+              "周福"
+            ],
+            "dependsOn": [],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "周福立于殿中",
+              "evidenceAnchor": "周福立于殿中",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "durationEstimate": {
+              "lower": 0.5,
+              "upper": 1.2,
+              "source": "周福立于殿中的静态站立姿态，预期0.8秒",
+              "expected": 0.8,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [
+              "beat-01-speech"
+            ],
+            "textOrVocalization": "周福立于殿中"
+          },
+          {
+            "id": "beat-01-speech",
+            "kind": "speech",
+            "actorIds": [
+              "旁白"
+            ],
+            "dependsOn": [],
+            "resources": [
+              "voice"
+            ],
+            "completion": {
+              "modality": "audio",
+              "finalState": "诏书宣读完毕",
+              "evidenceAnchor": "桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "deliveryStyle": "narration",
+            "durationEstimate": {
+              "lower": 5.1,
+              "upper": 7.823,
+              "source": "25字旁白，按narration referenceRate 4.5字/秒加启动余量0.25秒，预期5.8秒",
+              "expected": 5.8,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [
+              "beat-01-stand"
+            ],
+            "textOrVocalization": "桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书"
+          },
+          {
+            "id": "beat-01-forward",
+            "kind": "action",
+            "actorIds": [
+              "周福"
+            ],
+            "dependsOn": [
+              "beat-01-speech"
+            ],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "周福站立于内侍面前",
+              "evidenceAnchor": "周福上前",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "durationEstimate": {
+              "lower": 1,
+              "upper": 1.8,
+              "source": "从殿中向前走至内侍面前，预期1.3秒",
+              "expected": 1.3,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [],
+            "textOrVocalization": "周福上前"
+          },
+          {
+            "id": "beat-01-receive",
+            "kind": "action",
+            "actorIds": [
+              "周福"
+            ],
+            "dependsOn": [
+              "beat-01-forward"
+            ],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "周福双手持印绶于胸前",
+              "evidenceAnchor": "接过印绶",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "durationEstimate": {
+              "lower": 0.8,
+              "upper": 1.4,
+              "source": "双手接过印绶并收至胸前，预期1.0秒",
+              "expected": 1,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [],
+            "textOrVocalization": "接过印绶"
+          },
+          {
+            "id": "beat-01-bow",
+            "kind": "action",
+            "actorIds": [
+              "周福"
+            ],
+            "dependsOn": [
+              "beat-01-receive"
+            ],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "周福完成行礼动作",
+              "evidenceAnchor": "行礼",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "durationEstimate": {
+              "lower": 1.2,
+              "upper": 2,
+              "source": "持印绶躬身行礼，预期1.5秒",
+              "expected": 1.5,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [],
+            "textOrVocalization": "行礼"
+          }
+        ],
+        "version": "duration-v2",
+        "schedule": [
+          {
+            "kind": "action",
+            "beatId": "beat-01-stand",
+            "actorIds": [
+              "周福"
+            ],
+            "endSecond": 1.2,
+            "startSecond": 0,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 1.2,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "speech",
+            "beatId": "beat-01-speech",
+            "actorIds": [
+              "旁白"
+            ],
+            "endSecond": 7.823,
+            "startSecond": 0,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 7.823,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "action",
+            "beatId": "beat-01-forward",
+            "actorIds": [
+              "周福"
+            ],
+            "endSecond": 9.623,
+            "startSecond": 7.823,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 1.8,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "action",
+            "beatId": "beat-01-receive",
+            "actorIds": [
+              "周福"
+            ],
+            "endSecond": 11.023,
+            "startSecond": 9.623,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 1.4,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "action",
+            "beatId": "beat-01-bow",
+            "actorIds": [
+              "周福"
+            ],
+            "endSecond": 13.023,
+            "startSecond": 11.023,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 2,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ],
+        "actorGroups": [],
+        "sampleTimes": [
+          0,
+          0.6,
+          1.2,
+          3.912,
+          7.823,
+          8.723,
+          9.623,
+          10.323,
+          11.023,
+          12.023,
+          13.023,
+          13.92
+        ],
+        "scheduleHash": "duration-v2-sha256-e7f1b8c923aaface8f775debe614171563ad1b0b56b81b803f9718d87a73994e",
+        "timingPolicy": {
+          "speech": {
+            "chant": {
+              "maximumRate": 4.5,
+              "referenceRate": 3.3,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 2.8
+            },
+            "singing": {
+              "maximumRate": 3.5,
+              "referenceRate": 2.8,
+              "startupAllowance": 0.35,
+              "minimumNaturalRate": 2
+            },
+            "dialogue": {
+              "maximumRate": 5,
+              "referenceRate": 4.5,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 3.3
+            },
+            "narration": {
+              "maximumRate": 5,
+              "referenceRate": 4.5,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 3.3
+            }
+          },
+          "version": "duration-policy-v2.1",
+          "linePauseSeconds": 0.2,
+          "shortPauseSeconds": 0.15,
+          "minimumActionSeconds": 0.3,
+          "sentencePauseSeconds": 0.25,
+          "minimumReactionSeconds": 0.5,
+          "maximumProviderDuration": 15,
+          "minimumProviderDuration": 3,
+          "endingReadabilityReserve": 0.5,
+          "minimumVocalizationSeconds": 0.8,
+          "maxConservativeExtraSeconds": 1,
+          "measurementToleranceSeconds": 0.25
+        },
+        "sourceBeatIds": [
+          "beat-01"
+        ],
+        "speechWindows": [
+          {
+            "end": 7.823,
+            "text": "桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书",
+            "start": 0,
+            "beatId": "beat-01-speech",
+            "actorIds": [
+              "旁白"
+            ],
+            "sourceBeatId": "beat-01",
+            "deliveryStyle": "narration"
+          }
+        ],
+        "timelineWindows": [
+          {
+            "beatIds": [
+              "beat-01-stand",
+              "beat-01-speech"
+            ],
+            "endSecond": 7.823,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-01-stand，0至1.2秒，导演参考）场景：洛阳宫中尚书台；周福立于殿中；完成态：周福立于殿中。",
+                "beatId": "beat-01-stand"
+              },
+              {
+                "quote": "（节拍 beat-01-speech，0至7.823秒，导演参考）画外旁白自然朗读：桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书；完成态：诏书宣读完毕。",
+                "beatId": "beat-01-speech"
+              }
+            ],
+            "startSecond": 0
+          },
+          {
+            "beatIds": [
+              "beat-01-forward"
+            ],
+            "endSecond": 9.623,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-01-forward，7.823至9.623秒，导演参考）周福上前；完成态：周福站立于内侍面前。",
+                "beatId": "beat-01-forward"
+              }
+            ],
+            "startSecond": 7.823
+          },
+          {
+            "beatIds": [
+              "beat-01-receive"
+            ],
+            "endSecond": 11.023,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-01-receive，9.623至11.023秒，导演参考）周福接过印绶；完成态：周福双手持印绶于胸前。",
+                "beatId": "beat-01-receive"
+              }
+            ],
+            "startSecond": 9.623
+          },
+          {
+            "beatIds": [
+              "beat-01-bow"
+            ],
+            "endSecond": 13.023,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-01-bow，11.023至13.023秒，导演参考）周福行礼；完成态：周福完成行礼动作。",
+                "beatId": "beat-01-bow"
+              }
+            ],
+            "startSecond": 11.023
+          },
+          {
+            "beatIds": [],
+            "endSecond": 14,
+            "beatQuotes": [],
+            "startSecond": 13.023
+          }
+        ],
+        "compiledVideoPrompt": "0-7.823秒：（节拍 beat-01-stand，0至1.2秒，导演参考）场景：洛阳宫中尚书台；周福立于殿中；完成态：周福立于殿中。同时，（节拍 beat-01-speech，0至7.823秒，导演参考）画外旁白自然朗读：桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书；完成态：诏书宣读完毕。\n7.823-9.623秒：（节拍 beat-01-forward，7.823至9.623秒，导演参考）周福上前；完成态：周福站立于内侍面前。\n9.623-11.023秒：（节拍 beat-01-receive，9.623至11.023秒，导演参考）周福接过印绶；完成态：周福双手持印绶于胸前。\n11.023-13.023秒：（节拍 beat-01-bow，11.023至13.023秒，导演参考）周福行礼；完成态：周福完成行礼动作。\n13.023-14秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+        "sourceBeatRequirements": [
+          {
+            "id": "beat-01",
+            "anchors": [
+              "周福",
+              "印绶",
+              "行礼"
+            ],
+            "setting": "洛阳宫中尚书台"
+          }
+        ]
+      },
+      "duration": 14,
+      "audioText": "桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书",
+      "audioType": "旁白",
+      "characters": [
+        "周福",
+        "内侍"
+      ],
+      "continuity": {
+        "mode": "scene_cut",
+        "bridgeType": "opening",
+        "bridgeAnchor": "",
+        "previousShotId": ""
+      },
+      "shotIntent": {
+        "purpose": "呈现周福因师生关系被擢升为尚书的史实",
+        "cameraReason": "中景正面机位可同时呈现内侍持印与周福接印行礼的完整过程",
+        "viewpointCharacter": "周福"
+      },
+      "worldState": {
+        "settingId": "drama-01",
+        "characters": [
+          {
+            "name": "周福",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          },
+          {
+            "name": "内侍",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "videoPrompt": "0-7.823秒：（节拍 beat-01-stand，0至1.2秒，导演参考）场景：洛阳宫中尚书台；周福立于殿中；完成态：周福立于殿中。同时，（节拍 beat-01-speech，0至7.823秒，导演参考）画外旁白自然朗读：桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书；完成态：诏书宣读完毕。\n7.823-9.623秒：（节拍 beat-01-forward，7.823至9.623秒，导演参考）周福上前；完成态：周福站立于内侍面前。\n9.623-11.023秒：（节拍 beat-01-receive，9.623至11.023秒，导演参考）周福接过印绶；完成态：周福双手持印绶于胸前。\n11.023-13.023秒：（节拍 beat-01-bow，11.023至13.023秒，导演参考）周福行礼；完成态：周福完成行礼动作。\n13.023-14秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.1 和已编译节拍分别完成下列声部：[{\"beatId\":\"beat-01-speech\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。",
+      "scheduleHash": "duration-v2-sha256-e7f1b8c923aaface8f775debe614171563ad1b0b56b81b803f9718d87a73994e",
+      "visualPrompt": "洛阳宫中尚书台内景,东汉建筑风格,自然光从侧面窗棂透入。殿内立有朱红色立柱,地面铺青石板。周福方形脸,留有短须,黑色高冠,冠顶有横向装饰,穿深灰色交领长袍,外罩黑色对襟外袍,胸前有灰色云纹刺绣,立领为浅灰色,腰系黑色宽腰带,内层为深青灰色长衫,下摆露出多层叠穿效果,周福立于殿中。内侍身穿深褐色官服,双手捧印绶,站在周福前方。印绶为红色绶带配铜质官印。",
+      "endCharacters": [
+        "周福",
+        "内侍"
+      ],
+      "storyProgress": {
+        "status": "complete",
+        "unitId": "drama-01",
+        "response": "通过宣读诏书与接印仪式,周福正式就任尚书",
+        "actionResult": "周福接受尚书印绶并行礼称谢",
+        "pendingActions": []
+      },
+      "beatDramaturgy": [
+        {
+          "audio": [
+            "桓帝即位,念昔日蠡吾侯时受学于甘陵周福,今擢福为尚书"
+          ],
+          "beatId": "beat-01",
+          "visual": [
+            "周福立于殿中",
+            "周福上前",
+            "接过印绶",
+            "行礼"
+          ],
+          "function": "建立周福因师生关系被擢升的史实背景",
+          "stateChange": "从普通士人到尚书,通过接受印绶与行礼体现"
+        }
+      ],
+      "coveredBeatIds": [
+        "beat-01"
+      ],
+      "firstFrameMode": "reference",
+      "timingEstimate": {
+        "version": "duration-v2",
+        "confidence": "medium",
+        "budgetBasis": "sum-of-constrained-upper-estimates",
+        "tailSeconds": 0.5,
+        "scheduleHash": "duration-v2-sha256-e7f1b8c923aaface8f775debe614171563ad1b0b56b81b803f9718d87a73994e",
+        "modelDuration": 14,
+        "policyVersion": "duration-policy-v2.1",
+        "safeEndBudget": 13.523,
+        "speechSeconds": 7.823,
+        "maximumDuration": 15,
+        "plannedDuration": 10,
+        "contentEndBudget": 13.023,
+        "requiredDuration": 14,
+        "selectedDuration": 14,
+        "rawRequiredSeconds": 13.523,
+        "conservativeExtraSeconds": 0.477,
+        "endingReadabilityReserve": 0.5
+      },
+      "dramaticSceneId": "drama-01",
+      "historicalBasis": "[史料2]桓帝为蠡吾侯时受学于甘陵周福,及即帝位,擢福为尚书",
+      "lastFramePrompt": "周福方形脸,留有短须,黑色高冠,冠顶有横向装饰,穿深灰色交领长袍,外罩黑色对襟外袍,胸前有灰色云纹刺绣,立领为浅灰色,腰系黑色宽腰带,内层为深青灰色长衫,下摆露出多层叠穿效果,双手持印绶于胸前,完成躬身行礼,站立于内侍面前。内侍身穿深褐色官服,站在周福对面。\n【静态尾帧】只呈现动作完成后的单一时间点与最终状态；单幅全画幅画面，禁止分镜、拼贴、分栏、上下三段、连环画、重复人物；画面内禁止字幕、水印、标题、标签及任何可读文字，榜文、竹简、牌匾等文字载体只能虚焦、背向镜头或呈现不可辨纹理。",
+      "repairProvenance": {
+        "scope": "initial",
+        "attempt": 1,
+        "candidateVersion": 1,
+        "generationAttempts": 2,
+        "episodeRewriteCount": 0,
+        "parentCandidateVersion": 0
+      },
+      "scriptValidation": {
+        "scope": "script-contract",
+        "passed": true,
+        "policy": "executable-with-advice-v1",
+        "attempts": [
+          {
+            "mode": "repair",
+            "errors": [
+              "HISTORY_DRAMA_INVALID: beat-01.visual 仅声明完成，却未落在实际画面动作中：“周福立于殿中”"
+            ],
+            "attempt": 1
+          }
+        ],
+        "warnings": [],
+        "localRepair": true,
+        "localRepairs": [
+          {
+            "path": "pacing.beats[0].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[1].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[2].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[3].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[0].durationEstimate.lower",
+            "after": 5.1,
+            "before": 4.8,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "pacing.beats[0].durationEstimate.expected",
+            "after": 5.634,
+            "before": 5.3,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "pacing.beats[0].durationEstimate.upper",
+            "after": 7.823,
+            "before": 6,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "duration",
+            "after": 14,
+            "before": 10,
+            "source": "compiled-duration-range"
+          },
+          {
+            "path": "pacing.beats[0].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[1].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[2].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[3].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[4].performanceInstruction",
+            "before": "",
+            "source": "writer-format",
+            "removed": true
+          },
+          {
+            "path": "pacing.beats[1].durationEstimate.upper",
+            "after": 7.823,
+            "before": 7.8,
+            "source": "shared-speech-policy"
+          },
+          {
+            "path": "duration",
+            "after": 14,
+            "before": 11,
+            "source": "compiled-duration-range"
+          }
+        ]
+      },
+      "initialCharacters": [
+        "周福",
+        "内侍"
+      ],
+      "presentCharacters": [
+        "周福",
+        "内侍"
+      ],
+      "adaptationBoundary": "诏书宣读的具体措辞、周福接受印绶的动作与称谢为合理拟制,不改变桓帝擢升周福为尚书的史实",
+      "completionCriteria": [
+        "周福接受印绶",
+        "宣读诏书内容清晰呈现"
+      ],
+      "enteringCharacters": [],
+      "contentContractVersion": "cinematic-v1"
+    }
+  }
+]

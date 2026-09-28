@@ -1,0 +1,362 @@
+{
+  "provenance": "Real run-2/writer-3-candidate.json and source-scene.json; raw provider envelope removed only",
+  "shot": {
+    "contentContractVersion": "cinematic-v1",
+    "dramaticSceneId": "drama-01",
+    "id": "scene-01-shot-01",
+    "title": "乡人传唱歌谣",
+    "duration": 11,
+    "pacing": {
+      "version": "duration-v2",
+      "timingPolicy": {
+        "version": "duration-policy-v2.1",
+        "speech": {
+          "dialogue": {
+            "referenceRate": 4.5,
+            "minimumNaturalRate": 3.3,
+            "maximumRate": 5,
+            "startupAllowance": 0.25
+          },
+          "narration": {
+            "referenceRate": 4.5,
+            "minimumNaturalRate": 3.3,
+            "maximumRate": 5,
+            "startupAllowance": 0.25
+          },
+          "chant": {
+            "referenceRate": 3.3,
+            "minimumNaturalRate": 2.8,
+            "maximumRate": 4.5,
+            "startupAllowance": 0.25
+          },
+          "singing": {
+            "referenceRate": 2.8,
+            "minimumNaturalRate": 2,
+            "maximumRate": 3.5,
+            "startupAllowance": 0.35
+          }
+        },
+        "shortPauseSeconds": 0.15,
+        "sentencePauseSeconds": 0.25,
+        "linePauseSeconds": 0.2,
+        "measurementToleranceSeconds": 0.25,
+        "endingReadabilityReserve": 0.5,
+        "maxConservativeExtraSeconds": 1,
+        "minimumProviderDuration": 3,
+        "maximumProviderDuration": 15,
+        "minimumVocalizationSeconds": 0.8,
+        "minimumActionSeconds": 0.3,
+        "minimumReactionSeconds": 0.5
+      },
+      "actorGroups": [
+        {
+          "id": "group-background-villagers",
+          "label": "背景乡人",
+          "memberDescription": "街巷中原本在场的其他乡人，身着东汉平民服饰，分散于街巷各处"
+        }
+      ],
+      "beats": [
+        {
+          "id": "beat-01-walk",
+          "sourceBeatId": "beat-01",
+          "actorIds": [
+            "传唱歌谣的乡人"
+          ],
+          "kind": "action",
+          "performanceInstruction": "乡人行走",
+          "dependsOn": [],
+          "overlapAllowedWith": [
+            "beat-01-chant"
+          ],
+          "resources": [
+            "body"
+          ],
+          "durationEstimate": {
+            "lower": 3.5,
+            "expected": 4.2,
+            "upper": 5,
+            "source": "从街巷一端进入画面中央的行走动作，每秒约1.2米步速，行走距离约5米",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "乡人已走至画面中央偏左位置",
+            "modality": "visual",
+            "evidenceAnchor": "乡人行走"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-01-chant",
+          "sourceBeatId": "beat-01",
+          "actorIds": [
+            "传唱歌谣的乡人"
+          ],
+          "kind": "speech",
+          "deliveryStyle": "chant",
+          "textOrVocalization": "天下规矩房伯武，因师获印周仲进",
+          "performanceInstruction": "哼唱歌谣",
+          "dependsOn": [],
+          "overlapAllowedWith": [
+            "beat-01-walk"
+          ],
+          "resources": [
+            "voice"
+          ],
+          "durationEstimate": {
+            "lower": 4.5,
+            "expected": 5,
+            "upper": 5.5,
+            "source": "歌谣18字，chant类型referenceRate=3.3字/秒，加startupAllowance=0.25秒和句间停顿0.25秒",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "完整唱出歌谣全文",
+            "modality": "audio",
+            "evidenceAnchor": "天下规矩房伯武,因师获印周仲进"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-02-hear",
+          "sourceBeatId": "beat-02",
+          "actorIds": [
+            "group-background-villagers"
+          ],
+          "kind": "reaction",
+          "performanceInstruction": "其他乡人侧耳，有人点头",
+          "dependsOn": [
+            "beat-01-chant"
+          ],
+          "overlapAllowedWith": [],
+          "resources": [],
+          "durationEstimate": {
+            "lower": 1.5,
+            "expected": 2,
+            "upper": 2.5,
+            "source": "侧耳和点头的自然反应动作，包括转头、侧耳、点头的连贯过程",
+            "confidence": "medium"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "其他乡人已侧耳并点头完成",
+            "modality": "visual",
+            "evidenceAnchor": "其他乡人侧耳有人点头"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-02-vocalization",
+          "sourceBeatId": "beat-02",
+          "actorIds": [
+            "group-background-villagers"
+          ],
+          "kind": "vocalization",
+          "textOrVocalization": "嗯、嗯哼",
+          "performanceInstruction": "跟着哼唱",
+          "dependsOn": [
+            "beat-02-hear"
+          ],
+          "overlapAllowedWith": [],
+          "resources": [
+            "voice"
+          ],
+          "durationEstimate": {
+            "lower": 0.8,
+            "expected": 1.2,
+            "upper": 1.5,
+            "source": "简短无词回应声，两个短促音节",
+            "confidence": "medium"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "背景乡人发出跟唱声音",
+            "modality": "audio",
+            "evidenceAnchor": "跟着哼唱"
+          },
+          "vocalization": {
+            "vocalizationType": "hum_along",
+            "actorGroup": "group-background-villagers",
+            "expectedAudibility": "clearly_audible",
+            "melodyRelation": "same_tune_fragment",
+            "completionCue": "短促无词音节结束"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        }
+      ]
+    },
+    "shotIntent": {
+      "viewpointCharacter": "传唱歌谣的乡人",
+      "purpose": "建立桓帝时期甘陵时空背景，呈现歌谣传唱事实和乡人知晓过程",
+      "cameraReason": "中景能够同时展现主唱乡人的行走哼唱动作和街巷中其他乡人的侧耳点头反应，建立街巷市井场景氛围"
+    },
+    "beatDramaturgy": [
+      {
+        "beatId": "beat-01",
+        "function": "建立时空背景与事件起因",
+        "stateChange": "从无信息到观众知道桓帝时期、甘陵有两位士人在朝、乡人作歌谣评价",
+        "visual": [
+          "乡人行走",
+          "街巷市井场景",
+          "乡人",
+          "街巷",
+          "哼唱歌谣"
+        ],
+        "audio": [
+          "天下规矩房伯武,因师获印周仲进"
+        ]
+      },
+      {
+        "beatId": "beat-02",
+        "function": "确认歌谣在甘陵流传",
+        "stateChange": "从单人传唱到多人知晓",
+        "visual": [
+          "其他乡人侧耳",
+          "有人点头",
+          "乡人",
+          "侧耳",
+          "点头"
+        ],
+        "audio": [
+          "跟着哼唱"
+        ]
+      }
+    ],
+    "storyProgress": {
+      "unitId": "drama-01",
+      "status": "complete",
+      "actionResult": "歌谣在甘陵街巷传唱，多名乡人知晓并跟唱",
+      "response": "建立建宁元年甘陵时空，呈现周福、房植两位在朝士人的民间评价歌谣及其传播",
+      "pendingActions": []
+    },
+    "characters": [
+      "传唱歌谣的乡人"
+    ],
+    "presentCharacters": [
+      "传唱歌谣的乡人"
+    ],
+    "initialCharacters": [],
+    "enteringCharacters": [
+      {
+        "name": "传唱歌谣的乡人",
+        "startSecond": 0,
+        "endSecond": 4,
+        "path": "从街巷左侧沿土路向画面中央偏左位置走来"
+      }
+    ],
+    "endCharacters": [
+      "传唱歌谣的乡人"
+    ],
+    "worldState": {
+      "settingId": "drama-01",
+      "characters": [
+        {
+          "name": "传唱歌谣的乡人",
+          "position": {
+            "status": "unknown"
+          },
+          "heldProps": {
+            "status": "unknown"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        }
+      ]
+    },
+    "continuity": {
+      "mode": "scene_cut",
+      "previousShotId": "",
+      "bridgeType": "opening",
+      "bridgeAnchor": ""
+    },
+    "coveredBeatIds": [
+      "beat-01",
+      "beat-02"
+    ],
+    "visualPrompt": "东汉甘陵街巷，土路两侧为土坯墙低矮民居，屋顶覆草，墙面斑驳。街巷市井场景中可见木栅栏、陶罐、草席等生活物件。自然光线，天色明亮。背景乡人三五人分散站立或蹲坐于街巷各处，身着东汉平民服饰。传唱歌谣的乡人：成年男性，肤色偏麦色，脸型略长，眉毛浓黑，上唇及下巴留短须。黑发向后梳拢，头顶束小髻，无冠帽。身穿深灰色交领布袍，袖口卷起，肩覆棕褐色粗织披肩，边缘带毛边。胸前斜跨绳带，腰束多圈麻绳,下穿褐色宽松裤，小腿缠麻色绑腿，脚穿棕色布鞋。传唱歌谣的乡人从街巷左侧进入画面。",
+    "camera": "固定机位，中景，摄影机位于街巷中段右侧，视线水平略偏左，轴线沿街巷纵深方向。画面16:9横构图，左侧为乡人进入方向，右侧及背景呈现街巷环境和其他乡人。",
+    "mood": "日常平和中带有民间舆论的自然传播感",
+    "firstFrameMode": "reference",
+    "lastFramePrompt": "传唱歌谣的乡人站立于画面中央偏左位置，双脚自然分开，身体朝向画面右前方，头部微抬，嘴唇闭合。背景乡人中有两三人转头面向主唱乡人，头部微微侧倾做侧耳状，有一人头部点下后回正。街巷场景光线不变，无新增物件。",
+    "videoPrompt": "0.0-4.0秒：传唱歌谣的乡人从街巷左侧沿土路向画面中央偏左位置走来，乡人行走，步伐自然，双臂随步伐自然摆动，边走边哼唱歌谣：天下规矩房伯武，因师获印周仲进。街巷市井场景，背景可见土坯民居、木栅栏、陶罐。4.0-6.0秒：传唱歌谣的乡人走至画面中央偏左位置，继续哼唱歌谣后半句，哼唱歌谣，身体略停。6.0-8.5秒：其他乡人听到歌谣，有人转头其他乡人侧耳，头部微微侧倾，耳朵朝向主唱乡人，有人点头。8.5-10.5秒：背景乡人中有人头部自然下垂后回正点头，同时发出短促无词哼唱声\"嗯、嗯哼\"，跟着哼唱。",
+    "audioType": "对白",
+    "audioText": "传唱歌谣的乡人：天下规矩房伯武，因师获印周仲进",
+    "historicalBasis": "沿用[史料2]载'乡人为之谣曰:天下规矩房伯武,因师获印周仲进'",
+    "adaptationBoundary": "本镜对白为史载歌谣原文；乡人传唱动作、行走路径、街巷场景细节、其他乡人侧耳点头和跟唱的具体呈现方式为合理拟制，不改变歌谣传唱和多人知晓的史实"
+  },
+  "scene": {
+    "id": "scene-01",
+    "sequence": 1,
+    "title": "歌谣传唱",
+    "dramaticSceneId": "drama-01",
+    "cast": [
+      "传唱歌谣的乡人"
+    ],
+    "purpose": "建立时空和事件起因。观众知道:桓帝时期,甘陵有两位在朝为官者周福和房植,乡人为他们作歌谣评价,为后续宾客分歧提供起因",
+    "requiredBeats": [
+      {
+        "id": "beat-01",
+        "description": "建宁元年,甘陵街巷。乡人边走边哼唱:'天下规矩房伯武,因师获印周仲进'",
+        "function": "建立时空背景与事件起因",
+        "stateChange": "从无信息到观众知道桓帝时期、甘陵有两位士人在朝、乡人作歌谣评价",
+        "observable": {
+          "visual": [
+            "乡人行走",
+            "街巷市井场景"
+          ],
+          "audio": [
+            "天下规矩房伯武,因师获印周仲进"
+          ]
+        },
+        "setting": "甘陵街巷",
+        "mustShow": [
+          "乡人",
+          "街巷",
+          "哼唱歌谣"
+        ]
+      },
+      {
+        "id": "beat-02",
+        "description": "其他乡人听到歌谣,有人侧耳,有人跟着哼唱",
+        "function": "确认歌谣在甘陵流传",
+        "stateChange": "从单人传唱到多人知晓",
+        "observable": {
+          "visual": [
+            "其他乡人侧耳",
+            "有人点头"
+          ],
+          "audio": []
+        },
+        "setting": "甘陵街巷",
+        "mustShow": [
+          "乡人",
+          "侧耳",
+          "点头"
+        ]
+      }
+    ],
+    "historicalBasis": "[史料2]载'乡人为之谣曰:天下规矩房伯武,因师获印周仲进'",
+    "adaptationBoundary": "乡人传唱动作和街巷场景为合理拟制,歌谣原文见史料",
+    "targetDuration": 8,
+    "continuityMode": "scene_cut",
+    "completionCriteria": [
+      "歌谣原文已唱出",
+      "多人知晓已呈现"
+    ],
+    "contentContractVersion": "cinematic-v1",
+    "dramaticUnitId": "drama-01",
+    "settingId": "drama-01",
+    "closesUnit": true,
+    "continuityFromPrevious": false
+  }
+}

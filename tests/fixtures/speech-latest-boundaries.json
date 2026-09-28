@@ -1,0 +1,144 @@
+{
+  "sourceRecordId": "record-4kibh7",
+  "segments": [
+    {
+      "end": 2.69,
+      "text": "天下规矩防博武",
+      "start": 0.37,
+      "words": [
+        {
+          "end": 0.87,
+          "word": "天",
+          "start": 0.37,
+          "probability": 0.549149215221405
+        },
+        {
+          "end": 1.19,
+          "word": "下",
+          "start": 0.87,
+          "probability": 0.9990008473396301
+        },
+        {
+          "end": 1.49,
+          "word": "规",
+          "start": 1.19,
+          "probability": 0.9489443302154541
+        },
+        {
+          "end": 1.77,
+          "word": "矩",
+          "start": 1.49,
+          "probability": 0.9852321743965149
+        },
+        {
+          "end": 1.99,
+          "word": "防",
+          "start": 1.77,
+          "probability": 0.8989511132240295
+        },
+        {
+          "end": 2.31,
+          "word": "博",
+          "start": 1.99,
+          "probability": 0.9415866732597351
+        },
+        {
+          "end": 2.69,
+          "word": "武",
+          "start": 2.31,
+          "probability": 0.7866953015327454
+        }
+      ]
+    },
+    {
+      "end": 5.53,
+      "text": "殷师霍印周众静",
+      "start": 2.69,
+      "words": [
+        {
+          "end": 3.69,
+          "word": "殷",
+          "start": 2.69,
+          "probability": 0.5231135431677103
+        },
+        {
+          "end": 3.93,
+          "word": "师",
+          "start": 3.69,
+          "probability": 0.41738471388816833
+        },
+        {
+          "end": 4.15,
+          "word": "霍",
+          "start": 3.93,
+          "probability": 0.860694408416748
+        },
+        {
+          "end": 4.41,
+          "word": "印",
+          "start": 4.15,
+          "probability": 0.8553899526596069
+        },
+        {
+          "end": 4.69,
+          "word": "周",
+          "start": 4.41,
+          "probability": 0.7551137208938599
+        },
+        {
+          "end": 4.99,
+          "word": "众",
+          "start": 4.69,
+          "probability": 0.7171769887208939
+        },
+        {
+          "end": 5.53,
+          "word": "静",
+          "start": 4.99,
+          "probability": 0.49825525283813477
+        }
+      ]
+    },
+    {
+      "end": 5.83,
+      "text": "好",
+      "start": 5.53,
+      "words": [
+        {
+          "end": 5.83,
+          "word": "好",
+          "start": 5.53,
+          "probability": 0.8744612336158752
+        }
+      ]
+    }
+  ],
+  "windows": [
+    {
+      "end": 4.3,
+      "text": "天下规矩房伯武,因师获印周仲进",
+      "start": 1
+    }
+  ],
+  "expectedText": "传唱歌谣的乡人:天下规矩房伯武,因师获印周仲进",
+  "legacySpeechValidation": {
+    "issues": [],
+    "method": "local-whisper-small-phonetic-alignment",
+    "passed": true,
+    "alignment": [
+      {
+        "planned": {
+          "end": 4.3,
+          "text": "天下规矩房伯武,因师获印周仲进",
+          "start": 1
+        },
+        "actualEnd": 4.99,
+        "actualStart": 0.37,
+        "alignmentCoverage": 0.9285714285714286
+      }
+    ],
+    "lastSpeechEnd": 5.83,
+    "lipSyncVerified": false,
+    "phoneticErrorRate": 0.14285714285714285
+  }
+}

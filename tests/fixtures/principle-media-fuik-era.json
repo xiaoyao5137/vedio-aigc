@@ -1,0 +1,1244 @@
+{
+  "provenance": {
+    "recordId": "record-fuik5a",
+    "loopIndex": 0,
+    "note": "Actual authored script, ASR, review and numbered source contents; asset URLs replaced with stable fixture identifiers. verifiedSourceProof is an offline evidence completion, not a new model report."
+  },
+  "context": {
+    "shot_script": {
+      "id": "scene-01-seg-01",
+      "duration": 15,
+      "characters": [
+        "房植门生"
+      ],
+      "audioType": "旁白",
+      "audioText": "建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝",
+      "videoPrompt": "0-14.381秒：（节拍 beat-pacing-01，0至2秒，导演参考）场景：洛阳城内街市；房植门生从街市右侧沿街道走入画面中央；完成态：房植门生已从街市右侧走入画面中央；动作依据：房植门生行走街市。同时，（节拍 beat-pacing-02，0至14.381秒，导演参考）画外旁白自然朗读：建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝；完成态：旁白完整说出背景信息。\n14.381-15秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.1 和已编译节拍分别完成下列声部：[{\"beatId\":\"beat-pacing-02\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。",
+      "pacing": {
+        "beats": [
+          {
+            "id": "beat-pacing-01",
+            "kind": "action",
+            "actorIds": [
+              "房植门生"
+            ],
+            "dependsOn": [],
+            "resources": [
+              "body"
+            ],
+            "completion": {
+              "modality": "visual",
+              "finalState": "房植门生已从街市右侧走入画面中央",
+              "evidenceAnchor": "房植门生行走街市",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "durationEstimate": {
+              "lower": 1,
+              "upper": 2,
+              "source": "步行进入画面的基础动作时间",
+              "expected": 1.5,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [
+              "beat-pacing-02"
+            ],
+            "textOrVocalization": "从街市右侧沿街道走入画面中央"
+          },
+          {
+            "id": "beat-pacing-02",
+            "kind": "speech",
+            "actorIds": [
+              "旁白"
+            ],
+            "dependsOn": [],
+            "resources": [
+              "voice"
+            ],
+            "completion": {
+              "modality": "audio",
+              "finalState": "旁白完整说出背景信息",
+              "evidenceAnchor": "建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝",
+              "requiredThisClip": true
+            },
+            "sourceBeatId": "beat-01",
+            "deliveryStyle": "narration",
+            "durationEstimate": {
+              "lower": 9.7,
+              "upper": 14.381,
+              "source": "38字旁白，按narration的referenceRate 4.5字/秒计算，加启动余量0.25秒和句间停顿",
+              "expected": 10.656,
+              "confidence": "high"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            },
+            "overlapAllowedWith": [
+              "beat-pacing-01"
+            ],
+            "textOrVocalization": "建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝"
+          }
+        ],
+        "version": "duration-v2",
+        "schedule": [
+          {
+            "kind": "action",
+            "beatId": "beat-pacing-01",
+            "actorIds": [
+              "房植门生"
+            ],
+            "endSecond": 2,
+            "startSecond": 0,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 2,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "kind": "speech",
+            "beatId": "beat-pacing-02",
+            "actorIds": [
+              "旁白"
+            ],
+            "endSecond": 14.381,
+            "startSecond": 0,
+            "sourceBeatId": "beat-01",
+            "budgetSeconds": 14.381,
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ],
+        "actorGroups": [],
+        "sampleTimes": [
+          0,
+          1,
+          2,
+          7.191,
+          14.381,
+          14.92
+        ],
+        "scheduleHash": "duration-v2-sha256-571efefcd7281260adb936d382af2d365e55559b4364cc2c078d3156f12fe04a",
+        "timingPolicy": {
+          "speech": {
+            "chant": {
+              "maximumRate": 4.5,
+              "referenceRate": 3.3,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 2.8
+            },
+            "singing": {
+              "maximumRate": 3.5,
+              "referenceRate": 2.8,
+              "startupAllowance": 0.35,
+              "minimumNaturalRate": 2
+            },
+            "dialogue": {
+              "maximumRate": 5,
+              "referenceRate": 4.5,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 3.3
+            },
+            "narration": {
+              "maximumRate": 5,
+              "referenceRate": 4.5,
+              "startupAllowance": 0.25,
+              "minimumNaturalRate": 3.3
+            }
+          },
+          "version": "duration-policy-v2.1",
+          "linePauseSeconds": 0.2,
+          "shortPauseSeconds": 0.15,
+          "minimumActionSeconds": 0.3,
+          "sentencePauseSeconds": 0.25,
+          "minimumReactionSeconds": 0.5,
+          "maximumProviderDuration": 15,
+          "minimumProviderDuration": 3,
+          "endingReadabilityReserve": 0.5,
+          "minimumVocalizationSeconds": 0.8,
+          "maxConservativeExtraSeconds": 1,
+          "measurementToleranceSeconds": 0.25
+        },
+        "sourceBeatIds": [
+          "beat-01"
+        ],
+        "speechWindows": [
+          {
+            "end": 14.381,
+            "text": "建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝",
+            "start": 0,
+            "beatId": "beat-pacing-02",
+            "actorIds": [
+              "旁白"
+            ],
+            "sourceBeatId": "beat-01",
+            "deliveryStyle": "narration"
+          }
+        ],
+        "timelineWindows": [
+          {
+            "beatIds": [
+              "beat-pacing-01",
+              "beat-pacing-02"
+            ],
+            "endSecond": 14.381,
+            "beatQuotes": [
+              {
+                "quote": "（节拍 beat-pacing-01，0至2秒，导演参考）场景：洛阳城内街市；房植门生从街市右侧沿街道走入画面中央；完成态：房植门生已从街市右侧走入画面中央；动作依据：房植门生行走街市。",
+                "beatId": "beat-pacing-01"
+              },
+              {
+                "quote": "（节拍 beat-pacing-02，0至14.381秒，导演参考）画外旁白自然朗读：建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝；完成态：旁白完整说出背景信息。",
+                "beatId": "beat-pacing-02"
+              }
+            ],
+            "startSecond": 0
+          },
+          {
+            "beatIds": [],
+            "endSecond": 15,
+            "beatQuotes": [],
+            "startSecond": 14.381
+          }
+        ],
+        "compiledVideoPrompt": "0-14.381秒：（节拍 beat-pacing-01，0至2秒，导演参考）场景：洛阳城内街市；房植门生从街市右侧沿街道走入画面中央；完成态：房植门生已从街市右侧走入画面中央；动作依据：房植门生行走街市。同时，（节拍 beat-pacing-02，0至14.381秒，导演参考）画外旁白自然朗读：建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝；完成态：旁白完整说出背景信息。\n14.381-15秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+        "sourceBeatRequirements": [
+          {
+            "id": "beat-01",
+            "anchors": [
+              "房植门生",
+              "街市"
+            ],
+            "setting": "洛阳城内街市"
+          }
+        ]
+      }
+    },
+    "video_take": {
+      "url": "https://fixture.example/fuik-take.mp4",
+      "params": {
+        "scheduleHash": "duration-v2-sha256-571efefcd7281260adb936d382af2d365e55559b4364cc2c078d3156f12fe04a"
+      }
+    },
+    "video_evidence": {
+      "decoded": true,
+      "duration": 15.04,
+      "width": 1280,
+      "height": 720,
+      "frameTimes": [
+        0,
+        2.137,
+        4.274,
+        6.411,
+        8.549,
+        10.686,
+        12.823,
+        14.96
+      ],
+      "hasAudio": true,
+      "meanVolumeDb": -25.1,
+      "transcript": [
+        {
+          "start": 0.91,
+          "end": 3.23,
+          "text": "建宁初年 环帝级位",
+          "words": [
+            {
+              "start": 0.91,
+              "end": 1.41,
+              "word": "建",
+              "probability": 0.46441760659217834
+            },
+            {
+              "start": 1.41,
+              "end": 1.57,
+              "word": "宁",
+              "probability": 0.9286821782588959
+            },
+            {
+              "start": 1.57,
+              "end": 1.71,
+              "word": "初",
+              "probability": 0.9493611454963684
+            },
+            {
+              "start": 1.71,
+              "end": 1.95,
+              "word": "年",
+              "probability": 0.9935382008552551
+            },
+            {
+              "start": 2.39,
+              "end": 2.53,
+              "word": " 环",
+              "probability": 0.5562892854213715
+            },
+            {
+              "start": 2.53,
+              "end": 2.73,
+              "word": "帝",
+              "probability": 0.9129269421100616
+            },
+            {
+              "start": 2.73,
+              "end": 2.89,
+              "word": "级",
+              "probability": 0.5461657643318176
+            },
+            {
+              "start": 2.89,
+              "end": 3.23,
+              "word": "位",
+              "probability": 0.9842110276222229
+            }
+          ]
+        },
+        {
+          "start": 4.83,
+          "end": 6.31,
+          "text": "帝西维利吾侯时",
+          "words": [
+            {
+              "start": 4.83,
+              "end": 5.23,
+              "word": "帝",
+              "probability": 0.7812996208667755
+            },
+            {
+              "start": 5.23,
+              "end": 5.41,
+              "word": "西",
+              "probability": 0.7838219404220581
+            },
+            {
+              "start": 5.41,
+              "end": 5.57,
+              "word": "维",
+              "probability": 0.6220489665865898
+            },
+            {
+              "start": 5.57,
+              "end": 5.73,
+              "word": "利",
+              "probability": 0.43267014622688293
+            },
+            {
+              "start": 5.73,
+              "end": 5.87,
+              "word": "吾",
+              "probability": 0.5244588777422905
+            },
+            {
+              "start": 5.87,
+              "end": 6.07,
+              "word": "侯",
+              "probability": 0.978287547826767
+            },
+            {
+              "start": 6.07,
+              "end": 6.31,
+              "word": "时",
+              "probability": 0.3570106029510498
+            }
+          ]
+        },
+        {
+          "start": 6.31,
+          "end": 8.31,
+          "text": "曾受学于甘陵人周福",
+          "words": [
+            {
+              "start": 6.31,
+              "end": 6.87,
+              "word": "曾",
+              "probability": 0.8124549388885498
+            },
+            {
+              "start": 6.87,
+              "end": 7.07,
+              "word": "受",
+              "probability": 0.7241050601005554
+            },
+            {
+              "start": 7.07,
+              "end": 7.25,
+              "word": "学",
+              "probability": 0.6873127222061157
+            },
+            {
+              "start": 7.25,
+              "end": 7.37,
+              "word": "于",
+              "probability": 0.7960749268531799
+            },
+            {
+              "start": 7.37,
+              "end": 7.53,
+              "word": "甘",
+              "probability": 0.8248715400695801
+            },
+            {
+              "start": 7.53,
+              "end": 7.67,
+              "word": "陵",
+              "probability": 0.7437265962362289
+            },
+            {
+              "start": 7.67,
+              "end": 7.81,
+              "word": "人",
+              "probability": 0.9977559447288513
+            },
+            {
+              "start": 7.81,
+              "end": 7.99,
+              "word": "周",
+              "probability": 0.9150189161300659
+            },
+            {
+              "start": 7.99,
+              "end": 8.31,
+              "word": "福",
+              "probability": 0.6735199689865112
+            }
+          ]
+        },
+        {
+          "start": 9.29,
+          "end": 11.11,
+          "text": "纪位后卓福为尚书",
+          "words": [
+            {
+              "start": 9.29,
+              "end": 9.69,
+              "word": "纪",
+              "probability": 0.37306294962763786
+            },
+            {
+              "start": 9.69,
+              "end": 9.83,
+              "word": "位",
+              "probability": 0.99247145652771
+            },
+            {
+              "start": 9.83,
+              "end": 10.03,
+              "word": "后",
+              "probability": 0.9893997311592102
+            },
+            {
+              "start": 10.03,
+              "end": 10.27,
+              "word": "卓",
+              "probability": 0.8715832233428955
+            },
+            {
+              "start": 10.27,
+              "end": 10.43,
+              "word": "福",
+              "probability": 0.46037089824676514
+            },
+            {
+              "start": 10.43,
+              "end": 10.59,
+              "word": "为",
+              "probability": 0.9344732165336609
+            },
+            {
+              "start": 10.59,
+              "end": 10.83,
+              "word": "尚",
+              "probability": 0.857128769159317
+            },
+            {
+              "start": 10.83,
+              "end": 11.11,
+              "word": "书",
+              "probability": 0.9519234001636505
+            }
+          ]
+        },
+        {
+          "start": 11.65,
+          "end": 13.03,
+          "text": "同俊河南隐坊",
+          "words": [
+            {
+              "start": 11.65,
+              "end": 12.05,
+              "word": "同",
+              "probability": 0.4333999752998352
+            },
+            {
+              "start": 12.05,
+              "end": 12.27,
+              "word": "俊",
+              "probability": 0.7679800689220428
+            },
+            {
+              "start": 12.27,
+              "end": 12.47,
+              "word": "河",
+              "probability": 0.9869605600833893
+            },
+            {
+              "start": 12.47,
+              "end": 12.61,
+              "word": "南",
+              "probability": 0.9978087544441223
+            },
+            {
+              "start": 12.61,
+              "end": 12.77,
+              "word": "隐",
+              "probability": 0.8938403427600861
+            },
+            {
+              "start": 12.77,
+              "end": 13.03,
+              "word": "坊",
+              "probability": 0.7796541750431061
+            }
+          ]
+        },
+        {
+          "start": 13.61,
+          "end": 14.69,
+          "text": "有名当朝",
+          "words": [
+            {
+              "start": 13.61,
+              "end": 14.01,
+              "word": "有",
+              "probability": 0.6266666054725647
+            },
+            {
+              "start": 14.01,
+              "end": 14.21,
+              "word": "名",
+              "probability": 0.9894142150878906
+            },
+            {
+              "start": 14.21,
+              "end": 14.41,
+              "word": "当",
+              "probability": 0.9925035238265991
+            },
+            {
+              "start": 14.41,
+              "end": 14.69,
+              "word": "朝",
+              "probability": 0.9978673458099365
+            }
+          ]
+        }
+      ],
+      "speechValidation": {
+        "passed": false,
+        "alignment": [
+          {
+            "planned": {
+              "end": 14.381,
+              "text": "建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝",
+              "start": 0,
+              "beatId": "beat-pacing-02",
+              "actorIds": [
+                "旁白"
+              ],
+              "sourceBeatId": "beat-01",
+              "deliveryStyle": "narration"
+            },
+            "actualStart": 0.91,
+            "actualEnd": 14.69,
+            "matchedStart": 0.91,
+            "matchedEnd": 14.69,
+            "alignmentCoverage": 0.9767441860465116,
+            "firstTokenMatched": true,
+            "lastTokenMatched": true,
+            "boundaryEvidenceVersion": 2,
+            "boundaryStatus": "uncertain",
+            "boundaryUncertaintyReasons": [
+              "partial-phonetic-alignment"
+            ],
+            "utteranceCandidateStart": 0.91,
+            "utteranceCandidateEnd": 14.69,
+            "startBoundaryRange": {
+              "lower": 0.91,
+              "upper": 0.91
+            },
+            "endBoundaryRange": {
+              "lower": 14.69,
+              "upper": 14.69
+            },
+            "rawUtteranceCandidate": {
+              "start": 0.91,
+              "end": 14.69,
+              "text": "建宁初年 环帝级位帝西维利吾侯时曾受学于甘陵人周福纪位后卓福为尚书同俊河南隐坊有名当朝",
+              "words": [
+                {
+                  "start": 0.91,
+                  "end": 1.41,
+                  "word": "建",
+                  "probability": 0.46441760659217834
+                },
+                {
+                  "start": 1.41,
+                  "end": 1.57,
+                  "word": "宁",
+                  "probability": 0.9286821782588959
+                },
+                {
+                  "start": 1.57,
+                  "end": 1.71,
+                  "word": "初",
+                  "probability": 0.9493611454963684
+                },
+                {
+                  "start": 1.71,
+                  "end": 1.95,
+                  "word": "年",
+                  "probability": 0.9935382008552551
+                },
+                {
+                  "start": 2.39,
+                  "end": 2.53,
+                  "word": " 环",
+                  "probability": 0.5562892854213715
+                },
+                {
+                  "start": 2.53,
+                  "end": 2.73,
+                  "word": "帝",
+                  "probability": 0.9129269421100616
+                },
+                {
+                  "start": 2.73,
+                  "end": 2.89,
+                  "word": "级",
+                  "probability": 0.5461657643318176
+                },
+                {
+                  "start": 2.89,
+                  "end": 3.23,
+                  "word": "位",
+                  "probability": 0.9842110276222229
+                },
+                {
+                  "start": 4.83,
+                  "end": 5.23,
+                  "word": "帝",
+                  "probability": 0.7812996208667755
+                },
+                {
+                  "start": 5.23,
+                  "end": 5.41,
+                  "word": "西",
+                  "probability": 0.7838219404220581
+                },
+                {
+                  "start": 5.41,
+                  "end": 5.57,
+                  "word": "维",
+                  "probability": 0.6220489665865898
+                },
+                {
+                  "start": 5.57,
+                  "end": 5.73,
+                  "word": "利",
+                  "probability": 0.43267014622688293
+                },
+                {
+                  "start": 5.73,
+                  "end": 5.87,
+                  "word": "吾",
+                  "probability": 0.5244588777422905
+                },
+                {
+                  "start": 5.87,
+                  "end": 6.07,
+                  "word": "侯",
+                  "probability": 0.978287547826767
+                },
+                {
+                  "start": 6.07,
+                  "end": 6.31,
+                  "word": "时",
+                  "probability": 0.3570106029510498
+                },
+                {
+                  "start": 6.31,
+                  "end": 6.87,
+                  "word": "曾",
+                  "probability": 0.8124549388885498
+                },
+                {
+                  "start": 6.87,
+                  "end": 7.07,
+                  "word": "受",
+                  "probability": 0.7241050601005554
+                },
+                {
+                  "start": 7.07,
+                  "end": 7.25,
+                  "word": "学",
+                  "probability": 0.6873127222061157
+                },
+                {
+                  "start": 7.25,
+                  "end": 7.37,
+                  "word": "于",
+                  "probability": 0.7960749268531799
+                },
+                {
+                  "start": 7.37,
+                  "end": 7.53,
+                  "word": "甘",
+                  "probability": 0.8248715400695801
+                },
+                {
+                  "start": 7.53,
+                  "end": 7.67,
+                  "word": "陵",
+                  "probability": 0.7437265962362289
+                },
+                {
+                  "start": 7.67,
+                  "end": 7.81,
+                  "word": "人",
+                  "probability": 0.9977559447288513
+                },
+                {
+                  "start": 7.81,
+                  "end": 7.99,
+                  "word": "周",
+                  "probability": 0.9150189161300659
+                },
+                {
+                  "start": 7.99,
+                  "end": 8.31,
+                  "word": "福",
+                  "probability": 0.6735199689865112
+                },
+                {
+                  "start": 9.29,
+                  "end": 9.69,
+                  "word": "纪",
+                  "probability": 0.37306294962763786
+                },
+                {
+                  "start": 9.69,
+                  "end": 9.83,
+                  "word": "位",
+                  "probability": 0.99247145652771
+                },
+                {
+                  "start": 9.83,
+                  "end": 10.03,
+                  "word": "后",
+                  "probability": 0.9893997311592102
+                },
+                {
+                  "start": 10.03,
+                  "end": 10.27,
+                  "word": "卓",
+                  "probability": 0.8715832233428955
+                },
+                {
+                  "start": 10.27,
+                  "end": 10.43,
+                  "word": "福",
+                  "probability": 0.46037089824676514
+                },
+                {
+                  "start": 10.43,
+                  "end": 10.59,
+                  "word": "为",
+                  "probability": 0.9344732165336609
+                },
+                {
+                  "start": 10.59,
+                  "end": 10.83,
+                  "word": "尚",
+                  "probability": 0.857128769159317
+                },
+                {
+                  "start": 10.83,
+                  "end": 11.11,
+                  "word": "书",
+                  "probability": 0.9519234001636505
+                },
+                {
+                  "start": 11.65,
+                  "end": 12.05,
+                  "word": "同",
+                  "probability": 0.4333999752998352
+                },
+                {
+                  "start": 12.05,
+                  "end": 12.27,
+                  "word": "俊",
+                  "probability": 0.7679800689220428
+                },
+                {
+                  "start": 12.27,
+                  "end": 12.47,
+                  "word": "河",
+                  "probability": 0.9869605600833893
+                },
+                {
+                  "start": 12.47,
+                  "end": 12.61,
+                  "word": "南",
+                  "probability": 0.9978087544441223
+                },
+                {
+                  "start": 12.61,
+                  "end": 12.77,
+                  "word": "隐",
+                  "probability": 0.8938403427600861
+                },
+                {
+                  "start": 12.77,
+                  "end": 13.03,
+                  "word": "坊",
+                  "probability": 0.7796541750431061
+                },
+                {
+                  "start": 13.61,
+                  "end": 14.01,
+                  "word": "有",
+                  "probability": 0.6266666054725647
+                },
+                {
+                  "start": 14.01,
+                  "end": 14.21,
+                  "word": "名",
+                  "probability": 0.9894142150878906
+                },
+                {
+                  "start": 14.21,
+                  "end": 14.41,
+                  "word": "当",
+                  "probability": 0.9925035238265991
+                },
+                {
+                  "start": 14.41,
+                  "end": 14.69,
+                  "word": "朝",
+                  "probability": 0.9978673458099365
+                }
+              ],
+              "segmentIndices": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "segments": [
+                {
+                  "start": 0.91,
+                  "end": 3.23,
+                  "text": "建宁初年 环帝级位",
+                  "words": [
+                    {
+                      "start": 0.91,
+                      "end": 1.41,
+                      "word": "建",
+                      "probability": 0.46441760659217834
+                    },
+                    {
+                      "start": 1.41,
+                      "end": 1.57,
+                      "word": "宁",
+                      "probability": 0.9286821782588959
+                    },
+                    {
+                      "start": 1.57,
+                      "end": 1.71,
+                      "word": "初",
+                      "probability": 0.9493611454963684
+                    },
+                    {
+                      "start": 1.71,
+                      "end": 1.95,
+                      "word": "年",
+                      "probability": 0.9935382008552551
+                    },
+                    {
+                      "start": 2.39,
+                      "end": 2.53,
+                      "word": " 环",
+                      "probability": 0.5562892854213715
+                    },
+                    {
+                      "start": 2.53,
+                      "end": 2.73,
+                      "word": "帝",
+                      "probability": 0.9129269421100616
+                    },
+                    {
+                      "start": 2.73,
+                      "end": 2.89,
+                      "word": "级",
+                      "probability": 0.5461657643318176
+                    },
+                    {
+                      "start": 2.89,
+                      "end": 3.23,
+                      "word": "位",
+                      "probability": 0.9842110276222229
+                    }
+                  ]
+                },
+                {
+                  "start": 4.83,
+                  "end": 6.31,
+                  "text": "帝西维利吾侯时",
+                  "words": [
+                    {
+                      "start": 4.83,
+                      "end": 5.23,
+                      "word": "帝",
+                      "probability": 0.7812996208667755
+                    },
+                    {
+                      "start": 5.23,
+                      "end": 5.41,
+                      "word": "西",
+                      "probability": 0.7838219404220581
+                    },
+                    {
+                      "start": 5.41,
+                      "end": 5.57,
+                      "word": "维",
+                      "probability": 0.6220489665865898
+                    },
+                    {
+                      "start": 5.57,
+                      "end": 5.73,
+                      "word": "利",
+                      "probability": 0.43267014622688293
+                    },
+                    {
+                      "start": 5.73,
+                      "end": 5.87,
+                      "word": "吾",
+                      "probability": 0.5244588777422905
+                    },
+                    {
+                      "start": 5.87,
+                      "end": 6.07,
+                      "word": "侯",
+                      "probability": 0.978287547826767
+                    },
+                    {
+                      "start": 6.07,
+                      "end": 6.31,
+                      "word": "时",
+                      "probability": 0.3570106029510498
+                    }
+                  ]
+                },
+                {
+                  "start": 6.31,
+                  "end": 8.31,
+                  "text": "曾受学于甘陵人周福",
+                  "words": [
+                    {
+                      "start": 6.31,
+                      "end": 6.87,
+                      "word": "曾",
+                      "probability": 0.8124549388885498
+                    },
+                    {
+                      "start": 6.87,
+                      "end": 7.07,
+                      "word": "受",
+                      "probability": 0.7241050601005554
+                    },
+                    {
+                      "start": 7.07,
+                      "end": 7.25,
+                      "word": "学",
+                      "probability": 0.6873127222061157
+                    },
+                    {
+                      "start": 7.25,
+                      "end": 7.37,
+                      "word": "于",
+                      "probability": 0.7960749268531799
+                    },
+                    {
+                      "start": 7.37,
+                      "end": 7.53,
+                      "word": "甘",
+                      "probability": 0.8248715400695801
+                    },
+                    {
+                      "start": 7.53,
+                      "end": 7.67,
+                      "word": "陵",
+                      "probability": 0.7437265962362289
+                    },
+                    {
+                      "start": 7.67,
+                      "end": 7.81,
+                      "word": "人",
+                      "probability": 0.9977559447288513
+                    },
+                    {
+                      "start": 7.81,
+                      "end": 7.99,
+                      "word": "周",
+                      "probability": 0.9150189161300659
+                    },
+                    {
+                      "start": 7.99,
+                      "end": 8.31,
+                      "word": "福",
+                      "probability": 0.6735199689865112
+                    }
+                  ]
+                },
+                {
+                  "start": 9.29,
+                  "end": 11.11,
+                  "text": "纪位后卓福为尚书",
+                  "words": [
+                    {
+                      "start": 9.29,
+                      "end": 9.69,
+                      "word": "纪",
+                      "probability": 0.37306294962763786
+                    },
+                    {
+                      "start": 9.69,
+                      "end": 9.83,
+                      "word": "位",
+                      "probability": 0.99247145652771
+                    },
+                    {
+                      "start": 9.83,
+                      "end": 10.03,
+                      "word": "后",
+                      "probability": 0.9893997311592102
+                    },
+                    {
+                      "start": 10.03,
+                      "end": 10.27,
+                      "word": "卓",
+                      "probability": 0.8715832233428955
+                    },
+                    {
+                      "start": 10.27,
+                      "end": 10.43,
+                      "word": "福",
+                      "probability": 0.46037089824676514
+                    },
+                    {
+                      "start": 10.43,
+                      "end": 10.59,
+                      "word": "为",
+                      "probability": 0.9344732165336609
+                    },
+                    {
+                      "start": 10.59,
+                      "end": 10.83,
+                      "word": "尚",
+                      "probability": 0.857128769159317
+                    },
+                    {
+                      "start": 10.83,
+                      "end": 11.11,
+                      "word": "书",
+                      "probability": 0.9519234001636505
+                    }
+                  ]
+                },
+                {
+                  "start": 11.65,
+                  "end": 13.03,
+                  "text": "同俊河南隐坊",
+                  "words": [
+                    {
+                      "start": 11.65,
+                      "end": 12.05,
+                      "word": "同",
+                      "probability": 0.4333999752998352
+                    },
+                    {
+                      "start": 12.05,
+                      "end": 12.27,
+                      "word": "俊",
+                      "probability": 0.7679800689220428
+                    },
+                    {
+                      "start": 12.27,
+                      "end": 12.47,
+                      "word": "河",
+                      "probability": 0.9869605600833893
+                    },
+                    {
+                      "start": 12.47,
+                      "end": 12.61,
+                      "word": "南",
+                      "probability": 0.9978087544441223
+                    },
+                    {
+                      "start": 12.61,
+                      "end": 12.77,
+                      "word": "隐",
+                      "probability": 0.8938403427600861
+                    },
+                    {
+                      "start": 12.77,
+                      "end": 13.03,
+                      "word": "坊",
+                      "probability": 0.7796541750431061
+                    }
+                  ]
+                },
+                {
+                  "start": 13.61,
+                  "end": 14.69,
+                  "text": "有名当朝",
+                  "words": [
+                    {
+                      "start": 13.61,
+                      "end": 14.01,
+                      "word": "有",
+                      "probability": 0.6266666054725647
+                    },
+                    {
+                      "start": 14.01,
+                      "end": 14.21,
+                      "word": "名",
+                      "probability": 0.9894142150878906
+                    },
+                    {
+                      "start": 14.21,
+                      "end": 14.41,
+                      "word": "当",
+                      "probability": 0.9925035238265991
+                    },
+                    {
+                      "start": 14.41,
+                      "end": 14.69,
+                      "word": "朝",
+                      "probability": 0.9978673458099365
+                    }
+                  ]
+                }
+              ],
+              "attribution": "unverified-ASR-candidate"
+            }
+          }
+        ],
+        "issues": [
+          "台词首尾或对齐证据不确定，须复核同一素材音频：建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝"
+        ],
+        "phoneticErrorRate": 0.023255813953488372,
+        "lastSpeechEnd": 14.69,
+        "lipSyncVerified": false,
+        "alignmentVersion": 2,
+        "dialogueCompletenessVerified": false,
+        "method": "local-whisper-small-phonetic-alignment"
+      },
+      "originalUrl": "https://fixture.example/fuik-take.mp4",
+      "url": "/generated/fuik-verified.mp4",
+      "evidenceUrl": "/generated/fuik-evidence.json",
+      "frames": [
+        "/generated/fuik-frame-0.jpg",
+        "/generated/fuik-frame-1.jpg",
+        "/generated/fuik-frame-2.jpg",
+        "/generated/fuik-frame-3.jpg",
+        "/generated/fuik-frame-4.jpg",
+        "/generated/fuik-frame-5.jpg",
+        "/generated/fuik-frame-6.jpg",
+        "/generated/fuik-frame-7.jpg"
+      ],
+      "lastFrameUrl": "/generated/fuik-frame-7.jpg"
+    },
+    "media_review": {
+      "version": "principle-review-v1",
+      "decision": "revise",
+      "issues": [
+        {
+          "code": "historical_era",
+          "problem": "实际旁白将桓帝即位放在建宁初年，与本次文本提供的纪年说明明确冲突。",
+          "repair": "仅修正并重录开头的时间衔接，例如将“建宁初年,桓帝即位”改为“此前，桓帝即位”；完整保留其余旁白、师生关系、人物地位及街市入场剧情。",
+          "evidence": {
+            "source": "asr",
+            "frameIndices": [],
+            "finding": "ASR开头对应“建宁初年,桓帝即位”。本次文本明确说明“建宁元年是灵帝即位后的年号”，并指出桓帝即位早于建宁改元；该纪年冲突已体现在实际语音转写中。",
+            "quote": "建宁初年 环帝级位"
+          }
+        }
+      ],
+      "warnings": [
+        {
+          "code": "speech_uncertain",
+          "message": "ASR“同俊河南隐坊”未明确识别出“房植”的“植”，其他多处差异属于同音或近音转写，不能据此认定台词大范围错误。建议复听原素材这一短句；台词完整性及口型均未验证。"
+        },
+        {
+          "code": "costume_detail",
+          "message": "帧4至7可见主演戴挺立黑色高帽，与计划中的纶巾存在造型差异；仅凭此不足以确证时代错误，可局部统一服饰。"
+        }
+      ],
+      "endingState": "末帧7中，房植门生站在街道中央略偏左，面向镜头，双手自然下垂，身穿深色长袍、系宽腰带、戴黑色高帽。左后方有背向镜头的粉衣行人，右侧摊位旁有商贩与顾客。",
+      "endCharacters": [
+        "房植门生"
+      ]
+    },
+    "historical_sources": {
+      "citations": [
+        {
+          "index": 1,
+          "id": "web-482bca96c4e53765",
+          "title": "後漢書/卷8",
+          "content": "卷八·帝紀第八　孝靈皇帝\n孝靈皇帝諱宏， 〈 《 謚法 》曰：「亂而不損曰靈。\n」《 伏侯古今注 》曰宏之字曰大。\n曾祖河閒孝王開，祖淑，父萇。\n世封解瀆亭侯， 〈 淑以河閒王子封爲解瀆亭侯，萇襲父封，故言世封也。\n解瀆亭在今定州義豐縣東北也。\n桓帝崩，無子，皇太后與父城門校尉竇武定策禁中，使守光祿大夫劉儵持節，將左右羽林至河閒奉迎。\n〈 《 續漢志 》曰：「桓帝之初，京都童謠曰：『城上烏，尾畢逋，父爲吏，子爲徒。\n河閒奼女工數錢，以錢爲室金爲堂，石上慊慊舂黃梁。\n梁下有懸鼓，我欲擊之丞卿怒。\n』『城上烏』者，處高獨食，不與下共，謂人主多聚斂也。\n『父爲吏，子爲徒』者，言蠻夷叛逆，父旣爲軍吏，子弟又爲卒徒往擊之也。\n『一徒死，百乘車』者，言前一人討胡旣死矣，後又遣百乘車往也。\n『車班班』者，言乘輿班班入河閒迎靈帝也。\n『奼女數錢』，言帝旣立，其母永樂太后好聚金以爲堂室也。\n『石上慊慊』者，言太后雖積金錢，猶慊慊常若不足，使人舂黃粱而食之也。\n『我欲擊之』者，言太后敎帝使賣官受錢，天下忠篤之士怨望，欲擊鼓求見卿，懸鼓者復怒而止我也。\n建寧元年 春正月壬午，城門校尉竇武爲大將軍。\n己亥，帝到夏門亭， 〈 《 東觀記 》曰：「到夏門外萬壽亭，羣臣謁見。\n」 〉 使竇武持節，以王青蓋車迎入殿中。\n庚子，即皇帝位，年十二。\n以前太尉陳蕃爲太傅，與竇武及司徒胡廣參錄尚書事。\n使護羌校尉段熲討先零羌。\n二月辛酉，葬孝桓皇帝于宣陵， 〈 在洛陽東南三十里，高十二丈，周三百步。\n段熲大破先零羌於逢義山。\n閏月甲午，追尊皇祖爲孝元皇，夫人夏氏爲孝元皇后，考爲孝仁皇，夫人董氏爲慎園貴人。\n〈 慎園在今瀛州樂壽縣東南，俗呼爲二皇陵。\n夏四月戊辰，太尉周景薨。\n司空宣酆免，長樂衞尉王暢爲司空。\n詔公卿以下各上封事，及郡國守相舉有道之士各一人；\n又故刺史、二千石清高有遺惠，爲衆所歸者，皆詣公車。\n秋七月，破羌將軍段熲復破先零羌於涇陽。\n〈 涇陽，縣名，屬安定，故城在今原州平涼縣南也。\n八月，司空王暢免，宗正劉寵爲司空。\n九月丁亥，中常侍曹節矯詔誅太傅陳蕃、大將軍竇武及尚書令尹勳、侍中劉瑜、屯騎校尉馮述，皆夷其族。\n〈 太后與竇武密謀欲誅曹節，今武等旣誅，故太后被遷。\n〉 司徒胡廣爲太傅，錄尚書事。\n司空劉寵爲司徒，大鴻臚許栩爲司空。\n冬十月甲辰晦，日有食之。\n令天下繫囚罪未決入縑贖，各有差。\n十一月，太尉劉矩免，太僕沛國聞人襲爲太尉。\n〈 姓聞人，名襲，字定卿。\n《 風俗通 》曰：「少正卯，魯之聞人，其後氏焉。\n十二月，鮮卑及濊貊寇幽并二州。\n二年春正月丁丑，大赦天下。\n三月乙巳，尊慎園董貴人爲孝仁皇后。\n〈 《 續漢志 》曰：「置永樂宮，儀如桓帝尊匽貴人之禮。\n夏四月癸巳，大風，雨雹。\n五月，太尉聞人襲罷，司空許栩免。\n六月，司徒劉寵爲太尉，太常許訓爲司徒， 〈 訓字季師，平輿人。\n〉 太僕長沙劉囂爲司空。\n秋七月，破羌將軍段熲大破先零羌於射虎塞外谷，東羌悉平。\n九月，江夏蠻叛，州郡討平之。\n丹陽山越賊圍太守陳夤，夤擊破之。\n冬十月丁亥，中常侍侯覽諷有司奏前司空虞放、太僕杜密、長樂少府李膺、司隷校尉朱瑀、潁川太守巴肅、沛相荀翌、河內太守魏朗、山陽太守翟超皆爲鉤黨，下獄， 〈 鉤謂相牽引也。\n〉 死者百餘人，妻子徙邊，諸附從者錮及五屬。\n〉 制詔州郡大舉鉤黨，於是天下豪桀及儒學行義者，一切結爲黨人。\n〈 《 續漢志 》曰：「建寧中，京都長者皆以葦方笥爲裝具，時有識者竊言，葦笥郡國讞篋也。\n後黨人禁錮，會赦，有疑者皆讞廷尉，人名悉入方笥中。\n十一月，太尉劉寵免，太僕郭禧爲太尉。\n是歲，長樂太僕曹節爲車騎將軍，百餘日罷。\n三年春正月，河內人婦食夫，河南人夫食婦。\n夏四月，太尉郭禧罷，太中大夫聞人襲爲太尉。\n八月，大鴻臚橋玄爲司空。\n九月，執金吾董寵下獄死。"
+        },
+        {
+          "index": 2,
+          "id": "web-edb11baf48d82732",
+          "title": "後漢書/卷67",
+          "content": "卷六十七　黨錮列傳　第五十七\n► 郭符許列傳　第五十八\n孔子曰：「性相近也，習相遠也。\n」言嗜惡之本同，而遷染之塗異也。\n言人好惡，各有本性，遷染者，由其所習。\n尚書曰：「唯人生厚，因物有遷。\n」墨子曰：「墨子見染絲者，泣而歎曰：『染於蒼則蒼，染於黃則黃，故染不可不慎也。\n非獨染絲然也，國亦有染。\n殷紂染於惡來，故國殘身死，爲天下僇。\n』」 〉 夫刻意則行不肆，牽物則其志流。\n〈 刻意，刻削其意不得自恣也。\n莊子曰：「刻意尚行，離時異俗。\n牽物謂爲物所牽制，則其志流宕忘反也。\n淮南子曰：「非拘緊牽連於物，而不與推移也。\n」 〉 是以聖人導人理性，裁抑宕佚，慎其所與，節其所偏，雖情品萬區，質文異數，至於陶物振俗，其道一也。\n管子曰：「夫法之制人，猶陶之於埴，冶之於金也。\n叔末澆訛，王道陵缺， 〈 叔末猶季末也。\n〉 而猶假仁以效己，憑義以濟功。\n蓋前哲之遺塵，有足求者。\n〈 褫猶奪也，音直紙反。\n齊侯伐楚，楚子使與師言曰：「君處北海，寡人南海，唯是風馬牛不相及也，不虞君之涉吾地也。\n」管仲對曰：「爾貢苞茅不入，王祭不供，無以縮酒，寡人是征。\n」對曰：「貢之不入，寡君之罪也。\n」遂使屈完與齊盟於召陵。\n又晉呂甥、卻苪將焚公宮而殺晉侯，寺人披請見，公使讓之，且辭曰：「汝爲惠公來求殺余，命汝三宿，汝中宿而至。\n」對曰：「臣謂君之入也，其知之矣。\n除君之惡，唯力是視，蒲人狄人，余何有焉。\n今君即位，其無蒲、狄乎？\n〉 強者以決勝爲雄，弱者以詐劣受屈。\n至有畫半策而綰萬金，開一説而錫琛瑞。\n〈 蘇秦説趙王，賜白壁百雙，黃金萬鎰。\n虞卿一見趙王，賜白璧一雙，黃金百鎰。\n〉 或起徒步而仕執珪，解草衣以升卿相。\n〈 《史記》曰：楚惠王言「莊舄，越之鄙細人也，今仕楚執珪，貴富矣」。\n解草衣謂范睢、蔡澤之類。\n〉 士之飾巧馳辯，以要能釣利者，不期而景從矣。\n〈 韓子李斯曰：「韓非飾辯詐謀，以釣利於秦」也。\n賈誼過秦曰「贏糧而景從」也。\n〉 自是愛尚相奪，與時回變，其風不可留，其敝不能反。\n及漢祖杖劍，武夫勃興，憲令寬賒，文禮簡闊，緒余四豪之烈，人懷陵上之心， 〈 四豪謂信陵君魏公子無忌、平原君趙勝、春申君黃歇、孟嘗君田文。\n前書班固曰：「游談者以四豪爲稱首。\n」 〉 輕死重氣，怨惠必讎，令行私庭，權移匹庶，任俠之方，成其俗矣。\n〈 《前書音義》曰：「相與信爲任，同是非爲俠，所謂權行州域，力折公侯者也。\n」 〉 自武帝以後，崇尚儒學，懷經協術，所在霧會，至有石渠分爭之論，黨同伐異之説，守文之徒，盛於時矣。\n〈 武帝詔求賢良，於是公孫弘、董仲舒等出焉。\n宣帝時，集諸儒於石渠閣，講論六蓺。\n召五經名儒太子蕭望之等大議殿中，平公羊、谷梁同異，同己者朋黨之，異己者攻伐之。\n劉歆書曰：「黨同門，妒道真。\n」 〉 至王莽專僞，終於篡國，忠義之流，恥見纓紼，遂乃榮華丘壑，甘足枯槁。\n〈 謂襲勝、薛方、郭欽、蔣詡之類，並隱居不應莽召。\n〉 雖中興在運，漢德重開，而保身懷方，彌相慕襲，去就之節，重於時矣。\n〈 謂逢萌、嚴光、周黨、尚長之屬。\n〉 逮桓靈之閒，主荒政繆，國命委於閹寺，士子羞與爲伍，故匹夫抗憤，處士橫議，遂乃激揚名聲，互相題拂，品核公卿，裁量執政，婞直之風，於斯行矣。\n〈 婞，狠也，音邢鼎反。\n夫上好則下必甚，矯枉故直必過，其理然矣。\n〈 《禮記》曰：「下之事上也，不從其所令，從其所行。\n上好是物，下必有甚者矣。\n正枉必過其直，見《孟子》。\n〉 若范滂、張儉之徒，清心忌惡，終陷黨議，不其然乎？\n初，桓帝爲蠡吾侯，受學於甘陵周福，及即帝位，擢福爲尚書。\n時同郡河南尹房植有名當朝，鄉人爲之謠曰：「天下規矩房伯武，因師獲印周仲進。\n」二家賓客，互相譏揣 〈 初委反 〉 ，遂各樹朋徒，漸成尤隙，由是甘陵有南北部，黨人之議，自此始矣。"
+        },
+        {
+          "index": 3,
+          "id": "web-5fc9b7bb5b37885c",
+          "title": "後漢書/卷69",
+          "content": "竇武字游平，扶風平陵人，安豐戴侯融之玄孫也。\n武少以經行著稱，常教授於大澤中，不交時事，名顯關西。\n延熹八年 ，長女選入掖庭，桓帝以為貴人，拜武郎中。\n其冬，貴人立為皇后，武遷越騎校尉，封槐里侯，五千戶。\n在位多辟名士，清身疾惡，禮賂不通，妻子衣食裁充足而已。\n是時羌蠻寇難，歲儉民飢，武得兩宮賞賜，悉散與太學諸生，及載肴糧於路，飩施貧民。\n兄子紹，為虎賁中郎將，性疏簡奢侈。\n武每數切厲相戒，猶不覺悟，乃上書求退紹位，又自責不能訓導，當先受罪。\n由是紹更遵節，大小莫敢違犯。\n時國政多失，內官專寵，李膺、杜密等為黨事考逮。\n臣聞明主不諱譏刺之言，以探幽暗之實；\n忠臣不卹諫爭之患，以暢萬端之事。\n是以君臣並熙，名奮百世。\n臣幸得遭盛明之世，逢文武之化，豈敢懷祿逃罪，不竭其誠！\n陛下初從藩國，爰登聖祚，天下逸豫，謂當中興。\n梁、孫、寇、鄧雖或誅滅，而常侍黃門續為禍虐，欺罔陛下，競行譎詐，自造制度，妄爵非人，朝政日衰，姦臣日彊。\n伏尋西京放恣王氏，佞臣執政，終喪天下。\n今不慮前事之失，復循覆車之軌，臣恐二世之難，必將復及，趙高之變，不朝則夕。\n近者姦臣牢脩，造設黨議，遂收前司隸校尉李膺、太僕杜密、御史中丞陳翔、太尉掾范滂等逮考，連及數百人，曠年拘錄，事無效驗。\n臣惟膺等建忠抗節，志經王室，此誠陛下稷、党、伊、呂之佐，而虛為姦臣賊子之所誣枉，天下寒心，海內失望。\n惟陛下留神澄省，時見理出，以厭人鬼喁喁之心。\n臣聞古之明君，必須賢佐，以成政道。\n今臺閣近臣，尚書令陳蕃，僕射胡廣，尚書朱宇、荀緄、劉祐、魏朗、劉矩、尹勳等，皆國之貞士，朝之良佐。\n尚書郎張陵、媯皓、苑康、楊喬、邊韶、戴恢等，文質彬彬，明達國典。\n而陛下委任近習，專樹饕餮，外典州郡，內幹心膂。\n宜以次貶黜，案罪糾罰，抑奪宦官欺國之封，案其無狀誣罔之罪，信任忠良，平決臧否，使邪正毀譽，各得其所，寶愛天官，唯善是授。\n如此，咎徵可消，天應可待。\n閒者有嘉禾、芝草、黃龍之見。\n夫瑞生必於嘉士，福至實由善人，在德為瑞，無德為災。\n陛下所行，不合天意，不宜稱慶。\n書奏，因以病上還城門校尉、槐里侯印綬。\n帝不許，有詔原李膺、杜密等，自黃門北寺、若盧、都內諸獄，繫囚罪輕者皆出之。\n武召侍御史河閒劉儵，參問其國中王子侯之賢者，儵稱解瀆亭侯宏。\n武入白太后，遂徵立之，是為靈帝。\n拜武為大將軍，常居禁中。\n帝既立，論定策功，更封武為聞喜侯；\n兄子紹鄠侯，遷步兵校尉；\n紹弟靖西鄉侯，為侍中，監羽林左騎。\n武既輔朝政，常有誅翦宦官之意，太傅陳蕃亦素有謀。\n時共會朝堂，蕃私謂武曰：「中常侍曹節、王甫等，自先帝時操弄國權，濁亂海內，百姓匈匈，歸咎於此。\n武於是引同志尹勳為尚書令，劉瑜為侍中，馮述為屯騎校尉；\n又徵天下名士廢黜者前司隸李膺、宗正劉猛、太僕杜密、廬江太守朱宇等，列於朝廷；\n請前越巂太守荀翌為從事中郎，辟潁川陳寔為屬：共定計策。\n於是天下雄俊，知其風旨，莫不延頸企踵，思奮其智力。\n會五月日食，蕃復說武曰：「昔蕭望之困一石顯，近者李、杜諸公禍及妻子，況今石顯數十輩乎！\n蕃以八十之年，欲為將軍除害，今可且因日食，斥罷宦官，以塞天變。\n又趙夫人及女尚書，旦夕亂太后，急宜退絕。\n」武乃白太后曰：「故事，黃門、常侍但當給事省內，典門戶，主近署財物耳。\n今乃使與政事而任權重，子弟布列，專為貪暴。\n」太后曰：「漢來故事世有，但當誅其有罪，豈可盡廢邪？\n」時中常侍管霸頗有才略，專制省內。\n武先白誅霸及中常侍蘇康等，竟死。\n武復數白誅曹節等，太后冘豫未忍，故事久不發。\n劉瑜素善天官，惡之，上書皇太后曰：「太白犯房左驂，上將星入太微，其占宮門當閉，將相不利，姦人在主傍。\n」又與武、蕃書，以星辰錯繆，不利大臣，宜速斷大計。\n武、蕃得書將發，於是以朱宇為司隸校尉，劉祐為河南尹，虞祁為洛陽令。\n武乃奏免黃門令魏彪，以所親小黃門山冰代之。"
+        },
+        {
+          "index": 4,
+          "id": "web-02b11cf9413873aa",
+          "title": "後漢書/卷8",
+          "content": "冬，濟南賊起，攻東平陵。\n〈 東平陵，縣名，屬濟南國，故城在今濟州東。\n《 廣州記 》曰：「其俗食人，以鼻飲水，口中進噉如故。\n四年春正月甲子，帝加元服，大赦天下。\n賜公卿以下各有差，唯黨人不赦。\n二月癸卯，地震，海水溢，河水清。\n太尉聞人襲免，太僕李咸爲太尉。\n〈 字元卓，汝南西平人。\n詔公卿至六百石各上封事。\n大疫，使中謁者巡行致醫藥。\n司徒許訓免，司空橋玄爲司徒。\n夏四月，太常來豔爲司空。\n〈 豔字季德，南陽新野人。\n五月，河東地裂，雨雹，山水暴出。\n癸丑，立貴人宋氏爲皇后。\n〈 執金吾宋酆女，前年入掖庭爲貴人。\n太常宗俱爲司空， 〈 俱字伯儷，南陽安衆人。\n熹平元年 春三月壬戌，太傅胡廣薨。\n夏五月己巳，大赦天下，改元熹平。\n長樂太僕侯覽有罪，自殺。\n秋七月甲寅，葬桓思皇后。\n宦官諷司隷校尉段熲捕繫太學諸生千餘人。\n〈 時有人書朱雀闕云「天下大亂，公卿皆尸祿」故捕之。\n〉 冬十月，渤海王悝被誣謀反，丁亥，悝及妻子皆自殺。\n十一月，會稽人許生自稱「越王」，寇郡縣， 〈 《 東觀記 》曰：「會稽許昭聚衆自稱大將軍，立父生爲越王，攻破郡縣。\n」 〉 遣楊州刺史臧旻、丹陽太守陳夤討破之。\n十二月，司徒許栩罷，大鴻臚袁隗爲司徒。\n二年春正月，大疫，使使者巡行致醫藥。\n夏五月，以司隷校尉段熲爲太尉。\n沛相師遷坐誣罔國王，下獄死。\n臣賢案：陳敬王傳云「國相師遷」。\n又《 東觀記 》曰「陳行相師遷奏，沛相魏愔，前爲陳相，與陳王寵交通」。\n明魏愔爲沛相，此言師遷爲沛相，蓋誤也。\n〈 《 續漢志 》曰：「時出大魚二枚，各長八九丈，高二丈餘。\n秋七月，司空楊賜免，太常潁川唐珍爲司空。\n冬十二月，日南徼外國重譯貢獻。\n三年春正月，夫餘國遣使貢獻。\n〈 耽字漢公，東海人也。\n三月，中山王暢薨，無子，國除。\n夏六月，封河閒王利子康爲濟南王，奉孝仁皇祀。\n冬十月癸丑，令天下繫囚罪未決，入縑贖。\n十一月，楊州刺史臧旻率丹陽太守陳寅，大破許生於會稽，斬之。\n十二月，鮮卑寇北地，北地太守夏育追擊破之。\n司空唐珍罷，永樂少府許訓爲司空。\n四年春三月，詔諸儒正五經文字，刻石立于太學門外。\n封河閒王建孫佗爲任城王。\n延陵園灾， 〈 成帝陵也，在今咸陽縣西。\n〉 遣使者持節告祠延陵。\n遣守宮令之鹽監，穿渠爲民興利。\n〈 《 前書 》地理志及《 續漢 》郡國志並無監，今蒲州安邑西南有鹽池。\n令郡國遇災者，減田租之半；\n其傷害十四以上，勿收責。\n冬十月丁巳，令天下繫囚罪未決，入縑贖。\n拜沖帝母虞美人爲憲園貴人， 〈 順帝虞美人也。\n〉 質帝母陳夫人爲渤海孝王妃。\n〈 渤海孝王鴻之夫人也。\n改平準爲中準， 〈 《 漢官儀 》曰：「平準令一人，秩六百石也。\n」 〉 使宦者爲令，列於內署。\n自是諸署悉以閹人爲丞、令。\n五年夏四月癸亥，大赦天下。\n益州郡夷叛，太守李顒討平之。\n〈 《 前書 》武帝祠中嶽，改嵩高爲崇高。\n《 東觀記 》曰：「使中郎將堂谿典請雨，因上言改之，名爲嵩高山。\n使侍御史行詔獄亭部，理冤枉，原輕繫，休囚徒。\n五月，太尉陳耽罷，司空許訓爲太尉。\n閏月，永昌太守曹鸞坐訟黨人，弃市。\n其言切直，帝怒，檻車送槐里獄掠殺之也。\n〉 詔黨人門生故吏父兄子弟在位者，皆免官禁錮。\n六月壬戌，太常南陽劉逸爲司空。\n秋七月，太尉許訓罷，光祿勳劉寬爲太尉。\n冬十月壬午，御殿後槐樹自拔倒豎。\n十一月丙戌，光祿大夫楊賜爲司徒。\n試太學生年六十以上百餘人，除郎中、太子舍人至王家郎、郡國文學吏。\n〈 《 漢官儀 》曰：「太子舍人、王家郎中並秩二百石，無員。\n六年春正月辛丑，大赦天下。\n二月，南宮平城門及武庫東垣屋自壞。\n〈 平城門，洛陽城南門也。\n蔡邕曰：「平城門，正陽之門，與宮連，郊祀法駕所從出，門之最尊者。\n《 易傳 》曰：「小人在位，厥妖城門自壞。\n市賈民爲宣陵孝子者數十人，皆除太子舍人。"
+        },
+        {
+          "index": 5,
+          "id": "web-b6fc1e96b4c948f7",
+          "title": "後漢書/卷67",
+          "content": "後汝南太守宗資任功曹范滂，南陽太守成瑨亦委功曹岑晊 〈 音質 〉 ，二郡又爲謠曰：\n「汝南太守范孟博，南陽宗資主畫諾。\n南陽太守岑公孝，弘農成瑨但坐嘯。\n」 〈 謝承書曰「成瑨少修仁義，篤學，以清名見。\n舉孝廉，拜郎中，遷南陽太守。\n郡舊多豪強，中官黃門磐牙境界。\n瑨下車，振威嚴以撿攝之。\n是時桓帝乳母、中官貴人外親張子禁，怙恃貴埶，不畏法網，功曹岑晊勸使捕子禁付宛獄，笞殺之。\n宗資字叔都，南陽安觿人也。\n資少在京師，學孟氏易、歐陽尚書。\n舉孝廉，拜議郎，補御史中丞、汝南太守。\n署范滂爲功曹，委任政事，推功於滂，不伐其美。\n任善之名，聞於海內」也。\n〉 因此流言轉入太學，諸生三萬餘人，郭林宗、賈偉節爲其冠 〈 冠猶首也。\n〉 ，並與李膺、陳蕃、王暢更相褒重。\n學中語曰：「天下模楷李元禮，不畏強禦陳仲舉，天下俊秀王叔茂。\n」又渤海公族進階 〈 公族，姓也，名進階。\n風俗通曰：「晉成公立嫡子爲公族大夫。\n」韓無忌號公族穆子，見《左氏傳》 〉 、扶風魏齊卿，並危言深論，不隱豪強 〈 危言謂不畏危難而直言也。\n論語孔子曰：「邦有道，危言危行。\n自公卿以下，莫不畏其貶議，屣履到門。\n時河內張成善説風角，推占當赦，遂教子殺人。\n李膺爲河南尹，督促收捕，既而逢宥獲免，膺愈懷憤疾，竟案殺之。\n初，成以方伎交通宦官，帝亦頗誶其占。\n成弟子牢修因上書誣告膺等養太學游士，交結諸郡生徒，更相驅馳，共爲部黨，誹訕朝廷，疑亂風俗。\n〈 説文曰：「誹，謗也。\n」蒼頡篇曰：「訕，非也。\n」 〉 於是天子震怒，班下郡國，逮捕黨人，佈告天下，使同忿疾，遂收執膺等。\n其辭所連及陳寔之徒二百餘人，或有逃遁不獲，皆懸金購募。\n明年，尚書霍諝、城門校尉竇武並表爲請，帝意稍解，乃皆赦歸田裡，禁錮終身。\n自是正直廢放，邪枉熾結，海內希風之流，遂共相摽搒 〈 希，望也，摽搒猶相稱揚也。\n「搒」與「牓」同，古字通。\n〉 ，指天下名士，爲之稱號。\n上曰「三君」，次曰「八俊」，次曰「八顧」，次曰「八及」，次曰「八廚」，猶古之「八元」、「八凱」也。\n竇武、劉淑、陳蕃爲「三君」。\n李膺、荀翌、杜密、王暢、劉祐、魏朗、趙典、朱㝢爲「八俊」。\n郭林宗、宗慈、巴肅、夏馥、范滂、尹勳、蔡衍、羊陟爲「八顧」。\n顧者，言能以德行引人者也。\n張儉、岑晊、劉表、陳翔、孔昱、苑康、檀敷、翟超爲「八及」。\n及者，言其能導人追宗者也 〈 導，引也。\n度尚、張邈、王考、劉儒、胡母班、秦周、蕃向、王章爲「八廚」 〈 蕃，姓也，音皮。\n廚者，言能以財救人者也。\n又張儉鄉人朱並，承望中常侍侯覽意旨，上書告儉與同鄉二十四人別相署號，共爲部黨，圖危社稷。\n以儉及檀彬、褚鳳、張肅、薛蘭、馮禧、魏玄、徐乾爲「八俊」，田林、張隱、劉表、薛郁、王訪、劉祗、宣靖、公緒恭爲「八顧」 〈 公緒，姓也。\n〉 ，朱楷、田盤、疎耽、薛敦、宋布、唐龍、嬴咨、宣褒爲「八及」，刻石立墠，共爲部黨，而儉爲之魁 〈 墠，除地於中爲壇。\n靈帝詔刊章捕儉等 〈 刊，削。\n不欲宣露並名，故削除之，而直捕儉等。\n大長秋曹節因此諷有司奏捕前黨故司空虞放、太僕杜密、長樂少府李膺、司隸校尉朱㝢、穎川太守巴肅、沛相荀翌、河內太守魏朗、山陽太守翟超、任城相劉儒、太尉掾范滂等百餘人，皆死獄中。\n余或先歿不及，或亡命獲免。\n自此諸爲怨隙者，因相陷害，睚眦之忿，濫入黨中。\n前書音義曰：「瞋目魍也。\n」史記曰：「睚眦之隙必報。\n」 〉 又州郡承旨，或有未嘗交關，亦離禍毒。\n其死徙廢禁者，六七百人。\n熹平五年，永昌太守曹鸞上書大訟黨人，言甚方切。\n帝省奏大怒，即詔司隸、益州檻車收鸞，送槐裡獄掠殺之。\n於是又詔州郡更考黨人門生故吏父子兄弟，其在位者，免官禁錮，爰及五屬。\n〈 謂斬衰、齊衰、大功、小功、緦麻也。\n光和二年，上祿長和海 〈 上祿，縣，屬武都郡，今成州縣也。"
+        },
+        {
+          "index": 6,
+          "id": "web-420cfdf42b7daeb0",
+          "title": "後漢書/卷69",
+          "content": "使冰奏素狡猾尤無狀者長樂尚書鄭駱，送北寺獄。\n蕃謂武曰：「此曹子便當收殺，何復考為！\n」武不從，令冰與尹勳、侍御史祝瑨雜考駱，辭連及曹節、王甫。\n勳、冰即奏收節等，使劉瑜內奏。\n時武出宿歸府，典中書者先以告長樂五官史朱瑀。\n瑀盜發武奏，罵曰：「中官放縱者，自可誅耳。\n我曹何罪，而當盡見族滅？\n」因大呼曰：「陳蕃、竇武奏白太后廢帝，為大逆！\n」乃夜召素所親壯健者長樂從官史共普、張亮等十七人，喢血共盟誅武等。\n曹節聞之，驚起，白帝曰：「外閒切切，請出御德陽前殿。\n」令帝拔劍踊躍，使乳母趙嬈等擁衛左右，取棨信，閉諸禁門。\n召尚書官屬，脅以白刃，使作詔板。\n拜王甫為黃門令，持節至北寺獄收尹勳、山冰。\n冰疑，不受詔，甫格殺之。\n令中謁者守南宮，閉門，絕複道。\n使鄭駱等持節，及侍御史、謁者捕收武等。\n武不受詔，馳入步兵營，與紹共射殺使者。\n召會北軍五校士數千人屯都亭下，令軍士曰：「黃門常侍反，盡力者封侯重賞。\n」詔以少府周靖行車騎將軍，加節，與護匈奴中郎將張奐率五營士討武。\n夜漏盡，王甫將虎賁、羽林、廄騶、都候、劍戟士，合千餘人，出屯朱雀掖門，與奐等合。\n明旦悉軍闕下，與武對陳。\n甫兵漸盛，使其士大呼武軍曰：「竇武反，汝皆禁兵，當宿衛宮省，何故隨反者乎？\n」營府素畏服中官，於是武軍稍稍歸甫。\n武、紹走，諸軍追圍之，皆自殺，梟首洛陽都亭。\n收捕宗親、賓客、姻屬，悉誅之，及劉瑜、馮述，皆夷其族。\n徙武家屬日南，遷太后於雲臺。\n當是時，凶豎得志，士大夫皆喪其氣矣。\n武府掾桂陽胡騰，少師事武，獨殯斂行喪，坐以禁錮。\n武孫輔，時年二歲，逃竄得全。\n胡騰及令史南陽張敞共逃輔於零陵界，詐云已死，騰以為己子，而使聘娶焉。\n至建安中，荊州牧劉表聞而辟焉，以為從事，使還竇姓，以事列上。\n會表卒，曹操定荊州，輔與宗人徙居於鄴，辟丞相府。\n從征馬超，為流矢所中死。\n初，武母產武而并產一蛇，送之林中。\n後母卒，及葬未窆，有大蛇自榛草而出，徑至喪所，以頭擊柩，涕血皆流，俯仰蛣屈，若哀泣之容，有頃而去。\n初，桓帝巡狩南陽，以騰為護駕從事。\n公卿貴戚車騎萬計，徵求費役，不可勝極。\n騰上言：「天子無外，乘輿所幸，即為京師。\n臣請以荊州刺史比司隸校尉，臣自同都官從事。\n自是肅然，莫敢妄有干欲，騰以此顯名。\n何進字遂高，南陽宛人也。\n異母女弟選入掖庭為貴人，有寵於靈帝，拜進郎中，再遷虎賁中郎將，出為潁川太守。\n光和二年 ，貴人立為皇后，徵進入，拜侍中、將作大匠、河南尹。\n中平元年 ，黃巾賊張角等起，以進為大將軍，率左右羽林五營士屯都亭，修理器械，以鎮京師。\n張角別黨馬元義謀起洛陽，進發其姦，以功封慎侯。\n四年，滎陽賊數千人群起，攻燒郡縣，殺中牟縣令，詔使進弟河南尹苗出擊之。\n詔遣使者迎於成皋，拜苗為車騎將軍，封濟陽侯。\n五年，天下滋亂，望氣者以為京師當有大兵，兩宮流血。\n大將軍司馬許涼、假司馬伍宕說進曰：「太公六韜有天子將兵事，可以威厭四方。\n」進以為然，入言之於帝。\n於是乃詔進大發四方兵，講武於平樂觀下。\n起大壇，上建十二重五采華蓋，高十丈，壇東北為小壇，復建九重華蓋，高九丈，列步兵，騎士數萬人，結營為陳。\n天子親出臨軍，駐大華蓋下，進駐小華蓋下。\n禮畢，帝躬擐甲介馬，稱「無上將軍」，行陳三匝而還。\n是時置西園八校尉，以小黃門蹇碩為上軍校尉，虎賁中郎將袁紹為中軍校尉，屯騎都尉鮑鴻為下軍校尉，議郎曹操為典軍校尉，趙融為助軍校尉，淳于瓊為佐軍校尉，又有左右校尉。\n帝以蹇碩壯健而有武略，特親任之，以為元帥，督司隸校尉以下，雖大將軍亦領屬焉。\n碩雖擅兵於中，而猶畏忌於進，乃與諸常侍共說帝遣進西擊邊章、韓遂。\n帝從之，賜兵車百乘，虎賁斧鉞。\n進陰知其謀，乃上遣袁紹東擊徐兗二州兵，須紹還，即戎事，以稽行期。\n初，何皇后生皇子辯，王貴人生皇子協。"
+        }
+      ]
+    }
+  },
+  "verifiedSourceProof": {
+    "sourceIndex": 1,
+    "sourceQuote": "我欲擊之』者，言太后敎帝使賣官受錢，天下忠篤之士怨望，欲擊鼓求見卿，懸鼓者復怒而止我也。\n建寧元年 春正月壬午，城門校尉竇武爲大將軍。\n己亥，帝到夏門亭， 〈 《 東觀記 》曰：「到夏門外萬壽亭，羣臣謁見。\n」 〉 使竇武持節，以王青蓋車迎入殿中。\n庚子，即皇帝位，年十二。\n以前太尉陳蕃爲太傅，與竇武及司徒胡廣參錄尚書事。\n使護羌校尉段熲討先零羌。\n二月辛酉，葬孝桓皇帝于宣陵， 〈 在洛陽東南三十里，高十二丈，周三百步。\n段熲大破先零羌於逢義山。"
+  }
+}

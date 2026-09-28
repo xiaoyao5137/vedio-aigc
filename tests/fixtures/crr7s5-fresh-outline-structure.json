@@ -1,0 +1,1115 @@
+{
+  "sourceRecordId": "record-57hbx6",
+  "candidate": {
+    "contentContractVersion": "cinematic-v1",
+    "episodeTitle": "符水与饥民",
+    "episodeDrama": {
+      "centralQuestion": "张角如何用符水治病吸引饥民追随，最终建立起遍布八州的黄巾信徒组织",
+      "viewpointCharacters": [
+        "张角"
+      ],
+      "stakes": "饥民的生存、汉室的统治基础、张角能否将信众转化为组织力量",
+      "openingPromise": {
+        "description": "中平元年前十余年间，饥荒与疫病中的百姓面对符水治病的张角，观众要看他如何从传道者变为拥有数十万信徒的组织者",
+        "beatIds": [
+          "beat-01"
+        ]
+      },
+      "payoff": {
+        "description": "张角的弟子已遍布八州，信徒数十万,组织体系建立完成,为即将到来的起事做好准备",
+        "beatIds": [
+          "beat-34",
+          "beat-35"
+        ]
+      }
+    },
+    "historicalLocks": [
+      {
+        "id": "fact-01",
+        "fact": "鉅鹿张角自称大賢良師,奉事黄老道,畜养弟子,跪拜首过,符水呪说以疗病,病者颇愈,百姓信向之",
+        "sourceRefs": [
+          "[史料2]"
+        ]
+      },
+      {
+        "id": "fact-02",
+        "fact": "张角因遣弟子八人使於四方,以善道教化天下,转相诳惑",
+        "sourceRefs": [
+          "[史料2]"
+        ]
+      },
+      {
+        "id": "fact-03",
+        "fact": "十餘年閒,衆徒数十万,连结郡国,自青徐幽冀荆扬兗豫八州之人,莫不毕应",
+        "sourceRefs": [
+          "[史料2]"
+        ]
+      },
+      {
+        "id": "fact-04",
+        "fact": "大方万余人,小方六七千,各立渠帅",
+        "sourceRefs": [
+          "[史料2]"
+        ]
+      },
+      {
+        "id": "fact-05",
+        "fact": "灵帝世政教日乱,豪猾益炽",
+        "sourceRefs": [
+          "[史料3]"
+        ]
+      },
+      {
+        "id": "fact-06",
+        "fact": "建宁至中平年间,天下饥困,大疫频发",
+        "sourceRefs": [
+          "[史料5]"
+        ]
+      }
+    ],
+    "adaptationSpace": {
+      "policy": "史事节点可据史呈现；对白、微动作和场面调度须标明为合理拟制。",
+      "sourceLevel": "A/B｜正史直载或多源互证",
+      "allowed": [
+        "拟制张角为病患施符水的具体过程与对白",
+        "拟制饥民求医的具体言行和病症表现",
+        "拟制张角与弟子讨论传道方略的对白",
+        "拟制信众跪拜、传唱教义的场面调度",
+        "拟制张角遣弟子出使时的嘱咐内容"
+      ],
+      "forbidden": [
+        "不得改变张角传道、治病、组织信众的主体行动",
+        "不得改变十余年间发展至数十万信徒、八州呼应的规模与时长",
+        "不得虚构张角的政治阴谋动机或与朝廷的直接冲突",
+        "不得把饥民、疫病的时代背景改为其他社会原因",
+        "不得将弟子八人遣使四方改为其他传播方式"
+      ]
+    },
+    "characterDramas": [
+      {
+        "name": "张角",
+        "goal": "用符水治病赢得饥民信任,建立遍布各州的信徒组织",
+        "concern": "病患是否真能好转,信众能否持续追随,传道范围能否扩大",
+        "leverage": "掌握符水咒说之术,能治愈部分病患,有传道的口才",
+        "tactic": "先施符水治病,再传黄老善道,用疗效建立信任后发展组织",
+        "speechStyle": "以问答方式引导信众自省悔过,语气平和而笃定",
+        "basis": "performance",
+        "historicalLockIds": [
+          "fact-01",
+          "fact-02"
+        ],
+        "coreMotivation": {
+          "status": "unknown",
+          "description": "史料未记载张角传道初期的核心政治动机",
+          "historicalLockIds": []
+        },
+        "initialState": {
+          "knowledge": [
+            "黄老道义理",
+            "符水咒说疗病之法",
+            "当世饥荒疫病严重"
+          ],
+          "relationships": [
+            "已有初期追随弟子"
+          ],
+          "choices": [
+            "选择自称大贤良师开始传道"
+          ]
+        }
+      }
+    ],
+    "dramaticScenes": [
+      {
+        "id": "drama-01",
+        "function": "setup",
+        "setting": "历史地图沙盘信息空间",
+        "characters": [],
+        "goal": "建立本集时空背景与核心事件",
+        "obstacle": "首次观看者不知道灵帝年间的饥荒疫病处境与张角传道的起点",
+        "tactics": "用历史地图沙盘标示八州地理范围,旁白交代灵帝世饥困大疫与张角符水传道的事实",
+        "turn": "从时代困境转入张角以符水治病的具体行动",
+        "result": "观众知道灵帝世天下饥困疫病,张角在此背景下开始用符水治病传道",
+        "beatIds": [
+          "beat-01"
+        ],
+        "characterStates": []
+      },
+      {
+        "id": "drama-02",
+        "function": "conflict",
+        "setting": "鉅鹿郡外荒野简陋草棚",
+        "characters": [
+          "张角"
+        ],
+        "goal": "张角为染病饥民施符水,使其病愈并信服",
+        "obstacle": "饥民病重,对符水半信半疑",
+        "tactics": "张角让病患跪拜忏悔,施符水并念咒,观察病患反应",
+        "turn": "病患饮符水后症状缓解,开始叩拜感激",
+        "result": "病患及周围饥民见证疗效,开始信向张角",
+        "beatIds": [
+          "beat-02",
+          "beat-03",
+          "beat-04"
+        ],
+        "characterStates": [
+          {
+            "name": "张角",
+            "before": {
+              "knowledge": [
+                "黄老道义理",
+                "符水咒说疗病之法",
+                "当世饥荒疫病严重"
+              ],
+              "relationships": [
+                "已有初期追随弟子"
+              ],
+              "choices": [
+                "选择自称大贤良师开始传道"
+              ]
+            },
+            "after": {
+              "knowledge": [
+                "黄老道义理",
+                "符水咒说疗病之法",
+                "当世饥荒疫病严重",
+                "符水确能治愈部分病患"
+              ],
+              "relationships": [
+                "已有初期追随弟子",
+                "新获饥民信众"
+              ],
+              "choices": [
+                "选择自称大贤良师开始传道",
+                "继续用符水治病吸引更多信众"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "drama-03",
+        "function": "conflict",
+        "setting": "鉅鹿郡内张角居所院落",
+        "characters": [
+          "张角"
+        ],
+        "goal": "张角向聚集的信众传授黄老善道,建立组织雏形",
+        "obstacle": "信众来自各地,需要统一教义与行为规范",
+        "tactics": "张角讲述黄老之道,要求信众跪拜首过悔罪,建立师徒关系",
+        "turn": "信众齐声应诺,跪拜称角为大贤良师",
+        "result": "信众接受张角为师,愿意传播善道,组织雏形建立",
+        "beatIds": [
+          "beat-05",
+          "beat-06",
+          "beat-07"
+        ],
+        "characterStates": [
+          {
+            "name": "张角",
+            "before": {
+              "knowledge": [
+                "黄老道义理",
+                "符水咒说疗病之法",
+                "当世饥荒疫病严重",
+                "符水确能治愈部分病患"
+              ],
+              "relationships": [
+                "已有初期追随弟子",
+                "新获饥民信众"
+              ],
+              "choices": [
+                "选择自称大贤良师开始传道",
+                "继续用符水治病吸引更多信众"
+              ]
+            },
+            "after": {
+              "knowledge": [
+                "黄老道义理",
+                "符水咒说疗病之法",
+                "当世饥荒疫病严重",
+                "符水确能治愈部分病患",
+                "信众愿意传播善道"
+              ],
+              "relationships": [
+                "已有初期追随弟子",
+                "新获饥民信众",
+                "信众尊其为大贤良师"
+              ],
+              "choices": [
+                "选择自称大贤良师开始传道",
+                "继续用符水治病吸引更多信众",
+                "决定遣弟子往四方传道"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "drama-04",
+        "function": "transition",
+        "setting": "从鉅鹿居所到各州传道路途的地理空间",
+        "characters": [],
+        "goal": "呈现张角遣八弟子分赴四方的空间扩展",
+        "obstacle": "需要让观众理解传道从一地扩展到八州的地理过程",
+        "tactics": "用历史地图沙盘标示八弟子分赴青徐幽冀荆扬兗豫八州,旁白说明以善道教化天下",
+        "turn": "从一地传道转为八州同时传播",
+        "result": "观众理解传道范围从鉅鹿扩展至八州",
+        "beatIds": [
+          "beat-08"
+        ],
+        "characterStates": []
+      },
+      {
+        "id": "drama-05",
+        "function": "consequence",
+        "setting": "青州某郡县村落空地",
+        "characters": [
+          "张角"
+        ],
+        "goal": "展现张角弟子在各州传道,信众持续增长",
+        "obstacle": "各地饥民分散,需要持续的治病与传道才能聚拢",
+        "tactics": "张角弟子为病患施符水,讲述善道,信众跪拜追随",
+        "turn": "病患好转,更多饥民前来求医听道",
+        "result": "该地信众聚集,形成小方组织",
+        "beatIds": [
+          "beat-09",
+          "beat-10"
+        ],
+        "characterStates": [
+          {
+            "name": "张角",
+            "before": {
+              "knowledge": [
+                "黄老道义理",
+                "符水咒说疗病之法",
+                "当世饥荒疫病严重",
+                "符水确能治愈部分病患",
+                "信众愿意传播善道"
+              ],
+              "relationships": [
+                "已有初期追随弟子",
+                "新获饥民信众",
+                "信众尊其为大贤良师"
+              ],
+              "choices": [
+                "选择自称大贤良师开始传道",
+                "继续用符水治病吸引更多信众",
+                "决定遣弟子往四方传道"
+              ]
+            },
+            "after": {
+              "knowledge": [
+                "黄老道义理",
+                "符水咒说疗病之法",
+                "当世饥荒疫病严重",
+                "符水确能治愈部分病患",
+                "信众愿意传播善道",
+                "各州传道已见成效"
+              ],
+              "relationships": [
+                "已有初期追随弟子",
+                "新获饥民信众",
+                "信众尊其为大贤良师",
+                "各州弟子正在发展信众"
+              ],
+              "choices": [
+                "选择自称大贤良师开始传道",
+                "继续用符水治病吸引更多信众",
+                "决定遣弟子往四方传道",
+                "继续扩大传道规模"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "drama-06",
+        "function": "transition",
+        "setting": "时间流逝的视觉呈现空间",
+        "characters": [],
+        "goal": "呈现十余年时间跨度与信众规模持续增长",
+        "obstacle": "需要压缩十余年传道过程而不失叙事清晰",
+        "tactics": "用四季更替、草木枯荣的实景蒙太奇,配合旁白说明十余年间信众增至数十万",
+        "turn": "从初期传道转入组织成熟期",
+        "result": "观众理解传道已历十余年,信众规模已达数十万",
+        "beatIds": [
+          "beat-11"
+        ],
+        "characterStates": []
+      },
+      {
+        "id": "drama-07",
+        "function": "consequence",
+        "setting": "鉅鹿郡张角居所内堂",
+        "characters": [
+          "张角"
+        ],
+        "goal": "张角与核心弟子商议组织架构,确立大方小方体系",
+        "obstacle": "信众数十万分散各州,需要统一管理体系",
+        "tactics": "张角与弟子讨论分立大方小方,各设渠帅统领",
+        "turn": "张角决定按规模分立万余人为大方,六七千人为小方,各立渠帅",
+        "result": "组织体系确立,信众转化为有序管理的方阵",
+        "beatIds": [
+          "beat-12",
+          "beat-13"
+        ],
+        "characterStates": [
+          {
+            "name": "张角",
+            "before": {
+              "knowledge": [
+                "黄老道义理",
+                "符水咒说疗病之法",
+                "当世饥荒疫病严重",
+                "符水确能治愈部分病患",
+                "信众愿意传播善道",
+                "各州传道已见成效"
+              ],
+              "relationships": [
+                "已有初期追随弟子",
+                "新获饥民信众",
+                "信众尊其为大贤良师",
+                "各州弟子正在发展信众"
+              ],
+              "choices": [
+                "选择自称大贤良师开始传道",
+                "继续用符水治病吸引更多信众",
+                "决定遣弟子往四方传道",
+                "继续扩大传道规模"
+              ]
+            },
+            "after": {
+              "knowledge": [
+                "黄老道义理",
+                "符水咒说疗病之法",
+                "当世饥荒疫病严重",
+                "符水确能治愈部分病患",
+                "信众愿意传播善道",
+                "各州传道已见成效",
+                "已建立大方小方组织体系"
+              ],
+              "relationships": [
+                "已有初期追随弟子",
+                "新获饥民信众",
+                "信众尊其为大贤良师",
+                "各州弟子正在发展信众",
+                "各方渠帅听命于己"
+              ],
+              "choices": [
+                "选择自称大贤良师开始传道",
+                "继续用符水治病吸引更多信众",
+                "决定遣弟子往四方传道",
+                "继续扩大传道规模",
+                "确立分方立帅的组织架构"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "drama-08",
+        "function": "payoff",
+        "setting": "八州地理空间的历史地图沙盘",
+        "characters": [],
+        "goal": "总结呈现张角组织已遍布八州、信众数十万的最终规模",
+        "obstacle": "需要让观众直观理解组织的地理覆盖与规模",
+        "tactics": "历史地图沙盘标示青徐幽冀荆扬兗豫八州信众分布,旁白说明数十万信众莫不毕应,连结郡国",
+        "turn": "从组织架构讨论转入整体局势呈现",
+        "result": "观众看到张角组织已成气候,为后续事件埋下伏笔",
+        "beatIds": [
+          "beat-14",
+          "beat-15"
+        ],
+        "characterStates": []
+      }
+    ],
+    "scenes": [
+      {
+        "id": "scene-01",
+        "sequence": 1,
+        "title": "开场沙盘·灵帝世饥困与张角符水传道",
+        "dramaticSceneId": "drama-01",
+        "editorialRole": "episode_opening",
+        "visualTreatment": "animated",
+        "animationStyle": "historical_map",
+        "animationAesthetic": "cinematic_gongbi",
+        "contextPayload": {
+          "timePlace": "灵帝建宁至中平年间,汉境八州",
+          "geographicFocus": [
+            "青州",
+            "徐州",
+            "幽州",
+            "冀州",
+            "荆州",
+            "扬州",
+            "兗州",
+            "豫州"
+          ],
+          "historicalBackground": "灵帝世政教日乱,天下饥困,大疫频发,百姓求生无门",
+          "narration": "灵帝世,朝政日乱,天下饥困,大疫频发。鉅鹿张角自称大贤良师,以符水咒说为饥民疗病,病者颇愈,百姓信向。十余年间,信众遍及青徐幽冀荆扬兗豫八州,衆徒数十万。"
+        },
+        "cast": [],
+        "purpose": "用历史地图沙盘建立灵帝世饥困疫病的时代背景,呈现张角在鉅鹿以符水治病传道的起点,以及最终遍布八州的传播范围,让观众知道本集要看符水如何吸引饥民、组织如何建立。",
+        "requiredBeats": [
+          {
+            "id": "beat-01",
+            "description": "历史地图沙盘标示汉境,重点标出八州地理位置与鉅鹿位置;旁白完整说出:灵帝世,朝政日乱,天下饥困,大疫频发。鉅鹿张角自称大贤良师,以符水咒说为饥民疗病,病者颇愈,百姓信向。十余年间,信众遍及青徐幽冀荆扬兗豫八州,衆徒数十万。",
+            "function": "开场信息建立",
+            "stateChange": "观众从无上下文变为知道灵帝世饥困疫病背景,知道张角在鉅鹿用符水治病并发展至八州数十万信众,理解本集要看这个过程如何发生",
+            "observable": {
+              "visual": [
+                "历史地图沙盘标示汉境八州地理位置",
+                "鉅鹿位置标示"
+              ],
+              "audio": [
+                "灵帝世,朝政日乱,天下饥困,大疫频发。鉅鹿张角自称大贤良师,以符水咒说为饥民疗病,病者颇愈,百姓信向。十余年间,信众遍及青徐幽冀荆扬兗豫八州,衆徒数十万。"
+              ]
+            },
+            "setting": "历史地图沙盘信息空间",
+            "mustShow": [
+              "历史地图沙盘标示八州与鉅鹿位置"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]支持张角自称大贤良师,用符水治病,信众遍布八州数十万;[史料3][史料5]支持灵帝世政教日乱,天下饥困大疫。",
+        "adaptationBoundary": "只拟制地图标示方式与旁白组织,史实内容不变。",
+        "targetDuration": 8,
+        "continuityMode": "scene_cut",
+        "completionCriteria": [
+          "八州地理位置与鉅鹿位置已清晰标示",
+          "旁白已完整呈现灵帝世饥困疫病背景",
+          "张角符水治病与十余年发展至八州数十万的事实已说明"
+        ]
+      },
+      {
+        "id": "scene-02",
+        "sequence": 2,
+        "title": "荒野草棚·病患求医",
+        "dramaticSceneId": "drama-02",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "cast": [
+          "张角"
+        ],
+        "purpose": "从开场背景转入具体场景,呈现饥民因疫病困苦,前来求张角符水治病的处境,建立张角治病的起点情境。",
+        "requiredBeats": [
+          {
+            "id": "beat-02",
+            "description": "荒野草棚外,数名面黄肌瘦的饥民搀扶着一名病患跪在地上,张角站在草棚前;病患咳嗽不止,气息微弱;张角观察病患,开口问:染病多久了?",
+            "function": "建立治病场景与人物关系",
+            "stateChange": "观众看到饥民病患的困苦处境,知道张角开始询问病情",
+            "observable": {
+              "visual": [
+                "饥民搀扶病患跪地",
+                "病患咳嗽气息微弱",
+                "张角站立观察"
+              ],
+              "audio": [
+                "染病多久了?"
+              ]
+            },
+            "setting": "鉅鹿郡外荒野简陋草棚",
+            "mustShow": [
+              "饥民搀扶病患跪地",
+              "张角站立观察"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]支持张角以符水咒说疗病,病者颇愈;[史料5][史料6]支持当时大疫与饥荒背景。",
+        "adaptationBoundary": "拟制饥民求医的具体言行和病症表现,拟制张角询问病情的对白。",
+        "targetDuration": 5,
+        "continuityMode": "scene_cut",
+        "completionCriteria": [
+          "饥民病患困苦处境已呈现",
+          "张角询问病情的具体对白已说出"
+        ]
+      },
+      {
+        "id": "scene-03",
+        "sequence": 3,
+        "title": "荒野草棚·跪拜首过",
+        "dramaticSceneId": "drama-02",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "cast": [
+          "张角"
+        ],
+        "purpose": "承接上段询问,呈现张角要求病患跪拜忏悔的过程,为施符水做准备。",
+        "requiredBeats": [
+          {
+            "id": "beat-03",
+            "description": "饥民答:半月有余,遍求医药不得;张角缓声说:病由心生,须跪拜首过,忏悔己罪,方能得愈;病患与周围饥民依言跪拜,低头叩地",
+            "function": "建立符水治病的仪式前提",
+            "stateChange": "病患与饥民接受张角要求,跪拜忏悔",
+            "observable": {
+              "visual": [
+                "病患与饥民跪拜叩地"
+              ],
+              "audio": [
+                "半月有余,遍求医药不得",
+                "病由心生,须跪拜首过,忏悔己罪,方能得愈"
+              ]
+            },
+            "setting": "鉅鹿郡外荒野简陋草棚",
+            "mustShow": [
+              "病患与饥民跪拜叩地"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]支持张角畜养弟子,跪拜首过,符水咒说以疗病。",
+        "adaptationBoundary": "拟制张角要求跪拜首过的具体对白与病患应答,史料明确记载跪拜首过为治病仪式。",
+        "targetDuration": 6,
+        "continuityMode": "tail_continuation",
+        "completionCriteria": [
+          "张角要求跪拜首过的对白已说出",
+          "病患与饥民跪拜忏悔的动作已呈现"
+        ]
+      },
+      {
+        "id": "scene-04",
+        "sequence": 4,
+        "title": "荒野草棚·施符水见效",
+        "dramaticSceneId": "drama-02",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "cast": [
+          "张角"
+        ],
+        "purpose": "承接跪拜忏悔,呈现张角施符水咒说,病患饮后症状缓解,周围饥民见证疗效而信服,完成本场治病过程。",
+        "requiredBeats": [
+          {
+            "id": "beat-04",
+            "description": "张角从草棚内取出木碗,碗中盛清水,口中念咒,将符纸投入水中,递给病患;病患双手接过,饮下符水;片刻后,病患咳嗽渐止,气息平稳,抬头叩拜:多谢大贤良师!周围饥民惊喜交加,齐声叩拜",
+            "function": "呈现符水疗效与饥民信服",
+            "stateChange": "病患症状缓解,病患与周围饥民开始信向张角,尊其为大贤良师",
+            "observable": {
+              "visual": [
+                "张角取木碗盛水念咒投符",
+                "病患双手接碗饮下",
+                "病患咳嗽渐止气息平稳",
+                "病患与饥民叩拜"
+              ],
+              "audio": [
+                "多谢大贤良师!"
+              ]
+            },
+            "setting": "鉅鹿郡外荒野简陋草棚",
+            "mustShow": [
+              "张角取木碗盛水念咒投符",
+              "病患饮符水",
+              "病患咳嗽渐止",
+              "病患与饥民叩拜"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]明确记载符水咒说以疗病,病者颇愈,百姓信向之。",
+        "adaptationBoundary": "拟制施符水的具体动作与病患好转后的感激对白,史料支持病者颇愈的结果。",
+        "targetDuration": 10,
+        "continuityMode": "tail_continuation",
+        "completionCriteria": [
+          "张角施符水的完整过程已呈现",
+          "病患症状缓解的具体表现已呈现",
+          "饥民信服叩拜的动作已呈现"
+        ]
+      },
+      {
+        "id": "scene-05",
+        "sequence": 5,
+        "title": "张角居所院落·信众聚集",
+        "dramaticSceneId": "drama-03",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "cast": [
+          "张角"
+        ],
+        "purpose": "换至张角居所,呈现经治病吸引而来的信众聚集,等待张角传授教义,建立传道场景。",
+        "requiredBeats": [
+          {
+            "id": "beat-05",
+            "description": "鉅鹿郡内张角居所院落,数十名信众席地而坐,面向堂前;张角从堂内走出,立于堂前;信众起身行礼,复又坐下",
+            "function": "建立传道场景与师徒关系",
+            "stateChange": "信众聚集完毕,等待张角传授教义",
+            "observable": {
+              "visual": [
+                "信众席地而坐",
+                "张角从堂内走出立于堂前",
+                "信众起身行礼后坐下"
+              ],
+              "audio": []
+            },
+            "setting": "鉅鹿郡内张角居所院落",
+            "mustShow": [
+              "信众席地而坐",
+              "张角立于堂前"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]支持张角奉事黄老道,畜养弟子,以善道教化,百姓信向。",
+        "adaptationBoundary": "拟制信众聚集听道的场面调度,史料支持张角畜养弟子传道的事实。",
+        "targetDuration": 5,
+        "continuityMode": "scene_cut",
+        "completionCriteria": [
+          "信众聚集院落的场景已建立",
+          "张角准备传道的位置已呈现"
+        ]
+      },
+      {
+        "id": "scene-06",
+        "sequence": 6,
+        "title": "张角居所院落·传授黄老善道",
+        "dramaticSceneId": "drama-03",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "cast": [
+          "张角"
+        ],
+        "purpose": "承接信众聚集,呈现张角传授黄老善道,要求信众跪拜首过,建立统一的教义与行为规范。",
+        "requiredBeats": [
+          {
+            "id": "beat-06",
+            "description": "张角开口:诸君因病而来,因善道而聚。黄老之道,贵清静无为,贵悔过自新。人之有病,皆由心生罪孽,当跪拜首过,洗涤旧恶,方能身安心定;信众齐声应:愿奉师教",
+            "function": "传授教义与行为规范",
+            "stateChange": "信众接受黄老善道教义,愿意遵从跪拜首过的规范",
+            "observable": {
+              "visual": [],
+              "audio": [
+                "诸君因病而来,因善道而聚。黄老之道,贵清静无为,贵悔过自新。人之有病,皆由心生罪孽,当跪拜首过,洗涤旧恶,方能身安心定",
+                "愿奉师教"
+              ]
+            },
+            "setting": "鉅鹿郡内张角居所院落",
+            "mustShow": [
+              "信众齐声应答"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]明确记载张角奉事黄老道,跪拜首过,以善道教化天下。",
+        "adaptationBoundary": "拟制张角传授黄老善道的具体对白与信众应答,史料支持黄老道与跪拜首过的事实。",
+        "targetDuration": 10,
+        "continuityMode": "tail_continuation",
+        "completionCriteria": [
+          "张角传授黄老善道的具体内容已说出",
+          "信众接受教义的应答已呈现"
+        ]
+      },
+      {
+        "id": "scene-07",
+        "sequence": 7,
+        "title": "张角居所院落·尊为大贤良师",
+        "dramaticSceneId": "drama-03",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "cast": [
+          "张角"
+        ],
+        "purpose": "承接传授教义,呈现信众尊张角为大贤良师,建立正式的师徒关系,完成本场传道过程。",
+        "requiredBeats": [
+          {
+            "id": "beat-07",
+            "description": "张角继续说:今世道乱,民不聊生,唯有善道可救苍生。尔等既奉此道,当传于四方,使天下皆知悔过向善;信众齐齐跪拜,高声呼:拜见大贤良师!",
+            "function": "确立师徒关系与传道使命",
+            "stateChange": "信众正式尊张角为大贤良师,愿意传播善道,组织雏形建立",
+            "observable": {
+              "visual": [
+                "信众齐齐跪拜"
+              ],
+              "audio": [
+                "今世道乱,民不聊生,唯有善道可救苍生。尔等既奉此道,当传于四方,使天下皆知悔过向善",
+                "拜见大贤良师!"
+              ]
+            },
+            "setting": "鉅鹿郡内张角居所院落",
+            "mustShow": [
+              "信众齐齐跪拜",
+              "信众高声称大贤良师"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]明确记载张角自称大贤良师,以善道教化天下,转相诳惑。",
+        "adaptationBoundary": "拟制张角嘱咐传道的对白与信众尊称的场面,史料支持大贤良师称号与传道事实。",
+        "targetDuration": 8,
+        "continuityMode": "tail_continuation",
+        "completionCriteria": [
+          "张角嘱咐传播善道的对白已说出",
+          "信众尊称大贤良师并跪拜的场面已呈现"
+        ]
+      },
+      {
+        "id": "scene-08",
+        "sequence": 8,
+        "title": "地理承接·八弟子分赴四方",
+        "dramaticSceneId": "drama-04",
+        "editorialRole": "context_bridge",
+        "visualTreatment": "animated",
+        "animationStyle": "historical_map",
+        "animationAesthetic": "cinematic_gongbi",
+        "contextPayload": {
+          "timePlace": "鉅鹿传道初期至各州传播阶段",
+          "geographicFocus": [
+            "青州",
+            "徐州",
+            "幽州",
+            "冀州",
+            "荆州",
+            "扬州",
+            "兗州",
+            "豫州"
+          ],
+          "historicalBackground": "张角遣八弟子分赴四方传道",
+          "narration": "张角因遣弟子八人使于四方,以善道教化天下,转相诳惑。"
+        },
+        "cast": [],
+        "purpose": "用历史地图沙盘呈现张角遣八弟子分赴青徐幽冀荆扬兗豫八州传道的地理扩展,承接从鉅鹿一地到八州传播的空间转换。",
+        "requiredBeats": [
+          {
+            "id": "beat-08",
+            "description": "历史地图沙盘标示从鉅鹿向八州辐射的路线;旁白说:张角因遣弟子八人使于四方,以善道教化天下,转相诳惑",
+            "function": "空间转换与传道扩展",
+            "stateChange": "观众理解传道从鉅鹿扩展到八州,弟子分赴各地",
+            "observable": {
+              "visual": [
+                "历史地图沙盘标示从鉅鹿向八州辐射的路线"
+              ],
+              "audio": [
+                "张角因遣弟子八人使于四方,以善道教化天下,转相诳惑"
+              ]
+            },
+            "setting": "从鉅鹿居所到各州传道路途的地理空间",
+            "mustShow": [
+              "历史地图沙盘标示从鉅鹿向八州辐射的路线"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]明确记载张角因遣弟子八人使于四方,以善道教化天下,转相诳惑。",
+        "adaptationBoundary": "只拟制地图路线呈现方式,史实内容不变。",
+        "targetDuration": 6,
+        "continuityMode": "scene_cut",
+        "completionCriteria": [
+          "八州传道路线已在地图标示",
+          "张角遣八弟子分赴四方的事实已说明"
+        ]
+      },
+      {
+        "id": "scene-09",
+        "sequence": 9,
+        "title": "青州村落·弟子传道治病",
+        "dramaticSceneId": "drama-05",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "cast": [
+          "张角"
+        ],
+        "purpose": "从地理承接转入具体场景,呈现张角弟子在青州为饥民治病传道,信众持续增长,展现传道在各州的实际效果。",
+        "requiredBeats": [
+          {
+            "id": "beat-09",
+            "description": "青州某郡县村落空地,张角弟子立于人群中,为一名病患施符水,念咒;病患饮下符水,症状缓解,叩拜感激;周围更多饥民围拢,跪地求医听道",
+            "function": "呈现弟子传道治病的效果",
+            "stateChange": "该地饥民见证疗效,前来求医听道,信众增加",
+            "observable": {
+              "visual": [
+                "弟子为病患施符水念咒",
+                "病患饮符水症状缓解",
+                "病患叩拜",
+                "更多饥民围拢跪地"
+              ],
+              "audio": []
+            },
+            "setting": "青州某郡县村落空地",
+            "mustShow": [
+              "弟子为病患施符水",
+              "病患症状缓解叩拜",
+              "更多饥民围拢跪地"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]支持弟子以善道教化天下,转相诳惑,病者颇愈,百姓信向。",
+        "adaptationBoundary": "拟制弟子治病传道的具体场面,史料支持各地传道与治病吸引信众的事实。",
+        "targetDuration": 8,
+        "continuityMode": "scene_cut",
+        "completionCriteria": [
+          "弟子施符水治病的过程已呈现",
+          "饥民因疗效而信服的场面已呈现"
+        ]
+      },
+      {
+        "id": "scene-10",
+        "sequence": 10,
+        "title": "青州村落·信众聚集成方",
+        "dramaticSceneId": "drama-05",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "cast": [
+          "张角"
+        ],
+        "purpose": "承接治病吸引,呈现该地信众聚集,形成小方组织,完成本场各州传道效果的呈现。",
+        "requiredBeats": [
+          {
+            "id": "beat-10",
+            "description": "弟子对聚集的信众说:大贤良师教我等,人当悔过向善,方能脱离苦海。尔等既信此道,当聚为一方,共奉善道;信众齐声应诺,跪拜称谢",
+            "function": "呈现信众组织化",
+            "stateChange": "该地信众形成小方组织,听从弟子统领",
+            "observable": {
+              "visual": [
+                "信众跪拜"
+              ],
+              "audio": [
+                "大贤良师教我等,人当悔过向善,方能脱离苦海。尔等既信此道,当聚为一方,共奉善道"
+              ]
+            },
+            "setting": "青州某郡县村落空地",
+            "mustShow": [
+              "信众跪拜应诺"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]支持大方小方各立渠帅的组织形式,转相诳惑使信众持续增长。",
+        "adaptationBoundary": "拟制弟子组织信众的对白,史料支持分方立帅的组织事实。",
+        "targetDuration": 7,
+        "continuityMode": "tail_continuation",
+        "completionCriteria": [
+          "弟子组织信众成方的对白已说出",
+          "信众接受组织的场面已呈现"
+        ]
+      },
+      {
+        "id": "scene-11",
+        "sequence": 11,
+        "title": "时间蒙太奇·十余年传道",
+        "dramaticSceneId": "drama-06",
+        "editorialRole": "context_bridge",
+        "visualTreatment": "live_action",
+        "cast": [],
+        "purpose": "用四季更替、草木枯荣的实景蒙太奇压缩十余年时间跨度,配合旁白说明信众持续增长至数十万,承接从初期传道到组织成熟的时间转换。",
+        "requiredBeats": [
+          {
+            "id": "beat-11",
+            "description": "实景呈现春夏秋冬四季更替,草木由枯到荣再到枯,如此反复;旁白说:十余年间,衆徒数十万,连结郡国,自青徐幽冀荆扬兗豫八州之人,莫不毕应",
+            "function": "时间压缩与规模呈现",
+            "stateChange": "观众理解十余年时间已过,信众规模已达数十万,遍布八州",
+            "observable": {
+              "visual": [
+                "四季更替的实景",
+                "草木枯荣反复"
+              ],
+              "audio": [
+                "十余年间,衆徒数十万,连结郡国,自青徐幽冀荆扬兗豫八州之人,莫不毕应"
+              ]
+            },
+            "setting": "时间流逝的视觉呈现空间",
+            "mustShow": [
+              "四季更替的实景",
+              "草木枯荣反复"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]明确记载十余年间,衆徒数十万,连结郡国,自青徐幽冀荆扬兗豫八州之人,莫不毕应。",
+        "adaptationBoundary": "拟制时间流逝的视觉呈现方式,史实时间与规模不变。",
+        "targetDuration": 6,
+        "continuityMode": "scene_cut",
+        "completionCriteria": [
+          "十余年时间跨度已通过四季更替呈现",
+          "信众数十万遍布八州的事实已说明"
+        ]
+      },
+      {
+        "id": "scene-12",
+        "sequence": 12,
+        "title": "张角居所内堂·商议组织架构",
+        "dramaticSceneId": "drama-07",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "cast": [
+          "张角"
+        ],
+        "purpose": "从时间蒙太奇转入内堂场景,呈现张角与核心弟子商议如何管理数十万信众,引出分立大方小方的组织架构决策。",
+        "requiredBeats": [
+          {
+            "id": "beat-12",
+            "description": "鉅鹿郡张角居所内堂,张角与数名核心弟子围坐;弟子禀报:各州信众日增,已难统计,如何管束?张角沉思片刻,说:当分立方阵,万余人为大方,六七千人为小方,各立渠帅统领",
+            "function": "提出组织架构方案",
+            "stateChange": "张角决定建立大方小方体系",
+            "observable": {
+              "visual": [
+                "张角与弟子围坐",
+                "张角沉思"
+              ],
+              "audio": [
+                "各州信众日增,已难统计,如何管束?",
+                "当分立方阵,万余人为大方,六七千人为小方,各立渠帅统领"
+              ]
+            },
+            "setting": "鉅鹿郡张角居所内堂",
+            "mustShow": [
+              "张角与弟子围坐"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]明确记载大方万余人,小方六七千,各立渠帅。",
+        "adaptationBoundary": "拟制张角与弟子商议组织架构的对白,史料支持大方小方分立与各立渠帅的事实。",
+        "targetDuration": 9,
+        "continuityMode": "scene_cut",
+        "completionCriteria": [
+          "张角决定分立大方小方的对白已说出",
+          "各立渠帅统领的方案已提出"
+        ]
+      },
+      {
+        "id": "scene-13",
+        "sequence": 13,
+        "title": "张角居所内堂·确立渠帅体系",
+        "dramaticSceneId": "drama-07",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "cast": [
+          "张角"
+        ],
+        "purpose": "承接组织架构方案,呈现弟子应诺执行,组织体系正式确立,完成本场组织管理的决策过程。",
+        "requiredBeats": [
+          {
+            "id": "beat-13",
+            "description": "弟子们齐声应:谨遵师命;张角继续说:各方渠帅,皆听我号令,不得擅动。待时机成熟,自有大事可为;弟子们再次应诺",
+            "function": "确立组织体系与号令统一",
+            "stateChange": "组织架构正式确立,各方渠帅听命于张角,信众转化为有序管理的方阵",
+            "observable": {
+              "visual": [],
+              "audio": [
+                "谨遵师命",
+                "各方渠帅,皆听我号令,不得擅动。待时机成熟,自有大事可为"
+              ]
+            },
+            "setting": "鉅鹿郡张角居所内堂",
+            "mustShow": [
+              "弟子应诺"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]支持各立渠帅的组织形式,暗示后续起事的准备。",
+        "adaptationBoundary": "拟制张角强调号令统一的对白,史料支持组织架构确立与后续起事的因果关系。",
+        "targetDuration": 7,
+        "continuityMode": "tail_continuation",
+        "completionCriteria": [
+          "张角强调号令统一的对白已说出",
+          "组织体系确立的应诺已呈现"
+        ]
+      },
+      {
+        "id": "scene-14",
+        "sequence": 14,
+        "title": "结尾沙盘·八州信众布局",
+        "dramaticSceneId": "drama-08",
+        "editorialRole": "payoff",
+        "visualTreatment": "animated",
+        "animationStyle": "historical_map",
+        "animationAesthetic": "cinematic_gongbi",
+        "contextPayload": {
+          "timePlace": "十余年传道后的中平元年前夕",
+          "geographicFocus": [
+            "青州",
+            "徐州",
+            "幽州",
+            "冀州",
+            "荆州",
+            "扬州",
+            "兗州",
+            "豫州"
+          ],
+          "historicalBackground": "张角组织已遍布八州,信众数十万",
+          "narration": "十余年间,张角信众遍布八州,大方万余人,小方六七千,各立渠帅,连结郡国,衆徒数十万,莫不毕应。"
+        },
+        "cast": [],
+        "purpose": "用历史地图沙盘总结呈现张角组织已遍布八州、信众数十万、各立渠帅的最终规模与布局,回应开场建立的传道问题,为后续集埋下伏笔。",
+        "requiredBeats": [
+          {
+            "id": "beat-14",
+            "description": "历史地图沙盘标示八州信众分布,各州标注大方小方位置;旁白说:十余年间,张角信众遍布八州,大方万余人,小方六七千,各立渠帅,连结郡国,衆徒数十万,莫不毕应",
+            "function": "总结组织规模与地理布局",
+            "stateChange": "观众看到张角组织已成气候,遍布八州,规模数十万,组织严密",
+            "observable": {
+              "visual": [
+                "历史地图沙盘标示八州信众分布",
+                "各州标注大方小方位置"
+              ],
+              "audio": [
+                "十余年间,张角信众遍布八州,大方万余人,小方六七千,各立渠帅,连结郡国,衆徒数十万,莫不毕应"
+              ]
+            },
+            "setting": "八州地理空间的历史地图沙盘",
+            "mustShow": [
+              "历史地图沙盘标示八州信众分布"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]明确记载十余年间,衆徒数十万,连结郡国,自青徐幽冀荆扬兗豫八州之人,莫不毕应;大方万余人,小方六七千,各立渠帅。",
+        "adaptationBoundary": "只拟制地图呈现方式,史实内容不变。",
+        "targetDuration": 7,
+        "continuityMode": "scene_cut",
+        "completionCriteria": [
+          "八州信众分布与大方小方布局已在地图呈现",
+          "数十万信众连结郡国的规模已说明"
+        ]
+      },
+      {
+        "id": "scene-15",
+        "sequence": 15,
+        "title": "鉅鹿远景·待时而动",
+        "dramaticSceneId": "drama-08",
+        "editorialRole": "payoff",
+        "visualTreatment": "live_action",
+        "cast": [],
+        "purpose": "承接沙盘总结,用鉅鹿远景实景呈现黄昏时分张角居所与周围聚集的信众,暗示组织已为未来行动做好准备,完成本集结尾。",
+        "requiredBeats": [
+          {
+            "id": "beat-15",
+            "description": "黄昏时分,鉅鹿郡外远景,张角居所周围聚集着成群信众,或坐或立,等待号令;夕阳西沉,暮色渐浓",
+            "function": "暗示组织待时而动",
+            "stateChange": "观众看到张角组织已为未来行动做好准备,本集完成",
+            "observable": {
+              "visual": [
+                "黄昏鉅鹿远景",
+                "居所周围成群信众",
+                "夕阳西沉暮色渐浓"
+              ],
+              "audio": []
+            },
+            "setting": "八州地理空间的历史地图沙盘",
+            "mustShow": [
+              "黄昏鉅鹿远景",
+              "居所周围成群信众",
+              "夕阳西沉"
+            ]
+          }
+        ],
+        "historicalBasis": "[史料2]记载张角组织建立后为中平元年起事做准备。",
+        "adaptationBoundary": "拟制黄昏远景的实景呈现,暗示组织待时而动,不虚构具体起事准备动作。",
+        "targetDuration": 5,
+        "continuityMode": "tail_continuation",
+        "completionCriteria": [
+          "黄昏鉅鹿远景已呈现",
+          "信众聚集待命的氛围已呈现"
+        ]
+      }
+    ],
+    "count": 15,
+    "totalDuration": 107
+  },
+  "expected": {
+    "requireBeatCoverage": true,
+    "requireNarrativeClosure": true,
+    "requireDramaContract": true,
+    "requireEditorialGrammar": true,
+    "deriveInheritedStates": true,
+    "input": {
+      "adaptation_policy": "史事节点可据史呈现；对白、微动作和场面调度须标明为合理拟制。",
+      "source_level": "A/B｜正史直载或多源互证"
+    },
+    "sourceRefs": [
+      "[史料1]",
+      "[史料2]",
+      "[史料3]",
+      "[史料4]",
+      "[史料5]",
+      "[史料6]"
+    ]
+  }
+}

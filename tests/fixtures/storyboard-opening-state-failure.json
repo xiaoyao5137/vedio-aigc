@@ -1,0 +1,502 @@
+{
+  "description": "Reduced record-fuik5a loop 1 input context and the four exact author worldState candidates. Reference URLs are offline placeholders; raw provider payloads, credentials and duplicated response text are omitted.",
+  "inputContext": {
+    "scene": {
+      "id": "scene-01-seg-02",
+      "sequence": 2,
+      "title": "街市人群传唱歌谣",
+      "dramaticSceneId": "drama-01",
+      "cast": [
+        "房植门生"
+      ],
+      "purpose": "街市人群传唱歌谣:天下规矩房伯武,因师获印周仲进；房植门生听到歌谣后停步,眉头微皱",
+      "requiredBeats": [
+        {
+          "id": "beat-02",
+          "description": "街市人群传唱歌谣:天下规矩房伯武,因师获印周仲进",
+          "function": "引出歌谣内容",
+          "stateChange": "歌谣内容传入耳中",
+          "observable": {
+            "visual": [
+              "人群传唱"
+            ],
+            "audio": [
+              "天下规矩房伯武,因师获印周仲进"
+            ]
+          },
+          "setting": "洛阳城内街市",
+          "mustShow": [
+            "人群",
+            "传唱"
+          ]
+        },
+        {
+          "id": "beat-03",
+          "description": "房植门生听到歌谣后停步,眉头微皱",
+          "function": "呈现门生对歌谣的不满",
+          "stateChange": "从平静到心生不满",
+          "observable": {
+            "visual": [
+              "停步",
+              "眉头微皱"
+            ],
+            "audio": []
+          },
+          "setting": "洛阳城内街市",
+          "mustShow": [
+            "停步",
+            "眉头微皱"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]鄉人为之谣曰天下规矩房伯武因师获印周仲进",
+      "adaptationBoundary": "人群传唱歌谣前的哼唱引入为合理拟制的表演细节；房植门生听闻歌谣后停步、眉头微皱为合理拟制的动作和反应",
+      "targetDuration": 10,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "原节拍表演：街市人群传唱歌谣:天下规矩房伯武,因师获印周仲进",
+        "画面呈现：人群传唱",
+        "完整听到：天下规矩房伯武,因师获印周仲进",
+        "原锚点已呈现：人群",
+        "原锚点已呈现：传唱",
+        "原节拍表演：房植门生听到歌谣后停步,眉头微皱",
+        "画面呈现：停步",
+        "画面呈现：眉头微皱"
+      ],
+      "contentContractVersion": "cinematic-v1",
+      "dramaticUnitId": "drama-01",
+      "settingId": "drama-01",
+      "closesUnit": true,
+      "continuityFromPrevious": true,
+      "sourceSceneId": "scene-01"
+    },
+    "loop": {
+      "index": 2,
+      "zeroIndex": 1,
+      "previous": {
+        "shot_script": {
+          "id": "scene-01-seg-01",
+          "contentContractVersion": "cinematic-v1",
+          "characters": [
+            "房植门生"
+          ],
+          "presentCharacters": [
+            "房植门生"
+          ],
+          "endCharacters": [
+            "房植门生"
+          ],
+          "worldState": {
+            "settingId": "drama-01",
+            "characters": [
+              {
+                "name": "房植门生",
+                "position": {
+                  "status": "unknown"
+                },
+                "heldProps": {
+                  "status": "unknown"
+                },
+                "pendingAction": {
+                  "status": "unknown"
+                }
+              }
+            ]
+          },
+          "storyProgress": {
+            "status": "continuing",
+            "unitId": "drama-01",
+            "response": "桓帝师生关系及两家地位已通过旁白交代",
+            "actionResult": "房植门生在街市中行走，背景信息通过旁白交代",
+            "pendingActions": [
+              "引出歌谣内容",
+              "呈现门生对歌谣的不满"
+            ]
+          },
+          "pacing": {
+            "version": "duration-v2",
+            "scheduleHash": "duration-v2-sha256-571efefcd7281260adb936d382af2d365e55559b4364cc2c078d3156f12fe04a"
+          }
+        },
+        "video_shot": {
+          "qualityPolicy": "principle-v1",
+          "decoded": true,
+          "duration": 15.04,
+          "hasAudio": true,
+          "audioEmbedded": true,
+          "technicalValidation": {
+            "passed": true,
+            "speechVerified": true,
+            "scope": "decoded-media-principle-policy",
+            "visualContinuityVerified": false
+          },
+          "url": "/generated/verified-opening-fixture.mp4",
+          "evidenceUrl": "/generated/opening-fixture-evidence.json",
+          "originalUrl": "https://fixtures.invalid/opening.mp4",
+          "frames": [
+            "/generated/verified-opening-fixture-frame-0.jpg",
+            "/generated/verified-opening-fixture-frame-7.jpg"
+          ],
+          "lastFrameUrl": "/generated/verified-opening-fixture-frame-7.jpg",
+          "raw": {
+            "url": "https://fixtures.invalid/opening.mp4",
+            "params": {
+              "scheduleHash": "duration-v2-sha256-571efefcd7281260adb936d382af2d365e55559b4364cc2c078d3156f12fe04a"
+            }
+          },
+          "qualityReview": {
+            "status": "needs_attention",
+            "canProceed": true,
+            "principleIssues": []
+          },
+          "visualReview": {
+            "passed": false,
+            "decision": "revise",
+            "endingState": "末帧7中，房植门生站在街道中央略偏左，面向镜头，双手自然下垂，身穿深色长袍、系宽腰带、戴黑色高帽。左后方有背向镜头的粉衣行人，右侧摊位旁有商贩与顾客。",
+            "endCharacters": [
+              "房植门生"
+            ],
+            "endingStateEvidence": {
+              "method": "actual-tail-image",
+              "frame": "/generated/verified-opening-fixture-frame-7.jpg"
+            }
+          }
+        },
+        "last_frame": {
+          "available": true,
+          "url": "/generated/verified-opening-fixture-frame-7.jpg",
+          "source": "extracted-from-video"
+        }
+      }
+    }
+  },
+  "candidate": {
+    "contentContractVersion": "cinematic-v1",
+    "dramaticSceneId": "drama-01",
+    "id": "scene-01-seg-02",
+    "title": "街市人群传唱歌谣，房植门生闻之不悦",
+    "duration": 9,
+    "pacing": {
+      "version": "duration-v2",
+      "timingPolicy": {
+        "version": "duration-policy-v2.1",
+        "speech": {
+          "dialogue": {
+            "referenceRate": 4.5,
+            "minimumNaturalRate": 3.3,
+            "maximumRate": 5,
+            "startupAllowance": 0.25
+          },
+          "narration": {
+            "referenceRate": 4.5,
+            "minimumNaturalRate": 3.3,
+            "maximumRate": 5,
+            "startupAllowance": 0.25
+          },
+          "chant": {
+            "referenceRate": 3.3,
+            "minimumNaturalRate": 2.8,
+            "maximumRate": 4.5,
+            "startupAllowance": 0.25
+          },
+          "singing": {
+            "referenceRate": 2.8,
+            "minimumNaturalRate": 2,
+            "maximumRate": 3.5,
+            "startupAllowance": 0.35
+          }
+        },
+        "shortPauseSeconds": 0.15,
+        "sentencePauseSeconds": 0.25,
+        "linePauseSeconds": 0.2,
+        "measurementToleranceSeconds": 0.25,
+        "endingReadabilityReserve": 0.5,
+        "maxConservativeExtraSeconds": 1,
+        "minimumProviderDuration": 3,
+        "maximumProviderDuration": 15,
+        "minimumVocalizationSeconds": 0.8,
+        "minimumActionSeconds": 0.3,
+        "minimumReactionSeconds": 0.5
+      },
+      "actorGroups": [
+        {
+          "id": "street-crowd-group",
+          "label": "街市人群",
+          "memberDescription": "街市中的行人、商贩与顾客，包括画面中已有的粉衣行人、蓝衣商贩等"
+        }
+      ],
+      "beats": [
+        {
+          "id": "beat-02-chant",
+          "sourceBeatId": "beat-02",
+          "actorIds": [
+            "street-crowd-group"
+          ],
+          "kind": "speech",
+          "deliveryStyle": "chant",
+          "textOrVocalization": "天下规矩房伯武，因师获印周仲进",
+          "performanceInstruction": "人群传唱歌谣",
+          "dependsOn": [],
+          "overlapAllowedWith": [],
+          "resources": [
+            "voice"
+          ],
+          "durationEstimate": {
+            "lower": 5.2,
+            "expected": 5.7,
+            "upper": 6.5,
+            "source": "18字chant，minimumNaturalRate 2.8字/秒=6.4秒，加启动0.25秒、逗号停顿0.15秒、句末停顿0.25秒",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "人群完整传唱完歌谣全句",
+            "modality": "audio",
+            "evidenceAnchor": "天下规矩房伯武，因师获印周仲进"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-03-stop",
+          "sourceBeatId": "beat-03",
+          "actorIds": [
+            "房植门生"
+          ],
+          "kind": "action",
+          "textOrVocalization": "停步",
+          "dependsOn": [
+            "beat-02-chant"
+          ],
+          "overlapAllowedWith": [],
+          "resources": [
+            "body"
+          ],
+          "durationEstimate": {
+            "lower": 0.3,
+            "expected": 0.5,
+            "upper": 0.7,
+            "source": "从静立到完全停定的身体动作",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "房植门生完全停止动作",
+            "modality": "visual",
+            "evidenceAnchor": "停步"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-03-frown",
+          "sourceBeatId": "beat-03",
+          "actorIds": [
+            "房植门生"
+          ],
+          "kind": "reaction",
+          "textOrVocalization": "眉头微皱",
+          "dependsOn": [
+            "beat-03-stop"
+          ],
+          "overlapAllowedWith": [],
+          "resources": [
+            "body"
+          ],
+          "durationEstimate": {
+            "lower": 0.5,
+            "expected": 0.8,
+            "upper": 1.2,
+            "source": "面部表情变化的反应时间",
+            "confidence": "medium"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "房植门生眉头皱起，显露不满神色",
+            "modality": "visual",
+            "evidenceAnchor": "眉头微皱"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        }
+      ]
+    },
+    "shotIntent": {
+      "viewpointCharacter": "房植门生",
+      "purpose": "呈现街市人群传唱贬低房植的歌谣，以及房植门生听到后的不满反应",
+      "cameraReason": "延续上一镜正面中景，保持对房植门生的关注，能够清晰看到其停步和面部表情变化"
+    },
+    "beatDramaturgy": [
+      {
+        "beatId": "beat-02",
+        "function": "引出歌谣内容",
+        "stateChange": "歌谣内容传入耳中",
+        "visual": [
+          "人群传唱"
+        ],
+        "audio": [
+          "天下规矩房伯武，因师获印周仲进"
+        ]
+      },
+      {
+        "beatId": "beat-03",
+        "function": "呈现门生对歌谣的不满",
+        "stateChange": "从平静到心生不满",
+        "visual": [
+          "停步",
+          "眉头微皱"
+        ],
+        "audio": []
+      }
+    ],
+    "storyProgress": {
+      "unitId": "drama-01",
+      "status": "complete",
+      "actionResult": "房植门生听到街市人群传唱贬低其师的歌谣，停步并露出不满神色",
+      "response": "房植门生心生不满，为后续两家门生冲突埋下伏笔",
+      "pendingActions": []
+    },
+    "characters": [
+      "房植门生"
+    ],
+    "presentCharacters": [
+      "房植门生"
+    ],
+    "initialCharacters": [
+      "房植门生"
+    ],
+    "enteringCharacters": [],
+    "endCharacters": [
+      "房植门生"
+    ],
+    "worldState": {
+      "settingId": "drama-01",
+      "characters": [
+        {
+          "name": "房植门生",
+          "position": {
+            "status": "observed",
+            "value": "站在街道中央",
+            "evidence": "承接上一镜末帧实际观察，房植门生站在街道中央，正面朝向镜头"
+          },
+          "heldProps": {
+            "status": "observed",
+            "value": "无",
+            "evidence": "双手自然下垂，无持物"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        }
+      ]
+    },
+    "continuity": {
+      "mode": "tail_continuation",
+      "previousShotId": "scene-01-seg-01",
+      "bridgeType": "same_frame",
+      "bridgeAnchor": ""
+    },
+    "coveredBeatIds": [
+      "beat-02",
+      "beat-03"
+    ],
+    "visualPrompt": "末帧7中，房植门生站在街道中央略偏左，面向镜头，双手自然下垂，身穿深色长袍、系宽腰带、戴黑色高帽。左后方有背向镜头的粉衣行人，右侧摊位旁有商贩与顾客。街市人群传唱活动，东汉洛阳街市，白日自然光，远处可见东汉建筑屋檐、木质摊位、悬挂灯笼。16:9构图，正面中景，保持上一镜机位与轴线。",
+    "camera": "正面中景，固定机位，延续上一镜视线轴线，镜头高度与房植门生视线齐平，能清晰看到其面部表情变化",
+    "mood": "街市日常生活中突现的不和谐音符，房植门生内心的不悦与警觉",
+    "firstFrameMode": "reuse_previous_tail",
+    "lastFramePrompt": "末帧中，房植门生站在街道中央，正面朝向镜头，已完全停步，眉头微皱显露不满神色，戴黑色高帽，身穿深色长袍、系宽腰带，双手自然下垂。街市人群在其周围继续活动，左后方粉衣行人，右侧摊位旁有商贩与顾客。",
+    "videoPrompt": "0-0.5秒：房植门生站在街道中央，面向镜头，戴黑色高帽，身穿深色长袍系宽腰带，双手自然下垂。街市人群在周围活动，左后方粉衣行人，右侧摊位旁有商贩与顾客。0.5-6.5秒：街市人群传唱开始，画面中可见左后方粉衣行人、右侧摊位商贩与顾客等人群传唱，声音清晰传来：天下规矩房伯武，因师获印周仲进。房植门生站立聆听。6.5-7.2秒：听到歌谣后，房植门生停步，身体微微一顿，完全停定。7.2-8.4秒：房植门生眉头微皱，面部表情从平静转为不满，眉头渐渐皱起。8.4-9秒：房植门生保持停步站立，眉头微皱的不满神色清晰可见，街市人群继续在周围活动。",
+    "audioType": "对白",
+    "audioText": "街市人群：天下规矩房伯武，因师获印周仲进",
+    "historicalBasis": "[史料2]鄉人为之谣曰天下规矩房伯武因师获印周仲进",
+    "adaptationBoundary": "人群传唱歌谣为史载事实；房植门生听闻后停步、眉头微皱为合理拟制的具体反应动作"
+  },
+  "candidateWorldStates": [
+    {
+      "settingId": "drama-01",
+      "characters": [
+        {
+          "name": "房植门生",
+          "position": {
+            "status": "observed",
+            "description": "站在街道中央略偏左"
+          },
+          "heldProps": {
+            "status": "observed",
+            "description": "无持物，双手自然下垂"
+          },
+          "pendingAction": {
+            "status": "observed",
+            "description": "停步，眉头微皱"
+          }
+        }
+      ]
+    },
+    {
+      "settingId": "drama-01",
+      "characters": [
+        {
+          "name": "房植门生",
+          "position": {
+            "status": "observed",
+            "value": "站在街道中央",
+            "evidence": "承接上一镜末帧，房植门生站在街道中央面向镜头"
+          },
+          "heldProps": {
+            "status": "observed",
+            "value": "无",
+            "evidence": "双手自然下垂，无持物"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        }
+      ]
+    },
+    {
+      "settingId": "drama-01",
+      "characters": [
+        {
+          "name": "房植门生",
+          "position": {
+            "status": "observed",
+            "value": "站在街道中央略偏左",
+            "evidence": "承接上一镜末帧7，房植门生站在街道中央略偏左，面向镜头"
+          },
+          "heldProps": {
+            "status": "observed",
+            "value": "无",
+            "evidence": "双手自然下垂，无持物"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        }
+      ]
+    },
+    {
+      "settingId": "drama-01",
+      "characters": [
+        {
+          "name": "房植门生",
+          "position": {
+            "status": "observed",
+            "value": "站在街道中央",
+            "evidence": "承接上一镜末帧实际观察，房植门生站在街道中央，正面朝向镜头"
+          },
+          "heldProps": {
+            "status": "observed",
+            "value": "无",
+            "evidence": "双手自然下垂，无持物"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        }
+      ]
+    }
+  ]
+}

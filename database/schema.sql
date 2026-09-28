@@ -134,3 +134,39 @@ create index if not exists character_assets_lookup_idx
 
 create index if not exists character_assets_workflow_idx
   on character_assets (workflow_id, updated_at desc);
+
+create table if not exists character_biographies (
+  workflow_id text not null,
+  character_name text not null,
+  biography text not null default '' check (char_length(biography) <= 10000),
+  updated_at timestamptz not null default now(),
+  primary key (workflow_id, character_name)
+);
+
+-- A person's equipment is shared by all of their three-view versions. Existing
+-- character_assets rows remain unchanged and keep their historical IDs.
+create table if not exists character_equipment (
+  id text primary key,
+  person_id text not null,
+  workflow_id text not null default '',
+  character_name text not null,
+  name text not null,
+  kind text not null check (kind in ('weapon','armor','prop','accessory','other')),
+  description text not null default '',
+  image_url text not null default '',
+  aliases jsonb not null default '[]'::jsonb,
+  applicability jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (jsonb_typeof(aliases) = 'array'),
+  check (jsonb_typeof(applicability) = 'object')
+);
+
+create index if not exists character_equipment_person_idx
+  on character_equipment (person_id, updated_at desc);
+
+create index if not exists character_equipment_lookup_idx
+  on character_equipment (workflow_id, character_name);
+
+create unique index if not exists character_equipment_person_name_idx
+  on character_equipment (person_id, lower(regexp_replace(name, '[[:space:]]+', '', 'g')));

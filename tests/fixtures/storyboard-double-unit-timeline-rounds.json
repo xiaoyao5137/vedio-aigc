@@ -1,0 +1,609 @@
+[
+  {
+    "attempt": 1,
+    "modelExecutionId": "model-run-mts6jaq6-tukapte",
+    "candidate": {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-01",
+      "id": "shot-01",
+      "title": "周福整理案卷",
+      "duration": 8,
+      "pacing": {
+        "version": "dynamic-v1",
+        "actionSeconds": 1,
+        "reactionSeconds": 0.7,
+        "activityWindows": [
+          {
+            "kind": "action",
+            "startSecond": 0,
+            "endSecond": 1
+          },
+          {
+            "kind": "speech",
+            "startSecond": 1.5,
+            "endSecond": 7.4
+          }
+        ]
+      },
+      "shotIntent": {
+        "viewpointCharacter": "周福",
+        "purpose": "建立周福新任尚书的身份与环境,交代其与桓帝的师生关系及擢升缘由",
+        "cameraReason": "中景展示周福官服和案卷,建立其尚书身份和工作环境,为后续民谣冲击做铺垫"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-01",
+          "function": "建立周福新任尚书的身份与环境",
+          "stateChange": "从无具体职位信息到明确周福为尚书",
+          "visual": [
+            "周福在宅内厅堂整理案卷",
+            "身着尚书官服"
+          ],
+          "audio": []
+        },
+        {
+          "beatId": "beat-02",
+          "function": "交代周福与桓帝的师生关系及擢升缘由",
+          "stateChange": "观众理解周福官位来源",
+          "visual": [
+            "周福伏案"
+          ],
+          "audio": [
+            "桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-01",
+        "status": "continuing",
+        "actionResult": "周福尚书身份已通过官服和旁白建立,师生关系及擢升缘由已交代",
+        "response": "周福在宅内厅堂整理案卷,展现新任尚书的身份;旁白交代其因桓帝师生关系而获擢升",
+        "pendingActions": [
+          "民谣传入",
+          "门客转述民谣",
+          "周福回应民谣"
+        ]
+      },
+      "characters": [
+        "周福"
+      ],
+      "presentCharacters": [
+        "周福"
+      ],
+      "initialCharacters": [
+        "周福"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "周福"
+      ],
+      "worldState": {
+        "settingId": "drama-01",
+        "characters": [
+          {
+            "name": "周福",
+            "position": {
+              "status": "observed",
+              "value": "坐于厅堂案几后"
+            },
+            "heldProps": {
+              "status": "observed",
+              "value": "手持竹简案卷"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "scene_cut",
+        "previousShotId": "",
+        "bridgeType": "opening",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-01",
+        "beat-02"
+      ],
+      "visualPrompt": "东汉时期室内厅堂,自然光从侧窗透入。周福坐于木制案几后,方形脸,留有短须,黑色高冠,冠顶有横向装饰。穿深灰色交领长袍,外罩黑色对襟外袍,胸前有灰色云纹刺绣。立领为浅灰色。腰系黑色宽腰带。内层为深青灰色长衫,下摆露出多层叠穿效果。整体色调以黑、深灰、青灰为主,纹样集中于胸前区域。身着尚书官服。案几上摆放竹简案卷,周福正在整理案卷。背景为简朴木质家具和素色墙壁。16:9画幅,中景,正面略偏侧角度",
+      "camera": "中景,机位正面略偏侧,平视角度,固定机位,视线轴线从观众向周福",
+      "mood": "克制的专注与思虑",
+      "firstFrameMode": "reference",
+      "lastFramePrompt": "周福坐于案几后,双手按在案卷上,头部微微低垂,保持伏案姿态。身着尚书官服,黑色高冠,深灰色交领长袍外罩黑色对襟外袍。案几上竹简案卷整齐摆放。厅堂内自然光从侧窗照入",
+      "videoPrompt": "0.0秒-1.0秒:周福在宅内厅堂坐于案几后,双手拿起竹简案卷,轻轻展开查看,身着尚书官服,黑色高冠,深灰色交领长袍外罩黑色对襟外袍。1.5秒-7.4秒:周福保持伏案姿态,双手按在案卷上,头部微微低垂,环境声中响起旁白完整叙述:桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书。7.4秒-7.7秒:周福继续伏案,双手轻轻调整案卷位置,保持专注整理的姿态",
+      "audioType": "旁白",
+      "audioText": "桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书",
+      "historicalBasis": "[史料2]桓帝为蠡吾侯时受学于甘陵周福,即位后擢福为尚书",
+      "adaptationBoundary": "周福整理案卷的具体动作为合理拟制,旁白依据史料直陈"
+    }
+  },
+  {
+    "attempt": 2,
+    "modelExecutionId": "model-run-mts6k62a-4w1ibj0",
+    "candidate": {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-01",
+      "id": "scene-01",
+      "title": "周福整理案卷",
+      "duration": 8,
+      "pacing": {
+        "version": "dynamic-v1",
+        "actionSeconds": 1,
+        "reactionSeconds": 0.7,
+        "activityWindows": [
+          {
+            "kind": "action",
+            "startSecond": 0,
+            "endSecond": 1
+          },
+          {
+            "kind": "speech",
+            "startSecond": 1.5,
+            "endSecond": 7.38
+          },
+          {
+            "kind": "reaction",
+            "startSecond": 7.38,
+            "endSecond": 7.7
+          }
+        ]
+      },
+      "shotIntent": {
+        "viewpointCharacter": "周福",
+        "purpose": "建立周福新任尚书的身份与环境,交代其与桓帝的师生关系及擢升缘由",
+        "cameraReason": "中景展示周福官服和案卷,建立其尚书身份和工作环境,为后续民谣冲击做铺垫"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-01",
+          "function": "建立周福新任尚书的身份与环境",
+          "stateChange": "从无具体职位信息到明确周福为尚书",
+          "visual": [
+            "周福整理案卷",
+            "身着尚书官服"
+          ],
+          "audio": []
+        },
+        {
+          "beatId": "beat-02",
+          "function": "交代周福与桓帝的师生关系及擢升缘由",
+          "stateChange": "观众理解周福官位来源",
+          "visual": [
+            "周福伏案"
+          ],
+          "audio": [
+            "桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-01",
+        "status": "continuing",
+        "actionResult": "周福尚书身份已通过官服和旁白建立,师生关系及擢升缘由已交代",
+        "response": "周福在宅内厅堂整理案卷,展现新任尚书的身份;旁白交代其因桓帝师生关系而获擢升",
+        "pendingActions": [
+          "民谣传入",
+          "门客转述民谣",
+          "周福回应民谣"
+        ]
+      },
+      "characters": [
+        "周福"
+      ],
+      "presentCharacters": [
+        "周福"
+      ],
+      "initialCharacters": [
+        "周福"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "周福"
+      ],
+      "worldState": {
+        "settingId": "drama-01",
+        "characters": [
+          {
+            "name": "周福",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "scene_cut",
+        "previousShotId": "",
+        "bridgeType": "opening",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-01",
+        "beat-02"
+      ],
+      "visualPrompt": "东汉时期室内厅堂,自然光从侧窗透入。周福坐于木制案几后,方形脸,留有短须,黑色高冠,冠顶有横向装饰。穿深灰色交领长袍,外罩黑色对襟外袍,胸前有灰色云纹刺绣。立领为浅灰色。腰系黑色宽腰带。内层为深青灰色长衫,下摆露出多层叠穿效果。整体色调以黑、深灰、青灰为主,纹样集中于胸前区域。身着尚书官服。案几上摆放周福整理案卷,竹简展开。背景为简朴木质家具和素色墙壁。16:9画幅,中景,正面略偏侧角度",
+      "camera": "中景,机位正面略偏侧,平视角度,固定机位,视线轴线从观众向周福",
+      "mood": "克制的专注与思虑",
+      "firstFrameMode": "reference",
+      "lastFramePrompt": "周福坐于案几后,双手按在案卷上,头部微微低垂,保持周福伏案姿态。身着尚书官服,黑色高冠,深灰色交领长袍外罩黑色对襟外袍。案几上竹简案卷整齐摆放。厅堂内自然光从侧窗照入",
+      "videoPrompt": "0.0秒-1.0秒:周福在宅内厅堂坐于案几后,双手拿起竹简,轻轻展开,周福整理案卷,身着尚书官服,黑色高冠,深灰色交领长袍外罩黑色对襟外袍。1.5秒-7.38秒:周福保持周福伏案姿态,双手按在案卷上,头部微微低垂,环境声中响起旁白完整叙述:桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书。7.38秒-7.7秒:周福继续伏案,双手轻轻调整案卷位置,保持专注姿态",
+      "audioType": "旁白",
+      "audioText": "桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书",
+      "historicalBasis": "[史料2]桓帝为蠡吾侯时受学于甘陵周福,即位后擢福为尚书",
+      "adaptationBoundary": "周福整理案卷的具体动作为合理拟制,旁白依据史料直陈"
+    }
+  },
+  {
+    "attempt": 3,
+    "modelExecutionId": "model-run-mts6ki0d-1bzzf5g",
+    "candidate": {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-01",
+      "id": "scene-01",
+      "title": "周福整理案卷",
+      "duration": 8,
+      "pacing": {
+        "version": "dynamic-v1",
+        "actionSeconds": 1,
+        "reactionSeconds": 0.7,
+        "activityWindows": [
+          {
+            "kind": "action",
+            "startSecond": 0,
+            "endSecond": 1
+          },
+          {
+            "kind": "speech",
+            "startSecond": 1.5,
+            "endSecond": 7.38
+          },
+          {
+            "kind": "reaction",
+            "startSecond": 7.38,
+            "endSecond": 8.08
+          }
+        ]
+      },
+      "shotIntent": {
+        "viewpointCharacter": "周福",
+        "purpose": "建立周福新任尚书的身份与环境,交代其与桓帝的师生关系及擢升缘由",
+        "cameraReason": "中景展示周福官服和案卷,建立其尚书身份和工作环境,为后续民谣冲击做铺垫"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-01",
+          "function": "建立周福新任尚书的身份与环境",
+          "stateChange": "从无具体职位信息到明确周福为尚书",
+          "visual": [
+            "周福整理案卷",
+            "身着尚书官服"
+          ],
+          "audio": []
+        },
+        {
+          "beatId": "beat-02",
+          "function": "交代周福与桓帝的师生关系及擢升缘由",
+          "stateChange": "观众理解周福官位来源",
+          "visual": [
+            "周福伏案"
+          ],
+          "audio": [
+            "桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-01",
+        "status": "continuing",
+        "actionResult": "周福尚书身份已通过官服和旁白建立,师生关系及擢升缘由已交代",
+        "response": "周福在宅内厅堂整理案卷,展现新任尚书的身份;旁白交代其因桓帝师生关系而获擢升",
+        "pendingActions": [
+          "民谣传入",
+          "门客转述民谣",
+          "周福回应民谣"
+        ]
+      },
+      "characters": [
+        "周福"
+      ],
+      "presentCharacters": [
+        "周福"
+      ],
+      "initialCharacters": [
+        "周福"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "周福"
+      ],
+      "worldState": {
+        "settingId": "drama-01",
+        "characters": [
+          {
+            "name": "周福",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "scene_cut",
+        "previousShotId": "",
+        "bridgeType": "opening",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-01",
+        "beat-02"
+      ],
+      "visualPrompt": "东汉时期室内厅堂,自然光从侧窗透入。周福坐于木制案几后,方形脸,留有短须,黑色高冠,冠顶有横向装饰。穿深灰色交领长袍,外罩黑色对襟外袍,胸前有灰色云纹刺绣。立领为浅灰色。腰系黑色宽腰带。内层为深青灰色长衫,下摆露出多层叠穿效果。整体色调以黑、深灰、青灰为主,纹样集中于胸前区域。身着尚书官服。案几上摆放周福整理案卷,竹简展开。背景为简朴木质家具和素色墙壁。16:9画幅,中景,正面略偏侧角度",
+      "camera": "中景,机位正面略偏侧,平视角度,固定机位,视线轴线从观众向周福",
+      "mood": "克制的专注与思虑",
+      "firstFrameMode": "reference",
+      "lastFramePrompt": "周福坐于案几后,双手按在案卷上,头部微微抬起,周福伏案姿态。身着尚书官服,黑色高冠,深灰色交领长袍外罩黑色对襟外袍。案几上竹简案卷整齐摆放。厅堂内自然光从侧窗照入",
+      "videoPrompt": "0.0秒-1.0秒:周福在宅内厅堂坐于案几后,双手拿起竹简,轻轻展开,周福整理案卷,身着尚书官服,黑色高冠,深灰色交领长袍外罩黑色对襟外袍。1.5秒-7.38秒:周福保持周福伏案姿态,双手按在案卷上,头部微微低垂,环境声中响起旁白完整叙述:桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书。7.38秒-8.0秒:旁白结束后,周福双手按在案卷上,头部微微抬起,目光投向案几上的竹简",
+      "audioType": "旁白",
+      "audioText": "桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书",
+      "historicalBasis": "[史料2]桓帝为蠡吾侯时受学于甘陵周福,即位后擢福为尚书",
+      "adaptationBoundary": "周福整理案卷的具体动作为合理拟制,旁白依据史料直陈"
+    }
+  },
+  {
+    "attempt": 4,
+    "modelExecutionId": "model-run-mts6kuny-8sogtgr",
+    "candidate": {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-01",
+      "id": "scene-01",
+      "title": "周福整理案卷",
+      "duration": 9,
+      "pacing": {
+        "version": "dynamic-v1",
+        "actionSeconds": 1,
+        "reactionSeconds": 0.7,
+        "activityWindows": [
+          {
+            "kind": "action",
+            "startSecond": 0,
+            "endSecond": 1
+          },
+          {
+            "kind": "speech",
+            "startSecond": 1.5,
+            "endSecond": 7.38
+          },
+          {
+            "kind": "reaction",
+            "startSecond": 7.38,
+            "endSecond": 8.08
+          }
+        ]
+      },
+      "shotIntent": {
+        "viewpointCharacter": "周福",
+        "purpose": "建立周福新任尚书的身份与环境,交代其与桓帝的师生关系及擢升缘由",
+        "cameraReason": "中景展示周福官服和案卷,建立其尚书身份和工作环境,为后续民谣冲击做铺垫"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-01",
+          "function": "建立周福新任尚书的身份与环境",
+          "stateChange": "从无具体职位信息到明确周福为尚书",
+          "visual": [
+            "周福整理案卷",
+            "身着尚书官服"
+          ],
+          "audio": []
+        },
+        {
+          "beatId": "beat-02",
+          "function": "交代周福与桓帝的师生关系及擢升缘由",
+          "stateChange": "观众理解周福官位来源",
+          "visual": [
+            "周福伏案"
+          ],
+          "audio": [
+            "桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-01",
+        "status": "continuing",
+        "actionResult": "周福尚书身份已通过官服和旁白建立,师生关系及擢升缘由已交代",
+        "response": "周福在宅内厅堂整理案卷,展现新任尚书的身份;旁白交代其因桓帝师生关系而获擢升",
+        "pendingActions": [
+          "民谣传入",
+          "门客转述民谣",
+          "周福回应民谣"
+        ]
+      },
+      "characters": [
+        "周福"
+      ],
+      "presentCharacters": [
+        "周福"
+      ],
+      "initialCharacters": [
+        "周福"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "周福"
+      ],
+      "worldState": {
+        "settingId": "drama-01",
+        "characters": [
+          {
+            "name": "周福",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "scene_cut",
+        "previousShotId": "",
+        "bridgeType": "opening",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-01",
+        "beat-02"
+      ],
+      "visualPrompt": "东汉时期室内厅堂,自然光从侧窗透入。周福坐于木制案几后,方形脸,留有短须,黑色高冠,冠顶有横向装饰。穿深灰色交领长袍,外罩黑色对襟外袍,胸前有灰色云纹刺绣。立领为浅灰色。腰系黑色宽腰带。内层为深青灰色长衫,下摆露出多层叠穿效果。整体色调以黑、深灰、青灰为主,纹样集中于胸前区域。身着尚书官服。案几上摆放周福整理案卷,竹简展开。背景为简朴木质家具和素色墙壁。16:9画幅,中景,正面略偏侧角度",
+      "camera": "中景,机位正面略偏侧,平视角度,固定机位,视线轴线从观众向周福",
+      "mood": "克制的专注与思虑",
+      "firstFrameMode": "reference",
+      "lastFramePrompt": "周福坐于案几后,双手按在案卷上,头部微微抬起,周福伏案姿态。身着尚书官服,黑色高冠,深灰色交领长袍外罩黑色对襟外袍。案几上竹简案卷整齐摆放。厅堂内自然光从侧窗照入",
+      "videoPrompt": "0.0秒-1.0秒:周福在宅内厅堂坐于案几后,双手拿起竹简,轻轻展开,周福整理案卷,身着尚书官服,黑色高冠,深灰色交领长袍外罩黑色对襟外袍。1.5秒-7.38秒:周福保持周福伏案姿态,双手按在案卷上,头部微微低垂,环境声中响起旁白完整叙述:桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书。7.38秒-8.08秒:旁白结束后,周福双手按在案卷上,头部微微抬起,目光投向案几上的竹简。8.08秒-9.0秒:周福继续保持坐于案几后的姿态,双手轻按案卷,表情平静专注",
+      "audioType": "旁白",
+      "audioText": "桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书",
+      "historicalBasis": "[史料2]桓帝为蠡吾侯时受学于甘陵周福,即位后擢福为尚书",
+      "adaptationBoundary": "周福整理案卷的具体动作为合理拟制,旁白依据史料直陈"
+    }
+  },
+  {
+    "attempt": 5,
+    "modelExecutionId": "model-run-mts6l77g-6qd8vre",
+    "candidate": {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-01",
+      "id": "scene-01",
+      "title": "周福整理案卷",
+      "duration": 9,
+      "pacing": {
+        "version": "dynamic-v1",
+        "actionSeconds": 1,
+        "reactionSeconds": 0.7,
+        "activityWindows": [
+          {
+            "kind": "action",
+            "startSecond": 0,
+            "endSecond": 1
+          },
+          {
+            "kind": "speech",
+            "startSecond": 1.5,
+            "endSecond": 7.38
+          },
+          {
+            "kind": "reaction",
+            "startSecond": 7.38,
+            "endSecond": 8.08
+          }
+        ]
+      },
+      "shotIntent": {
+        "viewpointCharacter": "周福",
+        "purpose": "建立周福新任尚书的身份与环境,交代其与桓帝的师生关系及擢升缘由",
+        "cameraReason": "中景展示周福官服和案卷,建立其尚书身份和工作环境,为后续民谣冲击做铺垫"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-01",
+          "function": "建立周福新任尚书的身份与环境",
+          "stateChange": "从无具体职位信息到明确周福为尚书",
+          "visual": [
+            "周福整理案卷",
+            "身着尚书官服"
+          ],
+          "audio": []
+        },
+        {
+          "beatId": "beat-02",
+          "function": "交代周福与桓帝的师生关系及擢升缘由",
+          "stateChange": "观众理解周福官位来源",
+          "visual": [
+            "周福伏案"
+          ],
+          "audio": [
+            "桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-01",
+        "status": "continuing",
+        "actionResult": "周福尚书身份已通过官服和旁白建立,师生关系及擢升缘由已交代",
+        "response": "周福在宅内厅堂整理案卷,展现新任尚书的身份;旁白交代其因桓帝师生关系而获擢升",
+        "pendingActions": [
+          "民谣传入",
+          "门客转述民谣",
+          "周福回应民谣"
+        ]
+      },
+      "characters": [
+        "周福"
+      ],
+      "presentCharacters": [
+        "周福"
+      ],
+      "initialCharacters": [
+        "周福"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "周福"
+      ],
+      "worldState": {
+        "settingId": "drama-01",
+        "characters": [
+          {
+            "name": "周福",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "scene_cut",
+        "previousShotId": "",
+        "bridgeType": "opening",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-01",
+        "beat-02"
+      ],
+      "visualPrompt": "东汉时期室内厅堂,自然光从侧窗透入。周福坐于木制案几后,方形脸,留有短须,黑色高冠,冠顶有横向装饰。穿深灰色交领长袍,外罩黑色对襟外袍,胸前有灰色云纹刺绣。立领为浅灰色。腰系黑色宽腰带。内层为深青灰色长衫,下摆露出多层叠穿效果。整体色调以黑、深灰、青灰为主,纹样集中于胸前区域。身着尚书官服。案几上摆放周福整理案卷,竹简展开。背景为简朴木质家具和素色墙壁。16:9画幅,中景,正面略偏侧角度",
+      "camera": "中景,机位正面略偏侧,平视角度,固定机位,视线轴线从观众向周福",
+      "mood": "克制的专注与思虑",
+      "firstFrameMode": "reference",
+      "lastFramePrompt": "周福坐于案几后,双手按在案卷上,头部微微抬起,周福伏案姿态。身着尚书官服,黑色高冠,深灰色交领长袍外罩黑色对襟外袍。案几上竹简案卷整齐摆放。厅堂内自然光从侧窗照入",
+      "videoPrompt": "0.0-1.0秒:周福在宅内厅堂坐于木制案几后,双手拿起竹简,轻轻展开,周福整理案卷,身着尚书官服,黑色高冠,深灰色交领长袍外罩黑色对襟外袍。1.5-7.38秒:周福保持周福伏案姿态,双手按在案卷上,头部微微低垂,环境声中响起旁白完整叙述桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书。7.38-8.08秒:旁白结束后,周福双手按在案卷上,头部微微抬起,目光投向案几。8.08-9.0秒:周福继续坐于案几后,双手轻按案卷,表情平静专注",
+      "audioType": "旁白",
+      "audioText": "桓帝为蠡吾侯时,曾受学于甘陵周福。今即帝位,擢福为尚书",
+      "historicalBasis": "[史料2]桓帝为蠡吾侯时受学于甘陵周福,即位后擢福为尚书",
+      "adaptationBoundary": "周福整理案卷的具体动作为合理拟制,旁白依据史料直陈"
+    }
+  }
+]

@@ -1,0 +1,1450 @@
+{
+  "contentContractVersion": "cinematic-v1",
+  "episodeTitle": "甘陵党议",
+  "episodeDrama": {
+    "centralQuestion": "两家门生争执如何演变为朝野党争的起点",
+    "viewpointCharacters": [
+      "房植",
+      "周福"
+    ],
+    "stakes": "师门声望与门生仕途能否在朝廷立足",
+    "openingPromise": {
+      "description": "桓帝登基后擢升恩师周福为尚书,同郡房植已任河南尹且声名在前,一首歌谣引发两家门生互相讥刺",
+      "beatIds": [
+        "beat-01",
+        "beat-02",
+        "beat-03"
+      ]
+    },
+    "payoff": {
+      "description": "两家门生各自聚集形成南北部对立,甘陵党议成为此后党人之祸的起点",
+      "beatIds": [
+        "beat-18",
+        "beat-19",
+        "beat-20"
+      ]
+    }
+  },
+  "historicalLocks": [
+    {
+      "id": "fact-01",
+      "fact": "桓帝为蠡吾侯时受学于甘陵周福,即帝位后擢福为尚书",
+      "sourceRefs": [
+        "[史料2]"
+      ]
+    },
+    {
+      "id": "fact-02",
+      "fact": "同郡河南尹房植有名当朝",
+      "sourceRefs": [
+        "[史料2]"
+      ]
+    },
+    {
+      "id": "fact-03",
+      "fact": "鄉人为之谣曰:天下规矩房伯武,因师获印周仲进",
+      "sourceRefs": [
+        "[史料2]"
+      ]
+    },
+    {
+      "id": "fact-04",
+      "fact": "二家宾客互相讥揣,遂各树朋徒,渐成尤隙",
+      "sourceRefs": [
+        "[史料2]"
+      ]
+    },
+    {
+      "id": "fact-05",
+      "fact": "由是甘陵有南北部,党人之议自此始矣",
+      "sourceRefs": [
+        "[史料2]"
+      ]
+    }
+  ],
+  "adaptationSpace": {
+    "policy": "史事节点可据史呈现;对白、微动作和场面调度须标明为合理拟制",
+    "sourceLevel": "A/B｜正史直载或多源互证",
+    "allowed": [
+      "周福、房植的具体对白与表情反应",
+      "门生讥刺的具体言辞与场合",
+      "两家门生聚集时的具体交谈内容",
+      "人物在府邸、街市的具体动作调度"
+    ],
+    "forbidden": [
+      "改变桓帝师生关系及擢升因果",
+      "改变歌谣内容与传播者",
+      "虚构房植或周福组织党争的动机",
+      "改变甘陵南北部形成的先后顺序"
+    ]
+  },
+  "characterDramas": [
+    {
+      "name": "房植",
+      "goal": "维护自身在朝声望,应对门生与周福一方的冲突",
+      "concern": "歌谣暗示周福因师恩得官,会损害自己靠才干立身的名声",
+      "leverage": "河南尹高位及多年积累的声望",
+      "tactic": "以沉稳回应维持体面,避免直接卷入门生争执",
+      "speechStyle": "简洁克制,不轻易表露情绪",
+      "basis": "performance",
+      "historicalLockIds": [
+        "fact-02"
+      ],
+      "coreMotivation": {
+        "status": "unknown",
+        "description": "史料未记载房植对党争的核心动机",
+        "historicalLockIds": []
+      },
+      "initialState": {
+        "knowledge": [
+          "自己任河南尹且有名当朝",
+          "桓帝擢升周福为尚书"
+        ],
+        "relationships": [
+          "与周福同为甘陵人",
+          "门下有追随门生"
+        ],
+        "choices": []
+      }
+    },
+    {
+      "name": "周福",
+      "goal": "巩固因帝师身份获得的尚书之位",
+      "concern": "歌谣暗示自己靠师恩而非才干得官,需应对质疑",
+      "leverage": "桓帝旧日师生情分与尚书实权",
+      "tactic": "以帝师身份自重,不主动回应外界非议",
+      "speechStyle": "持重内敛,维护师道尊严",
+      "basis": "performance",
+      "historicalLockIds": [
+        "fact-01"
+      ],
+      "coreMotivation": {
+        "status": "unknown",
+        "description": "史料未记载周福对党争的核心动机",
+        "historicalLockIds": []
+      },
+      "initialState": {
+        "knowledge": [
+          "自己因教授桓帝而被擢为尚书",
+          "房植已任河南尹且声名在前"
+        ],
+        "relationships": [
+          "与房植同为甘陵人",
+          "门下有追随门生"
+        ],
+        "choices": []
+      }
+    },
+    {
+      "name": "房植门生",
+      "goal": "为师门争得声名,压制周福一方",
+      "concern": "周福因师恩骤升,会让房植显得不如",
+      "leverage": "房植的官声与自身言辞",
+      "tactic": "借歌谣讥讽周福,在公开场合挑起争论",
+      "speechStyle": "尖锐直接,善用典故讥刺",
+      "basis": "performance",
+      "historicalLockIds": [
+        "fact-04"
+      ],
+      "coreMotivation": {
+        "status": "performance",
+        "description": "拟制其为师门声望而争",
+        "historicalLockIds": []
+      },
+      "initialState": {
+        "knowledge": [
+          "房植任河南尹声名显赫",
+          "周福因帝师获印",
+          "街巷传唱歌谣"
+        ],
+        "relationships": [
+          "师从房植"
+        ],
+        "choices": []
+      }
+    },
+    {
+      "name": "周福门生",
+      "goal": "捍卫师门尊严,反击房植一方讥讽",
+      "concern": "歌谣贬低恩师,需维护帝师正当性",
+      "leverage": "周福尚书之位与帝师身份",
+      "tactic": "强调师道与君恩,回击对方质疑",
+      "speechStyle": "义正言辞,引经据典维护师道",
+      "basis": "performance",
+      "historicalLockIds": [
+        "fact-04"
+      ],
+      "coreMotivation": {
+        "status": "performance",
+        "description": "拟制其为师门尊严而辩",
+        "historicalLockIds": []
+      },
+      "initialState": {
+        "knowledge": [
+          "周福因帝师受擢为尚书",
+          "房植已有名望",
+          "歌谣传播甚广"
+        ],
+        "relationships": [
+          "师从周福"
+        ],
+        "choices": []
+      }
+    }
+  ],
+  "dramaticScenes": [
+    {
+      "id": "drama-01",
+      "function": "setup",
+      "setting": "洛阳城内街市",
+      "characters": [
+        "房植门生",
+        "周福门生"
+      ],
+      "goal": "建立桓帝师生关系、两家声望对比及歌谣引发的紧张",
+      "obstacle": "无直接冲突,是背景交代",
+      "tactics": "通过街市传唱与门生反应呈现",
+      "turn": "门生听到歌谣后神色变化",
+      "result": "两家门生各自心生不满",
+      "beatIds": [
+        "beat-01",
+        "beat-02",
+        "beat-03"
+      ],
+      "characterStates": [
+        {
+          "name": "房植门生",
+          "before": {
+            "knowledge": [
+              "房植任河南尹声名显赫",
+              "周福因帝师获印",
+              "街巷传唱歌谣"
+            ],
+            "relationships": [
+              "师从房植"
+            ],
+            "choices": []
+          },
+          "after": {
+            "knowledge": [
+              "房植任河南尹声名显赫",
+              "周福因帝师获印",
+              "街巷传唱歌谣",
+              "歌谣暗贬房植"
+            ],
+            "relationships": [
+              "师从房植"
+            ],
+            "choices": [
+              "决定找机会回击周福门生"
+            ]
+          }
+        },
+        {
+          "name": "周福门生",
+          "before": {
+            "knowledge": [
+              "周福因帝师受擢为尚书",
+              "房植已有名望",
+              "歌谣传播甚广"
+            ],
+            "relationships": [
+              "师从周福"
+            ],
+            "choices": []
+          },
+          "after": {
+            "knowledge": [
+              "周福因帝师受擢为尚书",
+              "房植已有名望",
+              "歌谣传播甚广",
+              "歌谣暗示恩师靠师恩得官"
+            ],
+            "relationships": [
+              "师从周福"
+            ],
+            "choices": [
+              "决定维护师门尊严"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "drama-02",
+      "function": "conflict",
+      "setting": "洛阳城内集市角落",
+      "characters": [
+        "房植门生",
+        "周福门生"
+      ],
+      "goal": "房植门生借歌谣讥讽周福因师得官,周福门生反击",
+      "obstacle": "周福门生需维护师道尊严对抗讥讽",
+      "tactics": "房植门生引用歌谣暗讽,周福门生以师道正当性回击",
+      "turn": "周福门生反问歌谣是否能定高下,房植门生冷笑离开",
+      "result": "双方不欢而散,积怨加深",
+      "beatIds": [
+        "beat-04",
+        "beat-05",
+        "beat-06",
+        "beat-07",
+        "beat-08"
+      ],
+      "characterStates": [
+        {
+          "name": "房植门生",
+          "before": {
+            "knowledge": [
+              "房植任河南尹声名显赫",
+              "周福因帝师获印",
+              "街巷传唱歌谣",
+              "歌谣暗贬房植"
+            ],
+            "relationships": [
+              "师从房植"
+            ],
+            "choices": [
+              "决定找机会回击周福门生"
+            ]
+          },
+          "after": {
+            "knowledge": [
+              "房植任河南尹声名显赫",
+              "周福因帝师获印",
+              "街巷传唱歌谣",
+              "歌谣暗贬房植",
+              "周福门生不服"
+            ],
+            "relationships": [
+              "师从房植",
+              "与周福门生交恶"
+            ],
+            "choices": [
+              "决定找机会回击周福门生",
+              "离开以示不屑"
+            ]
+          }
+        },
+        {
+          "name": "周福门生",
+          "before": {
+            "knowledge": [
+              "周福因帝师受擢为尚书",
+              "房植已有名望",
+              "歌谣传播甚广",
+              "歌谣暗示恩师靠师恩得官"
+            ],
+            "relationships": [
+              "师从周福"
+            ],
+            "choices": [
+              "决定维护师门尊严"
+            ]
+          },
+          "after": {
+            "knowledge": [
+              "周福因帝师受擢为尚书",
+              "房植已有名望",
+              "歌谣传播甚广",
+              "歌谣暗示恩师靠师恩得官",
+              "房植门生公然讥讽"
+            ],
+            "relationships": [
+              "师从周福",
+              "与房植门生交恶"
+            ],
+            "choices": [
+              "决定维护师门尊严",
+              "以师道回击讥讽"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "drama-03",
+      "function": "consequence",
+      "setting": "房植府邸内堂",
+      "characters": [
+        "房植",
+        "房植门生"
+      ],
+      "goal": "门生向房植禀报与周福门生的冲突",
+      "obstacle": "无",
+      "tactics": "门生陈述经过",
+      "turn": "房植沉默不语",
+      "result": "房植未明确表态,门生自行决定继续争斗",
+      "beatIds": [
+        "beat-09",
+        "beat-10",
+        "beat-11"
+      ],
+      "characterStates": [
+        {
+          "name": "房植",
+          "before": {
+            "knowledge": [
+              "自己任河南尹且有名当朝",
+              "桓帝擢升周福为尚书"
+            ],
+            "relationships": [
+              "与周福同为甘陵人",
+              "门下有追随门生"
+            ],
+            "choices": []
+          },
+          "after": {
+            "knowledge": [
+              "自己任河南尹且有名当朝",
+              "桓帝擢升周福为尚书",
+              "门生与周福门生发生争执"
+            ],
+            "relationships": [
+              "与周福同为甘陵人",
+              "门下有追随门生"
+            ],
+            "choices": [
+              "未表态制止或鼓励门生"
+            ]
+          }
+        },
+        {
+          "name": "房植门生",
+          "before": {
+            "knowledge": [
+              "房植任河南尹声名显赫",
+              "周福因帝师获印",
+              "街巷传唱歌谣",
+              "歌谣暗贬房植",
+              "周福门生不服"
+            ],
+            "relationships": [
+              "师从房植",
+              "与周福门生交恶"
+            ],
+            "choices": [
+              "决定找机会回击周福门生",
+              "离开以示不屑"
+            ]
+          },
+          "after": {
+            "knowledge": [
+              "房植任河南尹声名显赫",
+              "周福因帝师获印",
+              "街巷传唱歌谣",
+              "歌谣暗贬房植",
+              "周福门生不服",
+              "房植未表态制止"
+            ],
+            "relationships": [
+              "师从房植",
+              "与周福门生交恶"
+            ],
+            "choices": [
+              "决定找机会回击周福门生",
+              "离开以示不屑",
+              "联络同门继续对抗"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "drama-04",
+      "function": "consequence",
+      "setting": "周福府邸内堂",
+      "characters": [
+        "周福",
+        "周福门生"
+      ],
+      "goal": "门生向周福禀报与房植门生的冲突",
+      "obstacle": "无",
+      "tactics": "门生陈述经过并请示",
+      "turn": "周福微微颔首未多言",
+      "result": "周福未明确表态,门生自行决定继续维护",
+      "beatIds": [
+        "beat-12",
+        "beat-13",
+        "beat-14"
+      ],
+      "characterStates": [
+        {
+          "name": "周福",
+          "before": {
+            "knowledge": [
+              "自己因教授桓帝而被擢为尚书",
+              "房植已任河南尹且声名在前"
+            ],
+            "relationships": [
+              "与房植同为甘陵人",
+              "门下有追随门生"
+            ],
+            "choices": []
+          },
+          "after": {
+            "knowledge": [
+              "自己因教授桓帝而被擢为尚书",
+              "房植已任河南尹且声名在前",
+              "门生与房植门生发生争执"
+            ],
+            "relationships": [
+              "与房植同为甘陵人",
+              "门下有追随门生"
+            ],
+            "choices": [
+              "未表态制止或鼓励门生"
+            ]
+          }
+        },
+        {
+          "name": "周福门生",
+          "before": {
+            "knowledge": [
+              "周福因帝师受擢为尚书",
+              "房植已有名望",
+              "歌谣传播甚广",
+              "歌谣暗示恩师靠师恩得官",
+              "房植门生公然讥讽"
+            ],
+            "relationships": [
+              "师从周福",
+              "与房植门生交恶"
+            ],
+            "choices": [
+              "决定维护师门尊严",
+              "以师道回击讥讽"
+            ]
+          },
+          "after": {
+            "knowledge": [
+              "周福因帝师受擢为尚书",
+              "房植已有名望",
+              "歌谣传播甚广",
+              "歌谣暗示恩师靠师恩得官",
+              "房植门生公然讥讽",
+              "周福未表态制止"
+            ],
+            "relationships": [
+              "师从周福",
+              "与房植门生交恶"
+            ],
+            "choices": [
+              "决定维护师门尊严",
+              "以师道回击讥讽",
+              "联络同门继续对抗"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "drama-05",
+      "function": "consequence",
+      "setting": "洛阳城内某处院落",
+      "characters": [
+        "房植门生",
+        "周福门生"
+      ],
+      "goal": "呈现两家门生各自聚集朋徒形成对立",
+      "obstacle": "无",
+      "tactics": "两家门生分别召集同道",
+      "turn": "聚集完成",
+      "result": "南北部雏形形成",
+      "beatIds": [
+        "beat-15",
+        "beat-16",
+        "beat-17"
+      ],
+      "characterStates": [
+        {
+          "name": "房植门生",
+          "before": {
+            "knowledge": [
+              "房植任河南尹声名显赫",
+              "周福因帝师获印",
+              "街巷传唱歌谣",
+              "歌谣暗贬房植",
+              "周福门生不服",
+              "房植未表态制止"
+            ],
+            "relationships": [
+              "师从房植",
+              "与周福门生交恶"
+            ],
+            "choices": [
+              "决定找机会回击周福门生",
+              "离开以示不屑",
+              "联络同门继续对抗"
+            ]
+          },
+          "after": {
+            "knowledge": [
+              "房植任河南尹声名显赫",
+              "周福因帝师获印",
+              "街巷传唱歌谣",
+              "歌谣暗贬房植",
+              "周福门生不服",
+              "房植未表态制止",
+              "同门已聚集"
+            ],
+            "relationships": [
+              "师从房植",
+              "与周福门生交恶",
+              "与同门结为朋徒"
+            ],
+            "choices": [
+              "决定找机会回击周福门生",
+              "离开以示不屑",
+              "联络同门继续对抗",
+              "形成房植一方势力"
+            ]
+          }
+        },
+        {
+          "name": "周福门生",
+          "before": {
+            "knowledge": [
+              "周福因帝师受擢为尚书",
+              "房植已有名望",
+              "歌谣传播甚广",
+              "歌谣暗示恩师靠师恩得官",
+              "房植门生公然讥讽",
+              "周福未表态制止"
+            ],
+            "relationships": [
+              "师从周福",
+              "与房植门生交恶"
+            ],
+            "choices": [
+              "决定维护师门尊严",
+              "以师道回击讥讽",
+              "联络同门继续对抗"
+            ]
+          },
+          "after": {
+            "knowledge": [
+              "周福因帝师受擢为尚书",
+              "房植已有名望",
+              "歌谣传播甚广",
+              "歌谣暗示恩师靠师恩得官",
+              "房植门生公然讥讽",
+              "周福未表态制止",
+              "同门已聚集"
+            ],
+            "relationships": [
+              "师从周福",
+              "与房植门生交恶",
+              "与同门结为朋徒"
+            ],
+            "choices": [
+              "决定维护师门尊严",
+              "以师道回击讥讽",
+              "联络同门继续对抗",
+              "形成周福一方势力"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "drama-06",
+      "function": "consequence",
+      "setting": "洛阳城内街巷",
+      "characters": [
+        "房植门生"
+      ],
+      "goal": "总结南北部形成与党议起点",
+      "obstacle": "无",
+      "tactics": "呈现两家对立局面",
+      "turn": "无",
+      "result": "甘陵南北部对立成型,党人之议自此始",
+      "beatIds": [
+        "beat-18",
+        "beat-19",
+        "beat-20"
+      ],
+      "characterStates": [
+        {
+          "name": "房植门生",
+          "before": {
+            "knowledge": [
+              "房植任河南尹声名显赫",
+              "周福因帝师获印",
+              "街巷传唱歌谣",
+              "歌谣暗贬房植",
+              "周福门生不服",
+              "房植未表态制止",
+              "同门已聚集"
+            ],
+            "relationships": [
+              "师从房植",
+              "与周福门生交恶",
+              "与同门结为朋徒"
+            ],
+            "choices": [
+              "决定找机会回击周福门生",
+              "离开以示不屑",
+              "联络同门继续对抗",
+              "形成房植一方势力"
+            ]
+          },
+          "after": {
+            "knowledge": [
+              "房植任河南尹声名显赫",
+              "周福因帝师获印",
+              "街巷传唱歌谣",
+              "歌谣暗贬房植",
+              "周福门生不服",
+              "房植未表态制止",
+              "同门已聚集",
+              "甘陵形成南北部对立"
+            ],
+            "relationships": [
+              "师从房植",
+              "与周福门生交恶",
+              "与同门结为朋徒"
+            ],
+            "choices": [
+              "决定找机会回击周福门生",
+              "离开以示不屑",
+              "联络同门继续对抗",
+              "形成房植一方势力"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene-01",
+      "sequence": 1,
+      "title": "洛阳街市听闻歌谣",
+      "dramaticSceneId": "drama-01",
+      "cast": [
+        "房植门生"
+      ],
+      "purpose": "建立桓帝为蠡吾侯时受学于周福、即位后擢其为尚书的背景,引出街市传唱歌谣,房植门生听闻后神色不悦",
+      "requiredBeats": [
+        {
+          "id": "beat-01",
+          "description": "房植门生行走在洛阳街市,旁白:建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝",
+          "function": "建立桓帝师生关系与两家地位",
+          "stateChange": "从无背景到知晓桓帝擢升周福及房植地位",
+          "observable": {
+            "visual": [
+              "房植门生行走街市"
+            ],
+            "audio": [
+              "建宁初年,桓帝即位。帝昔为蠡吾侯时,曾受学于甘陵人周福,即位后擢福为尚书。同郡河南尹房植,有名当朝"
+            ]
+          },
+          "setting": "洛阳城内街市",
+          "mustShow": [
+            "房植门生",
+            "街市"
+          ]
+        },
+        {
+          "id": "beat-02",
+          "description": "街市人群传唱歌谣:天下规矩房伯武,因师获印周仲进",
+          "function": "引出歌谣内容",
+          "stateChange": "歌谣内容传入耳中",
+          "observable": {
+            "visual": [
+              "人群传唱"
+            ],
+            "audio": [
+              "天下规矩房伯武,因师获印周仲进"
+            ]
+          },
+          "setting": "洛阳城内街市",
+          "mustShow": [
+            "人群",
+            "传唱"
+          ]
+        },
+        {
+          "id": "beat-03",
+          "description": "房植门生听到歌谣后停步,眉头微皱",
+          "function": "呈现门生对歌谣的不满",
+          "stateChange": "从平静到心生不满",
+          "observable": {
+            "visual": [
+              "停步",
+              "眉头微皱"
+            ],
+            "audio": []
+          },
+          "setting": "洛阳城内街市",
+          "mustShow": [
+            "停步",
+            "眉头微皱"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]桓帝为蠡吾侯受学于甘陵周福,即帝位擢福为尚书;同郡河南尹房植有名当朝;鄉人为之谣曰天下规矩房伯武因师获印周仲进",
+      "adaptationBoundary": "旁白交代背景为合理拟制;房植门生听闻后的停步、皱眉为合理拟制的反应动作",
+      "targetDuration": 15,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "桓帝师生关系及擢升已通过旁白交代",
+        "歌谣完整唱出",
+        "房植门生不满神情已呈现"
+      ]
+    },
+    {
+      "id": "scene-02",
+      "sequence": 2,
+      "title": "集市角落门生相遇",
+      "dramaticSceneId": "drama-02",
+      "cast": [
+        "房植门生",
+        "周福门生"
+      ],
+      "purpose": "房植门生与周福门生在集市角落相遇,为接下来的言语交锋做铺垫",
+      "requiredBeats": [
+        {
+          "id": "beat-04",
+          "description": "周福门生从另一侧走来,两人在集市角落相遇,互相对视",
+          "function": "建立双方相遇的场景",
+          "stateChange": "从各自独行到面对面相遇",
+          "observable": {
+            "visual": [
+              "周福门生走来",
+              "两人对视"
+            ],
+            "audio": []
+          },
+          "setting": "洛阳城内集市角落",
+          "mustShow": [
+            "周福门生",
+            "两人对视"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客互相讥揣",
+      "adaptationBoundary": "两人相遇的具体场景与动作为合理拟制",
+      "targetDuration": 3,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "两人已在集市角落相遇并对视"
+      ]
+    },
+    {
+      "id": "scene-03",
+      "sequence": 3,
+      "title": "房植门生讥讽",
+      "dramaticSceneId": "drama-02",
+      "cast": [
+        "房植门生",
+        "周福门生"
+      ],
+      "purpose": "房植门生借歌谣讥讽周福因师恩得官",
+      "requiredBeats": [
+        {
+          "id": "beat-05",
+          "description": "房植门生冷笑道:街巷都在传唱,因师获印,这便是周仲进的名声了",
+          "function": "发起讥讽试探",
+          "stateChange": "从对视到房植门生挑起争端",
+          "observable": {
+            "visual": [
+              "冷笑"
+            ],
+            "audio": [
+              "街巷都在传唱,因师获印,这便是周仲进的名声了"
+            ]
+          },
+          "setting": "洛阳城内集市角落",
+          "mustShow": [
+            "冷笑"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客互相讥揣",
+      "adaptationBoundary": "房植门生讥讽的具体对白为合理拟制",
+      "targetDuration": 4,
+      "continuityMode": "coverage_cut",
+      "completionCriteria": [
+        "房植门生讥讽话语已说出"
+      ]
+    },
+    {
+      "id": "scene-04",
+      "sequence": 4,
+      "title": "周福门生反问",
+      "dramaticSceneId": "drama-02",
+      "cast": [
+        "房植门生",
+        "周福门生"
+      ],
+      "purpose": "周福门生以师道正当性反击房植门生的讥讽",
+      "requiredBeats": [
+        {
+          "id": "beat-06",
+          "description": "周福门生直视对方道:一句歌谣,便能断人高下?",
+          "function": "反击试探",
+          "stateChange": "从被讥讽到反问回击",
+          "observable": {
+            "visual": [
+              "直视对方"
+            ],
+            "audio": [
+              "一句歌谣,便能断人高下"
+            ]
+          },
+          "setting": "洛阳城内集市角落",
+          "mustShow": [
+            "直视对方"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客互相讥揣",
+      "adaptationBoundary": "周福门生反问的具体对白为合理拟制",
+      "targetDuration": 3,
+      "continuityMode": "coverage_cut",
+      "completionCriteria": [
+        "周福门生反问已说出"
+      ]
+    },
+    {
+      "id": "scene-05",
+      "sequence": 5,
+      "title": "房植门生讥笑",
+      "dramaticSceneId": "drama-02",
+      "cast": [
+        "房植门生",
+        "周福门生"
+      ],
+      "purpose": "房植门生以讥笑回应,暗示周福靠师恩非真才",
+      "requiredBeats": [
+        {
+          "id": "beat-07",
+          "description": "房植门生讥笑道:鄉人传唱,我只不过学了一句罢了",
+          "function": "进一步讥讽",
+          "stateChange": "从反问到继续嘲讽",
+          "observable": {
+            "visual": [
+              "讥笑"
+            ],
+            "audio": [
+              "鄉人传唱,我只不过学了一句罢了"
+            ]
+          },
+          "setting": "洛阳城内集市角落",
+          "mustShow": [
+            "讥笑"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客互相讥揣",
+      "adaptationBoundary": "房植门生讥笑及对白为合理拟制",
+      "targetDuration": 4,
+      "continuityMode": "coverage_cut",
+      "completionCriteria": [
+        "房植门生嘲讽话语已说出"
+      ]
+    },
+    {
+      "id": "scene-06",
+      "sequence": 6,
+      "title": "双方不欢而散",
+      "dramaticSceneId": "drama-02",
+      "cast": [
+        "房植门生",
+        "周福门生"
+      ],
+      "purpose": "周福门生沉默,房植门生转身离开,双方积怨加深",
+      "requiredBeats": [
+        {
+          "id": "beat-08",
+          "description": "周福门生紧握双拳未再开口,房植门生冷笑转身离去,周福门生目送其背影",
+          "function": "冲突暂告段落,双方各自压抑愤怒",
+          "stateChange": "从对峙到不欢而散",
+          "observable": {
+            "visual": [
+              "紧握双拳",
+              "转身离去",
+              "目送背影"
+            ],
+            "audio": []
+          },
+          "setting": "洛阳城内集市角落",
+          "mustShow": [
+            "紧握双拳",
+            "转身离去"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客互相讥揣,遂各树朋徒",
+      "adaptationBoundary": "双方离开时的具体动作为合理拟制",
+      "targetDuration": 4,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "双方分离动作已完成",
+        "积怨通过动作体现"
+      ]
+    },
+    {
+      "id": "scene-07",
+      "sequence": 7,
+      "title": "房植门生禀报",
+      "dramaticSceneId": "drama-03",
+      "cast": [
+        "房植门生"
+      ],
+      "purpose": "房植门生回到房植府邸,通过禀报动作引出下一段",
+      "requiredBeats": [
+        {
+          "id": "beat-09",
+          "description": "房植门生快步走进房植府邸内堂",
+          "function": "转换场景,承接上一场余怒",
+          "stateChange": "从街市到府邸内堂",
+          "observable": {
+            "visual": [
+              "快步走进内堂"
+            ],
+            "audio": []
+          },
+          "setting": "房植府邸内堂",
+          "mustShow": [
+            "快步走进",
+            "内堂"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客互相讥揣",
+      "adaptationBoundary": "门生进入府邸的动作为合理拟制",
+      "targetDuration": 3,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "场景已切换到房植府邸内堂"
+      ]
+    },
+    {
+      "id": "scene-08",
+      "sequence": 8,
+      "title": "房植门生陈述冲突",
+      "dramaticSceneId": "drama-03",
+      "cast": [
+        "房植",
+        "房植门生"
+      ],
+      "purpose": "房植门生向房植陈述与周福门生的冲突经过,观众了解房植的态度",
+      "requiredBeats": [
+        {
+          "id": "beat-10",
+          "description": "房植端坐案前,门生上前拱手道:恩师,今日在街市遇周福门下,他们对那歌谣颇有微词,弟子未曾退让",
+          "function": "门生陈述冲突",
+          "stateChange": "房植从未知到得知门生争执",
+          "observable": {
+            "visual": [
+              "端坐案前",
+              "上前拱手"
+            ],
+            "audio": [
+              "恩师,今日在街市遇周福门下,他们对那歌谣颇有微词,弟子未曾退让"
+            ]
+          },
+          "setting": "房植府邸内堂",
+          "mustShow": [
+            "端坐案前",
+            "上前拱手"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客互相讥揣,遂各树朋徒",
+      "adaptationBoundary": "门生禀报的具体对白与房植端坐为合理拟制",
+      "targetDuration": 6,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "门生陈述已完成",
+        "房植已听闻经过"
+      ]
+    },
+    {
+      "id": "scene-09",
+      "sequence": 9,
+      "title": "房植沉默",
+      "dramaticSceneId": "drama-03",
+      "cast": [
+        "房植",
+        "房植门生"
+      ],
+      "purpose": "房植听完后沉默不语,未表态制止或鼓励,门生自行退下",
+      "requiredBeats": [
+        {
+          "id": "beat-11",
+          "description": "房植沉默片刻,微微点头未多言,门生退出内堂",
+          "function": "房植未表态",
+          "stateChange": "从等待回应到门生自行决定",
+          "observable": {
+            "visual": [
+              "沉默",
+              "微微点头",
+              "门生退出"
+            ],
+            "audio": []
+          },
+          "setting": "房植府邸内堂",
+          "mustShow": [
+            "沉默",
+            "门生退出"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]史料未记载房植明确表态,二家宾客各树朋徒",
+      "adaptationBoundary": "房植沉默、点头及门生退出为合理拟制",
+      "targetDuration": 4,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "房植未表态已体现",
+        "门生已退出"
+      ]
+    },
+    {
+      "id": "scene-10",
+      "sequence": 10,
+      "title": "周福门生禀报",
+      "dramaticSceneId": "drama-04",
+      "cast": [
+        "周福门生"
+      ],
+      "purpose": "周福门生回到周福府邸,通过禀报动作引出下一段",
+      "requiredBeats": [
+        {
+          "id": "beat-12",
+          "description": "周福门生快步走进周福府邸内堂",
+          "function": "转换场景,承接门生愤懑",
+          "stateChange": "从街市到周福府邸内堂",
+          "observable": {
+            "visual": [
+              "快步走进内堂"
+            ],
+            "audio": []
+          },
+          "setting": "周福府邸内堂",
+          "mustShow": [
+            "快步走进",
+            "内堂"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客互相讥揣",
+      "adaptationBoundary": "门生进入府邸的动作为合理拟制",
+      "targetDuration": 3,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "场景已切换到周福府邸内堂"
+      ]
+    },
+    {
+      "id": "scene-11",
+      "sequence": 11,
+      "title": "周福门生陈述冲突",
+      "dramaticSceneId": "drama-04",
+      "cast": [
+        "周福",
+        "周福门生"
+      ],
+      "purpose": "周福门生向周福陈述与房植门生的冲突经过,观众了解周福的态度",
+      "requiredBeats": [
+        {
+          "id": "beat-13",
+          "description": "周福端坐案前,门生上前拱手道:恩师,今日在街市遇房植门下,他们借歌谣讥讽恩师,弟子已据理力争",
+          "function": "门生陈述冲突",
+          "stateChange": "周福从未知到得知门生争执",
+          "observable": {
+            "visual": [
+              "端坐案前",
+              "上前拱手"
+            ],
+            "audio": [
+              "恩师,今日在街市遇房植门下,他们借歌谣讥讽恩师,弟子已据理力争"
+            ]
+          },
+          "setting": "周福府邸内堂",
+          "mustShow": [
+            "端坐案前",
+            "上前拱手"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客互相讥揣,遂各树朋徒",
+      "adaptationBoundary": "门生禀报的具体对白与周福端坐为合理拟制",
+      "targetDuration": 6,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "门生陈述已完成",
+        "周福已听闻经过"
+      ]
+    },
+    {
+      "id": "scene-12",
+      "sequence": 12,
+      "title": "周福颔首",
+      "dramaticSceneId": "drama-04",
+      "cast": [
+        "周福",
+        "周福门生"
+      ],
+      "purpose": "周福听完后微微颔首未多言,未表态制止或鼓励,门生自行退下",
+      "requiredBeats": [
+        {
+          "id": "beat-14",
+          "description": "周福微微颔首未多言,门生退出内堂",
+          "function": "周福未表态",
+          "stateChange": "从等待回应到门生自行决定",
+          "observable": {
+            "visual": [
+              "微微颔首",
+              "门生退出"
+            ],
+            "audio": []
+          },
+          "setting": "周福府邸内堂",
+          "mustShow": [
+            "微微颔首",
+            "门生退出"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]史料未记载周福明确表态,二家宾客各树朋徒",
+      "adaptationBoundary": "周福颔首及门生退出为合理拟制",
+      "targetDuration": 3,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "周福未表态已体现",
+        "门生已退出"
+      ]
+    },
+    {
+      "id": "scene-13",
+      "sequence": 13,
+      "title": "房植门生聚集",
+      "dramaticSceneId": "drama-05",
+      "cast": [
+        "房植门生"
+      ],
+      "purpose": "房植门生在某处院落召集同门,呈现树朋徒的过程",
+      "requiredBeats": [
+        {
+          "id": "beat-15",
+          "description": "房植门生在某处院落内与数位同门围坐交谈,神色坚定",
+          "function": "呈现房植一方树朋徒",
+          "stateChange": "从单独行动到结为朋徒",
+          "observable": {
+            "visual": [
+              "围坐交谈",
+              "神色坚定"
+            ],
+            "audio": []
+          },
+          "setting": "洛阳城内某处院落",
+          "mustShow": [
+            "围坐交谈",
+            "神色坚定"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客遂各树朋徒",
+      "adaptationBoundary": "聚集场景与围坐交谈为合理拟制",
+      "targetDuration": 4,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "房植门生聚集场景已呈现"
+      ]
+    },
+    {
+      "id": "scene-14",
+      "sequence": 14,
+      "title": "周福门生聚集",
+      "dramaticSceneId": "drama-05",
+      "cast": [
+        "周福门生"
+      ],
+      "purpose": "周福门生在某处院落召集同门,呈现树朋徒的过程",
+      "requiredBeats": [
+        {
+          "id": "beat-16",
+          "description": "周福门生在另一处院落内与数位同门围坐交谈,神色严肃",
+          "function": "呈现周福一方树朋徒",
+          "stateChange": "从单独行动到结为朋徒",
+          "observable": {
+            "visual": [
+              "围坐交谈",
+              "神色严肃"
+            ],
+            "audio": []
+          },
+          "setting": "洛阳城内某处院落",
+          "mustShow": [
+            "围坐交谈",
+            "神色严肃"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]二家宾客遂各树朋徒",
+      "adaptationBoundary": "聚集场景与围坐交谈为合理拟制",
+      "targetDuration": 4,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "周福门生聚集场景已呈现"
+      ]
+    },
+    {
+      "id": "scene-15",
+      "sequence": 15,
+      "title": "两家对立加深",
+      "dramaticSceneId": "drama-05",
+      "cast": [
+        "房植门生",
+        "周福门生"
+      ],
+      "purpose": "呈现两家门生在街市再次遇见时的对峙,尤隙加深",
+      "requiredBeats": [
+        {
+          "id": "beat-17",
+          "description": "两家门生各自结队在街市相遇,互相对视,目光冷峻,擦肩而过",
+          "function": "呈现尤隙渐深",
+          "stateChange": "从各自聚集到公开对立",
+          "observable": {
+            "visual": [
+              "结队相遇",
+              "互相对视",
+              "擦肩而过"
+            ],
+            "audio": []
+          },
+          "setting": "洛阳城内某处院落",
+          "mustShow": [
+            "结队相遇",
+            "互相对视"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]渐成尤隙",
+      "adaptationBoundary": "两家门生相遇对峙的场景为合理拟制",
+      "targetDuration": 4,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "两家对立局面已呈现"
+      ]
+    },
+    {
+      "id": "scene-16",
+      "sequence": 16,
+      "title": "街巷议论",
+      "dramaticSceneId": "drama-06",
+      "cast": [
+        "房植门生"
+      ],
+      "purpose": "通过街巷议论引出甘陵南北部的形成",
+      "requiredBeats": [
+        {
+          "id": "beat-18",
+          "description": "房植门生行走街市,街巷有人低声议论:甘陵二家门生,竟分出了南北部",
+          "function": "引出南北部说法",
+          "stateChange": "从内部对立到外界认知",
+          "observable": {
+            "visual": [
+              "房植门生行走街市"
+            ],
+            "audio": [
+              "甘陵二家门生,竟分出了南北部"
+            ]
+          },
+          "setting": "洛阳城内街巷",
+          "mustShow": [
+            "房植门生",
+            "街巷"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]由是甘陵有南北部",
+      "adaptationBoundary": "街巷议论的具体对白为合理拟制",
+      "targetDuration": 4,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "南北部说法已通过议论引出"
+      ]
+    },
+    {
+      "id": "scene-17",
+      "sequence": 17,
+      "title": "旁白总结南北部",
+      "dramaticSceneId": "drama-06",
+      "cast": [
+        "房植门生"
+      ],
+      "purpose": "通过旁白总结甘陵南北部的形成",
+      "requiredBeats": [
+        {
+          "id": "beat-19",
+          "description": "房植门生继续前行,旁白:由是甘陵有南北部",
+          "function": "总结南北部形成",
+          "stateChange": "从具体事件到总结认知",
+          "observable": {
+            "visual": [
+              "房植门生前行"
+            ],
+            "audio": [
+              "由是甘陵有南北部"
+            ]
+          },
+          "setting": "洛阳城内街巷",
+          "mustShow": [
+            "房植门生前行"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]由是甘陵有南北部",
+      "adaptationBoundary": "旁白总结为合理拟制",
+      "targetDuration": 3,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "南北部形成已通过旁白总结"
+      ]
+    },
+    {
+      "id": "scene-18",
+      "sequence": 18,
+      "title": "党人之议起点",
+      "dramaticSceneId": "drama-06",
+      "cast": [
+        "房植门生"
+      ],
+      "purpose": "通过旁白点明党人之议自此始,回应开场歌谣引发的问题",
+      "requiredBeats": [
+        {
+          "id": "beat-20",
+          "description": "房植门生的背影渐行渐远,旁白:党人之议,自此始矣",
+          "function": "点明党议起点,回应开场悬念",
+          "stateChange": "从具体冲突到历史定论",
+          "observable": {
+            "visual": [
+              "背影渐远"
+            ],
+            "audio": [
+              "党人之议,自此始矣"
+            ]
+          },
+          "setting": "洛阳城内街巷",
+          "mustShow": [
+            "背影渐远"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]党人之议,自此始矣",
+      "adaptationBoundary": "旁白点明党议起点为合理拟制",
+      "targetDuration": 4,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "党人之议起点已点明",
+        "全集完整回应开场歌谣引发的问题"
+      ]
+    }
+  ],
+  "count": 18,
+  "totalDuration": 81
+}

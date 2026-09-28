@@ -1,0 +1,394 @@
+{
+  "prompt": "【本镜影视处理】live_action / story\n【动画叙事类型与美术风格】 / \n【场景与开场画面】16:9单一全画幅，真人实景，自然日光，东汉服化道。当阳长坂附近撤退土路的一处弯口，土路由画面右后方通向左前方，路边低矮草木。首帧刘备骑马位于弯口入口，尚未进入弯心，脸朝前，手握缰绳；成熟成年男子，中等身形、清瘦面容，黑发束髻并用深色头巾收束，黑色须发，灰褐交领短袍外罩深褐皮札甲，暗色束带、黑靴。平视中全景保留头部、手部、缰绳和马匹步态空间。张飞首帧位于后方画外；入画后严格沿用指定造型：面庞宽阔偏方、浓眉直鼻，肤色较浅且自然红润，黑色八字胡与下颏短须，宽肩厚背、臂膀粗壮、腰腹结实，黑发束髻余发披背，黑色高筒冠配棕色横簪；素面深灰短袖交领长袍、黑色宽领襟内露白色领边，黑色长披风、深棕宽腰封及带扣皮带、深棕皮护腕、黑裤黑靴。首帧只呈现一个时间点。连续实拍动作要求：刘备骑马进入土路弯口，回头望向来路并收紧缰绳；其中刘备回头望向来路并收紧缰绳清楚可见；随后张飞从后方赶到刘备身侧。无现代物件、可读文字、水印、拼贴或重复人物。\n【视觉处理硬约束】live_action 必须生成具有真实空间深度、自然光影和可信时代环境的完整实景；animated 严格执行 animationStyle 与 animationAesthetic，可使用历史人物插画、历史场景、象征物、时间或环境动画，不默认地图。character_illustration 使用系统二维插画编排路线：人物素材内部姿态、表情、嘴部和衣物全程不变，只允许整个人物图层在合适的历史背景上淡入、平移、缩放、淡出；historical_tableau 仅允许整幅定格画面轻微缩放、平移或渐变。二者均不向视频模型请求人物走路、转身、说话等肢体动画，背景由独立画外旁白讲清。其他动画按分镜运动。禁止低幼卡通、Q版、现代动漫符号、游戏CG和玄幻光效。旧 animated_map/historical_montage 分别按 historical_map/historical_tableau 兼容。人物参考附件只用于身份、脸部、体型和服装。\n0-3.5秒：（节拍 narration-flight，0至3.2秒，导演参考）场景：当阳长坂附近撤退土路的一处弯口；沿用上一镜画外旁白声线，清楚利落；逗号短停，句末自然收束，不渲染妻儿遭遇。画内人物不开口。；画外旁白自然朗读：追兵突然赶到，刘备丢下妻儿奔逃。；完成态：观众听清突然受追及刘备丢下妻儿奔逃的信息。；动作依据：旁白：追兵突然赶到，刘备丢下妻儿奔逃。。同时，（节拍 liubei-enter-look-rein，0至3.5秒，导演参考）刘备骑马进入土路弯口，回头望向来路并收紧缰绳。马匹沿土路由画面右后方向左前方进入弯心；刘备回头望向来路并收紧缰绳，头部转向、握缰的手及缰绳由松到紧的过程清楚可见，马步随之放缓。两处回望描述为同一次连续动作。；完成态：刘备已进入弯心并收缓马步，视线落向来路。；动作依据：刘备骑马进入土路弯口，回头望向来路并收紧缰绳；刘备回头望向来路并收紧缰绳。\n3.5-7秒：（节拍 narration-relationship，3.5至5.65秒，导演参考）同一画外声线接续前句，在张飞连续入画时介绍身份；重音轻落在“部将张飞”，不加评价。画内人物无语言口型。；画外旁白自然朗读：部将张飞还跟在身边。；完成态：观众辨认张飞并听清他是刘备的部将；两行按序完成整条旁白。；动作依据：旁白：追兵突然赶到，刘备丢下妻儿奔逃。部将张飞还跟在身边。。同时，（节拍 zhangfei-arrive-beside，3.5至7秒，导演参考）张飞从后方赶到刘备身侧。张飞从画面右后方来路画外沿同一土路骑马连续入画，向弯心的刘备身侧靠近；接近后收缓马步，与刘备并马，身体朝向仍顺着撤退方向。披风不遮住脸部和控缰的手。；完成态：张飞已赶到刘备身侧，两人在同一弯口会合。。\n7-8秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.2-brisk-narration 和已编译节拍分别完成下列声部：[{\"beatId\":\"narration-flight\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"追兵突然赶到，刘备丢下妻儿奔逃。\"},{\"beatId\":\"narration-relationship\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"部将张飞还跟在身边。\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。\n【本镜结束时的自然动作结果】16:9真人实景单一末帧，自然日光下的土路弯心。刘备在画面左前，张飞在其右后侧并马，张飞已赶到刘备身侧，马匹均朝向左前方撤退方向。刘备仍回望来路，手中缰绳已经收紧；张飞手握自己的缰绳，脸部清楚可见。刘备沿用灰褐短袍、深褐皮札甲、暗色束带、黑靴、黑发深色头巾及黑色须发。张飞沿用成熟壮实、较浅且自然红润肤色、黑色八字胡与短须、束髻披发、黑色高筒冠与棕色横簪、深灰交领袍、黑披风、深棕腰封护腕、黑裤黑靴的指定造型。双方均未开口交付或接受军令。全画幅无字幕、水印、可读文字、拼贴或重复人物。\n运镜：道路侧前方、接近骑者胸口高度的平视中全景，约40毫米镜头。摄影机始终位于道路同一侧，画面右后方为来路，左前方为撤退方向。开头轻微跟摇刘备进入弯心，回望收缰时保持脸与手无遮挡；随后保留右后方入画空间，让张飞连续赶上并马，不越轴、不切反应特写、不重演动作。\n人声类型：旁白\n【音轨文本；环境声模式为空且禁止人声】追兵突然赶到，刘备丢下妻儿奔逃。\n旁白：部将张飞还跟在身边。",
+  "params": {
+    "duration": 8,
+    "pacingVersion": "duration-v2",
+    "audioType": "旁白",
+    "audioText": "追兵突然赶到，刘备丢下妻儿奔逃。\n旁白：部将张飞还跟在身边。",
+    "pacing": {
+      "beats": [
+        {
+          "id": "liubei-enter-look-rein",
+          "kind": "action",
+          "actorIds": [
+            "刘备"
+          ],
+          "dependsOn": [],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "刘备已进入弯心并收缓马步，视线落向来路。",
+            "evidenceAnchor": "刘备骑马进入土路弯口，回头望向来路并收紧缰绳；刘备回头望向来路并收紧缰绳",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-02",
+          "durationEstimate": {
+            "lower": 2.8,
+            "upper": 3.5,
+            "source": "按短距离骑行进入弯心、回望与收缰连续完成的表演估计，非实测。",
+            "expected": 3.2,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [
+            "narration-flight"
+          ],
+          "textOrVocalization": "刘备骑马进入土路弯口，回头望向来路并收紧缰绳。马匹沿土路由画面右后方向左前方进入弯心；刘备回头望向来路并收紧缰绳，头部转向、握缰的手及缰绳由松到紧的过程清楚可见，马步随之放缓。两处回望描述为同一次连续动作。"
+        },
+        {
+          "id": "narration-flight",
+          "kind": "speech",
+          "actorIds": [
+            "旁白"
+          ],
+          "dependsOn": [],
+          "resources": [
+            "voice"
+          ],
+          "completion": {
+            "modality": "audio",
+            "finalState": "观众听清突然受追及刘备丢下妻儿奔逃的信息。",
+            "evidenceAnchor": "旁白：追兵突然赶到，刘备丢下妻儿奔逃。",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-02",
+          "deliveryStyle": "narration",
+          "durationEstimate": {
+            "lower": 2.8,
+            "upper": 3.2,
+            "source": "14个汉字，按旁白参考语速及最低自然语速计入启动、逗号短停和句末停顿估计。",
+            "expected": 3.05,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [
+            "liubei-enter-look-rein"
+          ],
+          "textOrVocalization": "追兵突然赶到，刘备丢下妻儿奔逃。",
+          "performanceInstruction": "沿用上一镜画外旁白声线，清楚利落；逗号短停，句末自然收束，不渲染妻儿遭遇。画内人物不开口。"
+        },
+        {
+          "id": "zhangfei-arrive-beside",
+          "kind": "action",
+          "actorIds": [
+            "张飞"
+          ],
+          "dependsOn": [
+            "liubei-enter-look-rein"
+          ],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "张飞已赶到刘备身侧，两人在同一弯口会合。",
+            "evidenceAnchor": "张飞从后方赶到刘备身侧",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-02",
+          "durationEstimate": {
+            "lower": 2.8,
+            "upper": 3.5,
+            "source": "按后方骑马连续入画、接近并收缓至并马位置估计，非实测。",
+            "expected": 3.2,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [
+            "narration-relationship"
+          ],
+          "textOrVocalization": "张飞从后方赶到刘备身侧。张飞从画面右后方来路画外沿同一土路骑马连续入画，向弯心的刘备身侧靠近；接近后收缓马步，与刘备并马，身体朝向仍顺着撤退方向。披风不遮住脸部和控缰的手。"
+        },
+        {
+          "id": "narration-relationship",
+          "kind": "speech",
+          "actorIds": [
+            "旁白"
+          ],
+          "dependsOn": [
+            "narration-flight",
+            "liubei-enter-look-rein"
+          ],
+          "resources": [
+            "voice"
+          ],
+          "completion": {
+            "modality": "audio",
+            "finalState": "观众辨认张飞并听清他是刘备的部将；两行按序完成整条旁白。",
+            "evidenceAnchor": "旁白：追兵突然赶到，刘备丢下妻儿奔逃。部将张飞还跟在身边。",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-02",
+          "deliveryStyle": "narration",
+          "durationEstimate": {
+            "lower": 1.9,
+            "upper": 2.15,
+            "source": "9个汉字，按旁白参考语速及最低自然语速计入启动与句末停顿估计。",
+            "expected": 2.05,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [
+            "zhangfei-arrive-beside"
+          ],
+          "textOrVocalization": "部将张飞还跟在身边。",
+          "performanceInstruction": "同一画外声线接续前句，在张飞连续入画时介绍身份；重音轻落在“部将张飞”，不加评价。画内人物无语言口型。"
+        }
+      ],
+      "version": "duration-v2",
+      "schedule": [
+        {
+          "kind": "action",
+          "beatId": "liubei-enter-look-rein",
+          "actorIds": [
+            "刘备"
+          ],
+          "endSecond": 3.5,
+          "startSecond": 0,
+          "sourceBeatId": "beat-02",
+          "budgetSeconds": 3.5,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "speech",
+          "beatId": "narration-flight",
+          "actorIds": [
+            "旁白"
+          ],
+          "endSecond": 3.2,
+          "startSecond": 0,
+          "sourceBeatId": "beat-02",
+          "budgetSeconds": 3.2,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "action",
+          "beatId": "zhangfei-arrive-beside",
+          "actorIds": [
+            "张飞"
+          ],
+          "endSecond": 7,
+          "startSecond": 3.5,
+          "sourceBeatId": "beat-02",
+          "budgetSeconds": 3.5,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "speech",
+          "beatId": "narration-relationship",
+          "actorIds": [
+            "旁白"
+          ],
+          "endSecond": 5.65,
+          "startSecond": 3.5,
+          "sourceBeatId": "beat-02",
+          "budgetSeconds": 2.15,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        }
+      ],
+      "actorGroups": [],
+      "sampleTimes": [
+        0,
+        1.6,
+        1.75,
+        3.2,
+        3.5,
+        4.575,
+        5.25,
+        5.65,
+        7,
+        7.92
+      ],
+      "scheduleHash": "duration-v2-sha256-23fe42260a73e54a8d5af6b65d32084fae60f6d4f6bc5ad938782529dcc365d4",
+      "timingPolicy": {
+        "speech": {
+          "chant": {
+            "maximumRate": 4.5,
+            "referenceRate": 3.3,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 2.8
+          },
+          "singing": {
+            "maximumRate": 3.5,
+            "referenceRate": 2.8,
+            "startupAllowance": 0.35,
+            "minimumNaturalRate": 2
+          },
+          "dialogue": {
+            "maximumRate": 5,
+            "referenceRate": 4.5,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 3.3
+          },
+          "narration": {
+            "maximumRate": 6.5,
+            "referenceRate": 5.8,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 5.5
+          }
+        },
+        "version": "duration-policy-v2.2-brisk-narration",
+        "linePauseSeconds": 0.2,
+        "shortPauseSeconds": 0.15,
+        "minimumActionSeconds": 0.3,
+        "sentencePauseSeconds": 0.25,
+        "minimumReactionSeconds": 0.5,
+        "maximumProviderDuration": 15,
+        "minimumProviderDuration": 3,
+        "endingReadabilityReserve": 0.5,
+        "minimumVocalizationSeconds": 0.8,
+        "maxConservativeExtraSeconds": 1,
+        "measurementToleranceSeconds": 0.25
+      },
+      "sourceBeatIds": [
+        "beat-02"
+      ],
+      "speechWindows": [
+        {
+          "end": 3.2,
+          "text": "追兵突然赶到，刘备丢下妻儿奔逃。",
+          "start": 0,
+          "beatId": "narration-flight",
+          "actorIds": [
+            "旁白"
+          ],
+          "sourceBeatId": "beat-02",
+          "deliveryStyle": "narration"
+        },
+        {
+          "end": 5.65,
+          "text": "部将张飞还跟在身边。",
+          "start": 3.5,
+          "beatId": "narration-relationship",
+          "actorIds": [
+            "旁白"
+          ],
+          "sourceBeatId": "beat-02",
+          "deliveryStyle": "narration"
+        }
+      ],
+      "timelineWindows": [
+        {
+          "beatIds": [
+            "narration-flight",
+            "liubei-enter-look-rein"
+          ],
+          "endSecond": 3.5,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 narration-flight，0至3.2秒，导演参考）场景：当阳长坂附近撤退土路的一处弯口；沿用上一镜画外旁白声线，清楚利落；逗号短停，句末自然收束，不渲染妻儿遭遇。画内人物不开口。；画外旁白自然朗读：追兵突然赶到，刘备丢下妻儿奔逃。；完成态：观众听清突然受追及刘备丢下妻儿奔逃的信息。；动作依据：旁白：追兵突然赶到，刘备丢下妻儿奔逃。。",
+              "beatId": "narration-flight"
+            },
+            {
+              "quote": "（节拍 liubei-enter-look-rein，0至3.5秒，导演参考）刘备骑马进入土路弯口，回头望向来路并收紧缰绳。马匹沿土路由画面右后方向左前方进入弯心；刘备回头望向来路并收紧缰绳，头部转向、握缰的手及缰绳由松到紧的过程清楚可见，马步随之放缓。两处回望描述为同一次连续动作。；完成态：刘备已进入弯心并收缓马步，视线落向来路。；动作依据：刘备骑马进入土路弯口，回头望向来路并收紧缰绳；刘备回头望向来路并收紧缰绳。",
+              "beatId": "liubei-enter-look-rein"
+            }
+          ],
+          "startSecond": 0
+        },
+        {
+          "beatIds": [
+            "narration-relationship",
+            "zhangfei-arrive-beside"
+          ],
+          "endSecond": 7,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 narration-relationship，3.5至5.65秒，导演参考）同一画外声线接续前句，在张飞连续入画时介绍身份；重音轻落在“部将张飞”，不加评价。画内人物无语言口型。；画外旁白自然朗读：部将张飞还跟在身边。；完成态：观众辨认张飞并听清他是刘备的部将；两行按序完成整条旁白。；动作依据：旁白：追兵突然赶到，刘备丢下妻儿奔逃。部将张飞还跟在身边。。",
+              "beatId": "narration-relationship"
+            },
+            {
+              "quote": "（节拍 zhangfei-arrive-beside，3.5至7秒，导演参考）张飞从后方赶到刘备身侧。张飞从画面右后方来路画外沿同一土路骑马连续入画，向弯心的刘备身侧靠近；接近后收缓马步，与刘备并马，身体朝向仍顺着撤退方向。披风不遮住脸部和控缰的手。；完成态：张飞已赶到刘备身侧，两人在同一弯口会合。。",
+              "beatId": "zhangfei-arrive-beside"
+            }
+          ],
+          "startSecond": 3.5
+        },
+        {
+          "beatIds": [],
+          "endSecond": 8,
+          "beatQuotes": [],
+          "startSecond": 7
+        }
+      ],
+      "compiledVideoPrompt": "0-3.5秒：（节拍 narration-flight，0至3.2秒，导演参考）场景：当阳长坂附近撤退土路的一处弯口；沿用上一镜画外旁白声线，清楚利落；逗号短停，句末自然收束，不渲染妻儿遭遇。画内人物不开口。；画外旁白自然朗读：追兵突然赶到，刘备丢下妻儿奔逃。；完成态：观众听清突然受追及刘备丢下妻儿奔逃的信息。；动作依据：旁白：追兵突然赶到，刘备丢下妻儿奔逃。。同时，（节拍 liubei-enter-look-rein，0至3.5秒，导演参考）刘备骑马进入土路弯口，回头望向来路并收紧缰绳。马匹沿土路由画面右后方向左前方进入弯心；刘备回头望向来路并收紧缰绳，头部转向、握缰的手及缰绳由松到紧的过程清楚可见，马步随之放缓。两处回望描述为同一次连续动作。；完成态：刘备已进入弯心并收缓马步，视线落向来路。；动作依据：刘备骑马进入土路弯口，回头望向来路并收紧缰绳；刘备回头望向来路并收紧缰绳。\n3.5-7秒：（节拍 narration-relationship，3.5至5.65秒，导演参考）同一画外声线接续前句，在张飞连续入画时介绍身份；重音轻落在“部将张飞”，不加评价。画内人物无语言口型。；画外旁白自然朗读：部将张飞还跟在身边。；完成态：观众辨认张飞并听清他是刘备的部将；两行按序完成整条旁白。；动作依据：旁白：追兵突然赶到，刘备丢下妻儿奔逃。部将张飞还跟在身边。。同时，（节拍 zhangfei-arrive-beside，3.5至7秒，导演参考）张飞从后方赶到刘备身侧。张飞从画面右后方来路画外沿同一土路骑马连续入画，向弯心的刘备身侧靠近；接近后收缓马步，与刘备并马，身体朝向仍顺着撤退方向。披风不遮住脸部和控缰的手。；完成态：张飞已赶到刘备身侧，两人在同一弯口会合。。\n7-8秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+      "sourceBeatRequirements": [
+        {
+          "id": "beat-02",
+          "anchors": [
+            "刘备回头望向来路并收紧缰绳",
+            "张飞从后方赶到刘备身侧"
+          ],
+          "setting": "当阳长坂附近撤退土路的一处弯口"
+        }
+      ]
+    },
+    "qualityMode": "principle-v1",
+    "referenceMode": "three-view-all",
+    "sound": "on",
+    "subtitlePolicy": "none",
+    "visualTreatment": "live_action",
+    "editorialRole": "story",
+    "characters": [
+      "刘备",
+      "张飞"
+    ],
+    "initialCharacters": [
+      "刘备"
+    ],
+    "presentCharacters": [
+      "刘备",
+      "张飞"
+    ],
+    "referenceImages": [
+      "https://media.example.test/liubei-three-view.png",
+      "https://media.example.test/zhangfei-three-view.png"
+    ],
+    "referenceBindings": [
+      {
+        "characterName": "刘备",
+        "assetId": "character-6fedef81d39f710e",
+        "role": "identity"
+      },
+      {
+        "characterName": "张飞",
+        "assetId": "character-ea33d0a323ed1345",
+        "role": "entering",
+        "entrance": {
+          "name": "张飞",
+          "path": "从画面右后方来路画外沿同一土路骑马连续入画，向弯心的刘备身侧靠近",
+          "endSecond": 7,
+          "startSecond": 3.5
+        }
+      }
+    ]
+  },
+  "model": {
+    "id": "offline-fixture",
+    "provider": "Kling",
+    "capability": "video",
+    "settings": {
+      "model": "kling-v3",
+      "endpoint": "https://provider.example.test/v1/videos",
+      "apiKey": "test"
+    }
+  }
+}

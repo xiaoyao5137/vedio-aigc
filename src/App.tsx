@@ -1,3 +1,65 @@
+import { BailianVoicePicker } from './BailianVoicePicker'
+import WorkflowLibrary from './WorkflowLibrary'
+import { CanvasNodeMedia } from './CanvasNodeMedia'
+import { canvasMediaKind, resolveCanvasMedia, type CanvasMedia } from './canvas-media'
+import { canvasMediaScale, projectCanvasNodes, CANVAS_MEDIA_NODE_HEIGHT } from './canvas-media-layout'
+import VoiceListeningReview from './VoiceListeningReview'
+import { voiceReviewSource, voiceReviewTarget } from './voice-review'
+import { assertVoiceRuntime, knownVoiceSpeakers } from './character-voice'
+import { voiceCandidateOutput, withApprovedVoiceCasting } from './voice-character-input'
+import { newExecutionVoicePolicy, voicePolicyLabel, type VoicePolicy } from './voice-policy'
+import { addOriginalVoiceNode } from './original-voice-workflow'
+import VoiceUpgradePanel, { type VoiceUpgradePlan } from './VoiceUpgradePanel'
+import { InspectorDisclosure, InspectorEntries } from './InspectorDisclosure'
+import { decodeExecutionState, encodeExecutionState } from './execution-storage'
+import { createExecutionSaveQueue, ExecutionPersistenceError, requireExecutionCheckpoint, type PersistenceResult } from './execution-persistence'
+import { SANGUO_SCENE_OUTLINE_PROMPT } from './scene-outline-prompt'
+import { branchSceneIncludesRun, branchSceneIndicesForRun } from './branch-scenes'
+import { RunDuration } from './RunDuration'
+import { BranchNodeShape } from './BranchNodeShape'
+import { branchOutputOffset } from './branch-node-geometry'
+import { BranchConnections } from './BranchConnections'
+import { migrateBranchWorkflow, migrateBranchRuns } from './branch-migration'
+import { DEFAULT_BRANCH_CODE, branchConfigurationErrors, executionRouteEdges, orderRouteNodes, retryBranchRun, routeBranch, setBranchEdge, setBranchLoop, type BranchState, type BranchPort, type RouteEdge } from './workflow-branch'
+import { fitDagZoom, wheelDagZoom, zoomDagAt } from './dag-zoom'
+import { expandSelection, moveSelection, nodesInSelection, selectionRect, type NodeBounds, type Point } from './canvas-selection'
+import { historicalInspectorRunIndex, nextInspectorRunIndex } from './debug-inspector-selection'
+import { mapNodeInputs, type MapInput } from './node-map'
+import { type ErrorRetryPolicy, type AcceptancePolicy } from './node-retry'
+import { EDITORIAL_VIDEO_PROMPT, upgradeActorlessSettingEstablishment, upgradeLiveActionExceptSandTable, upgradeQualityWorkflow } from './quality-node-presets'
+import { upgradePrincipleQuality } from './principle-workflow'
+import { upgradeLeanPrincipleQuality, upgradeManualReviewQuality, setQualityDisposition } from './principle-quality-budget'
+import { runPrincipleReview } from './principle-review-runtime'
+import { PrincipleQualitySummary } from './PrincipleQualitySummary'
+import { requestJson, requestNodeJson } from './node-transport'
+import { DurationDiagnostics } from './DurationDiagnostics'
+import { SANGUO_CINEMATIC_STORYBOARD_PROMPT } from './storyboard-prompt'
+import { normalizeDramaOutline, storyboardDramaContext } from './history-drama'
+import { cinematicContinuityIssue } from './history-cinema'
+import { applyScopedDramaRepair, attachDramaRepairProvenance } from './drama-repair'
+import { createDramaGenerationBudget, resolveDramaGenerationLimit } from './drama-generation-budget'
+import { historicalSourceReviewContext } from './history-source-review'
+import { nodePromptInputContext } from './review-input'
+import { videoPromptInputContext } from './video-prompt-input'
+import { resolveNodePolicy } from './node-policy-input'
+import { renderRetryFeedbackPrompt, renderWorkflowTemplate, resolveTemplateJsonValue, stringifyTemplateValue } from './workflow-template'
+import { refreshDramaticExpressionPrompt, upgradeDramaticExpression } from './dramatic-expression'
+import { parseEpisodeBoundary, refreshEpisodeBoundaryPrompt, upgradeEpisodeBoundary, validateEpisodeNarrativeBoundary } from './episode-boundary'
+import { upgradeSandTableWorkflow } from './sand-table-workflow'
+import { CHARACTER_VISUAL_CONTEXT_RUNTIME_VERSION, assertSelectedCharacterVisuals, characterArtisticIdentityCatalog, characterEquipmentCatalog, characterEquipmentPrompt, characterInputsForShot, characterSelectionsForEpisode, characterVisualCatalog, resolveCharacterVisualSelections, upgradeCharacterVisualWorkflow, upgradePersistedSanguoCharacterWorkflow } from './character-visual-workflow'
+import { CHARACTER_BIOGRAPHY_SOURCE_PARAM, upgradeCharacterBiographyWorkflow } from './character-biography-workflow'
+import { upgradeCoverageCutFrameWorkflow } from './coverage-cut-frame-gate'
+import { loadSanguoDefaultWorkflow } from './sanguo-default-workflow'
+import { isManualReview } from './quality-disposition'
+import { validateHistoricalProductionPlan, validateHistoricalAgency } from './history-content-guards'
+import { orderLoopPlaceholders, runWorkflowToCompletion, historicalVideoRetryIndexes, requiresManualMediaDecision, newlyRequiredManualMediaDecision } from './workflow-runner'
+import { prepareWorkflowRunContext } from './workflow-run-context'
+import { manualRetryRuns } from './run-invalidation'
+import { createFailedTextCandidateBinding, failedTextCandidateFromLedger, failedTextCandidatePrefixHashAlgorithm, failedTextCandidateRequestPrefix, failedTextCandidateWriterInputs, FailedTextCandidateError, isFailedTextCandidateValidationMessage, isRecoverableFailedTextNode, readFailedTextCandidate, withFailedTextCandidate, withoutFailedTextCandidate, type FailedTextCandidateBinding } from './failed-text-candidate'
+import { executeFailedTextCandidate, executeRecoveredHistoricalStoryboard } from './failed-text-execution'
+import type { LoopRerunMetadata } from './loop-rerun'
+import { breakpointRollbackCandidates, forkBreakpointRollback, planBreakpointRollback, previousBreakpointRollbackCandidate, type BreakpointRollbackMetadata } from './breakpoint-rollback'
+import { HISTORY_QUALITY_VERSION, characterAppearanceContext } from './history-media.ts'
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { MouseEvent, PointerEvent as ReactPointerEvent } from 'react'
 import {
@@ -21,6 +83,7 @@ import {
   ListPlus,
   LoaderCircle,
   Maximize2,
+  Minimize2,
   Pencil,
   Play,
   Plus,
@@ -38,21 +101,34 @@ import {
   Volume2,
   X,
   XCircle,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react'
 import './App.css'
 import { DEFAULT_CODE_NODE_SCRIPT, SANGUO_CHARACTER_LOOKUP_CODE, SANGUO_CONTEXT_INIT_CODE, SANGUO_FIRST_FRAME_BRANCH_CODE, SANGUO_REUSE_TAIL_CODE, SANGUO_TAIL_FRAME_CODE } from './code-node-presets'
+import { animatedMapEndFrameNode, animatedMapFirstFrameNode } from './animated-map-frames'
+import { STORYBOARD_SEGMENTS_KEY, sceneFromStoryboardSegment, storyboardContinuityContext } from './storyboard-runtime'
+import { createStoryboardSplitPlan, readStoryboardSplitCandidate, storyboardSplitCandidateRef, isManagedStoryboardSplitNode,
+  type StoryboardSplitPlanEvidence, type StoryboardSplitCandidateReference } from './storyboard-split-candidate'
+import { MAX_NODE_ATTEMPTS } from './retry-budget'
+import { contextWithGenerationAttempt } from './generation-request-context'
+import { captureVideoTailFrame } from './video-tail-frame'
 import CharacterLibrary from './CharacterLibrary'
 import { isSharedCredentialKey, sharedCredentialModelIds, syncSharedModelCredentials } from './model-config'
 import { inspectExperienceResponse, modelExperienceFields, parseModelExperienceParams, restoreModelExperienceRequest } from './model-experience'
 import type { ExperienceField, ExperienceMedia, ExperienceResponseInspection, ExperienceValue } from './model-experience'
-import { aggregateLoopOutputs, applyNodeOutputToContext, availableLoopIterations, buildVariableMetadata, canAdvanceStep, containsUnicodeReplacementCharacter, extractTextResponse, findInspectableNodeRunIndex, findLoopSnapshotRunIndex, findNextBreakpointIndex, firstBlockingRunIndex, hasExecutionPlanMismatch, missingRequiredParamNames, normalizeStructuredTextOutput, resolveVariableMetadata, scopedLoopNodes, serializedValuesDiffer, shouldRunNode, shouldSkipStep, validateHistoricalStructuredOutput } from './workflow-core'
+import { aggregateLoopOutputs, applyNodeOutputToContext, availableLoopIterations, buildSceneOutlineRepairSuffix, buildVariableMetadata, canAdvanceStep, containsUnicodeReplacementCharacter, extractTextResponse, findInspectableNodeRunIndex, findLoopSnapshotRunIndex, firstBlockingRunIndex, hasExecutionPlanMismatch, isDisplayedRunCompletedBeforeStep, isDurationPolicyTransition, refreshPendingExecutionNodes, missingRequiredParamNames, normalizeStructuredTextOutput, recoverInterruptedNodeRuns, resolveVariableMetadata, scopedLoopNodes, serializedValuesDiffer, shouldSkipStep, validateHistoricalStructuredOutput } from './workflow-core'
 import { loadAppViewState, saveAppViewState } from './app-view-state'
+import { createWorkflowBreakpointResolver, formatBreakpointValue, loadWorkflowBreakpoints, parseBreakpointValue, removeWorkflowBreakpoint, saveWorkflowBreakpoints, setWorkflowBreakpoint, shouldPauseBeforeRun, toggleWorkflowBreakpoint, type BreakpointOperator, type WorkflowBreakpoint } from './workflow-breakpoints'
 import type { AppPage, RunnerTab, WorkflowView } from './app-view-state'
+import { assetDownloadUrl } from './asset-download'
+import { repairSanguoVideoMediaRoute, upgradeSanguoVideoConcat } from './video-concat-workflow'
+import { applyVideoOutputProfile, VIDEO_OUTPUT_PROFILE_VERSION, type VideoExecutionMode } from './video-output-profile'
 
-type NodeKind = 'input' | 'image' | 'video' | 'text' | 'code' | 'loop' | 'internet' | 'validation' | 'knowledge' | 'asset' | 'audio' | 'compose'
+type NodeKind = 'input' | 'image' | 'video' | 'videoConcat' | 'text' | 'code' | 'loop' | 'internet' | 'validation' | 'knowledge' | 'asset' | 'audio' | 'compose' | 'http' | 'branch'
 type ParamType = 'text' | 'number' | 'boolean' | 'image' | 'images' | 'json'
 type ModelCapability = 'text' | 'image' | 'video' | 'audio'
-type ModelProvider = 'Anthropic' | 'OpenAI' | 'Ofox' | 'Kling' | 'Local' | 'Custom'
+type ModelProvider = 'Bailian' | 'Anthropic' | 'OpenAI' | 'Codex' | 'Ofox' | 'Kling' | 'Local' | 'Custom'
 type TextOutputMode = 'legacy-shots' | 'array' | 'json' | 'text'
 
 type WorkflowParam = { id: string; name: string; englishName?: string; type: ParamType; required: boolean; value: string }
@@ -75,9 +151,15 @@ type WorkflowNode = {
   outputMode?: TextOutputMode
   code?: string
   runIf?: { path: string; equals: unknown }
+  request?: { url: string; method: 'POST' | 'GET' }
+  acceptance?: AcceptancePolicy
+  errorRetry?: ErrorRetryPolicy
+  mapInput?: MapInput
+  captureTail?: boolean
+  loopResultMode?: 'collect' | 'latest'
 }
-type WorkflowEdge = { id: string; from: string; to: string }
-type Workflow = { id: string; name: string; description: string; nodes: WorkflowNode[]; edges: WorkflowEdge[]; schemaVersion?: number }
+type WorkflowEdge = RouteEdge
+type Workflow = { id: string; name: string; description: string; nodes: WorkflowNode[]; edges: WorkflowEdge[]; schemaVersion?: number; voicePolicy?: VoicePolicy }
 type ModelConfig = {
   id: string
   name: string
@@ -112,7 +194,7 @@ type ModelExecutionRecord = {
 }
 type ModelExecutionFilters = { channel: string; modelId: string; status: string; capability: string; keyword: string }
 type ExperienceSource = { record: ModelExecutionRecord; omittedFields: string[] }
-type NodeRunRequestContext = { workflowId?: string; workflowName?: string; nodeId?: string; nodeName?: string }
+type NodeRunRequestContext = { voiceExecutionId?: string; voicePolicy?: string; requestKey?: string; workflowId?: string; workflowName?: string; nodeId?: string; nodeName?: string }
 type ExperienceRunPhase = 'submitting' | 'processing' | 'paused' | 'succeeded' | 'failed'
 type ExperienceRun = {
   phase: ExperienceRunPhase
@@ -149,7 +231,14 @@ function loadStoredExperienceRuns(): Record<string, ExperienceRun> {
 type RunMode = 'run' | 'step'
 type RunnerInspectorTab = 'config' | 'input' | 'output'
 type WorkflowDebugState = { stepIndex: number }
-type StepTask = { node: WorkflowNode; loopNode?: WorkflowNode; loopItem?: unknown; loopIndex?: number; loopPrevious?: Record<string, unknown>; label?: string }
+type BreakpointEditorState = { workflowId: string; nodeId: string; conditional: boolean; path: string; operator: BreakpointOperator; value: string }
+const breakpointOperatorLabels: Record<BreakpointOperator, string> = { eq: '=', ne: '≠', gt: '>', gte: '≥', lt: '<', lte: '≤' }
+type StepTask = { failedCandidateBinding?: FailedTextCandidateBinding; storyboardSplitCandidate?: ReturnType<typeof readStoryboardSplitCandidate>; knownVoiceInputs?: unknown[]; voiceExecutionId?: string; voicePolicy?: string; executionId?: string; executionMode?: VideoExecutionMode; node: WorkflowNode; policyNodes?: WorkflowNode[]; loopNode?: WorkflowNode; loopItem?: unknown; loopIndex?: number; loopPrevious?: Record<string, unknown>; label?: string }
+const STORYBOARD_SPLIT_SOURCE_KEY = '__storyboardSplitSource'
+type StoryboardSplitSourceEnvelope = {
+  source: NonNullable<Awaited<ReturnType<typeof executeRecoveredHistoricalStoryboard>>['source']>
+  expected: Record<string, unknown>
+}
 type NodeRunResult = {
   node: WorkflowNode
   output: unknown
@@ -171,9 +260,29 @@ type NodeRunState = NodeRunResult & {
   loopPrevious?: Record<string, unknown>
   loopGroupId?: string
   loopIsLast?: boolean
+  attempt?: number
+  errorAttempt?: number
+  revision?: number
+  retryFeedback?: unknown
+  storyboardSplitPlan?: StoryboardSplitPlanEvidence
+  storyboardSplitCandidate?: StoryboardSplitCandidateReference
+  branchState?: BranchState
+  branchEntryTarget?: string
+  branchCarry?: Record<string, { loopIndex?: number; state: BranchState; paramOverrides?: Record<string, string> }>
+  routeInputContext?: Record<string, unknown>
+  routeInputOverrides?: Record<string, unknown>
+  paramOverrides?: Record<string, string>
+  attempts?: Array<Record<string, unknown>>
 }
 type ExecutionState = {
+  generationScopeId?: string
+  loopRerun?: LoopRerunMetadata
+  breakpointRollback?: BreakpointRollbackMetadata
+  breakpointRollbackHistory?: BreakpointRollbackMetadata[]
+  voiceUpgrade?: { sourceExecutionId: string; characterVersions: Array<{ characterId: string; from: number; to: number }>; invalidatedRunIds: string[] }
+  voicePolicy?: 'strict' | 'preview'
   id: string
+  requestScopeId?: string
   mode: RunMode
   workflowId: string
   workflowName: string
@@ -183,6 +292,8 @@ type ExecutionState = {
   logs: string[]
   selectedNodeId?: string
   historical?: boolean
+  persistenceError?: string
+  branchHistory?: Array<Record<string, unknown>>
 }
 type ExecutionRecord = {
   id: string
@@ -209,8 +320,9 @@ type WorkflowDebugSnapshot = {
   logs: string[]
 }
 type GraphDrag =
-  | { type: 'node'; nodeId: string; offsetX: number; offsetY: number }
-  | { type: 'edge'; from: string; x: number; y: number }
+  | { type: 'node'; start: Point; origins: Record<string, Point> }
+  | { type: 'selection'; start: Point; end: Point; bounds: NodeBounds[] }
+  | { type: 'edge'; from: string; branch?: BranchPort; x: number; y: number }
   | null
 
 const PARAM_VALUE_VISIBLE_LIMIT = 50
@@ -225,11 +337,14 @@ function getParamValueRows(value: string) {
 }
 
 const nodeMeta: Record<NodeKind, { label: string; icon: typeof Pencil }> = {
+  http: { label: 'HTTP 请求节点', icon: Globe2 },
   input: { label: '输入节点', icon: ListPlus },
   text: { label: '文本推理节点', icon: Bot },
   image: { label: '图片生成节点', icon: ImageIcon },
   video: { label: '视频生成节点', icon: Clapperboard },
+  videoConcat: { label: '视频拼接', icon: Clapperboard },
   code: { label: '代码执行节点', icon: Code2 },
+  branch: { label: '分支判断节点', icon: SlidersHorizontal },
   loop: { label: '循环控制节点', icon: Repeat },
   internet: { label: '互联网检索节点', icon: Globe2 },
   validation: { label: '规则校验节点', icon: ShieldCheck },
@@ -249,9 +364,13 @@ const runStatusLabels: Record<NodeRunStatus, string> = {
 
 const createId = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 8)}`
 const defaultLoop = (): LoopConfig => ({ enabled: false, sourcePath: 'script_fragments.items', fallbackCount: 8, itemVar: 'item' })
-const DAG_WHEEL_ZOOM_SENSITIVITY = 0.003
 
 const initialModels: ModelConfig[] = [
+  {
+    id: 'bailian-qwen-audio-tts', name: '百炼 Qwen Audio TTS Flash', provider: 'Bailian', capability: 'audio',
+    settings: { endpoint: '', apiKey: '', model: 'qwen-audio-3.0-tts-flash', voice: 'longanhuan_v3.6', instruction: '', rate: '1', pitch: '1', sampleRate: '24000', seed: '0' },
+    testInput: '诸位先坐下，我们慢慢商量。今天的事情，总能找到办法。', testResult: '',
+  },
   {
     id: 'claude-opus-4-8',
     name: 'claude 4.8 opus',
@@ -468,81 +587,6 @@ const sanguoContextNode: WorkflowNode = {
   position: { x: 330, y: 210 },
 }
 
-const SANGUO_SCENE_OUTLINE_PROMPT = `你是兼具正史功底、成熟电视剧编剧能力和短视频网感的三国历史短剧策划。基于运行时从互联网取得的史料原文，为《\${input.episode_title}》规划叙事完整、数量与时长均由史事复杂度决定的连续短镜头。成片必须让观众是在“追剧”，而不是听史料摘要或观看按时间顺序排列的历史事件。
-
-只返回一个 JSON 对象，不要 Markdown、解释或代码围栏。字段和类型必须严格如下：
-{
-  "episodeTitle": "本集标题",
-  "scenes": [
-    {
-      "id": "scene-01",
-      "sequence": 1,
-      "title": "镜头标题",
-      "purpose": "本镜头的叙事任务与可见动作",
-      "historicalBasis": "[史料1] 对应史料所支持的事实",
-      "adaptationBoundary": "正史未载、仅作合理戏剧化的内容",
-      "targetDuration": 15,
-      "continuityFromPrevious": false
-    }
-  ]
-}
-
-硬性规则：
-1. 根据本集史料的事件数量、人物行动、转折和收束，自主判断 scenes 数量；不得套用固定镜头数。每个 scene 对应一次独立的 15 秒视频生成。如果一段剧情在自然语速、完整动作和结尾留白下无法在 15 秒内完成，必须拆成两个或更多相邻 scene，不得压缩语速或草率收尾。sequence 从 1 连续递增，id 唯一。系统会按实际 scenes 数组自动计算场景数和总时长，无需输出 count 或 totalDuration。
-2. 所有 scene 的 targetDuration 必须固定为 15，不得输出 8–14 的任何数值。每镜最后至少预留 1.5 秒稳定画面。
-3. 第一镜 continuityFromPrevious 必须为 false。只有一个完整剧情动作无法在 15 秒内表达、因而主动拆成相邻两镜时，后镜才可为 true；前镜必须停在尚未完成的动作或信息上，后镜从完全相同的人物状态、空间和构图继续。仅仅时空相邻、人物相同或希望画面连贯，不得设为 true。
-4. historicalBasis 必须用“[史料N]”引用下方实际史料，不得把《三国演义》或合理拟制写成正史。
-5. 每个镜头必须有明确可拍摄动作，整体形成起承转合，并以史实节点或下一集悬念收束。
-6. 开篇优先使用反常动作、迫近危机、人物困境、身份反差或信息差迅速制造钩子；中段持续安排欲望与阻力、试探与反制、误判与后果，避免“某人做了某事、随后又发生某事”的历史直叙。
-7. 剧情必须兼具网感、趣味感、剧情感和电视剧吸睛性。网感来自节奏、反差、悬念、回扣、情绪爆点和便于传播的记忆点，不得硬塞现代网络热梗、现代词汇、出戏段子或低俗戏说；趣味优先来自人物性格碰撞、处境反差、言外之意和有代价的机锋。
-8. 每个具名角色的决定、动作、说话策略和关系张力必须符合正史及可靠注本记载的性格、身份、年龄阶段和政治处境；先从史料中提炼本集可见的性格证据，再将其转化为行动。不得把所有角色写成同一种忠勇、沉稳或慷慨腔调，也不得用后世定型印象覆盖其当时状态。
-9. purpose 不写抽象说明或史料摘要，必须同时写清“谁想达成什么—受到什么阻力—采取什么可见行动—产生什么戏剧变化/悬念”，并体现本镜头的角色性格与观众情绪价值。
-10. 合理戏剧化只能补足对白、微动作、场面调度和史料留白，不得虚构改变历史因果、胜负归属、人物核心立场或时代常识的桥段；所有拟制内容明确写入 adaptationBoundary。
-
-史料引用清单：
-\${historical_sources.citations}
-
-史料原文：
-\${historical_sources.text}`
-
-const SANGUO_STORYBOARD_PROMPT = `你是兼具电视剧叙事、短视频节奏和历史人物塑造能力的竖屏三国短剧分镜师。把本集《\${input.episode_title}》的当前场景“\${scene.title}”改写成一个可直接执行、开镜即有戏的视频短分镜，而不是把 scene.purpose 换一种说法复述。
-
-只返回一个 JSON 对象，不要 Markdown、解释或代码围栏。字段和类型必须严格如下：
-{
-  "id": "scene-01",
-  "title": "镜头标题",
-  "duration": 15,
-  "characters": ["本镜头实际出镜的人物姓名"],
-  "visualPrompt": "完整的竖屏9:16真人历史电影画面提示",
-  "camera": "景别、焦段与运镜",
-  "mood": "低饱和写实氛围",
-  "firstFrameMode": "reference",
-  "lastFramePrompt": "本镜头结束构图的完整提示，用于衔接下一镜",
-  "videoPrompt": "从首帧到尾帧的动作、运镜、物理约束与声音设计",
-  "audioType": "旁白",
-  "audioText": "旁白或角色名：对白",
-  "historicalBasis": "[史料1] 对应史料依据",
-  "adaptationBoundary": "本镜头合理拟制的边界"
-}
-
-硬性规则：
-1. duration 必须固定为 15。不得根据自行估时输出 8–14 秒。按每秒 4 个汉字估算自然历史剧对白，并额外计入句读、角色换人、明示停顿、对白后反应动作和至少 1.5 秒稳定尾帧。当前 scene 应已由上游拆分到 15 秒可完成；仍超限时只能凝练表达，不得加快语速或删除结尾反应。
-2. characters 只列画面中真实出镜的具名人物；群演不入列，不得为了复用已有资产增添人物。
-3. firstFrameMode 只能是 "reference" 或 "reuse_previous_tail"。默认且第一镜必须为 reference：直接把本镜人物资产作为参考附件交给视频模型自由构图，不生成首帧图。仅当 scene.continuityFromPrevious 为 true、上一镜因 15 秒限制尚未表达完且其尾帧可直接作为本镜起点时，才可 reuse_previous_tail；普通转场、完整动作后的新镜头一律 reference。
-4. 画面须为真人实景、东汉服化道准确、低饱和土褐/黛青/暗红色调、自然日光或油灯火把；禁止卡通、动漫、游戏 CG、玄幻光效、AI 塑料感、现代物件、字幕和水印。
-5. 同一人物跨镜头必须保持脸型、年龄、发式、胡须、服装主色和体型一致。visualPrompt 和 videoPrompt 必须明确写出每个具名人物应匹配其人物资产参考附件，但参考图只约束身份与服饰，不限制开场构图和动作；模型画面不生成文字，年月、地名和史实说明留给后期。
-6. historicalBasis 必须保留当前场景的史料编号；具体对白、微动作和正史未载过程写入 adaptationBoundary。
-7. 一个短分镜只聚焦一个强动作或一次关系变化。首帧就交代冲突、异常、压迫或关键道具，结尾必须形成反应、反转、代价、未答问题或可衔接下一镜的视觉钩子；禁止站桩念史、流水账旁白和没有对手反应的单向陈述。
-8. 每个具名角色都必须按史料记载的性格和本集所处人生阶段来行动与表达：用选择、目光、停顿、抢话、试探、克制、威压、迟疑或反制外化性格，不用旁白直接贴“足智多谋、忠勇”等标签，不套用《三国演义》或后世脸谱替代史料依据。
-9. audioType 只标记主要人声类型，只能精确填写“旁白”或“对白”；即使镜头包含环境声、动作声或音乐，也不得写成“旁白+环境音”等组合值。audioText 要像电视剧台词而非史书翻译：对白须有对象、目的、潜台词和对方压力，允许克制机锋、反差或回扣；旁白只补画面无法表达的关键信息。语言凝练、符合时代语境和身份差异，不得使用现代网络词、流行梗、官腔解说或无依据名言。videoPrompt 必须同时写清普通话对白/旁白、环境声和动作声，使视频模型一次生成同步画面与声音。
-10. 网感与趣味必须服务剧情：通过快进入、强信息差、人物关系张力、意外但合理的反应和可传播记忆点实现；不得把历史人物降格成现代段子手，不得为搞笑破坏人物尊严、史实因果或整体历史质感。
-11. visualPrompt、camera、lastFramePrompt 和 videoPrompt 必须共同落实上述戏剧动作与人物反应，镜头设计要突出权力距离、关系变化和情绪落点，不能只写通用的“缓慢推进、人物严肃”；camera 与 audioText 的完整内容都必须落实进 videoPrompt，而不是依赖视频模型的非标准扩展参数。lastFramePrompt 会直接交给图片模型生成目标尾帧，必须只描述动作全部完成后的单一时间点和最终静态构图，并为每个出镜具名人物重复写明稳定外貌、服装、画面位置和视线关系；禁止使用“从……到……”“先……再……”“又”“随后”“缓缓”“停留若干秒”等过程或时长语言；只能是一幅全画幅画面，所有人物必须同时存在于同一空间、同一机位、同一曝光中，禁止分别描写成多个镜头，禁止分镜、拼贴、分栏、上下三段、连环画和重复人物；禁止字幕、水印、标题、标签及任何可读文字，榜文、竹简、牌匾等文字载体只能虚焦、背向镜头或呈现不可辨纹理。
-12. videoPrompt 必须按时间顺序叙述，最后一个动作必须是 lastFramePrompt 所定义的主体和构图；到达该构图后不得再切换到其他人物，至少稳定停留 1.5 秒。
-
-当前场景：\${scene}
-
-史料原文：
-\${historical_sources.text}`
 
 const sanguoNodes: WorkflowNode[] = [
   {
@@ -599,7 +643,7 @@ const sanguoNodes: WorkflowNode[] = [
     params: [],
     uploads: [],
     loop: { enabled: true, sourcePath: 'scene_outline.scenes', fallbackCount: 0, itemVar: 'scene' },
-    childIds: ['sanguo-shot-script', 'sanguo-character-lookup', 'sanguo-character-portrait', 'sanguo-character-image', 'sanguo-character-archive', 'sanguo-first-frame-branch', 'sanguo-first-frame-tail', 'sanguo-end-frame', 'sanguo-video', 'sanguo-last-frame'],
+    childIds: ['sanguo-shot-script', 'sanguo-character-lookup', 'sanguo-character-portrait', 'sanguo-character-image', 'sanguo-character-archive', 'sanguo-first-frame-branch', 'sanguo-first-frame-tail', 'sanguo-animated-map-first-frame', 'sanguo-end-frame', 'sanguo-video', 'sanguo-last-frame'],
     position: { x: 1200, y: 240 },
   },
   {
@@ -610,7 +654,7 @@ const sanguoNodes: WorkflowNode[] = [
     outputMode: 'json',
     modelId: 'claude-opus-4-8',
     resultVar: 'shot_script',
-    prompt: SANGUO_STORYBOARD_PROMPT,
+    prompt: SANGUO_CINEMATIC_STORYBOARD_PROMPT,
     params: [],
     uploads: [],
     loop: defaultLoop(),
@@ -637,11 +681,11 @@ const sanguoNodes: WorkflowNode[] = [
     kind: 'internet',
     operation: 'character.historical-portrait',
     resultVar: 'character_portraits',
-    prompt: '仅检索具名重要历史人物的正史体貌记载；群演和职能型小人物跳过，查无可靠记载时返回空画像且不得臆造。',
-    runIf: { path: 'character_lookup.shouldGenerate', equals: true },
+    prompt: '对本镜具名人物补充可核对的正史生平与体貌资料；优先复用本集已检索史料。已有三视图也检查自动占位自传，仅替换缺证据段落；区分检索失败和确实缺载，不将小说外形或剧情造型写成正史。',
     params: [
       { id: 'sg-cp-characters', name: '待提取人物', englishName: 'characters', type: 'json', required: true, value: '${character_lookup.missingCharacters}' },
       { id: 'sg-cp-all', name: '全部出场人物', englishName: 'allCharacters', type: 'json', required: true, value: '${character_lookup.characters}' },
+      CHARACTER_BIOGRAPHY_SOURCE_PARAM,
       { id: 'sg-cp-max-sources', name: '每种史书最多来源', englishName: 'maxSources', type: 'number', required: true, value: '2' },
       { id: 'sg-cp-max-passages', name: '每种史书最多片段', englishName: 'maxPassages', type: 'number', required: true, value: '4' },
     ],
@@ -655,7 +699,7 @@ const sanguoNodes: WorkflowNode[] = [
     title: '人物图片生成',
     kind: 'image',
     operation: 'character.ensure',
-    modelId: 'local-image-simulator',
+    modelId: 'kling-image-3',
     resultVar: 'character_assets',
     prompt: '逐一生成缺失人物的定妆三视图，并以角色名称和连续性标识返回结构化结果。',
     runIf: { path: 'character_lookup.shouldGenerate', equals: true },
@@ -664,7 +708,8 @@ const sanguoNodes: WorkflowNode[] = [
       { id: 'sg-ci-all', name: '全部出场人物', englishName: 'allCharacters', type: 'json', required: true, value: '${character_portraits.allCharacters}' },
       { id: 'sg-ci-existing', name: '已有人物资产', englishName: 'existingAssets', type: 'json', required: false, value: '${character_lookup.existingAssets}' },
       { id: 'sg-ci-validate', name: '三视图质量检查', englishName: 'validateThreeView', type: 'boolean', required: true, value: 'true' },
-      { id: 'sg-ci-attempts', name: '质量失败重试次数', englishName: 'maxGenerationAttempts', type: 'number', required: true, value: '2' },
+      { id: 'sg-ci-fallback', name: '质量失败备用图片模型（历史工作流已禁用）', englishName: 'fallbackModelId', type: 'text', required: false, value: '' },
+      { id: 'sg-ci-attempts', name: '质量失败重试次数', englishName: 'maxGenerationAttempts', type: 'number', required: true, value: String(MAX_NODE_ATTEMPTS) },
     ],
     uploads: [],
     loop: defaultLoop(),
@@ -716,41 +761,38 @@ const sanguoNodes: WorkflowNode[] = [
     position: { x: 2890, y: 200 },
   },
   {
-    id: 'sanguo-end-frame',
-    title: '目标尾帧图生成',
-    kind: 'image',
-    modelId: 'local-image-simulator',
-    resultVar: 'end_frame',
-    prompt: '${shot_script.lastFramePrompt}\n【续接尾帧硬约束】这是本段视频动作全部完成后的单一时间点，只生成一幅无边框、全画幅、连续空间的 9:16 电影画面。若上文含动作变化或时间顺序，只呈现最终结果，不呈现过程。严禁分镜板、拼贴、分栏、上下三段、连环画、画中画、重复人物或下一动作；严禁字幕、水印、标题、标签及任何可读文字，榜文、竹简、牌匾等文字载体必须虚焦、背向镜头或仅保留不可辨纹理。',
-    params: [
-      { id: 'sg-ef-refs', name: '人物三视图', englishName: 'referenceImages', type: 'images', required: false, value: '${first_frame_branch.referenceRequest.referenceImages}' },
-      { id: 'sg-ef-size', name: '尺寸', englishName: 'size', type: 'text', required: true, value: '720x1280' },
-      { id: 'sg-ef-ref-mode', name: '人物参考处理', englishName: 'referenceMode', type: 'text', required: false, value: 'three-view-front' },
-      { id: 'sg-ef-bindings', name: '人物参考绑定', englishName: 'referenceBindings', type: 'json', required: false, value: '${first_frame_branch.referenceRequest.referenceBindings}' },
-    ],
-    uploads: [],
+    ...animatedMapFirstFrameNode,
     loop: defaultLoop(),
-    parentId: 'sanguo-scene-loop',
-    position: { x: 3170, y: 60 },
-  },
+  } as WorkflowNode,
+  {
+    ...animatedMapEndFrameNode,
+    loop: defaultLoop(),
+  } as WorkflowNode,
   {
     id: 'sanguo-video',
     title: '参考生视频',
     kind: 'video',
     modelId: 'local-video-simulator',
     resultVar: 'video_shot',
-    prompt: '${shot_script.videoPrompt}\n运镜：${shot_script.camera}\n结束画面：${shot_script.lastFramePrompt}\n声音类型：${shot_script.audioType}\n同期声音与台词：${shot_script.audioText}',
+    prompt: EDITORIAL_VIDEO_PROMPT,
     params: [
       { id: 'sg-v-image', name: '续接首帧（仅连续镜头）', englishName: 'referenceImage', type: 'image', required: false, value: '${first_frame.url}' },
-      { id: 'sg-v-end-image', name: '目标尾帧', englishName: 'endImage', type: 'image', required: true, value: '${end_frame.url}' },
+      { id: 'sg-v-end-image', name: '动画镜头目标尾帧', englishName: 'endImage', type: 'image', required: false, value: '${end_frame.url}' },
+      { id: 'sg-v-animation-style', name: '动画叙事类型', englishName: 'animationStyle', type: 'text', required: false, value: '${shot_script.animationStyle}' },
+      { id: 'sg-v-animation-aesthetic', name: '动画美术风格', englishName: 'animationAesthetic', type: 'text', required: false, value: '${shot_script.animationAesthetic}' },
       { id: 'sg-v-character-refs', name: '人物三视图', englishName: 'referenceImages', type: 'images', required: false, value: '${first_frame_branch.referenceRequest.referenceImages}' },
-      { id: 'sg-v-ref-mode', name: '人物参考处理', englishName: 'referenceMode', type: 'text', required: false, value: 'three-view-all' },
+      { id: 'sg-v-ref-mode', name: '人物参考处理', englishName: 'referenceMode', type: 'text', required: false, value: '${first_frame_branch.referenceRequest.referenceMode}' },
       { id: 'sg-v-ref-bindings', name: '人物参考绑定', englishName: 'referenceBindings', type: 'json', required: false, value: '${first_frame_branch.referenceRequest.referenceBindings}' },
-      { id: 'sg-v-ratio', name: '画幅比例', englishName: 'aspectRatio', type: 'text', required: true, value: '9:16' },
-      { id: 'sg-v-duration', name: '时长', englishName: 'duration', type: 'number', required: true, value: '15' },
+      { id: 'sg-v-characters', name: '本镜人物', englishName: 'characters', type: 'json', required: false, value: '${shot_script.characters}' },
+      { id: 'sg-v-character-equipment', name: '本镜人物装备需求', englishName: 'characterEquipment', type: 'json', required: false, value: '${shot_script.characterEquipment}' },
+      { id: 'sg-v-equipment-bindings', name: '已归档装备绑定', englishName: 'equipmentBindings', type: 'json', required: false, value: '${character_lookup.equipmentBindings}' },
+      { id: 'sg-v-illustration-layers', name: '二维人物图层编排', englishName: 'illustrationLayers', type: 'json', required: false, value: '${shot_script.illustrationLayers}' },
+      { id: 'sg-v-ratio', name: '画幅比例', englishName: 'aspectRatio', type: 'text', required: true, value: '16:9' },
+      { id: 'sg-v-duration', name: '动态时长', englishName: 'duration', type: 'number', required: true, value: '${shot_script.duration}' },
+      { id: 'sg-v-pacing', name: '节奏规划版本', englishName: 'pacingVersion', type: 'text', required: true, value: '${shot_script.pacing.version}' },
       { id: 'sg-v-mode', name: '生成模式', englishName: 'mode', type: 'text', required: true, value: 'std' },
       { id: 'sg-v-sound', name: '原生音频', englishName: 'sound', type: 'text', required: true, value: 'on' },
-      { id: 'sg-v-negative', name: '负向提示词', englishName: 'negativePrompt', type: 'text', required: false, value: '画面闪烁、人物变形、身份漂移、服饰突变、现代物件、字幕、水印、卡通、动漫、游戏CG、玄幻光效、AI塑料感' },
+      { id: 'sg-v-negative', name: '负向提示词', englishName: 'negativePrompt', type: 'text', required: false, value: '画面闪烁、人物变形、身份漂移、服饰突变、未按二维图层编排的人物出现或消失、纯色背景、摄影棚背景、幕布背景、舞台布景、三视图背景复现、人物抠图感、空洞背景、现代物件、字幕、水印、低幼卡通、游戏CG、玄幻光效、AI塑料感' },
     ],
     uploads: [],
     loop: defaultLoop(),
@@ -776,10 +818,12 @@ const sanguoNodes: WorkflowNode[] = [
     kind: 'validation',
     operation: 'history.verify',
     resultVar: 'historical_verification',
-    prompt: '确定性检查：核对每个短分镜的史料编号、改编边界和固定 15 秒时长；核对总时长必须等于镜头数乘以 15 秒；不调用大模型。',
+    prompt: '确定性检查：核对每个短分镜的史料编号、改编边界和动态 3–15 秒时长和剧情闭合；核对总时长为各镜实际时长之和；不调用大模型。',
     params: [
       { id: 'sg-check-citations', name: '史料引用', englishName: 'citations', type: 'json', required: true, value: '${historical_sources.citations}' },
       { id: 'sg-check-shots', name: '分镜', englishName: 'shots', type: 'json', required: true, value: '${shot_script.items}' },
+      { id: 'sg-check-videos', name: '成片质量证据', englishName: 'videos', type: 'json', required: true, value: '${video_shot.items}' },
+      { id: 'sg-check-quality', name: '要求真实质量检查', englishName: 'requireQualityEvidence', type: 'boolean', required: true, value: 'true' },
       { id: 'sg-check-policy', name: '改编规则', englishName: 'policy', type: 'text', required: true, value: '${input.adaptation_policy}' },
       { id: 'sg-check-scene-count', name: '剧情规划镜头数', englishName: 'expectedSceneCount', type: 'number', required: true, value: '${scene_outline.count}' },
       { id: 'sg-check-duration', name: '剧情规划总时长', englishName: 'expectedTotalDuration', type: 'number', required: true, value: '${scene_outline.totalDuration}' },
@@ -799,7 +843,7 @@ const sanguoNodes: WorkflowNode[] = [
       { id: 'sg-m-shots', name: '分镜', englishName: 'storyboards', type: 'json', required: true, value: '${shot_script.items}' },
       { id: 'sg-m-videos', name: '视频片段', englishName: 'videos', type: 'json', required: true, value: '${video_shot.items}' },
       { id: 'sg-m-ratio', name: '画幅', englishName: 'aspectRatio', type: 'text', required: true, value: '${input.aspect_ratio}' },
-      { id: 'sg-m-resolution', name: '分辨率', englishName: 'resolution', type: 'text', required: true, value: '1080x1920' },
+      { id: 'sg-m-resolution', name: '分辨率', englishName: 'resolution', type: 'text', required: true, value: '1920x1080' },
       { id: 'sg-m-format', name: '格式', englishName: 'format', type: 'text', required: true, value: 'mp4' },
     ],
     uploads: [],
@@ -820,8 +864,10 @@ const sanguoEdges: WorkflowEdge[] = [
   { id: 'sg-e-image-archive', from: 'sanguo-character-image', to: 'sanguo-character-archive' },
   { id: 'sg-e-archive-branch', from: 'sanguo-character-archive', to: 'sanguo-first-frame-branch' },
   { id: 'sg-e-branch-tail', from: 'sanguo-first-frame-branch', to: 'sanguo-first-frame-tail' },
-  { id: 'sg-e-branch-end', from: 'sanguo-first-frame-branch', to: 'sanguo-end-frame' },
-  { id: 'sg-e-end-video', from: 'sanguo-end-frame', to: 'sanguo-video' },
+  { id: 'sg-e-branch-animated-map-first', from: 'sanguo-first-frame-branch', to: 'sanguo-animated-map-first-frame' },
+  { id: 'sg-e-animated-map-first-end', from: 'sanguo-animated-map-first-frame', to: 'sanguo-end-frame' },
+  { id: 'sg-e-animated-map-end-video', from: 'sanguo-end-frame', to: 'sanguo-video' },
+  { id: 'sg-e-branch-video', from: 'sanguo-first-frame-branch', to: 'sanguo-video' },
   { id: 'sg-e-tail-video', from: 'sanguo-first-frame-tail', to: 'sanguo-video' },
   { id: 'sg-e-video-last-frame', from: 'sanguo-video', to: 'sanguo-last-frame' },
   { id: 'sg-e-last-frame-verify', from: 'sanguo-last-frame', to: 'sanguo-verify' },
@@ -831,9 +877,9 @@ const sanguoEdges: WorkflowEdge[] = [
 const initialWorkflows: Workflow[] = [
   {
     id: 'wf-sanguo-history-drama',
-    schemaVersion: 32,
+    schemaVersion: 59,
     name: '三国原著史料短剧（分步生成）',
-    description: '所有视频镜头固定生成 15 秒；无法在单镜完成的剧情会在大纲阶段拆为多镜，并以前镜实际尾帧作为后镜首帧续接。',
+    description: '按对白、动作和反应动态估算 3–15 秒镜头；剧情未完成先续拍，确认动作与回应完成后才能转场。',
     nodes: sanguoNodes,
     edges: sanguoEdges,
   },
@@ -875,16 +921,6 @@ const initialWorkflows: Workflow[] = [
   },
 ]
 
-async function requestJson<T>(url: string, init?: RequestInit) {
-  const response = await fetch(url, init)
-  const data = await response.json().catch(() => ({}))
-  if (!response.ok) {
-    const nestedError = data.body && typeof data.body === 'object' ? data.body.error : undefined
-    throw new Error(data.error ?? nestedError ?? `HTTP ${response.status}`)
-  }
-  return data as T
-}
-
 function loadConfigFromDatabase() {
   return requestJson<AppConfig>('/api/config')
 }
@@ -909,19 +945,20 @@ function loadExecutionRecords(workflowId: string) {
   return requestJson<{ records: ExecutionRecordListItem[] }>(`/api/execution-records?workflowId=${encodeURIComponent(workflowId)}`)
 }
 
-function loadExecutionRecord(id: string) {
-  return requestJson<{ record: ExecutionRecord }>(`/api/execution-records/${encodeURIComponent(id)}`)
+async function loadExecutionRecord(id: string) {
+  const response = await requestJson<{ record: ExecutionRecord }>(`/api/execution-records/${encodeURIComponent(id)}`)
+  return { ...response, record: { ...response.record, result: decodeExecutionState<ExecutionState>(response.record.result) } }
 }
 
-function saveExecutionRecord(record: ExecutionRecord) {
+async function saveExecutionRecord(record: ExecutionRecord) {
   return requestJson<{ ok: boolean; id: string }>('/api/execution-records', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ record }),
+    body: JSON.stringify({ record: { ...record, result: encodeExecutionState(record.result) } }),
   })
 }
 
-function loadModelExecutionRecords(filters: ModelExecutionFilters) {
+function loadModelExecutionRecords(filters: Partial<ModelExecutionFilters> & { workflowId?: string; nodeId?: string; operation?: string; requestKeyPrefix?: string; limit?: string }) {
   const query = new URLSearchParams()
   Object.entries(filters).forEach(([key, value]) => {
     if (value.trim()) query.set(key, value.trim())
@@ -930,19 +967,11 @@ function loadModelExecutionRecords(filters: ModelExecutionFilters) {
 }
 
 function runModelNode(model: ModelConfig, prompt: string, params: Record<string, unknown>, operation?: string, executionContext?: NodeRunRequestContext) {
-  return requestJson<{ status: number; body: unknown }>('/api/node-run', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, prompt, params, operation, executionContext }),
-  })
+  return requestNodeJson<{ status: number; body: unknown }>('/api/node-run', { model, prompt, params, operation, executionContext }, executionContext?.requestKey)
 }
 
 function runBuiltinNode(operation: string, prompt: string, params: Record<string, unknown>, model?: ModelConfig, executionContext?: NodeRunRequestContext) {
-  return requestJson<{ status: number; body: unknown }>('/api/builtin-node-run', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ operation, prompt, params, model, executionContext }),
-  })
+  return requestNodeJson<{ status: number; body: unknown }>('/api/builtin-node-run', { operation, prompt, params, model, executionContext }, executionContext?.requestKey)
 }
 
 function runCodeNode(code: string, prompt: string, params: Record<string, unknown>, files: UploadedAsset[], context: Record<string, unknown>) {
@@ -982,15 +1011,8 @@ function resolvePath(source: Record<string, unknown>, path: string) {
   }, source)
 }
 
-function stringifyValue(value: unknown) {
-  if (Array.isArray(value)) return value.join(', ')
-  if (value && typeof value === 'object') return JSON.stringify(value)
-  return value === undefined || value === null ? '' : String(value)
-}
-
-function interpolate(template: string, context: Record<string, unknown>) {
-  return template.replace(/\$\{([^}]+)\}/g, (_, expression: string) => stringifyValue(resolvePath(context, expression.trim())))
-}
+const stringifyValue = stringifyTemplateValue
+const interpolate = renderWorkflowTemplate
 
 function paramValue(param: WorkflowParam) {
   if (param.type === 'number') return Number(param.value || 0)
@@ -1026,7 +1048,23 @@ function nodeParamAliases(node: WorkflowNode, values: Record<string, unknown>) {
 function resolveParamValue(param: WorkflowParam, context: Record<string, unknown>) {
   const exactReference = param.value.trim().match(/^\$\{([^}]+)\}$/)
   if (exactReference) return resolvePath(context, exactReference[1].trim())
-  if (param.type === 'json') return paramValue(param)
+  // A json parameter is not automatically placeholder-free: 【对数组逐项执行】 (mapInput) only puts the
+  // item into the per-item context, so a template like `["${frame.url}"]` has to be resolved the same
+  // way a text parameter is. Returning the raw template made the literal string `${frame.url}` reach
+  // the vision review, and every 独立画面观察 frame of a finished clip then failed with
+  // “审查只接受 /generated/ 下的本地 JPEG 帧” (record-ys8pde 第 1 轮 / record-htfg6s).
+  if (param.type === 'json') {
+    if (!param.value.includes('${')) return paramValue(param)
+    // Shipped configs use two shapes: a quoted placeholder (`["${frame.url}"]`) that already parses as
+    // JSON, and a bare splice (`[${scene.beatIds}]`) that only becomes JSON once resolved. The first is
+    // walked as parsed data so arrays and objects keep their structure; the second falls back to text
+    // interpolation.
+    try {
+      return resolveTemplateJsonValue(JSON.parse(param.value), context)
+    } catch {
+      return paramValue({ ...param, value: interpolate(param.value, context) })
+    }
+  }
   const interpolated = interpolate(param.value, context)
   return paramValue({ ...param, value: interpolated })
 }
@@ -1042,30 +1080,7 @@ function uploadedImageOutput(node: WorkflowNode) {
 }
 
 function getExecutionOrder(workflow: Workflow) {
-  const nodesById = new Map(workflow.nodes.map((node) => [node.id, node]))
-  const indegree = new Map(workflow.nodes.map((node) => [node.id, 0]))
-  const outgoing = new Map<string, WorkflowEdge[]>()
-  workflow.edges.forEach((edge) => {
-    if (!nodesById.has(edge.from) || !nodesById.has(edge.to)) return
-    indegree.set(edge.to, (indegree.get(edge.to) ?? 0) + 1)
-    outgoing.set(edge.from, [...(outgoing.get(edge.from) ?? []), edge])
-  })
-  const queue = workflow.nodes.filter((node) => (indegree.get(node.id) ?? 0) === 0)
-  const ordered: WorkflowNode[] = []
-  while (queue.length) {
-    const node = queue.shift()
-    if (!node) continue
-    ordered.push(node)
-    ;(outgoing.get(node.id) ?? []).forEach((edge) => {
-      const nextValue = (indegree.get(edge.to) ?? 0) - 1
-      indegree.set(edge.to, nextValue)
-      if (nextValue === 0) {
-        const next = nodesById.get(edge.to)
-        if (next) queue.push(next)
-      }
-    })
-  }
-  return { ordered: ordered.length === workflow.nodes.length ? ordered : workflow.nodes, hasCycle: ordered.length !== workflow.nodes.length }
+  return orderRouteNodes(workflow)
 }
 
 function runNode(node: WorkflowNode, context: Record<string, unknown>, loopItem?: unknown, loopIndex?: number) {
@@ -1078,7 +1093,9 @@ function runNode(node: WorkflowNode, context: Record<string, unknown>, loopItem?
     loop: loopIndex === undefined ? undefined : { index: loopIndex + 1, zeroIndex: loopIndex },
     uploads: node.uploads.map((asset) => asset.name),
   }
-  const prompt = interpolate(node.prompt, localContext)
+  const promptContext = node.kind === 'text' ? nodePromptInputContext(localContext, values.promptInputMode)
+    : node.kind === 'video' ? videoPromptInputContext(localContext, values.promptInputMode) : localContext
+  const prompt = interpolate(node.prompt, promptContext)
   if (node.kind === 'input') return { ...values, prompt, uploads: node.uploads.map((asset) => asset.name) }
   if (node.kind === 'text') {
     const count = Math.max(1, Number(resolvePath(context, 'input.vedio_count') ?? values.vedio_count ?? 3))
@@ -1103,12 +1120,44 @@ function runNode(node: WorkflowNode, context: Record<string, unknown>, loopItem?
 }
 
 function getLoopNodes(workflow: Workflow, loopNodeId: string, ordered = getExecutionOrder(workflow).ordered) {
-  return scopedLoopNodes(workflow, loopNodeId, ordered)
+  return scopedLoopNodes({ ...workflow, edges: executionRouteEdges(workflow) }, loopNodeId, ordered)
 }
 
 function getLoopItems(context: Record<string, unknown>, loopNode: WorkflowNode) {
   const source = resolvePath(context, loopNode.loop.sourcePath)
   return Array.isArray(source) ? source : Array.from({ length: loopNode.loop.fallbackCount }, (_, index) => `片段 ${index + 1}`)
+}
+
+function storyboardSegments(output: unknown) {
+  if (!output || typeof output !== 'object' || Array.isArray(output)) return []
+  const segments = (output as Record<string, unknown>)[STORYBOARD_SEGMENTS_KEY]
+  return Array.isArray(segments) ? segments.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object' && !Array.isArray(item)) : []
+}
+
+function publicStoryboardOutput(output: Record<string, unknown>) {
+  return Object.fromEntries(Object.entries(output).filter(([key]) => ![STORYBOARD_SEGMENTS_KEY, STORYBOARD_SPLIT_SOURCE_KEY].includes(key)))
+}
+
+function expandedSceneOutline(context: Record<string, unknown>, sourceScene: unknown, segments: Record<string, unknown>[]) {
+  const outline = context.scene_outline
+  if (!outline || typeof outline !== 'object' || Array.isArray(outline)) return context
+  const record = outline as Record<string, unknown>
+  if (!Array.isArray(record.scenes)) return context
+  const source = sourceScene && typeof sourceScene === 'object' && !Array.isArray(sourceScene) ? sourceScene as Record<string, unknown> : {}
+  const sourceIndex = record.scenes.findIndex((item) => item === sourceScene || (item && typeof item === 'object' && !Array.isArray(item) && (item as Record<string, unknown>).id === source.id))
+  if (sourceIndex < 0) return context
+  const replacements = segments.map((segment, index) => sceneFromStoryboardSegment(sourceScene, segment, index, segments.length))
+  const scenes = [...record.scenes.slice(0, sourceIndex), ...replacements, ...record.scenes.slice(sourceIndex + 1)]
+    .map((scene, index) => scene && typeof scene === 'object' && !Array.isArray(scene) ? { ...scene as Record<string, unknown>, sequence: index + 1 } : scene)
+  const loop = context.scene_loop && typeof context.scene_loop === 'object' && !Array.isArray(context.scene_loop)
+    ? context.scene_loop as Record<string, unknown>
+    : undefined
+  return {
+    ...context,
+    ...(record.contentContractVersion === 'cinematic-v1' ? { approved_scene_outline: context.approved_scene_outline ?? record } : {}),
+    scene_outline: { ...record, scenes, count: scenes.length, totalDuration: scenes.reduce((sum, scene) => sum + Number((scene as Record<string, unknown>).targetDuration), 0) },
+    ...(loop ? { scene_loop: { ...loop, count: scenes.length } } : {}),
+  }
 }
 
 function runNodeInLoop(node: WorkflowNode, context: Record<string, unknown>, loopNode: WorkflowNode, loopItem: unknown, loopIndex: number) {
@@ -1125,7 +1174,9 @@ function runNodeInLoop(node: WorkflowNode, context: Record<string, unknown>, loo
     ...aliases,
     uploads: node.uploads.map((asset) => asset.name),
   }
-  const prompt = interpolate(node.prompt, localContext)
+  const promptContext = node.kind === 'text' ? nodePromptInputContext(localContext, values.promptInputMode)
+    : node.kind === 'video' ? videoPromptInputContext(localContext, values.promptInputMode) : localContext
+  const prompt = interpolate(node.prompt, promptContext)
   if (node.kind === 'input') return { ...values, prompt, uploads: node.uploads.map((asset) => asset.name) }
   if (node.kind === 'text') return { ...values, text: `已生成文本：${prompt}`, model: node.modelId }
   if (node.kind === 'image' && !node.modelId) return { ...uploadedImageOutput(node), prompt, model: undefined, params: values }
@@ -1240,7 +1291,7 @@ function collectRuntimeInputs(workflow: Workflow) {
 }
 
 function createStaticNodeRuns(workflow: Workflow) {
-  return getExecutionOrder(workflow).ordered.map<NodeRunState>((node, index) => ({
+  return orderLoopPlaceholders(workflow, getExecutionOrder(workflow).ordered).map<NodeRunState>((node, index) => ({
     id: `${node.id}-${index}`,
     node,
     output: undefined,
@@ -1256,6 +1307,7 @@ function createStaticNodeRuns(workflow: Workflow) {
 function createExecutionState(workflow: Workflow, mode: RunMode, nodeRuns = createStaticNodeRuns(workflow)): ExecutionState {
   return {
     id: createId('record'),
+    voicePolicy: newExecutionVoicePolicy(workflow.voicePolicy),
     mode,
     workflowId: workflow.id,
     workflowName: workflow.name,
@@ -1267,21 +1319,30 @@ function createExecutionState(workflow: Workflow, mode: RunMode, nodeRuns = crea
   }
 }
 
+function nodeWithRunOverrides(run: NodeRunState): WorkflowNode {
+  return { ...run.node, params: run.node.params.map(p => ({ ...p, value: run.paramOverrides?.[p.id] ?? p.value })) }
+}
+
 function prepareStepRun(state: ExecutionState, index: number) {
+  const prepared = prepareWorkflowRunContext(state.nodeRuns, index)
+  if (!prepared) return undefined
+  return { ...prepared, inputs: nodeParamValues(nodeWithRunOverrides(prepared.run), prepared.inputContext) }
+}
+
+function failedTextRunBinding(state: ExecutionState, index: number, inputContext: Record<string, unknown>, inputs: Record<string, unknown>, node = nodeWithRunOverrides(state.nodeRuns[index])) {
   const run = state.nodeRuns[index]
-  if (!run) return undefined
-  const context = index > 0 ? state.nodeRuns[index - 1]?.context ?? state.context : {}
-  const previousLoopResult = run.loopGroupId && (run.loopIndex ?? 0) > 0
-    ? Object.fromEntries(state.nodeRuns
-        .filter((item) => item.loopGroupId === run.loopGroupId && item.loopIndex === (run.loopIndex ?? 0) - 1 && item.status === 'success')
-        .map((item) => [item.node.resultVar, item.output]))
-    : run.loopPrevious
-  const inputContext = run.loopNode ? {
-    ...context,
-    [run.loopNode.loop.itemVar]: run.loopItem,
-    loop: { index: (run.loopIndex ?? 0) + 1, zeroIndex: run.loopIndex ?? 0, previous: previousLoopResult },
-  } : { ...context }
-  return { run, context, previousLoopResult, inputContext, inputs: nodeParamValues(run.node, inputContext) }
+  if (!isRecoverableFailedTextNode(node, inputs)) return undefined
+  // Bind the actual writer params, including the accepted prior tail image.
+  // The storyboard writer adds this attachment after its read-only projection;
+  // omitting it here would let a retry carry a draft across different media.
+  const writerInputs = failedTextCandidateWriterInputs(node.operation ?? '', inputs, inputContext)
+  return createFailedTextCandidateBinding({ executionId: state.id, requestScopeId: state.requestScopeId ?? state.id,
+    generationScopeId: state.generationScopeId ?? state.requestScopeId ?? state.id, workflowId: state.workflowId,
+    nodeId: node.id, runId: run.id, operation: node.operation ?? '', modelId: node.modelId ?? '', nodePrompt: node.prompt,
+    attempt: run.attempt ?? 1, revision: run.revision ?? 0, loopGroupId: run.loopGroupId, loopIndex: run.loopIndex,
+    sceneId: String(resolvePath(inputContext, 'scene.id') ?? ''), runtimeInputs: state.runtimeInputs,
+    successfulPrefix: state.nodeRuns.slice(0, index), successfulPrefixHashAlgorithm: failedTextCandidatePrefixHashAlgorithm(run.retryFeedback),
+    inputContext, inputs: writerInputs })
 }
 
 function validateRuntimeInputs(workflow: Workflow) {
@@ -1354,9 +1415,7 @@ function mediaFilename(url: string, kind: InspectableMediaKind, key: string) {
 }
 
 function mediaDownloadUrl(url: string, filename: string) {
-  return /^https?:\/\//i.test(url)
-    ? `/api/media-download?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename)}`
-    : url
+  return assetDownloadUrl(url, filename)
 }
 
 function cloneWithPath(source: unknown, path: string[], value: unknown): unknown {
@@ -1443,13 +1502,14 @@ function hasDamagedSanguoCanonicalText(workflow: Workflow) {
 }
 
 function migrateSanguoWorkflow(workflow: Workflow): Workflow {
+  if ((workflow.schemaVersion ?? 0) >= 60) return workflow
   const hasContextNode = workflow.nodes.some((node) => node.id === sanguoContextNode.id)
   const hasConfigurableCode = workflow.nodes.some((node) => node.id === sanguoContextNode.id && Boolean(node.code?.trim()))
   const canonicalNodeIds = new Set(sanguoNodes.map((node) => node.id))
   const hasCanonicalOrder = workflow.nodes
     .filter((node) => canonicalNodeIds.has(node.id))
     .every((node, index) => node.id === sanguoNodes[index]?.id)
-  const hasV32Topology = workflow.nodes.some((node) => node.id === 'sanguo-knowledge' && node.kind === 'internet' && node.operation === 'internet.retrieve'
+  const hasV39Topology = workflow.nodes.some((node) => node.id === 'sanguo-knowledge' && node.kind === 'internet' && node.operation === 'internet.retrieve'
       && node.params.every((param) => param.englishName !== 'sourceDetail' && param.englishName !== 'sourceNames'))
     && workflow.nodes.some((node) => node.id === 'sanguo-verify' && node.kind === 'validation' && node.operation === 'history.verify')
     && workflow.nodes.some((node) => node.id === 'sanguo-scene-outline' && node.kind === 'text' && node.params.length === 0)
@@ -1458,26 +1518,26 @@ function migrateSanguoWorkflow(workflow: Workflow): Workflow {
     && workflow.nodes.some((node) => node.id === 'sanguo-character-portrait' && node.kind === 'internet' && node.operation === 'character.historical-portrait'
       && node.params.every((param) => ['characters', 'allCharacters', 'maxSources', 'maxPassages'].includes(param.englishName ?? '')))
     && workflow.nodes.some((node) => node.id === 'sanguo-character-image' && node.kind === 'image' && node.operation === 'character.ensure'
-      && node.params.length === 5
-      && node.params.every((param) => ['characters', 'allCharacters', 'existingAssets', 'validateThreeView', 'maxGenerationAttempts'].includes(param.englishName ?? '')))
+      && node.params.length === 6
+      && node.params.every((param) => ['characters', 'allCharacters', 'existingAssets', 'validateThreeView', 'maxGenerationAttempts', 'fallbackModelId'].includes(param.englishName ?? '')))
     && workflow.nodes.some((node) => node.id === 'sanguo-character-archive' && node.kind === 'asset' && node.operation === 'character.archive'
       && node.params.every((param) => ['characters', 'generatedAssets'].includes(param.englishName ?? '')))
     && workflow.nodes.some((node) => node.id === 'sanguo-first-frame-branch' && node.kind === 'code' && node.params.length === 0)
     && workflow.nodes.some((node) => node.id === 'sanguo-first-frame-tail' && node.kind === 'code' && node.params.length === 0)
     && workflow.nodes.some((node) => node.id === 'sanguo-end-frame' && node.kind === 'image' && !node.operation
+      && node.runIf?.path === 'disabled_target_end_frame.enabled' && node.runIf.equals === true
       && node.params.every((param) => ['referenceImages', 'size', 'referenceMode', 'referenceBindings'].includes(param.englishName ?? '')))
     && workflow.nodes.some((node) => node.id === 'sanguo-video' && node.kind === 'video'
       && node.params.length === 10
-      && node.params.every((param) => ['referenceImage', 'endImage', 'referenceImages', 'referenceMode', 'referenceBindings', 'aspectRatio', 'duration', 'mode', 'sound', 'negativePrompt'].includes(param.englishName ?? ''))
+      && node.params.every((param) => ['referenceImage', 'referenceImages', 'referenceMode', 'referenceBindings', 'aspectRatio', 'duration', 'mode', 'sound', 'negativePrompt', 'pacingVersion'].includes(param.englishName ?? ''))
       && node.params.some((param) => param.englishName === 'referenceImage' && !param.required)
-      && node.params.some((param) => param.englishName === 'endImage' && param.required)
-      && node.params.some((param) => param.englishName === 'duration' && param.value === '15'))
+      && node.params.some((param) => param.englishName === 'duration' && param.value === '${shot_script.duration}'))
     && workflow.nodes.some((node) => node.id === 'sanguo-last-frame' && node.kind === 'code' && node.params.length === 0 && Boolean(node.code?.trim()))
     && !workflow.nodes.some((node) => node.id === 'sanguo-audio')
     && !workflow.nodes.some((node) => node.id === 'sanguo-first-frame')
     && workflow.edges.some((edge) => edge.from === 'sanguo-first-frame-branch' && edge.to === 'sanguo-first-frame-tail')
-    && workflow.edges.some((edge) => edge.from === 'sanguo-first-frame-branch' && edge.to === 'sanguo-end-frame')
-    && workflow.edges.some((edge) => edge.from === 'sanguo-end-frame' && edge.to === 'sanguo-video')
+    && workflow.edges.some((edge) => edge.from === 'sanguo-first-frame-branch' && edge.to === 'sanguo-video')
+    && !workflow.edges.some((edge) => edge.from === 'sanguo-end-frame' || edge.to === 'sanguo-end-frame')
     && workflow.edges.some((edge) => edge.from === 'sanguo-first-frame-tail' && edge.to === 'sanguo-video')
     && workflow.edges.some((edge) => edge.from === 'sanguo-video' && edge.to === 'sanguo-last-frame')
     && workflow.edges.some((edge) => edge.from === 'sanguo-last-frame' && edge.to === 'sanguo-verify')
@@ -1485,7 +1545,7 @@ function migrateSanguoWorkflow(workflow: Workflow): Workflow {
     .filter((node) => node.id === 'sanguo-scene-outline' || node.id === 'sanguo-shot-script')
     .every((node) => node.modelId === 'claude-opus-4-8')
   const hasDamagedCanonicalText = hasDamagedSanguoCanonicalText(workflow)
-  if ((workflow.schemaVersion ?? 1) >= 32 && hasContextNode && hasConfigurableCode && hasV32Topology && hasCanonicalOrder && usesRealHistoricalModels && !hasDamagedCanonicalText) return workflow
+  if ((workflow.schemaVersion ?? 1) >= 59 && hasContextNode && hasConfigurableCode && hasV39Topology && hasCanonicalOrder && usesRealHistoricalModels && !hasDamagedCanonicalText) return workflow
 
   let migratedWorkflow = workflow
   if ((workflow.schemaVersion ?? 1) < 4 || !hasContextNode || !hasConfigurableCode) {
@@ -1575,11 +1635,14 @@ function migrateSanguoWorkflow(workflow: Workflow): Workflow {
       outputMode: defaultNode.outputMode,
       modelId: node.id === 'sanguo-character-lookup' || node.id === 'sanguo-character-portrait' || node.id === 'sanguo-first-frame-branch' || node.id === 'sanguo-first-frame-tail' || node.id === 'sanguo-last-frame'
         ? undefined
-        : node.id === 'sanguo-scene-outline' || node.id === 'sanguo-shot-script'
+        : node.id === 'sanguo-scene-outline' || node.id === 'sanguo-shot-script' || defaultNode.kind === 'image'
           ? defaultNode.modelId
           : node.modelId ?? defaultNode.modelId,
       prompt: defaultNode.prompt,
-      params: defaultNode.params,
+      params: node.id === 'sanguo-character-image'
+        ? defaultNode.params.map((param) => param.englishName === 'maxGenerationAttempts'
+          ? node.params.find((existing) => existing.englishName === param.englishName) ?? param : param)
+        : defaultNode.params,
       code: defaultNode.code ?? node.code,
       runIf: defaultNode.runIf,
       loop: defaultNode.loop,
@@ -1604,14 +1667,24 @@ function migrateSanguoWorkflow(workflow: Workflow): Workflow {
   )
   return {
     ...migratedWorkflow,
-    schemaVersion: 32,
-    description: '所有视频镜头固定生成 15 秒；无法在单镜完成的剧情会在大纲阶段拆为多镜，并以前镜实际尾帧作为后镜首帧续接。',
+    schemaVersion: 59,
+    description: '按对白、动作和反应动态估算 3–15 秒镜头；剧情未完成先续拍，确认动作与回应完成后才能转场。',
     nodes: completedNodes,
     edges: [...preservedCustomEdges, ...sanguoEdges],
   }
 }
 
-function normalizeWorkflow(workflow: Workflow): Workflow {
+function workflowQualityDisposition(workflow: Workflow): 'manual-review-v1' | 'strict-v1' | undefined {
+  for (const node of workflow.nodes) {
+    const value = node.params.find(param => (param.englishName || param.name) === 'qualityDisposition')?.value
+    if (value === 'manual-review-v1' || value === 'strict-v1') return value
+  }
+  return undefined
+}
+
+// Kept visible to the real cold-start graph regression; dev HMR is disabled.
+// eslint-disable-next-line react-refresh/only-export-components
+export function normalizeWorkflow(workflow: Workflow): Workflow {
   const base: Workflow = {
     ...workflow,
     schemaVersion: workflow.schemaVersion ?? 1,
@@ -1624,12 +1697,14 @@ function normalizeWorkflow(workflow: Workflow): Workflow {
       loop: node.loop ?? defaultLoop(),
       position: node.position ?? { x: 80 + index * 280, y: 120 },
       outputMode: node.kind === 'text' ? node.outputMode ?? 'legacy-shots' : node.outputMode,
-      code: node.kind === 'code' ? node.code ?? DEFAULT_CODE_NODE_SCRIPT : node.code,
+      code: node.kind === 'branch' ? node.code ?? DEFAULT_BRANCH_CODE : node.kind === 'code' ? node.code ?? DEFAULT_CODE_NODE_SCRIPT : node.code,
     })),
     edges: workflow.edges ?? [],
   }
-  if (workflow.id === 'wf-sanguo-history-drama') return migrateSanguoWorkflow(base)
-  if (workflow.id !== 'wf-story') return base
+  if (workflow.id === 'wf-sanguo-history-drama') return upgradeCoverageCutFrameWorkflow(upgradeCharacterBiographyWorkflow(
+    upgradePersistedSanguoCharacterWorkflow(base, legacy =>
+      upgradeEpisodeBoundary(upgradeSandTableWorkflow(upgradeCharacterVisualWorkflow(upgradeDramaticExpression(upgradeManualReviewQuality(upgradeLeanPrincipleQuality(migrateBranchWorkflow(upgradeActorlessSettingEstablishment(repairSanguoVideoMediaRoute(upgradeLiveActionExceptSandTable(upgradeSanguoVideoConcat(upgradePrincipleQuality(upgradeQualityWorkflow(migrateSanguoWorkflow(legacy)))))))))))))))))
+  if (workflow.id !== 'wf-story') return migrateBranchWorkflow(base)
   const modelImageNode: WorkflowNode = {
     id: 'node-model-images',
     title: '模特图生成',
@@ -1659,12 +1734,12 @@ function normalizeWorkflow(workflow: Workflow): Workflow {
       { id: 'edge-model-images-script', from: 'node-model-images', to: 'node-script' },
     ])
     .filter((edge) => {
-      const key = `${edge.from}->${edge.to}`
+      const key = `${edge.from}->${edge.to}:${edge.branch ?? "normal"}`
       if (edgeKeys.has(key)) return false
       edgeKeys.add(key)
       return true
     })
-  return {
+  return migrateBranchWorkflow({
     ...base,
     nodes: nodes.map((node) => {
       if (node.id === 'node-input') {
@@ -1693,7 +1768,7 @@ function normalizeWorkflow(workflow: Workflow): Workflow {
       return node
     }),
     edges,
-  }
+  })
 }
 
 function mergeDefaultModels(stored: ModelConfig[]) {
@@ -1701,9 +1776,19 @@ function mergeDefaultModels(stored: ModelConfig[]) {
   return syncSharedModelCredentials([...stored, ...initialModels.filter((model) => !ids.has(model.id))])
 }
 
-function mergeDefaultWorkflows(stored: Workflow[]) {
+// The regression executes this same production merge with an empty database.
+// eslint-disable-next-line react-refresh/only-export-components
+export async function mergeDefaultWorkflows(stored: Workflow[], fetcher: typeof fetch = fetch): Promise<Workflow[]> {
   const ids = new Set(stored.map((workflow) => workflow.id))
-  return [...stored.map(normalizeWorkflow), ...initialWorkflows.filter((workflow) => !ids.has(workflow.id)).map(normalizeWorkflow)]
+  // A new database gets the reviewed graph. Existing Sanguo rows, including
+  // user edits and paid-history topology, never take this cold-start path.
+  const sanguoDefault = ids.has('wf-sanguo-history-drama')
+    ? [] : [await loadSanguoDefaultWorkflow<Workflow>(fetcher)]
+  const otherDefaults = initialWorkflows.filter((workflow) =>
+    workflow.id !== 'wf-sanguo-history-drama' && !ids.has(workflow.id))
+  return [...stored, ...sanguoDefault, ...otherDefaults]
+    .map(normalizeWorkflow)
+    .map(workflow => addOriginalVoiceNode(workflow, 'bailian-qwen-audio-tts-plus'))
 }
 
 function App() {
@@ -1713,19 +1798,29 @@ function App() {
   const canvasPanRef = useRef<{ x: number; y: number; left: number; top: number } | null>(null)
   const canvasViewRef = useRef({ zoom: 1, x: 0, y: 0 })
   const runnerViewportRef = useRef<HTMLDivElement>(null)
+  const runnerPanelRef = useRef<HTMLElement>(null)
+  const runnerFullscreenActiveRef = useRef(false)
   const runnerPanRef = useRef<{ pointerId: number; x: number; y: number; left: number; top: number } | null>(null)
-  const runnerZoomRef = useRef(1)
+  const runnerViewRef = useRef({ zoom: 1, x: 0, y: 0 })
   const modelTestAbortRef = useRef<Record<string, AbortController>>({})
   const legacyVideoRecoveryRef = useRef(new Set<string>())
   const workflowInfoOpenRef = useRef(false)
   const stepExecutionLockRef = useRef(false)
+  const failedTextRetryLockRef = useRef(false)
+  const [failedTextRetryLoading, setFailedTextRetryLoading] = useState(false)
+  const fullExecutionLockRef = useRef(false)
+  const fullPauseRequestedRef = useRef(false)
+  const [fullPauseRequested, setFullPauseRequested] = useState(false)
   const runnerAutoFollowRef = useRef(true)
-  const [page, setPage] = useState<AppPage>(restoredViewRef.current.page ?? 'workflow')
+  const [navCollapsed, setNavCollapsed] = useState(false)
+  const [inspectorOpen, setInspectorOpen] = useState(false)
+  const [page, setPageState] = useState<AppPage>(restoredViewRef.current.page ?? 'workflow')
+  const setPage = (next: AppPage) => { setInspectorOpen(false); setPageState(next) }
   const [workflows, setWorkflowsState] = useState<Workflow[]>(initialWorkflows)
   const [models, setModelsState] = useState<ModelConfig[]>(initialModels)
   const [draftModels, setDraftModels] = useState<ModelConfig[]>(initialModels)
   const restoredWorkflow = workflows.find((workflow) => workflow.id === restoredViewRef.current.activeWorkflowId) ?? workflows[0]
-  const [activeWorkflowId, setActiveWorkflowId] = useState(restoredWorkflow?.id ?? '')
+  const [activeWorkflowId, setActiveWorkflowId] = useState(restoredViewRef.current.activeWorkflowId ?? restoredWorkflow?.id ?? '')
   const activeWorkflowIdRef = useRef(activeWorkflowId)
   activeWorkflowIdRef.current = activeWorkflowId
   const [selectedNodeId, setSelectedNodeId] = useState(restoredWorkflow?.nodes[0]?.id ?? '')
@@ -1739,7 +1834,10 @@ function App() {
   const [modelExecutionLoading, setModelExecutionLoading] = useState(false)
   const [modelExecutionRefresh, setModelExecutionRefresh] = useState(0)
   const [experienceSource, setExperienceSource] = useState<ExperienceSource | null>(null)
-  const [workflowView, setWorkflowView] = useState<WorkflowView>(restoredViewRef.current.workflowView ?? 'list')
+  const [workflowView, setWorkflowViewState] = useState<WorkflowView>(restoredViewRef.current.workflowView ?? 'list')
+  const setWorkflowView = (next: WorkflowView) => { setInspectorOpen(false); setWorkflowViewState(next) }
+  const workflowViewRef = useRef(workflowView)
+  workflowViewRef.current = workflowView
   const [workflowInfoOpen, setWorkflowInfoOpen] = useState(false)
   const [workflowInfoDraft, setWorkflowInfoDraft] = useState(() => ({
     name: workflows[0]?.name ?? '',
@@ -1748,30 +1846,52 @@ function App() {
   const [workflowInfoError, setWorkflowInfoError] = useState('')
   const [workflowInfoSaving, setWorkflowInfoSaving] = useState(false)
   const [runnerTab, setRunnerTab] = useState<RunnerTab>(restoredViewRef.current.runnerTab ?? 'execute')
+  const [canvasSelection, setCanvasSelection] = useState<{ workflowId: string; ids: string[] } | null>(null)
   const [drag, setDrag] = useState<GraphDrag>(null)
   const [isCanvasPanning, setIsCanvasPanning] = useState(false)
+  const [showCanvasMedia, setShowCanvasMedia] = useState(true)
   const [zoom, setZoom] = useState(1)
   const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 })
   const [runnerZoom, setRunnerZoom] = useState(1)
+  const [runnerOffset, setRunnerOffset] = useState({ x: 0, y: 0 })
   const [isRunnerPanning, setIsRunnerPanning] = useState(false)
+  const [isRunnerFullscreen, setIsRunnerFullscreen] = useState(false)
+  const [runnerFullscreenError, setRunnerFullscreenError] = useState('')
   const [storageDiagnostic, setStorageDiagnostic] = useState('')
   const [configLoaded, setConfigLoaded] = useState(false)
+  const [configLoadError, setConfigLoadError] = useState('')
   const [configStatus, setConfigStatus] = useState('正在连接 PostgreSQL 配置库...')
   const [runMode, setRunMode] = useState<RunMode>('step')
   const [workflowDebug, setWorkflowDebug] = useState<WorkflowDebugState | null>(null)
-  const [workflowBreakpoints, setWorkflowBreakpoints] = useState<Record<string, string[]>>({})
+  const suspendedExecutionViewRef = useRef<{ executionId: string; debug: WorkflowDebugState | null } | null>(null)
+  const [workflowBreakpoints, setWorkflowBreakpoints] = useState(() => loadWorkflowBreakpoints(window.sessionStorage))
+  const workflowBreakpointsRef = useRef(workflowBreakpoints)
+  workflowBreakpointsRef.current = workflowBreakpoints
+  const [breakpointEditor, setBreakpointEditor] = useState<BreakpointEditorState | null>(null)
   const [debugContinueRunning, setDebugContinueRunning] = useState(false)
   const [runtimePanelOpen, setRuntimePanelOpen] = useState(true)
   const [runnerInspectorTab, setRunnerInspectorTab] = useState<RunnerInspectorTab>('config')
   const activeWorkflow = workflows.find((workflow) => workflow.id === activeWorkflowId) ?? workflows[0]
+  const selectedCanvasIds = canvasSelection?.workflowId === activeWorkflow.id ? canvasSelection.ids : [selectedNodeId]
+  const expandCanvasSelection = (ids: string[]) => expandSelection(ids, (id) => activeWorkflow.nodes.find(node => node.id === id)?.kind === 'loop' ? getLoopNodes(activeWorkflow, id).map(node => node.id) : [])
+  const selectCanvasNodes = (ids: string[]) => setCanvasSelection({ workflowId: activeWorkflow.id, ids })
   const selectedNode = activeWorkflow.nodes.find((node) => node.id === selectedNodeId) ?? activeWorkflow.nodes[0]
-  const workflowDebugSnapshot = useMemo(() => (workflowDebug ? createWorkflowDebugSnapshot(activeWorkflow, workflowDebug) : undefined), [activeWorkflow, workflowDebug])
+  const workflowDebugSnapshot = useMemo(() => (workflowView === 'edit' && workflowDebug ? createWorkflowDebugSnapshot(activeWorkflow, workflowDebug) : undefined), [activeWorkflow, workflowDebug, workflowView])
   const [, setRunResult] = useState(() => executeWorkflow(activeWorkflow))
-  const [executionState, setExecutionState] = useState<ExecutionState>(() => createExecutionState(activeWorkflow, 'step'))
+  const [executionState, setExecutionState] = useState<ExecutionState>(() => {
+    const state = createExecutionState(activeWorkflow, 'step')
+    return restoredViewRef.current.executionId ? { ...state, id: restoredViewRef.current.executionId } : state
+  })
+  const executionStateIdRef = useRef(executionState.id)
+  executionStateIdRef.current = executionState.id
   const [executionRecords, setExecutionRecords] = useState<ExecutionRecordListItem[]>([])
   const [executionRecordLoadingId, setExecutionRecordLoadingId] = useState('')
   const [selectedRunIndex, setSelectedRunIndex] = useState(0)
+  const [rollbackDialog, setRollbackDialog] = useState<{ executionId: string; targetRunId: string; mode: 'previous' | 'specific'; error?: string } | null>(null)
+  const [rollbackSaving, setRollbackSaving] = useState(false)
+  const rollbackSaveLock = useRef(false)
   const [selectedLoopSnapshot, setSelectedLoopSnapshot] = useState<{ groupId: string; loopIndex: number } | null>(null)
+  const [branchSceneSelection, setBranchSceneSelection] = useState<{ executionId: string; index: number } | null>(null)
   const [runnerAutoFollow, setRunnerAutoFollow] = useState(true)
   const [mediaPreview, setMediaPreview] = useState<MediaPreviewState | null>(null)
   const [textPreview, setTextPreview] = useState<TextPreviewState | null>(null)
@@ -1783,47 +1903,182 @@ function App() {
       : undefined
   const availableModels = models.filter((model) => selectedCapability && model.capability === selectedCapability)
   const executionOrder = getExecutionOrder(activeWorkflow)
-  const debugLoopInfo = workflowDebugSnapshot?.currentRun?.context.loop
+  const debugLoopInfo = workflowDebug
+    ? executionState.nodeRuns[workflowDebug.stepIndex]?.inputContext?.loop ?? executionState.nodeRuns[workflowDebug.stepIndex]?.context?.loop
+    : undefined
   const debugLoopLabel =
     debugLoopInfo && typeof debugLoopInfo === 'object' && 'index' in debugLoopInfo ? `，第 ${String(debugLoopInfo.index)} 轮` : ''
-  const graphWidth = Math.max(1300, ...activeWorkflow.nodes.map((node) => node.position.x + 280))
-  const graphHeight = Math.max(560, ...activeWorkflow.nodes.map((node) => node.position.y + 180))
-  const selectedRun = executionState.nodeRuns[selectedRunIndex] ?? executionState.nodeRuns.find((run) => run.node.id === executionState.selectedNodeId && run.status !== 'idle')
+  const isWorkflowDetail = workflowView === 'detail'
+  const canvasNodes = useMemo(() => projectCanvasNodes(activeWorkflow.nodes, showCanvasMedia), [activeWorkflow.nodes, showCanvasMedia])
+  const canvasYScale = canvasMediaScale(showCanvasMedia)
+  const canvasWorkflow = { ...activeWorkflow, nodes: canvasNodes }
+  const graphWidth = Math.max(1300, ...canvasNodes.map((node) => node.position.x + 280))
+  const graphHeight = Math.max(560, ...canvasNodes.map((node) => node.position.y + (showCanvasMedia ? CANVAS_MEDIA_NODE_HEIGHT + 120 : 260)))
+  const branchScenes = (executionState.branchHistory ?? []).filter(entry => entry.backwards && Array.isArray(entry.scene))
+  const branchSceneIndex = branchSceneSelection?.executionId === executionState.id ? branchSceneSelection.index : undefined
+  const historicalBranchScene = branchSceneIndex !== undefined ? branchScenes[branchSceneIndex] : undefined
+  const viewingBranchHistory = Boolean(historicalBranchScene)
+  const inspectedRuns = historicalBranchScene ? historicalBranchScene.scene as NodeRunState[] : executionState.nodeRuns
+  const selectedRun = inspectedRuns[selectedRunIndex] ?? inspectedRuns.find((run) => run.node.id === executionState.selectedNodeId && run.status !== 'idle')
+  const visibleBranchSceneIndices = branchSceneIndicesForRun(branchScenes, selectedRun)
   const loopGroupIds = useMemo(
-    () => [...new Set(executionState.nodeRuns.map((run) => run.loopGroupId).filter((groupId): groupId is string => Boolean(groupId)))],
-    [executionState.nodeRuns],
+    () => [...new Set(inspectedRuns.map((run) => run.loopGroupId).filter((groupId): groupId is string => Boolean(groupId)))],
+    [inspectedRuns],
   )
   const activeLoopGroupId = selectedLoopSnapshot && loopGroupIds.includes(selectedLoopSnapshot.groupId)
     ? selectedLoopSnapshot.groupId
     : selectedRun?.loopGroupId
-  const activeLoopIterations = activeLoopGroupId ? availableLoopIterations(executionState.nodeRuns, activeLoopGroupId) : []
-  const latestLoopIteration = activeLoopIterations.at(-1)
+  const activeLoopIterations = activeLoopGroupId ? availableLoopIterations(inspectedRuns, activeLoopGroupId) : []
+  const latestLoopIteration = inspectedRuns.find(run => run.loopGroupId === activeLoopGroupId && run.status === 'running')?.loopIndex
+    ?? inspectedRuns.find(run => run.loopGroupId === activeLoopGroupId && run.status === 'failed')?.loopIndex
+    ?? activeLoopIterations.find(index => inspectedRuns.some(run => run.loopGroupId === activeLoopGroupId && run.loopIndex === index && run.status === 'idle'))
+    ?? activeLoopIterations.at(-1)
   let activeLoopIteration = latestLoopIteration
   if (selectedLoopSnapshot && selectedLoopSnapshot.groupId === activeLoopGroupId) {
     activeLoopIteration = selectedLoopSnapshot.loopIndex
   } else if (selectedRun?.loopGroupId && selectedRun.loopGroupId === activeLoopGroupId) {
     activeLoopIteration = selectedRun.loopIndex
   }
-  const viewingHistoricalLoopSnapshot = activeLoopIteration !== undefined && latestLoopIteration !== undefined && activeLoopIteration < latestLoopIteration
+  const viewingHistoricalLoopSnapshot = activeLoopIteration !== undefined && latestLoopIteration !== undefined && activeLoopIteration !== latestLoopIteration
+  // Use the exact displayed run, including loop/branch history. Never infer output from aggregate context.
+  const canvasRunsByNode = useMemo(() => {
+    const result = new Map<string, NodeRunState>()
+    if (executionState.workflowId !== activeWorkflow.id) return result
+    for (const node of activeWorkflow.nodes) {
+      const runs = inspectedRuns.filter(run => run.node.id === node.id)
+      const isRepeated = Boolean(activeLoopGroupId && runs.some(run => run.loopGroupId === activeLoopGroupId))
+      const run = isRepeated
+        ? runs.find(run => run.loopGroupId === activeLoopGroupId && run.loopIndex === activeLoopIteration)
+        : runs.find(run => run.status === 'running') ?? runs.filter(run => run.status !== 'idle').at(-1) ?? runs[0]
+      if (run) result.set(node.id, run)
+    }
+    return result
+  }, [activeWorkflow.id, activeWorkflow.nodes, executionState.workflowId, inspectedRuns, activeLoopGroupId, activeLoopIteration])
+  const canvasMediaByNode = useMemo(() => {
+    const staticContext: Record<string, unknown> = {}
+    for (const node of activeWorkflow.nodes) {
+      if (node.kind === 'input') {
+        const values = nodeParamValues(node)
+        Object.assign(staticContext, nodeParamAliases(node, values), { [node.resultVar]: values })
+      } else if (node.kind === 'image' && !node.modelId && node.uploads.length) {
+        staticContext[node.resultVar] = uploadedImageOutput(node)
+      }
+    }
+    return new Map(activeWorkflow.nodes.map(node => {
+      const run = canvasRunsByNode.get(node.id)
+      if (workflowView === 'run' && run && run.status !== 'idle') {
+        return [node.id, resolveCanvasMedia(run.node, { run })]
+      }
+      // Config previews update immediately with edits; outputs still belong to the selected run.
+      const references = resolveCanvasMedia(workflowView === 'run' && run ? run.node : node, { context: workflowView === 'run' && run?.inputContext ? { ...staticContext, ...run.inputContext } : staticContext })
+      const outputs = run ? resolveCanvasMedia(run.node, { run }).filter(item => item.source === 'output') : []
+      return [node.id, [...outputs, ...references]]
+    }))
+  }, [activeWorkflow.nodes, canvasRunsByNode, workflowView])
+  const hasCanvasMedia = (node: WorkflowNode) => showCanvasMedia && node.kind !== 'branch' && node.kind !== 'loop' && Boolean(canvasMediaKind(node) || canvasMediaByNode.get(node.id)?.length)
+  const canvasNodeHeight = (node: WorkflowNode) => hasCanvasMedia(node) ? CANVAS_MEDIA_NODE_HEIGHT : 154
+  const openCanvasMedia = (item: CanvasMedia) => {
+    if (item.kind === 'audio') return
+    setMediaPreview({ url: item.url, kind: item.kind, label: item.label, filename: item.filename ?? `preview.${item.kind === 'image' ? 'png' : 'mp4'}` })
+  }
+  const renderCanvasMedia = (node: WorkflowNode) => hasCanvasMedia(node) ? <CanvasNodeMedia
+    key={`${executionState.workflowId === activeWorkflow.id ? executionState.id : activeWorkflow.id}:${canvasRunsByNode.get(node.id)?.id ?? node.id}`}
+    items={canvasMediaByNode.get(node.id) ?? []} kind={canvasMediaKind(node)}
+    status={canvasRunsByNode.get(node.id)?.status} nodeTitle={node.title} onPreview={openCanvasMedia}
+  /> : null
   const runtimeInputNodes = activeWorkflow.nodes.filter((node) => node.kind === 'input')
   const runtimeParamCount = runtimeInputNodes.reduce((count, node) => count + node.params.length, 0)
   const isStepDebugActive = runMode === 'step' && workflowDebug !== null
-  const breakpointNodeIds = useMemo(() => new Set(workflowBreakpoints[activeWorkflow.id] ?? []), [activeWorkflow.id, workflowBreakpoints])
+  const breakpointByNodeId = useMemo(
+    () => new Map((workflowBreakpoints[activeWorkflow.id] ?? []).filter((breakpoint) => breakpoint.enabled).map((breakpoint) => [breakpoint.nodeId, breakpoint])),
+    [activeWorkflow.id, workflowBreakpoints],
+  )
+  const breakpointNodeIds = useMemo(() => new Set(breakpointByNodeId.keys()), [breakpointByNodeId])
+  const resolveActiveBreakpoint = useMemo(
+    () => createWorkflowBreakpointResolver(() => workflowBreakpointsRef.current, activeWorkflow.id),
+    [activeWorkflow.id],
+  )
   const currentStepRun = workflowDebug ? executionState.nodeRuns[workflowDebug.stepIndex] : undefined
   const isStepExecuting = executionState.nodeRuns.some((run) => run.status === 'running')
-  const isDebugBusy = isStepExecuting || debugContinueRunning
-  const canMoveToNextStep = !isDebugBusy && workflowDebug
+  const isDebugBusy = isStepExecuting || debugContinueRunning || rollbackSaving || failedTextRetryLoading
+  const hasUnsavedExecution = Boolean(executionState.persistenceError)
+  const canMoveToNextStep = !isDebugBusy && !hasUnsavedExecution && workflowDebug
     ? currentStepRun?.status === 'idle' || canAdvanceStep(currentStepRun?.status, workflowDebug.stepIndex, executionState.nodeRuns.length)
     : false
-  const canContinueToBreakpoint = !isDebugBusy && Boolean(workflowDebug) && currentStepRun?.status !== 'failed'
+  const canContinueToBreakpoint = !isDebugBusy && !hasUnsavedExecution && Boolean(workflowDebug) && currentStepRun?.status !== 'failed'
+  const rollbackBreakpoints = useMemo(() => [...breakpointByNodeId.values()], [breakpointByNodeId])
+  const rollbackTargets = useMemo(
+    () => breakpointRollbackCandidates(executionState.nodeRuns, rollbackBreakpoints),
+    [executionState.nodeRuns, rollbackBreakpoints],
+  )
+  const previousRollbackTarget = useMemo(
+    () => previousBreakpointRollbackCandidate(executionState.nodeRuns, rollbackBreakpoints,
+      runMode === 'step' ? workflowDebug?.stepIndex : undefined),
+    [executionState.nodeRuns, rollbackBreakpoints, runMode, workflowDebug?.stepIndex],
+  )
+  const rollbackDialogActive = rollbackDialog?.executionId === executionState.id && executionState.workflowId === activeWorkflow.id
+  const rollbackTarget = rollbackDialogActive ? rollbackTargets.find(target => target.run.id === rollbackDialog.targetRunId
+    && (rollbackDialog.mode === 'specific' || previousRollbackTarget?.run.id === target.run.id)) : undefined
+  let rollbackImpact: ReturnType<typeof planBreakpointRollback> | undefined
+  let rollbackError = ''
+  if (rollbackDialogActive && rollbackTarget) {
+    try { rollbackImpact = planBreakpointRollback(executionState.nodeRuns, rollbackBreakpoints, rollbackTarget.run.id) }
+    catch (error) { rollbackError = error instanceof Error ? error.message : String(error) }
+  }
+
+  const persistWorkflowBreakpoints = (next: typeof workflowBreakpoints) => {
+    // Save at the user action, before an execution update or page remount.
+    // Breakpoints belong to workflow nodes, not to the moving step cursor.
+    // Update the ref synchronously so an already-running continue loop sees it
+    // at the next node boundary, before React has to commit another render.
+    workflowBreakpointsRef.current = next
+    try {
+      saveWorkflowBreakpoints(window.sessionStorage, next)
+    } catch {
+      setStorageDiagnostic('断点已在当前页面生效，但浏览器存储不可用，刷新后可能丢失。')
+    }
+    setWorkflowBreakpoints(next)
+  }
 
   const toggleBreakpoint = (nodeId: string) => {
-    setWorkflowBreakpoints((current) => {
-      const breakpoints = new Set(current[activeWorkflow.id] ?? [])
-      if (breakpoints.has(nodeId)) breakpoints.delete(nodeId)
-      else breakpoints.add(nodeId)
-      return { ...current, [activeWorkflow.id]: [...breakpoints] }
+    persistWorkflowBreakpoints(toggleWorkflowBreakpoint(workflowBreakpoints, activeWorkflow.id, nodeId))
+  }
+
+  const openBreakpointEditor = (nodeId: string) => {
+    const breakpoint = breakpointByNodeId.get(nodeId)
+    if (!breakpoint) {
+      toggleBreakpoint(nodeId)
+      return
+    }
+    setBreakpointEditor({
+      workflowId: activeWorkflow.id,
+      nodeId,
+      conditional: Boolean(breakpoint.condition),
+      path: breakpoint.condition?.path ?? 'loop.index',
+      operator: breakpoint.condition?.operator ?? 'eq',
+      value: breakpoint.condition ? formatBreakpointValue(breakpoint.condition.value) : '1',
     })
+  }
+
+  const saveBreakpointEditor = () => {
+    if (!breakpointEditor || !breakpointEditor.path.trim()) return
+    const breakpoint: WorkflowBreakpoint = {
+      nodeId: breakpointEditor.nodeId,
+      enabled: true,
+      ...(breakpointEditor.conditional ? { condition: {
+        path: breakpointEditor.path.trim(),
+        operator: breakpointEditor.operator,
+        value: parseBreakpointValue(breakpointEditor.value),
+      } } : {}),
+    }
+    persistWorkflowBreakpoints(setWorkflowBreakpoint(workflowBreakpoints, breakpointEditor.workflowId, breakpoint))
+    setBreakpointEditor(null)
+  }
+
+  const deleteBreakpointEditor = () => {
+    if (!breakpointEditor) return
+    persistWorkflowBreakpoints(removeWorkflowBreakpoint(workflowBreakpoints, breakpointEditor.workflowId, breakpointEditor.nodeId))
+    setBreakpointEditor(null)
   }
 
   const setRunnerFollowMode = (enabled: boolean) => {
@@ -1831,19 +2086,15 @@ function App() {
     setRunnerAutoFollow(enabled)
   }
 
-  const followExecutionRun = (index: number, run?: NodeRunState) => {
-    if (!runnerAutoFollowRef.current) return
-    setSelectedRunIndex(index)
-    if (run?.loopGroupId && run.loopIndex !== undefined) {
-      setSelectedLoopSnapshot({ groupId: run.loopGroupId, loopIndex: run.loopIndex })
-    }
+  const followExecutionInInspector = (runIndex: number) => {
+    setSelectedRunIndex((currentIndex) => nextInspectorRunIndex(currentIndex, runIndex, runnerAutoFollowRef.current))
   }
 
   const inspectLoopIteration = (loopIndex: number) => {
     if (!activeLoopGroupId) return
-    const runIndex = findLoopSnapshotRunIndex(executionState.nodeRuns, activeLoopGroupId, loopIndex, selectedRun?.node.id)
+    const runIndex = findLoopSnapshotRunIndex(inspectedRuns, activeLoopGroupId, loopIndex, selectedRun?.node.id)
     if (runIndex < 0) return
-    const run = executionState.nodeRuns[runIndex]
+    const run = inspectedRuns[runIndex]
     setRunnerFollowMode(false)
     setSelectedLoopSnapshot({ groupId: activeLoopGroupId, loopIndex })
     setSelectedRunIndex(runIndex)
@@ -1853,25 +2104,30 @@ function App() {
 
   const returnToCurrentLoopIteration = () => {
     if (!activeLoopGroupId || latestLoopIteration === undefined) return
-    const runIndex = findLoopSnapshotRunIndex(executionState.nodeRuns, activeLoopGroupId, latestLoopIteration, selectedRun?.node.id)
+    const runIndex = findLoopSnapshotRunIndex(inspectedRuns, activeLoopGroupId, latestLoopIteration, selectedRun?.node.id)
     setRunnerFollowMode(true)
     setSelectedLoopSnapshot({ groupId: activeLoopGroupId, loopIndex: latestLoopIteration })
     if (runIndex < 0) return
-    const run = executionState.nodeRuns[runIndex]
+    const run = inspectedRuns[runIndex]
     setSelectedRunIndex(runIndex)
     setExecutionState((current) => ({ ...current, selectedNodeId: run.node.id }))
   }
 
   const inspectRunnerNode = (nodeId: string, fallbackRunIndex: number) => {
+    const historicalRun = inspectedRuns.find(run => run.node.id === nodeId
+      && (!run.loopGroupId || run.loopGroupId === activeLoopGroupId && run.loopIndex === activeLoopIteration))
+    const leaveBranchHistory = historicalBranchScene && !branchSceneIncludesRun(historicalBranchScene, historicalRun)
+    const runs = leaveBranchHistory ? executionState.nodeRuns : inspectedRuns
     const runIndex = findInspectableNodeRunIndex(
-      executionState.nodeRuns,
+      runs,
       nodeId,
       fallbackRunIndex,
       activeLoopGroupId,
       activeLoopIteration,
     )
     if (runIndex < 0) return
-    const run = executionState.nodeRuns[runIndex]
+    const run = runs[runIndex]
+    if (leaveBranchHistory) setBranchSceneSelection(null)
     setRunnerFollowMode(false)
     setSelectedRunIndex(runIndex)
     setExecutionState((current) => ({ ...current, selectedNodeId: nodeId }))
@@ -1884,8 +2140,8 @@ function App() {
   const fitGraph = useCallback(() => {
     const viewport = viewportRef.current
     if (!viewport) return
-    const nextZoom = Math.min(1, Math.max(0.35, Math.min((viewport.clientWidth - 28) / graphWidth, (viewport.clientHeight - 28) / graphHeight)))
-    setZoom(Number(nextZoom.toFixed(2)))
+    const nextZoom = fitDagZoom(viewport.clientWidth, viewport.clientHeight, graphWidth, graphHeight)
+    setZoom(nextZoom)
     const nextOffset = {
       x: Math.max(14, (viewport.clientWidth - graphWidth * nextZoom) / 2),
       y: Math.max(14, (viewport.clientHeight - graphHeight * nextZoom) / 2),
@@ -1897,14 +2153,72 @@ function App() {
   const fitRunnerGraph = useCallback(() => {
     const viewport = runnerViewportRef.current
     if (!viewport) return
-    const nextZoom = Math.min(1, Math.max(0.35, Math.min((viewport.clientWidth - 28) / graphWidth, (viewport.clientHeight - 64) / graphHeight)))
-    const roundedZoom = Number(nextZoom.toFixed(2))
-    runnerZoomRef.current = roundedZoom
-    setRunnerZoom(roundedZoom)
-    viewport.scrollTo({ left: 0, top: 0 })
+    const nextZoom = fitDagZoom(viewport.clientWidth, viewport.clientHeight, graphWidth, graphHeight, 64)
+    const offset = { x: (viewport.clientWidth - graphWidth * nextZoom) / 2, y: 50 + (viewport.clientHeight - 64 - graphHeight * nextZoom) / 2 }
+    runnerViewRef.current = { zoom: nextZoom, ...offset }
+    setRunnerZoom(nextZoom)
+    setRunnerOffset(offset)
   }, [graphWidth, graphHeight])
 
+  const zoomRunnerBy = useCallback((factor: number) => {
+    const viewport = runnerViewportRef.current
+    if (!viewport) return
+    const currentView = runnerViewRef.current
+    const fitZoom = fitDagZoom(viewport.clientWidth, viewport.clientHeight, graphWidth, graphHeight, 64)
+    const nextZoom = wheelDagZoom(currentView.zoom, -Math.log(factor) / 0.003, fitZoom)
+    if (nextZoom === currentView.zoom) return
+    const nextView = zoomDagAt(currentView, nextZoom, { x: viewport.clientWidth / 2, y: viewport.clientHeight / 2 })
+    runnerViewRef.current = nextView
+    setRunnerZoom(nextZoom)
+    setRunnerOffset({ x: nextView.x, y: nextView.y })
+  }, [graphWidth, graphHeight])
+
+  const zoomCanvasBy = (factor: number) => {
+    const viewport = viewportRef.current
+    if (!viewport) return
+    const currentView = canvasViewRef.current
+    const nextZoom = wheelDagZoom(currentView.zoom, -Math.log(factor) / 0.003, fitDagZoom(viewport.clientWidth, viewport.clientHeight, graphWidth, graphHeight))
+    const nextView = zoomDagAt(currentView, nextZoom, { x: viewport.clientWidth / 2, y: viewport.clientHeight / 2 })
+    canvasViewRef.current = nextView
+    setZoom(nextZoom)
+    setCanvasOffset({ x: nextView.x, y: nextView.y })
+  }
+
+  const toggleRunnerFullscreen = async () => {
+    const panel = runnerPanelRef.current
+    if (!panel) return
+    setRunnerFullscreenError('')
+    try {
+      if (document.fullscreenElement === panel) await document.exitFullscreen()
+      else await panel.requestFullscreen()
+    } catch {
+      setRunnerFullscreenError('浏览器未能切换全屏，请检查页面权限后重试。')
+    }
+  }
+
+  useEffect(() => {
+    let fitFrame = 0
+    const syncFullscreen = () => {
+      const panel = runnerPanelRef.current
+      const nextFullscreen = Boolean(panel && document.fullscreenElement === panel)
+      const changed = nextFullscreen !== runnerFullscreenActiveRef.current
+      runnerFullscreenActiveRef.current = nextFullscreen
+      setIsRunnerFullscreen(nextFullscreen)
+      setRunnerFullscreenError('')
+      if (changed) {
+        window.cancelAnimationFrame(fitFrame)
+        fitFrame = window.requestAnimationFrame(fitRunnerGraph)
+      }
+    }
+    document.addEventListener('fullscreenchange', syncFullscreen)
+    return () => {
+      document.removeEventListener('fullscreenchange', syncFullscreen)
+      window.cancelAnimationFrame(fitFrame)
+    }
+  }, [fitRunnerGraph])
+
   const onRunnerWheel = useCallback((event: globalThis.WheelEvent) => {
+    if ((event.target as Element).closest('.canvas-node-media')) return
     event.preventDefault()
     event.stopPropagation()
     const viewport = runnerViewportRef.current
@@ -1912,29 +2226,21 @@ function App() {
     const rect = viewport.getBoundingClientRect()
     const pointerX = event.clientX - rect.left
     const pointerY = event.clientY - rect.top
-    const currentZoom = runnerZoomRef.current
-    const scaleFactor = Math.exp(-event.deltaY * DAG_WHEEL_ZOOM_SENSITIVITY)
-    const nextZoom = Number(Math.min(1.8, Math.max(0.35, currentZoom * scaleFactor)).toFixed(3))
-    if (nextZoom === currentZoom) return
-
-    const canvasX = (viewport.scrollLeft + pointerX) / currentZoom
-    const canvasY = (viewport.scrollTop + pointerY) / currentZoom
-    runnerZoomRef.current = nextZoom
+    const currentView = runnerViewRef.current
+    const nextZoom = wheelDagZoom(currentView.zoom, event.deltaY, fitDagZoom(viewport.clientWidth, viewport.clientHeight, graphWidth, graphHeight, 64))
+    if (nextZoom === currentView.zoom) return
+    const nextView = zoomDagAt(currentView, nextZoom, { x: pointerX, y: pointerY })
+    runnerViewRef.current = nextView
     setRunnerZoom(nextZoom)
-    window.requestAnimationFrame(() => {
-      viewport.scrollTo({
-        left: canvasX * nextZoom - pointerX,
-        top: canvasY * nextZoom - pointerY,
-      })
-    })
-  }, [])
+    setRunnerOffset({ x: nextView.x, y: nextView.y })
+  }, [graphWidth, graphHeight])
 
   useEffect(() => {
     const viewport = runnerViewportRef.current
-    if (!viewport || workflowView !== 'run' || runnerTab !== 'execute') return undefined
+    if (!configLoaded || !viewport || page !== 'workflow' || workflowView !== 'run' || runnerTab !== 'execute') return undefined
     viewport.addEventListener('wheel', onRunnerWheel, { passive: false })
     return () => viewport.removeEventListener('wheel', onRunnerWheel)
-  }, [onRunnerWheel, runnerTab, workflowView])
+  }, [configLoaded, onRunnerWheel, page, runnerTab, workflowView])
 
   useEffect(() => {
     if (!mediaPreview) return undefined
@@ -1964,6 +2270,20 @@ function App() {
     }
   }, [textPreview])
 
+  useEffect(() => {
+    if (!rollbackDialogActive) return undefined
+    const previousOverflow = document.body.style.overflow
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !rollbackSaveLock.current) setRollbackDialog(null)
+    }
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [rollbackDialogActive])
+
   useEffect(() => () => {
     Object.values(modelTestAbortRef.current).forEach((controller) => controller.abort())
   }, [])
@@ -1974,8 +2294,9 @@ function App() {
   }, [modelTestRuns])
 
   useEffect(() => {
-    saveAppViewState(window.sessionStorage, { page, workflowView, activeWorkflowId, runnerTab })
-  }, [activeWorkflowId, page, runnerTab, workflowView])
+    if (!configLoaded) return
+    saveAppViewState(window.sessionStorage, { page, workflowView, activeWorkflowId, runnerTab, executionId: executionState.id })
+  }, [activeWorkflowId, executionState.id, page, runnerTab, workflowView, configLoaded])
 
   useEffect(() => {
     if (!isDebugBusy) return undefined
@@ -1993,7 +2314,7 @@ function App() {
     if (!viewport) return
     event.preventDefault()
     event.currentTarget.setPointerCapture(event.pointerId)
-    runnerPanRef.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, left: viewport.scrollLeft, top: viewport.scrollTop }
+    runnerPanRef.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, left: runnerViewRef.current.x, top: runnerViewRef.current.y }
     setIsRunnerPanning(true)
   }
 
@@ -2002,8 +2323,9 @@ function App() {
     const viewport = runnerViewportRef.current
     if (!pan || pan.pointerId !== event.pointerId || !viewport) return
     event.preventDefault()
-    viewport.scrollLeft = pan.left - (event.clientX - pan.x)
-    viewport.scrollTop = pan.top - (event.clientY - pan.y)
+    const offset = { x: pan.left + event.clientX - pan.x, y: pan.top + event.clientY - pan.y }
+    runnerViewRef.current = { ...runnerViewRef.current, ...offset }
+    setRunnerOffset(offset)
   }
 
   const stopRunnerPan = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -2014,16 +2336,61 @@ function App() {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
   }
 
+  const fitGraphRef = useRef(fitGraph)
+  fitGraphRef.current = fitGraph
   useEffect(() => {
-    const id = window.requestAnimationFrame(fitGraph)
+    if (!configLoaded) return undefined
+    const id = window.requestAnimationFrame(() => fitGraphRef.current())
     return () => window.cancelAnimationFrame(id)
-  }, [activeWorkflow.id, fitGraph])
+  }, [activeWorkflow.id, configLoaded, workflowView, showCanvasMedia])
 
   useEffect(() => {
-    if (workflowView !== 'run' || runnerTab !== 'execute') return undefined
+    if (!configLoaded || page !== 'workflow' || workflowView !== 'run' || runnerTab !== 'execute') return undefined
     const id = window.requestAnimationFrame(fitRunnerGraph)
     return () => window.cancelAnimationFrame(id)
-  }, [activeWorkflow.id, workflowView, runnerTab, fitRunnerGraph])
+  }, [activeWorkflow.id, configLoaded, page, workflowView, runnerTab, fitRunnerGraph])
+
+  const executionSaveQueue = useMemo(() => createExecutionSaveQueue(), [])
+  const persistExecution = useCallback((state: ExecutionState): Promise<PersistenceResult> => {
+    const savedState = { ...state }
+    delete savedState.persistenceError
+    const record: ExecutionRecord = {
+      id: state.id,
+      workflowId: state.workflowId,
+      workflowName: state.workflowName,
+      mode: state.mode,
+      title: `${state.mode === 'step' ? '单步调试' : '完整执行'} · ${new Date().toLocaleString()}`,
+      runtimeInputs: state.runtimeInputs,
+      result: savedState,
+    }
+    return executionSaveQueue(async () => {
+      try {
+        await saveExecutionRecord(record)
+        const listItem: ExecutionRecordListItem = {
+          ...record,
+          succeededCount: state.nodeRuns.filter((run) => run.status === 'success').length,
+          failedCount: state.nodeRuns.filter((run) => run.status === 'failed').length,
+          totalCount: state.nodeRuns.length,
+        }
+        setExecutionRecords((current) => [listItem, ...current.filter((item) => item.id !== record.id)].slice(0, 40))
+        return { saved: true } as const
+      } catch (error) {
+        const message = `执行记录保存失败：${error instanceof Error ? error.message : String(error)}`
+        setConfigStatus(message)
+        setExecutionState(current => current.id === state.id ? { ...current, persistenceError: message } : current)
+        return { saved: false, error: message } as const
+      }
+    })
+  }, [executionSaveQueue])
+
+  const retryExecutionSave = async () => {
+    const state = executionState
+    const result = await persistExecution(state)
+    if (result.saved) {
+      setExecutionState(current => current.id === state.id ? { ...current, persistenceError: undefined } : current)
+      setConfigStatus('执行记录已保存，可继续运行')
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -2032,7 +2399,8 @@ function App() {
         const stored = await loadConfigFromDatabase()
         if (cancelled) return
         const nextModels = mergeDefaultModels(stored.models)
-        const nextWorkflows = mergeDefaultWorkflows(stored.workflows)
+        const nextWorkflows = await mergeDefaultWorkflows(stored.workflows)
+        if (cancelled) return
         const repairedDamagedWorkflowText = stored.workflows.some(hasDamagedSanguoCanonicalText)
         const modelsChanged = serializedValuesDiffer(stored.models, nextModels)
         const workflowsChanged = serializedValuesDiffer(stored.workflows, nextWorkflows)
@@ -2042,7 +2410,34 @@ function App() {
         setWorkflowsState(nextWorkflows)
         setActiveWorkflowId(hydratedWorkflow?.id ?? '')
         setSelectedNodeId(hydratedWorkflow?.nodes[0]?.id ?? '')
-        if (hydratedWorkflow) {
+        let recoveredExecution: ExecutionRecord | undefined
+        if (workflowViewRef.current === 'run' && executionStateIdRef.current) {
+          try {
+            const loaded = await loadExecutionRecord(executionStateIdRef.current)
+            if (loaded.record.workflowId === hydratedWorkflow?.id) recoveredExecution = loaded.record
+          } catch {
+            // A newly opened runner may not have written its first checkpoint yet.
+          }
+        }
+        if (hydratedWorkflow && recoveredExecution) {
+          const upgradedRuns = migrateBranchRuns(hydratedWorkflow, recoveredExecution.result.nodeRuns)
+          const recovered = recoverInterruptedNodeRuns(upgradedRuns)
+          const restoredExecution = {
+            ...recoveredExecution.result,
+            ...(upgradedRuns !== recoveredExecution.result.nodeRuns ? { id: createId('record'), requestScopeId: recoveredExecution.result.requestScopeId ?? recoveredExecution.result.id } : {}),
+            historical: false,
+            nodeRuns: recovered.nodeRuns,
+            selectedNodeId: recovered.nodeRuns[recovered.resumeIndex]?.node.id,
+          }
+          if (upgradedRuns !== recoveredExecution.result.nodeRuns) void persistExecution(restoredExecution)
+          setRunMode(recoveredExecution.mode)
+          setExecutionState(restoredExecution)
+          setSelectedNodeId(restoredExecution.selectedNodeId ?? hydratedWorkflow.nodes[0]?.id ?? '')
+          setSelectedRunIndex(recovered.resumeIndex)
+          setWorkflowDebug(recoveredExecution.mode === 'step' ? { stepIndex: recovered.resumeIndex } : null)
+          setRuntimePanelOpen(false)
+          setSelectedLoopSnapshot(null)
+        } else if (hydratedWorkflow) {
           const nextExecution = createExecutionState(hydratedWorkflow, 'step')
           setExecutionState({ ...nextExecution, selectedNodeId: undefined })
           setSelectedRunIndex(-1)
@@ -2057,7 +2452,9 @@ function App() {
         setConfigLoaded(true)
         const defaultsAdded = nextModels.length !== stored.models.length || nextWorkflows.length !== stored.workflows.length
         const workflowMigrated = workflowsChanged && !defaultsAdded
-        setConfigStatus(stored.models.length || stored.workflows.length
+        setConfigStatus(recoveredExecution
+          ? '检测到页面重建，已恢复上次执行检查点；被中断的节点可直接重新执行'
+          : stored.models.length || stored.workflows.length
           ? repairedDamagedWorkflowText
             ? 'PostgreSQL 配置已加载，已修复三国工作流中的损坏文本'
             : defaultsAdded
@@ -2072,14 +2469,16 @@ function App() {
         })
       } catch (error) {
         if (cancelled) return
-        setConfigStatus(`PostgreSQL 连接失败：${error instanceof Error ? error.message : String(error)}`)
+        const message = error instanceof Error ? error.message : String(error)
+        setConfigLoadError(message)
+        setConfigStatus(`PostgreSQL 连接失败：${message}`)
       }
     }
     void hydrateConfig()
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [persistExecution])
 
   useEffect(() => {
     if (!configLoaded) return undefined
@@ -2092,8 +2491,24 @@ function App() {
   }, [workflows, configLoaded])
 
   useEffect(() => {
-    if (!configLoaded || workflowView !== 'run' || executionState.historical || executionState.workflowId !== activeWorkflow.id) return
+    if (!configLoaded) return
+    const executableWorkflow = normalizeWorkflow(activeWorkflow)
+    if (!serializedValuesDiffer(activeWorkflow, executableWorkflow)) return
+    setWorkflowsState((current) => current.map((workflow) => workflow.id === executableWorkflow.id ? executableWorkflow : workflow))
+    setConfigStatus('检测到工作流规则升级，已在执行前更新当前工作流')
+  }, [activeWorkflow, configLoaded])
+
+  useEffect(() => {
+    if (!configLoaded || runMode !== 'step' || workflowView !== 'run' || executionState.historical || executionState.workflowId !== activeWorkflow.id) return
     if (!hasExecutionPlanMismatch(activeWorkflow, executionState.nodeRuns)) return
+    if (executionState.nodeRuns.some(run => run.status !== 'idle')) {
+      const nodeRuns = refreshPendingExecutionNodes(activeWorkflow, executionState.nodeRuns)
+      if (nodeRuns !== executionState.nodeRuns) setExecutionState(current => ({ ...current, nodeRuns }))
+      setConfigStatus(isDurationPolicyTransition(activeWorkflow, executionState.nodeRuns)
+        ? '此记录使用旧时长策略，已冻结原排程和成片证据；新策略需新建执行并从分镜重新规划'
+        : '已保留执行检查点及成片证据，未开始的节点使用最新兼容配置')
+      return
+    }
     const nextExecution = createExecutionState(activeWorkflow, 'step')
     setRunMode('step')
     setWorkflowDebug(null)
@@ -2102,17 +2517,17 @@ function App() {
     setSelectedRunIndex(-1)
     setRunResult(executeWorkflow(activeWorkflow))
     setConfigStatus('检测到工作流拓扑升级，已清除旧运行器节点快照')
-  }, [activeWorkflow, configLoaded, executionState.historical, executionState.nodeRuns, executionState.workflowId, workflowView])
+  }, [activeWorkflow, configLoaded, executionState.historical, executionState.nodeRuns, executionState.workflowId, runMode, workflowView])
 
   useEffect(() => {
-    if (workflowView !== 'run' || runnerTab !== 'history') return
+    if (!configLoaded || workflowView !== 'run' || runnerTab !== 'history') return
     void loadExecutionRecords(activeWorkflow.id)
       .then((data) => setExecutionRecords(data.records))
       .catch((error) => setConfigStatus(`执行记录加载失败：${error instanceof Error ? error.message : String(error)}`))
-  }, [activeWorkflow.id, runnerTab, workflowView])
+  }, [activeWorkflow.id, configLoaded, runnerTab, workflowView])
 
   useEffect(() => {
-    if (page !== 'models' || modelView.mode !== 'runs') return undefined
+    if (!configLoaded || page !== 'models' || modelView.mode !== 'runs') return undefined
     let cancelled = false
     const timer = window.setTimeout(() => {
       setModelExecutionLoading(true)
@@ -2131,7 +2546,7 @@ function App() {
       cancelled = true
       window.clearTimeout(timer)
     }
-  }, [modelExecutionFilters, modelExecutionRefresh, modelView.mode, page])
+  }, [configLoaded, modelExecutionFilters, modelExecutionRefresh, modelView.mode, page])
 
   const setWorkflows = (recipe: (current: Workflow[]) => Workflow[]) => setWorkflowsState((current) => recipe(current))
   const saveSingleModel = async (modelId: string) => {
@@ -2210,6 +2625,7 @@ function App() {
   }
 
   const onCanvasWheel = useCallback((event: globalThis.WheelEvent) => {
+    if ((event.target as Element).closest('.canvas-node-media')) return
     event.preventDefault()
     event.stopPropagation()
     const viewport = viewportRef.current
@@ -2219,33 +2635,39 @@ function App() {
     const pointerY = event.clientY - rect.top
 
     const currentView = canvasViewRef.current
-    const scaleFactor = Math.exp(-event.deltaY * DAG_WHEEL_ZOOM_SENSITIVITY)
-    const nextZoom = Number(Math.min(1.8, Math.max(0.35, currentView.zoom * scaleFactor)).toFixed(3))
+    const nextZoom = wheelDagZoom(currentView.zoom, event.deltaY, fitDagZoom(viewport.clientWidth, viewport.clientHeight, graphWidth, graphHeight))
     if (nextZoom === currentView.zoom) return
 
-    const canvasX = (pointerX - currentView.x) / currentView.zoom
-    const canvasY = (pointerY - currentView.y) / currentView.zoom
-    const nextOffset = {
-      x: pointerX - canvasX * nextZoom,
-      y: pointerY - canvasY * nextZoom,
-    }
+    const nextView = zoomDagAt(currentView, nextZoom, { x: pointerX, y: pointerY })
+    const nextOffset = { x: nextView.x, y: nextView.y }
     canvasViewRef.current = { zoom: nextZoom, ...nextOffset }
     setZoom(nextZoom)
     setCanvasOffset(nextOffset)
-  }, [])
+  }, [graphWidth, graphHeight])
 
   useEffect(() => {
     const viewport = viewportRef.current
-    if (!viewport || workflowView !== 'edit') return undefined
+    if (!configLoaded || !viewport || (workflowView !== 'edit' && workflowView !== 'detail')) return undefined
     viewport.addEventListener('wheel', onCanvasWheel, { passive: false })
     return () => viewport.removeEventListener('wheel', onCanvasWheel)
-  }, [onCanvasWheel, workflowView])
+  }, [configLoaded, onCanvasWheel, workflowView])
 
-  const startCanvasPan = (event: MouseEvent) => {
-    if (event.button !== 0 || (event.target as HTMLElement).closest('.dag-node,.edge-path')) return
+  const startCanvasPan = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0 || (event.target as HTMLElement).closest('.dag-node,.edge-path,.dag-toolbar')) return
     const viewport = viewportRef.current
     if (!viewport) return
+    if (event.shiftKey && !isWorkflowDetail) {
+      const start = canvasPoint(event)
+      const bounds = Array.from(surfaceRef.current?.querySelectorAll<HTMLElement>('[data-canvas-node-id]') ?? []).map(element => ({
+        id: element.dataset.canvasNodeId!, x: element.offsetLeft, y: element.offsetTop, width: element.offsetWidth, height: element.offsetHeight,
+      }))
+      selectCanvasNodes([])
+      setDrag({ type: 'selection', start, end: start, bounds })
+      return
+    }
+    selectCanvasNodes([])
     event.preventDefault()
+    event.currentTarget.setPointerCapture(event.pointerId)
     const offset = canvasViewRef.current
     canvasPanRef.current = { x: event.clientX, y: event.clientY, left: offset.x, top: offset.y }
     setIsCanvasPanning(true)
@@ -2257,7 +2679,28 @@ function App() {
     setDrag(null)
   }
 
+  const rememberExecutionView = () => {
+    if (workflowDebug || suspendedExecutionViewRef.current?.executionId !== executionState.id) {
+      suspendedExecutionViewRef.current = { executionId: executionState.id, debug: workflowDebug }
+    }
+  }
+  const returnToExecution = () => {
+    const workflow = workflows.find(item => item.id === executionState.workflowId)
+    if (!workflow) return
+    const suspended = suspendedExecutionViewRef.current
+    if (suspended?.executionId === executionState.id) setWorkflowDebug(suspended.debug)
+    suspendedExecutionViewRef.current = null
+    setActiveWorkflowId(workflow.id)
+    setSelectedNodeId(executionState.selectedNodeId ?? workflow.nodes[0]?.id ?? '')
+    setWorkflowInfoDraft({ name: workflow.name, description: workflow.description })
+    setRunMode(executionState.mode)
+    setPage('workflow')
+    setWorkflowView('run')
+    setRunnerTab('execute')
+  }
   const addWorkflow = () => {
+    if (isDebugBusy || hasUnsavedExecution) return
+    rememberExecutionView()
     const node: WorkflowNode = {
       id: createId('node'),
       title: '项目输入',
@@ -2279,8 +2722,31 @@ function App() {
     setWorkflowInfoOpen(false)
     setWorkflowDebug(null)
     setRunResult(executeWorkflow(workflow))
+    setPage('workflow')
+    setWorkflowView('edit')
+    workflowInfoOpenRef.current = true
+    setWorkflowInfoOpen(true)
+  }
+  const openWorkflowEditor = (workflow: Workflow) => {
+    if (isDebugBusy || hasUnsavedExecution) return
+    rememberExecutionView()
+    setActiveWorkflowId(workflow.id)
+    setSelectedNodeId(workflow.nodes[0]?.id ?? '')
+    setWorkflowInfoDraft({ name: workflow.name, description: workflow.description })
+    setWorkflowInfoError('')
+    workflowInfoOpenRef.current = false
+    setWorkflowInfoOpen(false)
+    setWorkflowDebug(null)
+    setWorkflowView('edit')
+  }
+  const openWorkflowDetail = (workflow: Workflow) => {
+    if (isDebugBusy || hasUnsavedExecution) return
+    openWorkflowEditor(workflow)
+    setWorkflowView('detail')
   }
   const duplicateWorkflow = () => {
+    if (isDebugBusy || hasUnsavedExecution) return
+    rememberExecutionView()
     const idMap = new Map(activeWorkflow.nodes.map((node) => [node.id, createId('node')]))
     const copy: Workflow = {
       ...activeWorkflow,
@@ -2291,9 +2757,11 @@ function App() {
         id: idMap.get(node.id) ?? createId('node'),
         parentId: node.parentId ? idMap.get(node.parentId) ?? node.parentId : undefined,
         childIds: node.childIds?.map((childId) => idMap.get(childId) ?? childId),
+        acceptance: node.acceptance ? { ...node.acceptance, retryFrom: idMap.get(node.acceptance.retryFrom) ?? node.acceptance.retryFrom } : undefined,
+        errorRetry: node.errorRetry ? { ...node.errorRetry, retryFrom: idMap.get(node.errorRetry.retryFrom) ?? node.errorRetry.retryFrom } : undefined,
         uploads: [...node.uploads],
       })),
-      edges: activeWorkflow.edges.map((edge) => ({ id: createId('edge'), from: idMap.get(edge.from) ?? edge.from, to: idMap.get(edge.to) ?? edge.to })),
+      edges: activeWorkflow.edges.map((edge) => ({ ...edge, id: createId('edge'), from: idMap.get(edge.from) ?? edge.from, to: idMap.get(edge.to) ?? edge.to })),
     }
     setWorkflows((current) => [...current, copy])
     setActiveWorkflowId(copy.id)
@@ -2307,7 +2775,7 @@ function App() {
   const addNode = (kind: NodeKind, position = { x: 160 + activeWorkflow.nodes.length * 80, y: 140 + (activeWorkflow.nodes.length % 3) * 110 }) => {
     const id = createId('node')
     const capability: ModelCapability | undefined = kind === 'asset' ? 'image' : kind === 'text' || kind === 'image' || kind === 'video' || kind === 'audio' ? kind : undefined
-    const operation = kind === 'internet' ? 'internet.retrieve' : kind === 'asset' ? 'character.ensure' : kind === 'validation' ? 'history.verify' : kind === 'compose' ? 'timeline.compose' : undefined
+    const operation = kind === 'internet' ? 'internet.retrieve' : kind === 'asset' ? 'character.ensure' : kind === 'validation' ? 'history.verify' : kind === 'compose' ? 'timeline.compose' : kind === 'videoConcat' ? 'video.concat' : undefined
     const node: WorkflowNode = {
       id,
       title: nodeMeta[kind].label,
@@ -2316,9 +2784,11 @@ function App() {
       prompt: kind === 'input' ? '输入 ${name}' : kind === 'code' ? '解析上传的附件，并将结果输出到流程上下文。' : `使用上下文变量生成${nodeMeta[kind].label}`,
       modelId: capability ? models.find((model) => model.capability === capability)?.id : undefined,
       operation,
-      code: kind === 'code' ? DEFAULT_CODE_NODE_SCRIPT : undefined,
+      request: kind === 'http' ? { url: '/api/video-evidence', method: 'POST' } : undefined,
+      code: kind === 'branch' ? DEFAULT_BRANCH_CODE : kind === 'code' ? DEFAULT_CODE_NODE_SCRIPT : undefined,
       outputMode: kind === 'text' ? 'legacy-shots' : undefined,
-      params: kind === 'input'
+      loopResultMode: kind === 'videoConcat' ? 'latest' : undefined,
+      params: kind === 'branch' ? [{ id: createId('param'), name: 'maxAttempts', englishName: 'maxAttempts', type: 'number', required: true, value: String(MAX_NODE_ATTEMPTS) }, { id: createId('param'), name: 'report', englishName: 'report', type: 'json', required: true, value: '${quality_report}' }] : kind === 'input'
         ? [{ id: createId('param'), name: 'name', englishName: 'name', type: 'text', required: false, value: '' }]
         : kind === 'video'
           ? [
@@ -2328,7 +2798,12 @@ function App() {
               { id: createId('param'), name: '原生音频', englishName: 'sound', type: 'text', required: false, value: 'off' },
               { id: createId('param'), name: '负向提示词', englishName: 'negativePrompt', type: 'text', required: false, value: '' },
             ]
-          : [],
+          : kind === 'videoConcat'
+            ? [
+                { id: createId('param'), name: '视频列表', englishName: 'videos', type: 'json', required: true, value: '${video_shot.items}' },
+                { id: createId('param'), name: '输出格式', englishName: 'format', type: 'text', required: true, value: 'mp4' },
+              ]
+            : [],
       uploads: [],
       loop: defaultLoop(),
       position,
@@ -2339,45 +2814,58 @@ function App() {
   const removeNode = (id: string) =>
     updateActiveWorkflow((workflow) => {
       const nodes = workflow.nodes.filter((node) => node.id !== id)
-      if (selectedNodeId === id) setSelectedNodeId(nodes[0]?.id ?? '')
+      if (selectedNodeId === id) { setSelectedNodeId(nodes[0]?.id ?? ''); setInspectorOpen(false) }
       return { ...workflow, nodes, edges: workflow.edges.filter((edge) => edge.from !== id && edge.to !== id) }
     })
   const removeEdge = (id: string) => updateActiveWorkflow((workflow) => ({ ...workflow, edges: workflow.edges.filter((edge) => edge.id !== id) }))
-  const addEdge = (from: string, to: string) => {
-    if (from === to) return
+  const addEdge = (from: string, to: string, branch?: BranchPort) => {
+    if (from === to && branch === undefined) return
     updateActiveWorkflow((workflow) => {
+      if (branch !== undefined) return { ...workflow, edges: setBranchEdge(workflow.edges, from, branch, to, createId('edge')) }
       if (workflow.edges.some((edge) => edge.from === from && edge.to === to)) return workflow
       return { ...workflow, edges: [...workflow.edges, { id: createId('edge'), from, to }] }
     })
   }
 
-  const onSurfaceMove = (event: MouseEvent) => {
+  const moveCanvasPan = (event: ReactPointerEvent<HTMLDivElement>) => {
     const pan = canvasPanRef.current
-    if (pan) {
-      const nextOffset = { x: pan.left + event.clientX - pan.x, y: pan.top + event.clientY - pan.y }
-      canvasViewRef.current = { ...canvasViewRef.current, ...nextOffset }
-      setCanvasOffset(nextOffset)
-      return
-    }
+    if (!pan) return
+    const nextOffset = { x: pan.left + event.clientX - pan.x, y: pan.top + event.clientY - pan.y }
+    canvasViewRef.current = { ...canvasViewRef.current, ...nextOffset }
+    setCanvasOffset(nextOffset)
+  }
+  const onSurfaceMove = (event: MouseEvent) => {
     if (!drag) return
     const point = canvasPoint(event)
     if (drag.type === 'edge') setDrag({ ...drag, ...point })
-    if (drag.type === 'node') updateNode(drag.nodeId, { position: { x: Math.max(0, point.x - drag.offsetX), y: Math.max(0, point.y - drag.offsetY) } })
+    if (drag.type === 'selection') {
+      setDrag({ ...drag, end: point })
+      selectCanvasNodes(expandCanvasSelection(nodesInSelection(drag.bounds, drag.start, point)))
+    }
+    if (drag.type === 'node') {
+      const positions = moveSelection(drag.origins, { x: point.x - drag.start.x, y: (point.y - drag.start.y) / canvasYScale })
+      updateActiveWorkflow(workflow => ({ ...workflow, nodes: workflow.nodes.map(node => positions[node.id] ? { ...node, position: positions[node.id] } : node) }))
+    }
   }
   const startNodeDrag = (event: MouseEvent, node: WorkflowNode) => {
-    if ((event.target as HTMLElement).closest('.node-action,.port')) return
-    const point = canvasPoint(event)
+    if (isWorkflowDetail || event.button !== 0 || (event.target as HTMLElement).closest('.node-action,.port,.canvas-node-media')) return
+    event.preventDefault()
+    event.stopPropagation()
+    const ids = expandCanvasSelection(event.shiftKey ? [...selectedCanvasIds, node.id] : selectedCanvasIds.includes(node.id) ? selectedCanvasIds : [node.id])
+    selectCanvasNodes(ids)
     setSelectedNodeId(node.id)
-    setDrag({ type: 'node', nodeId: node.id, offsetX: point.x - node.position.x, offsetY: point.y - node.position.y })
+    setDrag({ type: 'node', start: canvasPoint(event), origins: Object.fromEntries(activeWorkflow.nodes.filter(item => ids.includes(item.id)).map(item => [item.id, { ...item.position }])) })
   }
-  const startEdgeDrag = (event: MouseEvent, node: WorkflowNode) => {
+  const startEdgeDrag = (event: MouseEvent, node: WorkflowNode, branch?: BranchPort) => {
+    if (isWorkflowDetail) return
     event.stopPropagation()
     setSelectedNodeId(node.id)
-    setDrag({ type: 'edge', from: node.id, x: node.position.x + 248, y: node.position.y + 62 })
+    const offset = branchOutputOffset(branch)
+    setDrag({ type: 'edge', from: node.id, branch, x: node.position.x + offset.x, y: node.position.y + offset.y })
   }
   const finishEdgeDrag = (event: MouseEvent, to: string) => {
     event.stopPropagation()
-    if (drag?.type === 'edge') addEdge(drag.from, to)
+    if (drag?.type === 'edge') addEdge(drag.from, to, drag.branch)
     setDrag(null)
   }
   const addParam = () =>
@@ -2439,6 +2927,7 @@ function App() {
   const removeModel = (id: string) => setDraftModels((current) => current.filter((model) => model.id !== id))
 
   const openWorkflowRun = (workflow: Workflow) => {
+    if (isDebugBusy || hasUnsavedExecution) return
     setActiveWorkflowId(workflow.id)
     setSelectedNodeId(workflow.nodes[0]?.id ?? '')
     setWorkflowInfoDraft({ name: workflow.name, description: workflow.description })
@@ -2459,139 +2948,411 @@ function App() {
     setWorkflowView('run')
   }
 
-  const persistExecution = useCallback((state: ExecutionState) => {
-    const record: ExecutionRecord = {
-      id: state.id,
-      workflowId: state.workflowId,
-      workflowName: state.workflowName,
-      mode: state.mode,
-      title: `${state.mode === 'step' ? '单步调试' : '完整执行'} · ${new Date().toLocaleString()}`,
-      runtimeInputs: state.runtimeInputs,
-      result: state,
-    }
-    const nodeRuns = state.nodeRuns
-    const listItem: ExecutionRecordListItem = {
-      ...record,
-      succeededCount: nodeRuns.filter((run) => run.status === 'success').length,
-      failedCount: nodeRuns.filter((run) => run.status === 'failed').length,
-      totalCount: nodeRuns.length,
-    }
-    setExecutionRecords((current) => [listItem, ...current.filter((item) => item.id !== record.id)].slice(0, 40))
-    void saveExecutionRecord(record).catch((error) => setConfigStatus(`执行记录保存失败：${error instanceof Error ? error.message : String(error)}`))
-  }, [])
+
 
   const executeFullRun = async () => {
-    await runFullWorkflow(activeWorkflow)
+    if (executionState.persistenceError) return
+    const executableWorkflow = normalizeWorkflow(activeWorkflow)
+    if (serializedValuesDiffer(activeWorkflow, executableWorkflow)) {
+      const upgradedWorkflows = workflows.map((workflow) => workflow.id === executableWorkflow.id ? executableWorkflow : workflow)
+      setWorkflowsState(upgradedWorkflows)
+      void saveWorkflowsToDatabase(upgradedWorkflows)
+        .catch((error) => setConfigStatus(`执行前工作流升级保存失败：${error instanceof Error ? error.message : String(error)}`))
+    }
+    await runFullWorkflow(executableWorkflow)
   }
 
-  const executeRealTask = async (task: StepTask, context: Record<string, unknown>) => {
+  const executeRealTask = async (task: StepTask, context: Record<string, unknown>): Promise<unknown> => {
+    if (task.node.mapInput) return mapNodeInputs(task.node.mapInput, context, (itemContext, index) => executeRealTask({ ...task, node: { ...task.node, mapInput: undefined }, executionId: `${task.executionId ?? task.node.id}:item-${index}` }, itemContext))
     const node = task.node
+    const executionWorkflow = normalizeWorkflow(activeWorkflow)
     if (node.kind === 'input') return runNode(node, context)
     if (node.kind === 'loop') {
       const loopItems = getLoopItems(context, node)
-      return { count: loopItems.length, loopSource: node.loop.sourcePath, itemVar: node.loop.itemVar, nodes: getLoopNodes(activeWorkflow, node.id).map((item) => item.title) }
+      return { count: loopItems.length, loopSource: node.loop.sourcePath, itemVar: node.loop.itemVar, nodes: getLoopNodes(executionWorkflow, node.id).map((item) => item.title) }
     }
     const currentLoop = context.loop && typeof context.loop === 'object' && !Array.isArray(context.loop) ? context.loop as Record<string, unknown> : {}
     const loopContext = task.loopNode ? {
       [task.loopNode.loop.itemVar]: task.loopItem,
       loop: { ...currentLoop, index: (task.loopIndex ?? 0) + 1, zeroIndex: task.loopIndex ?? 0, previous: task.loopPrevious ?? currentLoop.previous },
     } : {}
-    const baseContext = { ...context, ...loopContext, uploads: node.uploads.map((asset) => asset.name) }
-    const values = nodeParamValues(node, baseContext)
+    const rawInput = context.input && typeof context.input === 'object' && !Array.isArray(context.input)
+      ? context.input as Record<string, unknown> : undefined
+    const activeInput = executionWorkflow.id === 'wf-sanguo-history-drama' && rawInput
+      ? { ...rawInput, characterAssetSelections: characterSelectionsForEpisode(rawInput.characterAssetSelections, rawInput.episode_number) }
+      : rawInput
+    const baseContext = { ...context, ...(activeInput ? { input: activeInput } : {}), ...loopContext, uploads: node.uploads.map((asset) => asset.name) }
+    let values = nodeParamValues(node, baseContext)
+    const qualityDisposition = workflowQualityDisposition(executionWorkflow)
+    if (qualityDisposition) values = { ...values, qualityDisposition }
+    if (executionWorkflow.id === 'wf-sanguo-history-drama' && (node.kind === 'video' || node.kind === 'videoConcat')) {
+      values = applyVideoOutputProfile(values, task.executionMode ?? 'step')
+    }
+    if (node.kind === 'text' && values.reviewPolicySource) {
+      values.reviewPolicy = resolveNodePolicy(values.reviewPolicySource, task.policyNodes ?? executionWorkflow.nodes,
+        sourceNode => nodeParamValues(sourceNode, baseContext))
+    }
     const missingRequiredParams = missingRequiredParamNames(node.params, values)
     if (missingRequiredParams.length) {
       throw new Error(`${node.title} 缺少必填输入：${missingRequiredParams.join('、')}。请先执行其前置节点，禁止绕过工作流依赖直接调用模型。`)
     }
-    if (node.operation === 'character.lookup' || node.operation === 'character.ensure' || node.operation === 'character.archive') values.workflowId = activeWorkflow.id
+    if (node.operation === 'character.lookup' || node.operation === 'character.ensure' || node.operation === 'character.archive' || node.operation === 'character.voice-design' || node.operation === 'character.voice-archive') values.workflowId = executionWorkflow.id
+    if (['character.lookup', 'character.ensure', 'character.archive', 'character.appearance'].includes(node.operation ?? '')) {
+      values.episodeNumber = resolvePath(baseContext, 'input.episode_number')
+    }
+    const selectionSensitive = ['history.scene-outline', 'history.storyboard', 'character.lookup'].includes(node.operation ?? '')
+    const selections = resolvePath(baseContext, 'input.characterAssetSelections')
+    if (selections && ['character.ensure', 'character.archive'].includes(node.operation ?? '')) values = {...values, characterAssetSelections: selections}
+    if (node.operation === 'character.archive' && values.shot === undefined) {
+      const shot = resolvePath(baseContext, 'shot_script')
+      if (shot && typeof shot === 'object' && !Array.isArray(shot)) values = {...values, shot}
+    }
+    const needsVisualCatalog = node.operation === 'history.scene-outline' && node.prompt.includes('【人物年龄与场景造型·大纲】')
+    const needsEquipmentCatalog = node.operation === 'history.scene-outline' && node.prompt.includes('${characterEquipmentCatalog}')
+    const needsArtisticIdentityCatalog = ['history.scene-outline', 'history.storyboard'].includes(node.operation ?? '')
+      && node.prompt.includes('${characterArtisticIdentityCatalog}')
+    const libraryAssets = needsVisualCatalog || needsArtisticIdentityCatalog || selectionSensitive && selections && Object.keys(selections).length
+      ? (await requestJson<{characters: Record<string, unknown>[]}>('/api/characters')).characters : []
+    const libraryEquipment = needsEquipmentCatalog
+      ? (await requestJson<{equipment: Record<string, unknown>[]}>(`/api/character-equipment?workflowId=${encodeURIComponent(executionWorkflow.id)}`)).equipment : []
+    const selectedCharacterVisuals = selectionSensitive ? resolveCharacterVisualSelections(libraryAssets, executionWorkflow.id, selections) : []
+    if (selectedCharacterVisuals.length && ['history.scene-outline', 'history.storyboard'].includes(node.operation ?? '')) values = {...values, selectedCharacterVisuals}
+    if (selectedCharacterVisuals.length && node.operation === 'history.storyboard') assertSelectedCharacterVisuals(resolvePath(baseContext, 'scene'), selectedCharacterVisuals)
     let codeBindings: Record<string, unknown> = {}
     if (node.kind === 'code' && node.operation === 'character.lookup') {
+      assertSelectedCharacterVisuals(resolvePath(baseContext, 'shot_script'), selectedCharacterVisuals)
+      const shot = resolvePath(baseContext, 'shot_script')
+      const actors = withApprovedVoiceCasting(characterInputsForShot(shot), shot as Record<string, unknown>,
+        resolvePath(baseContext, 'approved_scene_outline'))
       const lookupResponse = await runBuiltinNode(node.operation, node.prompt, {
-        characters: resolvePath(baseContext, 'shot_script.characters'),
-        workflowId: activeWorkflow.id,
+        characters: actors,
+        characterAssetSelections: selections,
+        includeVoices: true,
+        shot,
+        workflowId: executionWorkflow.id,
         episodeNumber: resolvePath(baseContext, 'input.episode_number'),
         sceneId: resolvePath(baseContext, 'scene.id'),
+        qualityDisposition: values.qualityDisposition,
       })
       if (lookupResponse.status >= 400) throw new Error(JSON.stringify(lookupResponse.body))
+      const lookup = lookupResponse.body as {items?: Array<{id?: string;characterName?: string}>}
+      for (const selected of selectedCharacterVisuals) if (actors.some(actor => actor.name === selected.name)
+        && !lookup.items?.some(asset => asset.characterName === selected.name && asset.id === selected.assetId)) {
+        throw new Error(`CHARACTER_VISUAL_SELECTION_MISMATCH: ${selected.name} 未召回用户指定的三视图，已在媒体付费前停止`)
+      }
       codeBindings = { character_lookup_result: lookupResponse.body }
     }
     const aliases = nodeParamAliases(node, values)
-    const localContext = {
+    const visualCatalog = needsVisualCatalog ? characterVisualCatalog(libraryAssets,
+      executionWorkflow.id, {input: resolvePath(baseContext, 'input'), historicalSources: resolvePath(baseContext, 'historical_sources')}, selectedCharacterVisuals) : undefined
+    const artisticIdentityCatalog = needsArtisticIdentityCatalog ? characterArtisticIdentityCatalog(libraryAssets,
+      executionWorkflow.id, {input: resolvePath(baseContext, 'input'), historicalSources: resolvePath(baseContext, 'historical_sources'),
+        scene: resolvePath(baseContext, 'scene'), sceneOutline: resolvePath(baseContext, 'scene_outline')}) : undefined
+    const equipmentCatalog = needsEquipmentCatalog ? characterEquipmentCatalog(libraryEquipment, executionWorkflow.id,
+      {input: resolvePath(baseContext, 'input'), historicalSources: resolvePath(baseContext, 'historical_sources')}) : undefined
+    const ungroundedContext = {
       ...baseContext,
       ...aliases,
+      params: values,
+      qualityDisposition: values.qualityDisposition,
       ...codeBindings,
+      ...(visualCatalog ? {characterVisualCatalog: visualCatalog} : {}),
+      ...(artisticIdentityCatalog ? {characterArtisticIdentityCatalog: artisticIdentityCatalog} : {}),
+      ...(equipmentCatalog ? {characterEquipmentCatalog: equipmentCatalog} : {}),
+      ...(selectedCharacterVisuals.length ? {selectedCharacterVisuals} : {}),
       uploads: node.uploads.map((asset) => asset.name),
     }
-    const prompt = interpolate(node.prompt, localContext)
-    const executionContext = { workflowId: activeWorkflow.id, workflowName: activeWorkflow.name, nodeId: node.id, nodeName: node.title }
+    const localContext = node.operation === 'history.storyboard'
+      ? storyboardDramaContext(storyboardContinuityContext(ungroundedContext))
+      : node.kind === 'text' && node.prompt.includes('${history_source_review}')
+        ? historicalSourceReviewContext(ungroundedContext) : ungroundedContext
+    const feedback = resolvePath(localContext, 'retry.feedback')
+    // Structural correction and editorial rewrites consume the same configured writer budget,
+    // including every child segment and every distinct model generation.
+    const writerBudget = ['history.scene-outline', 'history.storyboard'].includes(node.operation ?? '') && node.prompt.includes('cinematic-v1')
+      ? createDramaGenerationBudget(feedback, resolveDramaGenerationLimit(values.maxGenerationAttempts, 2, values.qualityDisposition)) : undefined
+    // A new draft is a distinct model operation even when its correction prompt is unchanged.
+    // Network reattachment retains this operation's key; it must never consume a new draft.
+    const consumeWriterContext = () => {
+      if (!writerBudget) return executionContext
+      writerBudget.consume()
+      return contextWithGenerationAttempt(executionContext, writerBudget.used)
+    }
+    const stampWriterResult = (output: unknown) => {
+      const result = attachDramaRepairProvenance(output, feedback, Number(resolvePath(localContext, 'retry.attempt')) || 1)
+      if (!writerBudget || !result || typeof result !== 'object') return result
+      const record = result as Record<string, unknown>
+      const repairProvenance = { ...(record.repairProvenance as Record<string, unknown>), generationAttempts: writerBudget.used }
+      const segments = record[STORYBOARD_SEGMENTS_KEY]
+      return { ...record, repairProvenance, ...(Array.isArray(segments) ? {
+        [STORYBOARD_SEGMENTS_KEY]: segments.map(segment => ({ ...segment, repairProvenance })),
+      } : {}) }
+    }
+    if (node.kind === 'video') {
+      const shot = resolvePath(localContext, 'shot_script') as Record<string, unknown> | undefined
+      if (shot && (shot.dramaticSceneId || shot.id)) values.voiceSceneId = shot.dramaticSceneId ?? shot.id
+      const issue = cinematicContinuityIssue(
+        (resolvePath(localContext, 'shot_script') ?? {}) as Record<string, unknown>,
+        resolvePath(localContext, 'loop.previous.shot_script') as Record<string, unknown> | undefined,
+        resolvePath(localContext, 'loop.previous.video_shot') as Record<string, unknown> | undefined,
+      )
+      if (issue) {
+        if (values.qualityDisposition !== 'manual-review-v1') throw new Error(`STORYBOARD_WORLD_STATE_INVALID: ${issue}；请基于前镜实测状态重试本镜分镜，已阻止视频付费调用`)
+        values = { ...values, qualityWarnings: [...(Array.isArray(values.qualityWarnings) ? values.qualityWarnings : []), `连续性待人工复核：${issue}`] }
+      }
+    }
+    const rawPromptContext = node.kind === 'text' ? nodePromptInputContext(localContext, values.promptInputMode)
+      : node.kind === 'video' ? videoPromptInputContext(localContext, values.promptInputMode) : localContext
+    const promptRetry = resolvePath(rawPromptContext, 'retry')
+    const promptContext = promptRetry && typeof promptRetry === 'object' && !Array.isArray(promptRetry)
+      ? { ...rawPromptContext, retry: { ...promptRetry, feedback: withoutFailedTextCandidate(resolvePath(rawPromptContext, 'retry.feedback')) } } : rawPromptContext
+    const writerStage = executionWorkflow.id === 'wf-sanguo-history-drama'
+      ? node.operation === 'history.scene-outline' ? 'outline' : node.operation === 'history.storyboard' ? 'storyboard' : undefined
+      : undefined
+    const currentPrompt = writerStage === 'outline'
+      ? refreshEpisodeBoundaryPrompt(refreshDramaticExpressionPrompt(node.prompt, writerStage))
+      : writerStage ? refreshDramaticExpressionPrompt(node.prompt, writerStage) : node.prompt
+    if (writerStage === 'outline' && !parseEpisodeBoundary(resolvePath(localContext, 'input.episode_boundary'),
+      resolvePath(localContext, 'input.episode_number'), resolvePath(localContext, 'input.episode_title'))) {
+      throw new Error('EPISODE_BOUNDARY_MISSING: 当前大纲缺少策划表邻集归属；请从「策划表输入整理」节点重跑，已阻止文本模型请求')
+    }
+    const prompt = interpolate(currentPrompt, promptContext) + renderRetryFeedbackPrompt(resolvePath(promptContext, 'retry.feedback'))
+      + (writerStage && selectedCharacterVisuals.length ? '\n【用户指定的本次三视图】' + JSON.stringify(selectedCharacterVisuals)
+        + '。出现这些人物的场景和分镜必须原样采用指定visualContext，不改用同人物其他候选。此选择是本作艺术造型，不能作为历史生年或实岁证据；剧情时间仍按史料。' : '')
+      + (node.kind === 'video' ? characterEquipmentPrompt(values.equipmentBindings) : '')
+    const knownSpeakers = node.kind === 'video' && task.voicePolicy === 'strict' ? knownVoiceSpeakers([
+      ...(task.knownVoiceInputs ?? []),
+      ...executionWorkflow.nodes.filter(n => n.kind === 'loop').flatMap(n => getLoopItems(baseContext, n)),
+      ...executionWorkflow.nodes.filter(n => n.kind === 'video' && !n.parentId && !executionWorkflow.nodes.some(owner => owner.kind === 'loop' && owner.childIds?.includes(n.id))).map(n => nodeParamValues(n, baseContext)),
+    ]) : undefined
+    const executionContext = { knownVoiceSpeakers: knownSpeakers, voiceExecutionId: task.voiceExecutionId, voicePolicy: task.voicePolicy, requestKey: task.executionId ? `${task.executionId}:${node.id}:${task.loopIndex ?? 0}:${String(resolvePath(localContext, 'scene.id') ?? '')}` : undefined, workflowId: executionWorkflow.id, workflowName: executionWorkflow.name, nodeId: node.id, nodeName: node.title }
+    if (executionWorkflow.id === 'wf-sanguo-history-drama' || (node.kind === 'video' && task.voicePolicy === 'strict')) {
+      const runtime = await requestJson<{ historyQualityVersion?: string; voiceContractVersion?: string; videoOutputProfileVersion?: string; characterVisualContextVersion?: string }>('/api/runtime-version').catch(() => ({ historyQualityVersion: undefined, voiceContractVersion: undefined, videoOutputProfileVersion: undefined, characterVisualContextVersion: undefined }))
+      if (executionWorkflow.id === 'wf-sanguo-history-drama' && runtime.historyQualityVersion !== HISTORY_QUALITY_VERSION) throw new Error('历史视频服务仍运行旧版本。请重启本地服务后再执行；已阻止新界面调用旧模型适配器。')
+      if (executionWorkflow.id === 'wf-sanguo-history-drama' && (executionWorkflow.schemaVersion ?? 0) >= 146 && runtime.characterVisualContextVersion !== CHARACTER_VISUAL_CONTEXT_RUNTIME_VERSION) throw new Error('人物年龄与场景造型服务仍运行旧版本。请重启本地服务后再执行；已阻止旧服务按姓名误用其他年龄的人物图。')
+      if ((node.kind === 'video' || node.kind === 'videoConcat') && runtime.videoOutputProfileVersion !== VIDEO_OUTPUT_PROFILE_VERSION) throw new Error('视频输出服务仍运行旧版本。请重启本地服务后再执行；已阻止错误规格的视频调用。')
+      if (node.kind === 'video' && task.voicePolicy === 'strict') assertVoiceRuntime(runtime)
+    }
     if (node.kind === 'image' && !node.modelId) return { ...uploadedImageOutput(node), prompt, model: undefined, params: values }
-    if (node.kind === 'code') {
+    if (node.kind === 'http') {
+      if (!node.request || !/^\/api\/[\w/-]+$/.test(node.request.url)) throw new Error('HTTP 节点需配置本地 /api/ 请求地址')
+      return requestJson<Record<string, unknown>>(node.request.url, { method: node.request.method, ...(node.request.method === 'POST' ? { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) } : {}) })
+    }
+    if (node.kind === 'code' || node.kind === 'branch') {
       if (!node.code?.trim()) throw new Error(`${node.title} 未配置 JavaScript 代码`)
       const files = await Promise.all(node.uploads.map(materializeUpload))
       const response = await runCodeNode(node.code, prompt, values, files, localContext)
-      if (response.status >= 400) throw new Error(JSON.stringify(response.body))
+      if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
+      const result = response.body as Record<string, unknown> | undefined
+      if (node.id === 'sanguo-scene-outline-accept' && result?.passed === true && result.contentContractVersion === 'cinematic-v1') {
+        return { ...result, contextPatch: { approved_scene_outline: result } }
+      }
       return response.body && typeof response.body === 'object' ? response.body : { value: response.body }
     }
     const model = models.find((item) => item.id === node.modelId)
     if (node.operation === 'character.ensure' || node.operation === 'frame.first.resolve') {
       if (node.modelId && !model) throw new Error(`${node.title} 配置的模型不存在`)
       const response = await runBuiltinNode(node.operation, prompt, values, model, executionContext)
-      if (response.status >= 400) throw new Error(JSON.stringify(response.body))
+      if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
+      if (node.kind === 'validation' && (response.body as Record<string, unknown>)?.passed !== true) throw new Error(`质量校验未通过：${JSON.stringify(response.body)}`)
       return { ...(response.body && typeof response.body === 'object' ? response.body as Record<string, unknown> : { value: response.body }), operation: node.operation }
     }
-    if (node.kind === 'internet' || node.kind === 'validation' || node.kind === 'knowledge' || node.kind === 'asset' || node.kind === 'compose') {
+    if (node.kind === 'internet' || node.kind === 'validation' || node.kind === 'knowledge' || node.kind === 'asset' || node.kind === 'compose' || node.kind === 'videoConcat') {
       if (!node.operation) throw new Error(`${node.title} 未配置内置 operation`)
       if (node.kind === 'asset' && node.modelId && !model) throw new Error(`${node.title} 配置的模型不存在`)
       const response = await runBuiltinNode(node.operation, prompt, values, model, executionContext)
-      if (response.status >= 400) throw new Error(JSON.stringify(response.body))
+      if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
+      if (node.kind === 'validation' && (response.body as Record<string, unknown>)?.passed !== true) throw new Error(`质量校验未通过：${JSON.stringify(response.body)}`)
       return { ...(response.body && typeof response.body === 'object' ? response.body as Record<string, unknown> : { value: response.body }), operation: node.operation }
     }
     if (!model) throw new Error(`${node.title} 未配置模型`)
-    let response = await runModelNode(model, prompt, values, node.operation, executionContext)
-    if (response.status >= 400) throw new Error(JSON.stringify(response.body))
-    let rawBody = response.body
+    let characterDesigns: ReturnType<typeof characterAppearanceContext> | undefined
+    if (node.operation === 'history.storyboard') {
+      const cast = resolvePath(localContext, 'scene.cast')
+      const previousCast = resolvePath(localContext, 'scene.continuityFromPrevious') === true ? resolvePath(localContext, 'loop.previous.shot_script.endCharacters') : []
+      const response = await runBuiltinNode('character.appearance', '', {
+        characterAssetSelections: selections,
+        characters: characterInputsForShot({characters: [...new Set([...(Array.isArray(cast) ? cast : []), ...(Array.isArray(previousCast) ? previousCast : [])])],
+          characterVisuals: resolvePath(localContext, 'scene.characterVisuals')}),
+        workflowId: executionWorkflow.id, episodeNumber: resolvePath(localContext, 'input.episode_number'), readOnly: true,
+      }, undefined, executionContext)
+      if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
+      characterDesigns = characterAppearanceContext((response.body as { items: Array<Record<string, unknown>> }).items)
+    }
+    if (node.operation === 'history.storyboard') {
+      const actualTail = resolvePath(localContext, 'loop.previous.actualTailEvidence') as Record<string, unknown> | undefined
+      const carry = task.failedCandidateBinding ? readFailedTextCandidate(feedback, task.failedCandidateBinding) : undefined
+      const productionTimingPrompt = values.pacingVersion === 'duration-v2'
+        ? '本轮使用duration-v2共享策略，按声明的表演类型、完整节拍依赖与可读收尾排程；不套4.5字/秒，不强制缩为最短整数，15秒放不下则按原节拍连续拆段。本轮pacing.timingPolicy必须原样使用以下完整对象：' + JSON.stringify(values.timingPolicy)
+        : '本轮按自然语速每秒4.5个汉字和短标点停顿动态预算，禁止拖腔和凑满15秒。一行超过6秒则在语义停顿处拆成两条同角色对白；15秒放不下必须连续拆段，不得删剧情。'
+      const expected = { ...values, storyboardQualityWarnings: resolvePath(localContext, 'storyboardQualityWarnings'), scene: resolvePath(localContext, 'scene'), previousShot: resolvePath(localContext, 'loop.previous.shot_script'), requireContinuityContract: true, requireDynamicPacing: true, requireNarrativeClosure: true, requireDramaContract: node.prompt.includes('cinematic-v1'), productionSpeechRate: 4.5, aspectRatio: resolvePath(localContext, 'input.aspect_ratio') }
+      const execution = await executeRecoveredHistoricalStoryboard({
+        binding: task.failedCandidateBinding, carry,
+        plannedCandidate: carry ? undefined : task.storyboardSplitCandidate,
+        canGenerate: () => writerBudget?.canConsume() ?? true,
+        prompt: `${prompt}\n【实际生产语速预算】${productionTimingPrompt}\n【既有角色定妆，必须沿用】${JSON.stringify(characterDesigns)}。仅沿用身份、脸部和服装，不沿用旧站位或动作。没有既有资产的角色才可设计新外观。`,
+        expected,
+        generate: async (candidatePrompt) => {
+          const generationContext = consumeWriterContext()
+          const coverageCut = resolvePath(localContext, 'scene.continuityMode') === 'coverage_cut'
+          const response = await runModelNode(model, candidatePrompt + (actualTail ? coverageCut
+            ? '\n【实际同场切镜依据】附件是前镜实际尾帧，只作为现场人物和世界状态证据，允许已批准的反打与新景别。画外人物不等于离场，不能重演已完成动作或凭空转移道具；按已采证worldState继承，未知不猜。'
+            : '\n【实际续接依据】附件是上一轮已验收成片的实际尾帧，上一镜lastFramePrompt已替换为该尾帧的实际观察。开场必须保持图中人物、站位、道具和机位；从这个状态连续表演本轮新剧情，禁止重演已完成动作。' : ''), { ...values, ...(actualTail ? { reviewImages: [actualTail.url] } : {}) }, node.operation, generationContext)
+          if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
+          return { raw: response.body, requestKey: generationContext.requestKey ?? '', httpStatus: response.status }
+        },
+      })
+      const splitSegments = storyboardSegments(execution.result)
+      return stampWriterResult({ ...execution.result,
+        ...(splitSegments.length > 1 && execution.source && isManagedStoryboardSplitNode(node, values)
+          ? { [STORYBOARD_SPLIT_SOURCE_KEY]: { source: execution.source, expected } satisfies StoryboardSplitSourceEnvelope } : {}),
+        ...(task.storyboardSplitCandidate && !carry ? { splitCandidateRecovery: {
+          ...task.storyboardSplitCandidate.provenance, currentValidationRequired: false,
+          validation: 'current-full-script-contract', generationAttempts: execution.generations,
+          mode: execution.generations ? 'repaired' : 'revalidated',
+        } } : {}),
+        ...(execution.recovered ? { failedCandidateRecovery: {
+        version: 'failed-text-candidate-recovery-v1', mode: execution.generations ? 'repaired' : 'revalidated',
+        sourceExecutionId: execution.recovered.binding.executionId, sourceRequestKey: execution.recovered.source.requestKey,
+        sourceModelExecutionId: execution.recovered.source.modelExecutionId, sourceRawSha256: execution.recovered.rawSha256,
+        generationAttempts: execution.generations,
+      } } : {}) })
+    }
+    if (node.kind === 'text' && values.qualityMode === 'principle-v1' && values.maxReviewAttempts !== undefined) {
+      const report = await runPrincipleReview({
+        maxAttempts: isManualReview(values) ? 1 : Number(values.maxReviewAttempts),
+        generate: async (attempt, correction) => {
+          const result = await runModelNode(model, prompt + correction, values, node.operation,
+            { ...executionContext, requestKey: executionContext.requestKey ? `${executionContext.requestKey}:principle-review-${attempt}` : undefined })
+          if (result.status >= 400) throw new Error(`HTTP ${result.status}: ${JSON.stringify(result.body)}`)
+          return result.body
+        },
+        normalize: raw => normalizeStructuredTextOutput(raw, extractTextResponse(raw), 'json'),
+      })
+      return { ...report, model: node.modelId }
+    }
     if (node.kind === 'text') {
-      const validationContext = node.operation === 'history.storyboard'
-        ? { ...values, scene: resolvePath(localContext as Record<string, unknown>, 'scene') }
-        : values
-      const normalizeAndValidate = (value: unknown) => {
+      const validationContext = node.operation === 'history.scene-outline'
+          ? { ...values, requireBeatCoverage: true, requireNarrativeClosure: true, requireDramaContract: node.prompt.includes('cinematic-v1'), requireEditorialGrammar: node.prompt.includes('editorialRole'), requireCharacterVisuals: node.prompt.includes('【人物年龄与场景造型·大纲】'), requireCharacterEquipment: node.prompt.includes('每段另写characterEquipment数组'), requireEpisodeBoundary: executionWorkflow.id === 'wf-sanguo-history-drama', deriveInheritedStates: true, input: resolvePath(localContext, 'input'), historicalSources: resolvePath(localContext, 'historical_sources') }
+          : node.operation === 'history.storyboard'
+            ? { ...values, requireCharacterEquipment: node.prompt.includes('继承当前scene.characterEquipment') }
+            : values
+      const normalizeCandidate = (value: unknown) => {
         const text = extractTextResponse(value)
-        const normalized = normalizeStructuredTextOutput(value, text, node.outputMode ?? 'legacy-shots')
-        return {
-          normalized,
-          validated: validateHistoricalStructuredOutput(node.operation, normalized, validationContext),
-        }
+        return normalizeStructuredTextOutput(value, text, node.outputMode ?? 'legacy-shots')
       }
+      const normalizeAndValidate = (value: unknown) => {
+        const normalized = applyScopedDramaRepair(normalizeCandidate(value), feedback, localContext)
+        // Collect independent guard failures together so one correction can address them all.
+        // The writer retains the actual diagnostics when its shared generation budget is exhausted.
+        const diagnostics: string[] = []
+        const collect = (check: () => void) => {
+          try { check() } catch (error) { diagnostics.push(error instanceof Error ? error.message : String(error)) }
+        }
+        if (node.operation === 'history.scene-outline') {
+          const citations = resolvePath(localContext, 'historical_sources.citations')
+          // Run pre-review guards against the same mechanical normalization used
+          // by the structural validator. Otherwise a harmless empty-cast generic
+          // montage is rejected before its deterministic live-action projection.
+          const guardCandidate = normalizeDramaOutline(normalized, validationContext)
+          collect(() => validateHistoricalProductionPlan(guardCandidate))
+          if (Array.isArray(citations)) collect(() => validateHistoricalAgency(guardCandidate, citations))
+          collect(() => validateEpisodeNarrativeBoundary(guardCandidate, resolvePath(localContext, 'input'),
+            executionWorkflow.id === 'wf-sanguo-history-drama'))
+        }
+        if (diagnostics.length && !isManualReview(values)) {
+          // Still run the contract validator so its own defects join the same round.
+          collect(() => validateHistoricalStructuredOutput(node.operation, normalized, validationContext))
+          throw new Error([...new Set(diagnostics)].join('\n'))
+        }
+        const validated = validateHistoricalStructuredOutput(node.operation, normalized, validationContext)
+        if (node.operation === 'history.scene-outline') assertSelectedCharacterVisuals(validated, selectedCharacterVisuals)
+        return { normalized, validated: isManualReview(values) && diagnostics.length && validated && typeof validated === 'object'
+          ? { ...validated, qualityWarnings: [...new Set([...((validated as Record<string, unknown>).qualityWarnings as string[] ?? []), ...diagnostics])] } : validated }
+      }
+      let rawBody: unknown
       let result: ReturnType<typeof normalizeAndValidate>
-      try {
-        result = normalizeAndValidate(rawBody)
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error)
-        if (node.operation !== 'history.storyboard' || !message.startsWith('STORYBOARD_TIMING_OVERFLOW:')) throw error
-        const retryPrompt = `${prompt}\n\n【时长校验未通过，必须重写】\n${message}\n请保留史实、核心冲突和最终画面落点，将 duration 设为 15，压缩对白和不必要停顿。普通话对白按每秒 4 个汉字估算，句读、角色换人另计；对白结束后必须保留反应动作和至少 1.5 秒稳定尾帧。只返回修正后的 JSON 对象。`
-        response = await runModelNode(model, retryPrompt, values, node.operation, executionContext)
-        if (response.status >= 400) throw new Error(JSON.stringify(response.body), { cause: error })
+      let recoveryProvenance: Record<string, unknown> | undefined
+      if (node.operation === 'history.scene-outline') {
+        const carry = task.failedCandidateBinding ? readFailedTextCandidate(feedback, task.failedCandidateBinding) : undefined
+        const execution = await executeFailedTextCandidate({ binding: task.failedCandidateBinding, carry, prompt,
+          maxGenerations: resolveDramaGenerationLimit(values.maxGenerationAttempts, 2, values.qualityDisposition),
+          canGenerate: () => writerBudget?.canConsume() ?? true,
+          generate: async correctionPrompt => {
+            const generationContext = consumeWriterContext()
+            const response = await runModelNode(model, correctionPrompt, values, node.operation, generationContext)
+            if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
+            return { raw: response.body, requestKey: generationContext.requestKey ?? '', httpStatus: response.status }
+          }, normalizeCandidate, normalizeAndValidate, buildCorrection: buildSceneOutlineRepairSuffix, candidatesDiffer: serializedValuesDiffer })
+        rawBody = execution.raw
+        result = execution.result
+        if (execution.recovered) recoveryProvenance = { version: 'failed-text-candidate-recovery-v1', mode: 'revalidated',
+          sourceExecutionId: execution.recovered.binding.executionId, sourceRequestKey: execution.recovered.source.requestKey,
+          sourceModelExecutionId: execution.recovered.source.modelExecutionId, sourceRawSha256: execution.recovered.rawSha256,
+          generationAttempts: execution.generations }
+      } else {
+        const response = await runModelNode(model, prompt, values, node.operation, consumeWriterContext())
+        if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
         rawBody = response.body
         result = normalizeAndValidate(rawBody)
       }
       const body = sanitizeBase64(rawBody)
-      return {
+      const transportModelId = body && typeof body === 'object' && !Array.isArray(body)
+        ? String((body as { transportFailover?: { toModelId?: unknown } }).transportFailover?.toModelId ?? '').trim()
+        : ''
+      return stampWriterResult({
         ...(result.validated && typeof result.validated === 'object' && !Array.isArray(result.validated) ? result.validated : result.normalized),
         raw: body,
-        model: node.modelId,
-      }
+        model: transportModelId || node.modelId,
+        ...(recoveryProvenance ? { failedCandidateRecovery: recoveryProvenance } : {}),
+      })
     }
+    const response = await runModelNode(model, prompt, values, node.operation, consumeWriterContext())
+    if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
+    const rawBody = response.body
     const body = sanitizeBase64(rawBody)
+    if (node.operation === 'character.voice-design') return { ...voiceCandidateOutput(rawBody), raw: body, model: node.modelId }
     const urls = extractMediaUrls(rawBody)
     const url = urls[0] ?? extractFirstUrl(rawBody)
     if (node.kind === 'video' && !url) {
       throw new Error(`${node.title} 未返回可用的视频 URL，不能标记为执行成功`)
     }
     const rawRecord = rawBody && typeof rawBody === 'object' && !Array.isArray(rawBody) ? rawBody as Record<string, unknown> : {}
-    const lastFrameUrl = extractFirstUrl(rawRecord.lastFrameUrl ?? rawRecord.last_frame_url ?? rawRecord.last_frame)
+    let lastFrameUrl = extractFirstUrl(rawRecord.lastFrameUrl ?? rawRecord.last_frame_url ?? rawRecord.last_frame)
+    let extractedLastFrameUrl = ''
+    if (node.kind === 'video' && node.captureTail !== false && url && !lastFrameUrl) {
+      const nextScene = resolvePath(localContext, `scene_outline.scenes.${(task.loopIndex ?? 0) + 1}`)
+      const nextSceneNeedsTail = Boolean(nextScene && typeof nextScene === 'object' && !Array.isArray(nextScene)
+        && (nextScene as Record<string, unknown>).continuityFromPrevious === true)
+      try {
+        const tailFrameDataUrl = await captureVideoTailFrame(url)
+        const stored = await requestJson<{ url: string }>('/api/runtime-assets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dataUrl: tailFrameDataUrl, prefix: `${node.id}-${task.loopIndex ?? 0}-tail` }),
+        })
+        extractedLastFrameUrl = stored.url
+        lastFrameUrl = stored.url
+      } catch (error) {
+        if (nextSceneNeedsTail) {
+          throw new Error(`下一镜要求连续续接，但当前成片尾帧提取失败：${error instanceof Error ? error.message : String(error)}`, { cause: error })
+        }
+      }
+    }
     return {
       url,
       ...(node.kind === 'image' ? { urls, items: urls.map((itemUrl) => ({ url: itemUrl })) } : {}),
       ...(lastFrameUrl ? { lastFrameUrl } : {}),
+      ...(extractedLastFrameUrl ? { extractedLastFrameUrl } : {}),
+      ...(rawRecord.characterVoices ? { characterVoices: rawRecord.characterVoices, voiceManifest: rawRecord.voiceManifest, voiceConsistency: rawRecord.voiceConsistency } : {}),
+      ...(rawRecord.narration ? { narration: rawRecord.narration, voiceManifest: rawRecord.voiceManifest, voiceConsistency: rawRecord.voiceConsistency } : {}),
+      ...(rawRecord.offscreenDialogue ? { offscreenDialogue: rawRecord.offscreenDialogue, voiceManifest: rawRecord.voiceManifest, voiceConsistency: rawRecord.voiceConsistency } : {}),
+      ...(rawRecord.nativeGroupVoices ? { nativeGroupVoices: rawRecord.nativeGroupVoices, voiceConsistency: rawRecord.voiceConsistency } : {}),
+      ...(rawRecord.mapVideoGate ? { mapVideoGate: rawRecord.mapVideoGate } : {}),
+      ...(rawRecord.mapAnnotationOverlay ? { mapAnnotationOverlay: rawRecord.mapAnnotationOverlay } : {}),
+      ...(rawRecord.mapPortraitOverlay ? { mapPortraitOverlay: rawRecord.mapPortraitOverlay } : {}),
+      ...(values.qualityDisposition ? { qualityDisposition: values.qualityDisposition } : {}),
+      ...(values.qualityWarnings ? { qualityWarnings: values.qualityWarnings } : {}),
       raw: body,
       prompt,
       params: values,
@@ -2599,124 +3360,63 @@ function App() {
     }
   }
 
+  const continueFullRun = async (state: ExecutionState) => {
+    if (state.persistenceError) return
+    if (fullExecutionLockRef.current || stepExecutionLockRef.current) return
+    fullExecutionLockRef.current = true
+    fullPauseRequestedRef.current = false
+    setFullPauseRequested(false)
+    setDebugContinueRunning(true)
+    try {
+      await runWorkflowToCompletion(state, (index, current) => fullPauseRequestedRef.current ? Promise.resolve(undefined) : executeStepIndex(index, current))
+    } finally {
+      fullExecutionLockRef.current = false
+      setDebugContinueRunning(false)
+    }
+  }
+
   const runFullWorkflow = async (workflow: Workflow) => {
+    if (executionState.persistenceError) return
+    if (fullExecutionLockRef.current || stepExecutionLockRef.current) return
     setRunMode('run')
     setWorkflowDebug(null)
     setRuntimePanelOpen(false)
     setRunnerFollowMode(true)
     setSelectedLoopSnapshot(null)
     const base = createExecutionState(workflow, 'run')
-    const validationError = validateRuntimeInputs(workflow)
+    const validationError = branchConfigurationErrors(workflow).join('；') || validateRuntimeInputs(workflow)
     if (validationError) {
       setRuntimePanelOpen(true)
       const failed = failInputNodeRuns(base.nodeRuns, validationError)
       const failedState = { ...base, ...failed, selectedNodeId: failed.selectedNodeId }
       setExecutionState(failedState)
       setSelectedRunIndex(failed.selectedRunIndex)
-      persistExecution(failedState)
+      await persistExecution(failedState)
       return
     }
-    setExecutionState({ ...base, selectedNodeId: undefined })
+    setExecutionState(base)
     setSelectedRunIndex(-1)
-    let nextState = base
-    let context: Record<string, unknown> = {}
-    let logs: string[] = []
-    let nodeRuns: NodeRunState[] = []
-    const { ordered } = getExecutionOrder(workflow)
-    const skippedLoopChildren = new Set<string>()
-    for (const node of ordered) {
-      if (skippedLoopChildren.has(node.id)) continue
-      const task: StepTask = { node, label: `${node.title} -> ${node.resultVar}` }
-      const index = nodeRuns.length
-      const inputContext = { ...context }
-      const inputs = nodeParamValues(node, inputContext)
-      const runningRun: NodeRunState = { id: `${node.id}-${index}`, node, output: undefined, context: { ...context }, inputs, inputContext, label: task.label, status: 'running', durationMs: 0, startedAt: performance.now() }
-      nodeRuns = [...nodeRuns, runningRun]
-      setExecutionState((current) => ({ ...current, nodeRuns, selectedNodeId: node.id }))
-      followExecutionRun(index, runningRun)
-      const startedAt = performance.now()
-      try {
-        const output = await executeRealTask(task, context)
-        context = applyNodeOutputToContext(context, node.resultVar, output)
-        logs = [...logs, task.label ?? `${node.title} -> ${node.resultVar}`]
-        nodeRuns = nodeRuns.map((run, runIndex) => (runIndex === index ? { ...run, output, context: { ...context }, status: 'success', durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : run))
-        if (node.kind === 'loop' && node.loop.enabled) {
-          const loopNodes = getLoopNodes(workflow, node.id)
-          const loopItems = getLoopItems(context, node)
-          const loopGroupId = `${node.id}-${Date.now()}`
-          loopNodes.forEach((loopChild) => skippedLoopChildren.add(loopChild.id))
-          const loopBaseContext = { ...context }
-          const iterationOutputs: Array<Record<string, unknown>> = []
-          for (let itemIndex = 0; itemIndex < loopItems.length; itemIndex += 1) {
-            const item = loopItems[itemIndex]
-            let iterationContext: Record<string, unknown> = {
-              ...loopBaseContext,
-              [node.loop.itemVar]: item,
-              loop: { index: itemIndex + 1, zeroIndex: itemIndex, previous: iterationOutputs.at(-1) },
-            }
-            const iterationResult: Record<string, unknown> = {}
-            for (const loopChild of loopNodes) {
-              const childTask: StepTask = { node: loopChild, loopNode: node, loopItem: item, loopIndex: itemIndex, label: `第 ${itemIndex + 1} 轮 / ${loopChild.title} -> ${loopChild.resultVar}` }
-              const childIndex = nodeRuns.length
-              const childStartedAt = performance.now()
-              const childInputContext = { ...iterationContext }
-              const childInputs = nodeParamValues(loopChild, childInputContext)
-              if (!shouldRunNode(loopChild.runIf, childInputContext)) {
-                const skippedRun: NodeRunState = { id: `${loopChild.id}-${childIndex}`, node: loopChild, output: { skipped: true, condition: loopChild.runIf }, context: { ...iterationContext }, inputs: childInputs, inputContext: childInputContext, label: childTask.label, status: 'skipped', durationMs: 0, loopNode: node, loopItem: item, loopIndex: itemIndex, loopPrevious: iterationOutputs.at(-1), loopGroupId, loopIsLast: itemIndex === loopItems.length - 1 && loopChild.id === loopNodes.at(-1)?.id }
-                nodeRuns = [...nodeRuns, skippedRun]
-                logs = [...logs, `${childTask.label}（分支条件未命中，已跳过）`]
-                setExecutionState((current) => ({ ...current, nodeRuns, context: iterationContext, logs, selectedNodeId: loopChild.id }))
-                followExecutionRun(childIndex, skippedRun)
-                continue
-              }
-              const runningChildRun: NodeRunState = { id: `${loopChild.id}-${childIndex}`, node: loopChild, output: undefined, context: { ...iterationContext }, inputs: childInputs, inputContext: childInputContext, label: childTask.label, status: 'running', durationMs: 0, startedAt: childStartedAt, loopNode: node, loopItem: item, loopIndex: itemIndex, loopPrevious: iterationOutputs.at(-1), loopGroupId, loopIsLast: itemIndex === loopItems.length - 1 && loopChild.id === loopNodes.at(-1)?.id }
-              nodeRuns = [...nodeRuns, runningChildRun]
-              setExecutionState((current) => ({ ...current, nodeRuns, selectedNodeId: loopChild.id }))
-              followExecutionRun(childIndex, runningChildRun)
-              const childOutput = await executeRealTask(childTask, iterationContext)
-              iterationContext = { ...iterationContext, [loopChild.resultVar]: childOutput }
-              iterationResult[loopChild.resultVar] = childOutput
-              logs = [...logs, childTask.label ?? `${loopChild.title} -> ${loopChild.resultVar}`]
-              nodeRuns = nodeRuns.map((run, runIndex) => (runIndex === childIndex ? { ...run, output: childOutput, context: { ...iterationContext }, status: 'success', durationMs: Math.max(1, Math.round(performance.now() - childStartedAt)) } : run))
-              setExecutionState((current) => ({ ...current, nodeRuns, context: iterationContext, logs, selectedNodeId: loopChild.id }))
-            }
-            iterationOutputs.push(iterationResult)
-          }
-          const aggregateOutputs = aggregateLoopOutputs(iterationOutputs)
-          context = {
-            ...loopBaseContext,
-            ...aggregateOutputs,
-            [node.resultVar]: { ...(output as Record<string, unknown>), items: iterationOutputs, count: iterationOutputs.length },
-          }
-          nodeRuns = nodeRuns.map((run, runIndex) => (runIndex === index ? { ...run, output: context[node.resultVar], context: { ...context } } : run))
-        }
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error)
-        logs = [...logs, `${node.title} -> 失败：${message}`]
-        nodeRuns = nodeRuns.map((run, runIndex) => (runIndex === index ? { ...run, status: 'failed', error: message, output: { error: message }, context: { ...context, error: message }, durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : run))
-        nextState = { ...base, nodeRuns, context: { ...context, error: message }, logs, selectedNodeId: node.id }
-        setExecutionState(nextState)
-        followExecutionRun(index, nodeRuns[index])
-        persistExecution(nextState)
-        return
-      }
-      nextState = { ...base, nodeRuns, context, logs, selectedNodeId: node.id }
-      setExecutionState(nextState)
-      followExecutionRun(index, nodeRuns[index])
-    }
-    persistExecution(nextState)
+    await continueFullRun(base)
   }
 
   const executeStepRun = () => {
-    if (stepExecutionLockRef.current) return
+    if (executionState.persistenceError) return
+    if (stepExecutionLockRef.current || fullExecutionLockRef.current) return
+    const executableWorkflow = normalizeWorkflow(activeWorkflow)
+    if (serializedValuesDiffer(activeWorkflow, executableWorkflow)) {
+      const upgradedWorkflows = workflows.map((workflow) => workflow.id === executableWorkflow.id ? executableWorkflow : workflow)
+      setWorkflowsState(upgradedWorkflows)
+      void saveWorkflowsToDatabase(upgradedWorkflows)
+        .catch((error) => setConfigStatus(`执行前工作流升级保存失败：${error instanceof Error ? error.message : String(error)}`))
+    }
     setRunMode('step')
     setRuntimePanelOpen(false)
     setRunnerInspectorTab('config')
     setRunnerFollowMode(true)
     setSelectedLoopSnapshot(null)
-    const nodeRuns = createStaticNodeRuns(activeWorkflow)
-    const nextState = createExecutionState(activeWorkflow, 'step', nodeRuns)
-    const validationError = validateRuntimeInputs(activeWorkflow)
+    const nodeRuns = createStaticNodeRuns(executableWorkflow)
+    const nextState = createExecutionState(executableWorkflow, 'step', nodeRuns)
+    const validationError = branchConfigurationErrors(executableWorkflow).join('；') || validateRuntimeInputs(executableWorkflow)
     if (validationError) {
       setRuntimePanelOpen(true)
       const failed = failInputNodeRuns(nodeRuns, validationError)
@@ -2729,13 +3429,8 @@ function App() {
     }
     setWorkflowDebug({ stepIndex: 0 })
     setExecutionState(nextState)
-    if (breakpointNodeIds.has(nodeRuns[0]?.node.id)) {
-      setSelectedNodeId(nodeRuns[0]?.node.id ?? selectedNode.id)
-      setSelectedRunIndex(0)
-    } else {
-      setSelectedRunIndex(-1)
-      void executeStepIndex(0, nextState)
-    }
+    setSelectedRunIndex(-1)
+    void executeStepIndex(0, nextState, { breakpointForNode: resolveActiveBreakpoint })
   }
 
   const moveWorkflowDebugStep = (direction: -1 | 1) => {
@@ -2748,35 +3443,52 @@ function App() {
     if (direction > 0 && !canAdvanceStep(currentRun?.status, workflowDebug.stepIndex, executionState.nodeRuns.length)) return
     const nextStepIndex = Math.max(0, Math.min(executionState.nodeRuns.length - 1, workflowDebug.stepIndex + direction))
     const nextState = { stepIndex: nextStepIndex }
-    setRunnerFollowMode(true)
     setWorkflowDebug(nextState)
-    setRunnerInspectorTab('config')
+    if (runnerAutoFollowRef.current) setRunnerInspectorTab('config')
     setSelectedNodeId(executionState.nodeRuns[nextStepIndex]?.node.id ?? selectedNode.id)
     if (direction > 0 && executionState.nodeRuns[nextStepIndex]?.status === 'idle') {
       void executeStepIndex(nextStepIndex, executionState)
     } else {
-      setSelectedRunIndex(nextStepIndex)
+      followExecutionInInspector(nextStepIndex)
     }
   }
 
   const executeStepIndex = async (
     requestedIndex: number,
     requestedState = executionState,
-    options: { stopBeforeNodeIds?: ReadonlySet<string>; ignoreBreakpointAtIndex?: number } = {},
+    options: { breakpointForNode?: (nodeId: string) => WorkflowBreakpoint | undefined; ignoreBreakpointRunId?: string; stopBeforeRun?: (run: NodeRunState) => boolean } = {},
   ): Promise<ExecutionState | undefined> => {
-    if (stepExecutionLockRef.current) return
+    if (stepExecutionLockRef.current || requestedState.persistenceError) return
+    if (isDurationPolicyTransition(activeWorkflow, requestedState.nodeRuns)) {
+      setConfigStatus('此记录使用旧时长策略，已冻结原排程和成片证据；请新建执行，从原分镜节点重新规划。')
+      return
+    }
+    const currentNodeIds = new Set(activeWorkflow.nodes.map(node => node.id))
+    const runNodeIds = new Set(requestedState.nodeRuns.flatMap(run => [run.node.id, ...(run.node.kind === 'loop' ? run.node.childIds ?? [] : [])]))
+    if (currentNodeIds.size !== runNodeIds.size || [...currentNodeIds].some(id => !runNodeIds.has(id))) {
+      setConfigStatus('此执行记录属于旧拓扑，已保留原证据。请从升级后的恢复记录继续，避免跳过独立验收。')
+      return
+    }
+    const retryErrors = branchConfigurationErrors(activeWorkflow)
+    if (retryErrors.length) { setConfigStatus(retryErrors.join('；')); return }
     const safeRequestedIndex = firstBlockingRunIndex(requestedState.nodeRuns, requestedIndex)
     const requestedRun = requestedState.nodeRuns[safeRequestedIndex]
     if (!requestedRun || requestedRun.status !== 'idle') return
     stepExecutionLockRef.current = true
+    let checkpointState = requestedState
+    const saveCheckpoint = async (state: ExecutionState) => {
+      checkpointState = state
+      await requireExecutionCheckpoint(() => persistExecution(state))
+    }
     try {
       let index = safeRequestedIndex
-      let baseState = requestedState
+      const refreshedRuns = refreshPendingExecutionNodes(normalizeWorkflow(activeWorkflow), requestedState.nodeRuns)
+      let baseState = refreshedRuns === requestedState.nodeRuns ? requestedState : { ...requestedState, nodeRuns: refreshedRuns }
       let prepared = prepareStepRun(baseState, index)
 
       // A route miss is bookkeeping, not a user-visible debug step. Record it and
       // continue to the next runnable node while holding the same execution lock.
-      while (prepared && shouldSkipStep(prepared.run.status, prepared.run.node.runIf, prepared.inputContext)) {
+      while (prepared && !options.stopBeforeRun?.(prepared.run) && shouldSkipStep(prepared.run.status, prepared.run.node.runIf, prepared.inputContext)) {
         const { run, inputs, inputContext } = prepared
         const output = { skipped: true, condition: run.node.runIf }
         const nextRuns = baseState.nodeRuns.map((item, itemIndex) => itemIndex === index
@@ -2788,44 +3500,179 @@ function App() {
         prepared = prepareStepRun(baseState, index)
       }
 
-      if (prepared
-        && options.stopBeforeNodeIds?.has(prepared.run.node.id)
-        && index !== options.ignoreBreakpointAtIndex) {
+      const matchingBreakpoint = prepared ? options.breakpointForNode?.(prepared.run.node.id) : undefined
+      if (prepared && (options.stopBeforeRun?.(prepared.run)
+        || shouldPauseBeforeRun(matchingBreakpoint, prepared.run, prepared.inputContext, options.ignoreBreakpointRunId))) {
+        const pausedRuns = baseState.nodeRuns.map((item, itemIndex) => itemIndex === index
+          ? { ...item, inputs: prepared.inputs, inputContext: prepared.inputContext }
+          : item)
+        const pausedState = { ...baseState, nodeRuns: pausedRuns, selectedNodeId: prepared.run.node.id }
         setWorkflowDebug({ stepIndex: index })
-        setExecutionState(baseState)
+        setExecutionState(pausedState)
         setSelectedNodeId(prepared.run.node.id)
-        setSelectedRunIndex(index)
-        persistExecution(baseState)
-        return baseState
+        followExecutionInInspector(index)
+        if (runnerAutoFollowRef.current && prepared.run.loopGroupId && prepared.run.loopIndex !== undefined) {
+          setSelectedLoopSnapshot({ groupId: prepared.run.loopGroupId, loopIndex: prepared.run.loopIndex })
+        }
+        await saveCheckpoint(pausedState)
+        return pausedState
       }
 
       if (!prepared || prepared.run.status !== 'idle') {
         const lastIndex = Math.max(0, Math.min(index - 1, baseState.nodeRuns.length - 1))
         setWorkflowDebug({ stepIndex: lastIndex })
         setExecutionState(baseState)
-        setSelectedRunIndex(lastIndex)
-        persistExecution(baseState)
+        followExecutionInInspector(lastIndex)
+        await saveCheckpoint(baseState)
         return baseState
       }
 
       const { run, context, previousLoopResult, inputContext, inputs } = prepared
       setWorkflowDebug({ stepIndex: index })
       setSelectedNodeId(run.node.id)
+      // Ensure a durable resume point exists before starting a long model call.
+      await saveCheckpoint(baseState)
       const startedAt = performance.now()
       const runningRuns = baseState.nodeRuns.map((item, itemIndex) => (itemIndex === index ? { ...item, inputs, inputContext, status: 'running' as NodeRunStatus, startedAt } : item))
-      setExecutionState({ ...baseState, nodeRuns: runningRuns, selectedNodeId: run.node.id })
-      setSelectedRunIndex(index)
+      const runningState = { ...baseState, nodeRuns: runningRuns, selectedNodeId: run.node.id }
+      setExecutionState(runningState)
+      followExecutionInInspector(index)
+      if (runnerAutoFollowRef.current && run.loopGroupId && run.loopIndex !== undefined) setSelectedLoopSnapshot({ groupId: run.loopGroupId, loopIndex: run.loopIndex })
       try {
-        const output = await executeRealTask({
-          node: run.node,
+        // Persist the exact in-flight node and resolved inputs before crossing a
+        // long model boundary. A reload can then recover this node as idle,
+        // while other tabs and diagnostics no longer mistake it for unstarted.
+        await saveCheckpoint(runningState)
+        const effectiveNode = nodeWithRunOverrides(run)
+        const disposition = workflowQualityDisposition(normalizeWorkflow(activeWorkflow))
+        const writerInputs = failedTextCandidateWriterInputs(effectiveNode.operation ?? '',
+          { ...inputs, ...(disposition ? { qualityDisposition: disposition } : {}) }, inputContext)
+        const failedBinding = failedTextRunBinding(baseState, index, inputContext, writerInputs, effectiveNode)
+        const carriedFailure = failedBinding ? readFailedTextCandidate(run.retryFeedback, failedBinding) : undefined
+        const writerProjection = effectiveNode.operation === 'history.storyboard'
+          ? storyboardContinuityContext({ ...inputContext, qualityDisposition: writerInputs.qualityDisposition }) : inputContext
+        const actualTail = resolvePath(writerProjection, 'loop.previous.actualTailEvidence') as Record<string, unknown> | undefined
+        const splitCandidate = run.storyboardSplitCandidate && !carriedFailure
+          ? readStoryboardSplitCandidate({ reference: run.storyboardSplitCandidate,
+              currentPrefix: baseState.nodeRuns.slice(0, index), runtimeInputs: baseState.runtimeInputs,
+              currentNode: effectiveNode, currentRun: run,
+              model: models.find(model => model.id === effectiveNode.modelId) ?? {}, params: writerInputs,
+              scene: resolvePath(writerProjection, 'scene') as Record<string, unknown>, timingPolicy: writerInputs.timingPolicy,
+              executionIdentity: { executionId: baseState.id, requestScopeId: baseState.requestScopeId ?? baseState.id, workflowId: baseState.workflowId },
+              actualTailUrl: typeof actualTail?.url === 'string' ? actualTail.url : undefined }) : undefined
+        let output = await executeRealTask({
+          failedCandidateBinding: failedBinding, storyboardSplitCandidate: splitCandidate,
+          knownVoiceInputs: baseState.nodeRuns.filter(item => item.node.kind === 'video' && item.status !== 'skipped').map(item => item.loopItem),
+          voiceExecutionId: baseState.requestScopeId ?? baseState.id, voicePolicy: baseState.voicePolicy,
+          executionId: `${baseState.generationScopeId ?? baseState.requestScopeId ?? baseState.id}:attempt-${run.attempt ?? 1}:revision-${run.revision ?? 0}`,
+          executionMode: baseState.mode,
+          node: effectiveNode,
+          policyNodes: baseState.nodeRuns.filter(item => item.loopIndex === undefined
+            || (item.loopGroupId === run.loopGroupId && item.loopIndex === run.loopIndex)).map(nodeWithRunOverrides),
           label: run.label,
           loopNode: run.loopNode,
           loopItem: run.loopItem,
           loopIndex: run.loopIndex,
           loopPrevious: previousLoopResult,
         }, inputContext)
-        let nextContext = applyNodeOutputToContext(inputContext, run.node.resultVar, output)
+        if (run.node.kind === 'branch') {
+          const transition = routeBranch(activeWorkflow, runningRuns.map((item, i) => i === index ? { ...item, durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : item), index, output, inputContext)
+          const updated: ExecutionState = { ...baseState, nodeRuns: transition.runs, context: transition.context,
+            branchHistory: [...(baseState.branchHistory ?? []), transition.history],
+            logs: [...baseState.logs, `${run.node.title} → ${transition.history.value} → ${transition.history.to}`],
+            selectedNodeId: transition.runs[transition.index].node.id }
+          setWorkflowDebug({ stepIndex: transition.index })
+          followExecutionInInspector(transition.index)
+          setExecutionState(updated)
+          await saveCheckpoint(updated)
+          return updated
+        }
+        const splitSegments = run.node.operation === 'history.storyboard' ? storyboardSegments(output) : []
+        const splitSource = output && typeof output === 'object' && !Array.isArray(output)
+          ? (output as Record<string, unknown>)[STORYBOARD_SPLIT_SOURCE_KEY] as StoryboardSplitSourceEnvelope | undefined : undefined
+        const publicSegments = splitSegments.length > 1 ? splitSegments.map(publicStoryboardOutput) : []
+        const sourceScene = splitSource?.expected.scene ?? run.loopItem
+        const splitScenes = publicSegments.map((segment, partIndex) => sceneFromStoryboardSegment(sourceScene, segment, partIndex, publicSegments.length))
+        if (publicSegments.length) output = publicSegments[0]
+        const expandedInputContext = publicSegments.length
+          ? {
+              ...expandedSceneOutline(inputContext, run.loopItem, publicSegments),
+              ...(run.loopNode ? { [run.loopNode.loop.itemVar]: splitScenes[0] } : {}),
+            }
+          : run.node.operation === 'history.storyboard' ? expandedSceneOutline(inputContext, run.loopItem, [output as Record<string, unknown>]) : inputContext
+        let nextContext = applyNodeOutputToContext(expandedInputContext, run.node.resultVar, output)
         let nextRuns = runningRuns.map((item, itemIndex) => (itemIndex === index ? { ...item, output, context: nextContext, status: 'success' as NodeRunStatus, durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : item))
+        if (publicSegments.length && run.loopNode && run.loopGroupId) {
+          const currentLoopIndex = run.loopIndex ?? 0
+          const loopChildren = getLoopNodes(activeWorkflow, run.loopNode.id)
+          const insertionIndex = nextRuns.findIndex((item, itemIndex) => itemIndex > index && item.loopGroupId === run.loopGroupId && (item.loopIndex ?? 0) > currentLoopIndex)
+          const insertAt = insertionIndex >= 0 ? insertionIndex : nextRuns.findIndex((item, itemIndex) => itemIndex > index && item.loopGroupId !== run.loopGroupId)
+          const boundedInsertAt = insertAt >= 0 ? insertAt : nextRuns.length
+          const extraCount = splitScenes.length - 1
+          nextRuns = nextRuns.map((item) => {
+            if (item.loopGroupId === run.loopGroupId && item.loopIndex === currentLoopIndex) return { ...item, loopItem: splitScenes[0] }
+            if (item.loopGroupId !== run.loopGroupId || (item.loopIndex ?? 0) <= currentLoopIndex) return item
+            const loopItem = item.loopItem && typeof item.loopItem === 'object' && !Array.isArray(item.loopItem)
+              ? { ...item.loopItem as Record<string, unknown>, sequence: Number((item.loopItem as Record<string, unknown>).sequence ?? 0) + extraCount }
+              : item.loopItem
+            const loopIndex = (item.loopIndex ?? 0) + extraCount
+            return { ...item, loopIndex, loopItem, label: `第 ${loopIndex + 1} 轮 / ${item.node.title} -> ${item.node.resultVar}` }
+          })
+          const insertedRuns: NodeRunState[] = []
+          splitScenes.slice(1).forEach((splitScene, extraIndex) => {
+            const loopIndex = currentLoopIndex + extraIndex + 1
+            loopChildren.forEach((child, childIndex) => {
+              insertedRuns.push({
+                id: `${child.id}-${run.loopGroupId}-split-${loopIndex}-${childIndex}`,
+                node: child,
+                output: undefined,
+                context: {},
+                inputs: {},
+                inputContext: {},
+                label: `第 ${loopIndex + 1} 轮 / ${child.title} -> ${child.resultVar}`,
+                status: 'idle',
+                durationMs: 0,
+                loopNode: run.loopNode,
+                loopItem: splitScene,
+                loopIndex,
+                loopPrevious: undefined,
+                loopGroupId: run.loopGroupId,
+                loopIsLast: false,
+              })
+            })
+          })
+          nextRuns = [...nextRuns.slice(0, boundedInsertAt), ...insertedRuns, ...nextRuns.slice(boundedInsertAt)]
+          const lastLoopIndex = Math.max(...nextRuns.filter((item) => item.loopGroupId === run.loopGroupId).map((item) => item.loopIndex ?? 0))
+          nextRuns = nextRuns.map((item) => item.loopGroupId === run.loopGroupId ? {
+            ...item,
+            loopIsLast: item.loopIndex === lastLoopIndex && item.node.id === loopChildren.at(-1)?.id,
+          } : item)
+          if (splitSource) {
+            const sourceBinding = splitSource.source.binding
+            if (!sourceBinding) throw new Error('STORYBOARD_SPLIT_CANDIDATE_INVALID: successful split lacks its provider binding')
+            const plan = await createStoryboardSplitPlan({
+              source: { executionId: baseState.id, requestScopeId: baseState.requestScopeId ?? baseState.id,
+                generationScopeId: sourceBinding.generationScopeId, workflowId: baseState.workflowId,
+                nodeId: run.node.id, runId: run.id, loopGroupId: run.loopGroupId, loopIndex: currentLoopIndex,
+                attempt: sourceBinding.attempt, revision: sourceBinding.revision, sceneId: sourceBinding.sceneId,
+                requestKey: splitSource.source.requestKey, httpStatus: splitSource.source.httpStatus,
+                modelExecutionId: splitSource.source.modelExecutionId },
+              raw: splitSource.source.raw, validatedSegments: publicSegments,
+              sourceRun: nextRuns[index], sourcePrefix: baseState.nodeRuns.slice(0, index),
+              runtimeInputs: baseState.runtimeInputs, sourceParams: writerInputs,
+              model: models.find(model => model.id === effectiveNode.modelId) ?? {},
+              originalScene: sourceScene as Record<string, unknown>, timingPolicy: writerInputs.timingPolicy,
+              expected: splitSource.expected,
+            })
+            nextRuns = nextRuns.map((item, itemIndex) => {
+              if (itemIndex === index) return { ...item, storyboardSplitPlan: plan }
+              const segmentIndex = (item.loopIndex ?? -1) - currentLoopIndex
+              return item.loopGroupId === run.loopGroupId && item.node.id === run.node.id
+                && segmentIndex >= 1 && segmentIndex < publicSegments.length
+                ? { ...item, storyboardSplitCandidate: storyboardSplitCandidateRef(plan, segmentIndex) } : item
+            })
+          }
+        }
         if (run.node.kind === 'loop' && run.node.loop.enabled) {
           const loopItems = getLoopItems(nextContext, run.node)
           const loopChildren = getLoopNodes(activeWorkflow, run.node.id)
@@ -2842,7 +3689,9 @@ function App() {
                 inputs: {},
                 inputContext: {},
                 label: `第 ${loopIndex + 1} 轮 / ${child.title} -> ${child.resultVar}`,
-                status: 'idle',
+                status: run.branchEntryTarget && loopIndex === 0 && childIndex < loopChildren.findIndex(n => n.id === run.branchEntryTarget) ? 'skipped' : 'idle',
+                branchState: run.branchCarry?.[child.id]?.loopIndex === loopIndex ? run.branchCarry[child.id].state : undefined,
+                paramOverrides: run.branchCarry?.[child.id]?.loopIndex === loopIndex ? run.branchCarry[child.id].paramOverrides : undefined,
                 durationMs: 0,
                 loopNode: run.node,
                 loopItem,
@@ -2854,7 +3703,7 @@ function App() {
             })
           })
           nextRuns = [...nextRuns.slice(0, index + 1), ...expandedRuns, ...nextRuns.slice(index + 1).filter((item) => !childIds.has(item.node.id))]
-        } else if (run.loopGroupId && run.loopIsLast) {
+        } else if (run.loopGroupId && run.loopIsLast && run.loopNode) {
           const completedLoopRuns = nextRuns.filter((item) => item.loopGroupId === run.loopGroupId && item.status === 'success')
           const iterations = new Map<number, Record<string, unknown>>()
           completedLoopRuns.forEach((item) => {
@@ -2862,33 +3711,45 @@ function App() {
             iteration[item.node.resultVar] = item.output
             iterations.set(item.loopIndex ?? 0, iteration)
           })
-          nextContext = { ...nextContext, ...aggregateLoopOutputs([...iterations.entries()].sort(([a], [b]) => a - b).map(([, value]) => value)) }
+          const orderedIterations = [...iterations.entries()].sort(([a], [b]) => a - b).map(([, value]) => value)
+          const loopOutputs = aggregateLoopOutputs(orderedIterations, Object.fromEntries(getLoopNodes(activeWorkflow, run.loopNode.id)
+            .map(child => [child.resultVar, child.loopResultMode ?? 'collect'])))
+          nextContext = { ...nextContext, ...loopOutputs }
           nextRuns = nextRuns.map((item, itemIndex) => itemIndex === index ? { ...item, context: nextContext } : item)
         }
         const logs = [...baseState.logs, run.label ?? `${run.node.title} -> ${run.node.resultVar}`]
         const updated = { ...baseState, nodeRuns: nextRuns, context: nextContext, logs, selectedNodeId: run.node.id }
         setExecutionState(updated)
-        persistExecution(updated)
+        await saveCheckpoint(updated)
+        if (requiresManualMediaDecision(nextRuns[index])) setRunnerInspectorTab('output')
         return updated
       } catch (error) {
+        if (error instanceof ExecutionPersistenceError) throw error
         const message = error instanceof Error ? error.message : String(error)
         const logs = [...baseState.logs, `${run.node.title} -> 失败：${message}`]
-        const nextRuns = runningRuns.map((item, itemIndex) => (itemIndex === index ? { ...item, output: { error: message }, context: { ...context, error: message }, status: 'failed' as NodeRunStatus, error: message, durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : item))
+        const nextRuns = runningRuns.map((item, itemIndex) => (itemIndex === index ? { ...item,
+          ...(error instanceof FailedTextCandidateError ? { retryFeedback: withFailedTextCandidate(item.retryFeedback, error.evidence) } : {}),
+          output: { error: message }, context: { ...context, error: message }, status: 'failed' as NodeRunStatus, error: message, durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : item))
         const updated = { ...baseState, nodeRuns: nextRuns, context: { ...context, error: message }, logs, selectedNodeId: run.node.id }
         setExecutionState(updated)
-        persistExecution(updated)
+        await saveCheckpoint(updated)
         return updated
       }
+    } catch (error) {
+      if (!(error instanceof ExecutionPersistenceError)) throw error
+      // Storage failure is not a model failure: retain the completed output and
+      // stop the executor until this exact checkpoint can be saved.
+      setExecutionState({ ...checkpointState, persistenceError: error.message })
+      return undefined
     } finally {
       stepExecutionLockRef.current = false
     }
   }
 
   const continueToNextBreakpoint = async () => {
-    if (!workflowDebug || stepExecutionLockRef.current || debugContinueRunning) return
+    if (!workflowDebug || stepExecutionLockRef.current || debugContinueRunning || executionState.persistenceError) return
     setDebugContinueRunning(true)
-    setRunnerFollowMode(true)
-    setRunnerInspectorTab('config')
+    if (runnerAutoFollowRef.current) setRunnerInspectorTab('config')
     try {
       let state = executionState
       const currentIndex = workflowDebug.stepIndex
@@ -2897,30 +3758,28 @@ function App() {
       // Resuming from a breakpoint executes that paused node once. Subsequent
       // breakpoint checks pause before executing the matching node.
       if (currentRun?.status === 'idle') {
+        const previous = state
         const updated = await executeStepIndex(currentIndex, state, {
-          stopBeforeNodeIds: breakpointNodeIds,
-          ignoreBreakpointAtIndex: currentIndex,
+          breakpointForNode: resolveActiveBreakpoint,
+          ignoreBreakpointRunId: currentRun.id,
         })
         if (!updated) return
         state = updated
         if (state.nodeRuns.some((run) => run.status === 'failed')) return
+        if (newlyRequiredManualMediaDecision(previous.nodeRuns, state.nodeRuns)) return
       }
 
       while (true) {
         const firstPendingIndex = state.nodeRuns.findIndex((run) => run.status === 'idle')
         if (firstPendingIndex < 0) return
-        const breakpointIndex = findNextBreakpointIndex(state.nodeRuns, breakpointNodeIds, firstPendingIndex - 1)
-        if (breakpointIndex === firstPendingIndex) {
-          const breakpointRun = state.nodeRuns[breakpointIndex]
-          setWorkflowDebug({ stepIndex: breakpointIndex })
-          setSelectedNodeId(breakpointRun.node.id)
-          setSelectedRunIndex(breakpointIndex)
-          return
-        }
-        const updated = await executeStepIndex(firstPendingIndex, state, { stopBeforeNodeIds: breakpointNodeIds })
+        const pendingRunId = state.nodeRuns[firstPendingIndex]?.id
+        const previous = state
+        const updated = await executeStepIndex(firstPendingIndex, state, { breakpointForNode: resolveActiveBreakpoint })
         if (!updated) return
         state = updated
+        if (state.nodeRuns.find((run) => run.id === pendingRunId)?.status === 'idle') return
         if (state.nodeRuns.some((run) => run.status === 'failed')) return
+        if (newlyRequiredManualMediaDecision(previous.nodeRuns, state.nodeRuns)) return
       }
     } finally {
       setDebugContinueRunning(false)
@@ -2928,12 +3787,20 @@ function App() {
   }
 
   const loadHistoricalExecution = (record: ExecutionRecord) => {
+    const upgradedRuns = migrateBranchRuns(activeWorkflow, record.result.nodeRuns)
+    if (upgradedRuns !== record.result.nodeRuns) {
+      const result = { ...record.result, id: createId('record'), requestScopeId: record.result.requestScopeId ?? record.result.id, nodeRuns: upgradedRuns,
+        selectedNodeId: upgradedRuns.find(r => r.status === 'failed')?.node.id ?? record.result.selectedNodeId }
+      record = { ...record, id: result.id, result }
+      void persistExecution(result)
+    }
+
     setRunMode(record.mode)
     setRuntimePanelOpen(false)
     setRunnerInspectorTab('config')
     setExecutionState({ ...record.result, historical: true })
-    setWorkflowDebug(record.mode === 'step' ? { stepIndex: Math.max(0, record.result.nodeRuns.findIndex((run) => run.status === 'idle') - 1) } : null)
-    const selectedIndex = record.result.nodeRuns.findIndex((run) => run.node.id === record.result.selectedNodeId && run.status !== 'idle')
+    const selectedIndex = historicalInspectorRunIndex(record.result.nodeRuns, record.result.selectedNodeId)
+    setWorkflowDebug(record.mode === 'step' ? { stepIndex: selectedIndex } : null)
     setSelectedRunIndex(selectedIndex)
     const historicalRun = record.result.nodeRuns[selectedIndex]
     setRunnerFollowMode(false)
@@ -2945,11 +3812,11 @@ function App() {
   const resolveExecutionRecord = async (item: ExecutionRecordListItem) => {
     if (item.runtimeInputs && item.result) return item as ExecutionRecord
     const { record } = await loadExecutionRecord(item.id)
-    setExecutionRecords((current) => current.map((candidate) => candidate.id === item.id ? { ...candidate, ...record } : candidate))
     return record
   }
 
   const openHistoricalExecution = async (item: ExecutionRecordListItem) => {
+    if (executionState.persistenceError) return
     setExecutionRecordLoadingId(item.id)
     try {
       const record = await resolveExecutionRecord(item)
@@ -2962,7 +3829,12 @@ function App() {
     }
   }
 
-  const retryFromRunIndex = (index: number) => {
+  const retryFromRunIndex = async (index: number) => {
+    if (isDebugBusy || failedTextRetryLockRef.current || stepExecutionLockRef.current || fullExecutionLockRef.current || rollbackSaveLock.current || executionState.persistenceError) return
+    if (isDurationPolicyTransition(activeWorkflow, executionState.nodeRuns)) {
+      setConfigStatus('此记录的旧时长策略已冻结；请从保留原大纲的新重排记录继续，不能将旧视频接到新排程验收。')
+      return
+    }
     setRunnerFollowMode(true)
     const validationError = validateRuntimeInputs(activeWorkflow)
     if (validationError) {
@@ -2973,32 +3845,177 @@ function App() {
       persistExecution(failedState)
       return
     }
+    const currentIds = new Set(activeWorkflow.nodes.map(node=>node.id))
+    const snapshotIds = new Set(executionState.nodeRuns.flatMap(run=>[run.node.id,...(run.node.kind==='loop'?run.node.childIds??[]:[])]))
+    if (currentIds.size !== snapshotIds.size || [...currentIds].some(id=>!snapshotIds.has(id))) {
+      setConfigStatus('此记录保留旧流程的验收证据。请打开已升级的恢复记录继续，或开始新执行；已阻止旧拓扑绕过独立验收。')
+      return
+    }
     const retryIndex = firstBlockingRunIndex(executionState.nodeRuns, index)
-    const baseRuns = executionState.nodeRuns.map((run, runIndex) => (runIndex < retryIndex ? run : {
-      ...run,
-      output: undefined,
-      context: {},
-      inputs: {},
-      inputContext: {},
-      status: 'idle' as NodeRunStatus,
-      durationMs: 0,
-      error: undefined,
-      startedAt: undefined,
-    }))
+    if (executionState.nodeRuns[retryIndex]?.node.kind === 'branch') {
+      const nodeRuns = retryBranchRun(executionState.nodeRuns, retryIndex)
+      const id = createId('record')
+      const updated = { ...executionState, id, parentExecutionId: executionState.id,
+        requestScopeId: executionState.requestScopeId ?? executionState.id, generationScopeId: id,
+        historical: false, mode: 'step' as const, nodeRuns, selectedNodeId: nodeRuns[retryIndex].node.id }
+      setRunMode('step')
+      setWorkflowDebug({ stepIndex: retryIndex })
+      setExecutionState(updated)
+      setSelectedRunIndex(retryIndex)
+      void executeStepIndex(retryIndex, updated)
+      return
+    }
+    const invalidated = activeWorkflow.id === 'wf-sanguo-history-drama' ? historicalVideoRetryIndexes(executionState.nodeRuns, retryIndex) : undefined
+    let sourceRuns = executionState.nodeRuns
+    let failedCandidateBinding: FailedTextCandidateBinding | undefined
+    const failedRun = sourceRuns[retryIndex]
+    if (failedRun?.status === 'failed' && isRecoverableFailedTextNode(failedRun.node, failedRun.inputs ?? {})
+      && isFailedTextCandidateValidationMessage(failedRun.error, failedRun.node.operation)) {
+      failedTextRetryLockRef.current = true
+      setFailedTextRetryLoading(true)
+      try {
+        const disposition = workflowQualityDisposition(normalizeWorkflow(activeWorkflow))
+        failedCandidateBinding = failedTextRunBinding(executionState, retryIndex, failedRun.inputContext ?? {},
+          { ...failedRun.inputs, ...(disposition ? { qualityDisposition: disposition } : {}) })
+        if (!failedCandidateBinding) throw new Error('FAILED_TEXT_CANDIDATE_INVALID: missing source run binding')
+        let evidence = readFailedTextCandidate(failedRun.retryFeedback, failedCandidateBinding)
+        if (!evidence) {
+          const ledger = await loadModelExecutionRecords({ workflowId: failedCandidateBinding.workflowId, nodeId: failedCandidateBinding.nodeId,
+            operation: failedCandidateBinding.operation, requestKeyPrefix: failedTextCandidateRequestPrefix(failedCandidateBinding), capability: 'text', limit: '20' })
+          evidence = failedTextCandidateFromLedger(ledger.records, failedCandidateBinding, failedRun.error!)
+        }
+        if (executionStateIdRef.current !== executionState.id) throw new Error('FAILED_TEXT_CANDIDATE_INVALID: execution changed while loading source evidence')
+        // Attach to the in-memory retry source only. The failed persisted record
+        // remains intact and every already completed prefix result is retained.
+        if (evidence) sourceRuns = sourceRuns.map((run, at) => at === retryIndex ? { ...run, retryFeedback: withFailedTextCandidate(run.retryFeedback, evidence!) } : run)
+      } catch (error) {
+        setConfigStatus(`失败候选恢复已停止：${error instanceof Error ? error.message : String(error)}`)
+        return
+      } finally {
+        failedTextRetryLockRef.current = false
+        setFailedTextRetryLoading(false)
+      }
+    }
+    const baseRuns = manualRetryRuns(sourceRuns, retryIndex, invalidated, failedCandidateBinding)
     const completedRuns = baseRuns.slice(0, retryIndex).filter((run) => run.status === 'success' || run.status === 'skipped')
+    const id = createId('record')
+    // Transport recovery resumes paid mapped siblings; an intentional new
+    // candidate needs a unique namespace even when retried from the same source.
+    const resumesTransport = baseRuns[retryIndex]?.revision === executionState.nodeRuns[retryIndex]?.revision
     const updated = {
       ...executionState,
-      id: createId('record'),
+      id,
+      parentExecutionId: executionState.id,
+      generationScopeId: resumesTransport ? executionState.generationScopeId ?? executionState.requestScopeId ?? executionState.id : id,
+      requestScopeId: executionState.requestScopeId ?? executionState.id,
+      historical: false,
+      mode: 'step' as const,
       nodeRuns: baseRuns,
       context: completedRuns.at(-1)?.context ?? {},
       logs: completedRuns.map((run) => run.label ?? `${run.node.title} -> ${run.node.resultVar}`),
       selectedNodeId: baseRuns[retryIndex]?.node.id,
     }
+    setRunMode('step')
     setWorkflowDebug({ stepIndex: retryIndex })
     setExecutionState(updated)
     setSelectedRunIndex(retryIndex)
     void executeStepIndex(retryIndex, updated)
   }
+
+  const createVoiceUpgradeExecution = async (plan: VoiceUpgradePlan) => {
+    if (isDebugBusy || executionState.persistenceError) throw Error('请等待当前执行停止并保存后再创建换声分支')
+    if (executionState.voicePolicy !== 'strict') throw Error('旧执行没有固定声音策略，请按参数创建完整新执行')
+    const currentIds = new Set(activeWorkflow.nodes.map(node => node.id))
+    const snapshotIds = new Set(executionState.nodeRuns.flatMap(run => [run.node.id, ...(run.node.kind === 'loop' ? run.node.childIds ?? [] : [])]))
+    if (currentIds.size !== snapshotIds.size || [...currentIds].some(id => !snapshotIds.has(id)) || isDurationPolicyTransition(activeWorkflow, executionState.nodeRuns)) throw Error('当前流程与原执行不兼容，请从已升级的恢复记录创建换声分支')
+    const id = createId('record'), first = Math.min(...plan.indexes)
+    const sourceId = executionState.requestScopeId ?? executionState.id
+    await requestJson('/api/character-voices/upgrade', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sourceId, targetId: id, expected: plan.changes.map(c => ({ characterId: c.to.characterId, version: c.to.version })) }) })
+    const nodeRuns = manualRetryRuns(executionState.nodeRuns, first, new Set(plan.indexes))
+    const completed = nodeRuns.slice(0, first).filter(run => run.status === 'success' || run.status === 'skipped')
+    const next: ExecutionState = { ...executionState, id, requestScopeId: id, generationScopeId: id, historical: false, mode: 'step', nodeRuns,
+      context: completed.at(-1)?.context ?? {}, selectedNodeId: nodeRuns[first].node.id,
+      logs: [...completed.map(run => run.label ?? run.node.title), `从 ${executionState.id} 创建换声执行，等待开始生成`],
+      voiceUpgrade: { sourceExecutionId: executionState.id, characterVersions: plan.changes.map(c => ({ characterId: c.to.characterId, from: c.from.version, to: c.to.version })), invalidatedRunIds: plan.indexes.map(i => nodeRuns[i].id) },
+    }
+    const saved = await persistExecution(next)
+    if (!saved.saved) throw Error(saved.error)
+    setExecutionState(next); setRunMode('step'); setSelectedRunIndex(first); setWorkflowDebug({ stepIndex: first }); setBranchSceneSelection(null)
+    setConfigStatus('换声分支已保存。原执行保留；点击继续执行后才会生成新视频。')
+  }
+
+  const openRollbackDialog = (mode: 'previous' | 'specific') => {
+    if (isDebugBusy || hasUnsavedExecution) return
+    const target = mode === 'previous' ? previousRollbackTarget : previousRollbackTarget ?? rollbackTargets.at(-1)
+    if (!target) return
+    setRollbackDialog({ executionId: executionState.id, targetRunId: target.run.id, mode })
+  }
+
+  const createBreakpointRollbackExecution = async () => {
+    if (!rollbackDialogActive || !rollbackTarget || isDebugBusy || stepExecutionLockRef.current || fullExecutionLockRef.current || rollbackSaveLock.current || executionState.persistenceError) return
+    rollbackSaveLock.current = true
+    setRollbackSaving(true)
+    try {
+      if (isDurationPolicyTransition(activeWorkflow, executionState.nodeRuns)) throw Error('此记录使用旧时长策略，请从已升级的恢复记录继续。')
+      const currentIds = new Set(activeWorkflow.nodes.map(node => node.id))
+      const snapshotIds = new Set(executionState.nodeRuns.flatMap(run => [run.node.id, ...(run.node.kind === 'loop' ? run.node.childIds ?? [] : [])]))
+      if (currentIds.size !== snapshotIds.size || [...currentIds].some(id => !snapshotIds.has(id))) throw Error('当前流程与原记录不兼容，请从已升级的恢复记录回退。')
+      const { state: fork, plan } = forkBreakpointRollback(executionState, {
+        id: createId('record'), targetRunId: rollbackTarget.run.id, breakpoints: rollbackBreakpoints, createdAt: new Date().toISOString(),
+      })
+      // A rollback to the first node leaves the whole queue idle. Refresh its
+      // pending definitions before saving so plan reconciliation keeps this
+      // fork and its provenance instead of replacing it with a fresh run.
+      const refreshed = { ...fork, nodeRuns: refreshPendingExecutionNodes(normalizeWorkflow(activeWorkflow), fork.nodeRuns) }
+      const prepared = prepareStepRun(refreshed, plan.targetIndex)
+      const next: ExecutionState = prepared ? { ...refreshed, nodeRuns: refreshed.nodeRuns.map((run, index) => index === plan.targetIndex
+        ? { ...run, inputs: prepared.inputs, inputContext: prepared.inputContext } : run) } : refreshed
+      const saved = await persistExecution(next)
+      if (!saved.saved) throw Error(saved.error)
+      if (executionStateIdRef.current !== executionState.id || activeWorkflowIdRef.current !== executionState.workflowId) {
+        setRollbackDialog(null)
+        setConfigStatus(`回退记录 ${next.id} 已保存，可从历史记录打开。`)
+        return
+      }
+      // Reject late source-record responses immediately, before React commits
+      // the newly selected rollback record.
+      executionStateIdRef.current = next.id
+      setExecutionState(next)
+      setRunMode('step')
+      setWorkflowDebug({ stepIndex: plan.targetIndex })
+      setSelectedRunIndex(plan.targetIndex)
+      const targetRun = next.nodeRuns[plan.targetIndex]
+      setSelectedNodeId(targetRun.node.id)
+      setSelectedLoopSnapshot(targetRun.loopGroupId && targetRun.loopIndex !== undefined
+        ? { groupId: targetRun.loopGroupId, loopIndex: targetRun.loopIndex } : null)
+      setBranchSceneSelection(null)
+      setRunnerFollowMode(true)
+      setRunnerInspectorTab('config')
+      setRuntimePanelOpen(false)
+      setRollbackDialog(null)
+      setConfigStatus(`已回退到 ${targetRun.loopIndex !== undefined ? `第 ${targetRun.loopIndex + 1} 轮 · ` : ''}${targetRun.node.title} 的执行前；原记录和目标之前的成果保留。点击“下一步”或“运行到下一断点”继续。`)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      setRollbackDialog(current => current?.executionId === executionState.id ? { ...current, error: message } : current)
+      setConfigStatus(message)
+    } finally {
+      rollbackSaveLock.current = false
+      setRollbackSaving(false)
+    }
+  }
+
+  const previousRollbackControl = <button type="button" className="ghost-btn" onClick={() => openRollbackDialog('previous')}
+    disabled={isDebugBusy || hasUnsavedExecution || !previousRollbackTarget}
+    title={previousRollbackTarget ? '回退到当前执行位置之前最近一个已到达的断点' : '当前执行位置之前没有可回退的断点'}>
+    <RotateCcw size={17} />回退到上一个断点
+  </button>
+
+  const rollbackControl = <button type="button" className="ghost-btn" onClick={() => openRollbackDialog('specific')}
+    disabled={isDebugBusy || hasUnsavedExecution || rollbackTargets.length === 0}
+    title={rollbackTargets.length ? '选择已到达的断点，保留此前成果并回退到执行前' : '请先为已到达的节点设置断点；条件断点只列出条件匹配的轮次'}>
+    <RotateCcw size={17} />回退到指定断点
+  </button>
+  const rollbackControls = <div className="rollback-action-pair">{previousRollbackControl}{rollbackControl}</div>
 
   const workflowWithRuntimeInputs = (workflow: Workflow, runtimeInputs: Record<string, unknown>): Workflow => ({
     ...workflow,
@@ -3017,6 +4034,7 @@ function App() {
   })
 
   const rerunHistoricalExecution = async (item: ExecutionRecordListItem) => {
+    if (executionState.persistenceError) return
     setExecutionRecordLoadingId(item.id)
     try {
       const record = await resolveExecutionRecord(item)
@@ -3154,6 +4172,7 @@ function App() {
   const renderExperienceField = (model: ModelConfig, field: ExperienceField) => {
     const value = experienceFieldValue(model, field)
     const disabled = experienceFieldDisabled(model, field)
+    if (model.provider === 'Bailian' && field.key === 'voice') return <BailianVoicePicker key={model.settings.model} model={model.settings.model} value={String(value)} disabled={disabled} onChange={voice => updateModelTestParam(model.id, 'voice', voice)} />
     const title = <span className="experience-field-title"><strong>{field.label}<em>选填</em></strong><code>{field.apiName}</code></span>
     if (field.control === 'checkbox') {
       return (
@@ -3219,8 +4238,9 @@ function App() {
         ) : field.control === 'textarea' || field.control === 'json' ? (
           <textarea {...commonProps} rows={field.control === 'json' ? 4 : 3} spellCheck={field.control !== 'json'} />
         ) : (
-          <input {...commonProps} type={field.control === 'number' ? 'number' : 'text'} min={field.min} max={field.max} step={field.step} />
+          <input {...commonProps} list={field.options ? `options-${model.id}-${field.key}` : undefined} type={field.control === 'number' ? 'number' : 'text'} min={field.min} max={field.max} step={field.step} />
         )}
+        {field.control === 'text' && field.options ? <datalist id={`options-${model.id}-${field.key}`}>{field.options.map(item => <option value={item.value} key={item.value}>{item.label}</option>)}</datalist> : null}
         {field.help ? <small>{field.help}</small> : null}
       </label>
     )
@@ -3230,9 +4250,9 @@ function App() {
     const fields = modelExperienceFields(model)
     if (!fields.length) return <p className="empty-note">该模型没有额外的单次调用参数，输入提示词后即可测试。</p>
     const groups = [
-      { id: 'input', title: '输入素材', description: '本次生成使用的参考素材' },
-      { id: 'generation', title: '生成控制', description: '画幅、时长、质量等单次参数' },
-      { id: 'advanced', title: '高级调用', description: '分镜、运镜、蒙版和任务回调' },
+      { id: 'input', title: '输入素材', description: model.capability === 'audio' ? '本次语音的人物标记' : '本次生成使用的参考素材' },
+      { id: 'generation', title: '生成控制', description: model.capability === 'audio' ? '音色、情绪、语速和音调' : '画幅、时长、质量等单次参数' },
+      { id: 'advanced', title: '高级调用', description: model.capability === 'audio' ? '音频采样率和生成种子' : '分镜、运镜、蒙版和任务回调' },
     ] as const
     return (
       <div className="experience-groups">
@@ -3509,6 +4529,7 @@ function App() {
               {run.taskId ? <div><dt>任务 ID</dt><dd title={run.taskId}>{run.taskId}</dd></div> : null}
               {run.providerStatus ? <div><dt>供应商状态</dt><dd>{run.providerStatus}</dd></div> : null}
               <div><dt>已用时</dt><dd>{elapsedSeconds} 秒</dd></div>
+              {model.capability === 'audio' && typeof (run.rawBody as { duration?: unknown })?.duration === 'number' ? <div><dt>实际音频时长</dt><dd>{Number((run.rawBody as { duration: number }).duration).toFixed(2)} 秒</dd></div> : null}
             </dl>
             {run.taskId && model.provider === 'Kling' && run.phase !== 'succeeded' ? <button type="button" className="ghost-btn experience-refresh-task" onClick={() => void resumeExperienceTask(model, run.taskId)}>{run.phase === 'processing' ? '立即刷新' : '继续查询'}</button> : null}
           </div>
@@ -3541,6 +4562,25 @@ function App() {
   }
 
   const renderModelFields = (model: ModelConfig) => {
+    if (model.provider === 'Codex' && model.capability === 'text') {
+      return (
+        <>
+          <label>Codex 可执行文件<input value={model.settings.executablePath ?? ''} placeholder="codex" onChange={(e) => updateModelSetting(model.id, 'executablePath', e.target.value)} /><small>使用本机 Codex CLI 的现有登录；每次独立调用，不改写全局配置。</small></label>
+          <div className="position-grid">
+            <label>推理强度<select value={model.settings.reasoningEffort ?? ''} onChange={(e) => updateModelSetting(model.id, 'reasoningEffort', e.target.value)}><option value="">沿用默认</option>{['low', 'medium', 'high', 'xhigh', 'max', 'ultra'].map((effort) => <option value={effort} key={effort}>{effort}</option>)}</select></label>
+            <label>调用超时（ms）<input type="number" min="1" max="3600000" step="1" value={model.settings.timeoutMs ?? '180000'} onChange={(e) => updateModelSetting(model.id, 'timeoutMs', e.target.value)} /></label>
+          </div>
+        </>
+      )
+    }
+    if (model.provider === 'Bailian' && model.capability === 'audio') {
+      return <>
+        <label>API Key<input type="password" value={model.settings.apiKey ?? ''} onChange={(e) => updateModelSetting(model.id, 'apiKey', e.target.value)} /></label>
+        <label>业务空间 Base URL<input value={model.settings.endpoint ?? ''} onChange={(e) => updateModelSetting(model.id, 'endpoint', e.target.value)} /><small>支持 compatible-mode/v1 地址，自动使用同域名语音合成接口。</small></label>
+        <label>默认音色 ID<input value={model.settings.voice ?? ''} onChange={(e) => updateModelSetting(model.id, 'voice', e.target.value)} /><small>系统音色或与当前模型匹配的定制音色 ID。</small></label>
+        <label>默认人物声音指令<textarea value={model.settings.instruction ?? ''} onChange={(e) => updateModelSetting(model.id, 'instruction', e.target.value)} placeholder="选填，例如：自然亲切、吐字清晰" /></label>
+      </>
+    }
     if (model.provider === 'Local') {
       return <label>联调模式<input value={model.settings.fixtureMode ?? 'true'} onChange={(e) => updateModelSetting(model.id, 'fixtureMode', e.target.value)} /></label>
     }
@@ -3577,30 +4617,47 @@ function App() {
     }
     return (
       <>
+        {model.capability === 'text' && ['Anthropic', 'OpenAI', 'Custom'].includes(model.provider) ? <label>接口协议<select value={model.settings.apiProtocol ?? ''} onChange={(e) => updateModelSetting(model.id, 'apiProtocol', e.target.value)}><option value="">{model.provider === 'Anthropic' ? 'Anthropic Messages（默认）' : '请选择网关支持的协议'}</option><option value="anthropic-messages">Anthropic Messages</option></select><small>协议由网关决定；GPT 等模型也可通过兼容 Messages 的网关接入。</small></label> : null}
+        {model.capability === 'text' && ['Anthropic', 'OpenAI', 'Custom'].includes(model.provider) ? <label>返回方式<select value={model.settings.stream ?? 'true'} onChange={(e) => updateModelSetting(model.id, 'stream', e.target.value)}><option value="true">流式响应</option><option value="false">完整响应（非流式）</option></select><small>网关流式连接不稳定时，可选择等待完整响应；两种方式都检查内容是否完整。</small></label> : null}
         <label>API Key<input type="password" value={model.settings.apiKey ?? ''} onChange={(e) => updateModelSetting(model.id, 'apiKey', e.target.value)} /></label>
         <label>Endpoint<input value={model.settings.endpoint ?? ''} onChange={(e) => updateModelSetting(model.id, 'endpoint', e.target.value)} /></label>
       </>
     )
   }
 
+  const updateBranchDebugParam = (index: number, paramId: string, value: string) => {
+    const updated = { ...executionState, nodeRuns: executionState.nodeRuns.map((run, i) => i === index ? { ...run, paramOverrides: { ...run.paramOverrides, [paramId]: value } } : run) }
+    setExecutionState(updated)
+    void persistExecution(updated)
+  }
+
   const updateSelectedRunContext = (path: string[], rawValue: string) => {
+    if (viewingBranchHistory) return
     let value: unknown = rawValue
     try {
       value = JSON.parse(rawValue)
     } catch {
       value = rawValue
     }
-    setExecutionState((current) => ({
-      ...current,
-      nodeRuns: current.nodeRuns.map((run, index) => (index === selectedRunIndex ? { ...run, context: cloneWithPath(run.context, path, value) as Record<string, unknown> } : run)),
-      context: cloneWithPath(current.context, path, value) as Record<string, unknown>,
-    }))
+    const updated = {
+      ...executionState,
+      nodeRuns: executionState.nodeRuns.map((run, index) => index === selectedRunIndex ? {
+        ...run, context: cloneWithPath(run.context, path, value) as Record<string, unknown>,
+        ...(run.node.kind === 'branch' ? {
+          routeInputContext: cloneWithPath(run.routeInputContext ?? run.inputContext ?? {}, path, value) as Record<string, unknown>,
+          routeInputOverrides: cloneWithPath(run.routeInputOverrides ?? {}, path, value) as Record<string, unknown>,
+        } : {}),
+      } : run),
+      context: cloneWithPath(executionState.context, path, value) as Record<string, unknown>,
+    }
+    setExecutionState(updated)
+    void persistExecution(updated)
   }
 
   const renderMediaValue = (value: unknown, key = 'media') => {
     if (typeof value === 'string') {
-      if (value.startsWith('data:audio/')) return <audio className="result-audio" src={value} controls />
-      if (/\.(mp3|wav|m4a|aac|ogg)(\?|$)/i.test(value)) return <audio className="result-audio" src={value} controls />
+      if (value.startsWith('data:audio/')) return <audio className="result-audio" src={value} controls preload="none" />
+      if (/\.(mp3|wav|m4a|aac|ogg)(\?|$)/i.test(value)) return <audio className="result-audio" src={value} controls preload="none" />
       const kind = inspectableMediaKind(value, key)
       if (kind) {
         const label = key || (kind === 'image' ? '图片' : '视频')
@@ -3611,7 +4668,7 @@ function App() {
             <div className="inspectable-media-stage">
               {kind === 'image'
                 ? <button type="button" className="inspectable-media-image-button" aria-label={`放大查看 ${label}`} onClick={preview}><img className="result-media" src={value} alt={label} loading="lazy" /></button>
-                : <video className="result-media" src={value} controls preload="metadata">当前浏览器不支持视频播放。</video>}
+                : <video className="result-media" src={value} controls preload="none">当前浏览器不支持视频播放。</video>}
             </div>
             <figcaption>
               <span>{kind === 'image' ? '图片' : '视频'}</span>
@@ -3646,32 +4703,18 @@ function App() {
   }
 
   const renderContextEditor = (value: unknown, path: string[] = [], metadataPrefix: string[] = [], paramLabels?: Map<string, { chineseName: string; producerTitle?: string }>, editable = true) => {
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      return (
-        <div className="context-tree">
-          {displayEntries(value as Record<string, unknown>).map(([key, child]) => {
-            const label = path.length === 0 ? paramLabels?.get(key) : undefined
-            return (
-              <details className="context-row" key={[...path, key].join('.')} open={typeof child === 'string' && (isMediaUrl(child) || Boolean(inspectableMediaKind(child, [...metadataPrefix, ...path, key].join('.'))))}>
-                <summary>{renderVariableName(key, [...metadataPrefix, ...path, key], label?.chineseName, label?.producerTitle)}</summary>
-                {renderContextEditor(child, [...path, key], metadataPrefix, paramLabels, editable)}
-              </details>
-            )
-          })}
-        </div>
-      )
-    }
-    if (Array.isArray(value)) {
-      return (
-        <div className="context-tree">
-          {value.map((child, index) => (
-            <details className="context-row" key={[...path, String(index)].join('.')} open={typeof child === 'string' && (isMediaUrl(child) || Boolean(inspectableMediaKind(child, [...metadataPrefix, ...path, String(index)].join('.'))))}>
-              <summary>{String(index)}</summary>
-              {renderContextEditor(child, [...path, String(index)], metadataPrefix, paramLabels, editable)}
-            </details>
-          ))}
-        </div>
-      )
+    if (value && typeof value === 'object') {
+      const entries = Array.isArray(value) ? undefined : displayEntries(value as Record<string, unknown>)
+      const count = entries?.length ?? (value as unknown[]).length
+      return <InspectorEntries count={count} renderEntry={(index) => {
+        const [key, child] = entries?.[index] ?? [String(index), (value as unknown[])[index]]
+        const label = path.length === 0 ? paramLabels?.get(key) : undefined
+        return <InspectorDisclosure key={key}
+          defaultOpen={path.length === 0 && typeof child === 'string' && Boolean(inspectableMediaKind(child, [...metadataPrefix, key].join('.')))}
+          summary={renderVariableName(key, [...metadataPrefix, ...path, key], label?.chineseName, label?.producerTitle)}>
+          {() => renderContextEditor(child, [...path, key], metadataPrefix, paramLabels, editable)}
+        </InspectorDisclosure>
+      }} />
     }
     const media = renderMediaValue(value, [...metadataPrefix, ...path].join('.'))
     const textValue = typeof value === 'string' && value.startsWith('data:') ? '[base64 hidden]' : typeof value === 'string' ? value : JSON.stringify(value, null, 2)
@@ -3715,6 +4758,9 @@ function App() {
       ...(model ? [['执行模型', model.name]] : []),
       ...(node.operation ? [['节点操作', node.operation]] : []),
       ...(node.outputMode ? [['结构化输出', outputModeLabel[node.outputMode]]] : []),
+      ...(node.mapInput ? [['逐项输入', JSON.stringify(node.mapInput)]] : []),
+      ...(node.request ? [['HTTP 请求', `${node.request.method} ${node.request.url}`]] : []),
+      ...(node.kind === 'branch' ? activeWorkflow.edges.filter(e => e.from === node.id).map(e => [`${e.branch} 出口`, activeWorkflow.nodes.find(n => n.id === e.to)?.title ?? e.to]) : []),
     ]
     return (
       <div className="node-implementation">
@@ -3727,7 +4773,7 @@ function App() {
             <pre>{node.prompt}</pre>
           </section>
         ) : null}
-        {node.kind === 'code' && node.code ? (
+        {(node.kind === 'code' || node.kind === 'branch') && node.code ? (
           <section className="implementation-block">
             <div className="implementation-title"><strong>JavaScript 实现</strong><span>只读快照</span></div>
             <pre>{node.code}</pre>
@@ -3768,6 +4814,7 @@ function App() {
 
   const selectedRunInputContext = useMemo(() => {
     if (!selectedRun?.context || !selectedRun.node.resultVar) return selectedRun?.context
+    if (selectedRun.node.kind === 'branch' && selectedRun.routeInputContext) return { ...selectedRun.inputContext, ...selectedRun.routeInputContext }
     if (selectedRun.inputContext) return selectedRun.inputContext
     const outputKeys = selectedRun.output && typeof selectedRun.output === 'object' && !Array.isArray(selectedRun.output) ? new Set(Object.keys(selectedRun.output as Record<string, unknown>)) : new Set<string>()
     return Object.fromEntries(
@@ -3775,6 +4822,16 @@ function App() {
     )
   }, [selectedRun])
   const selectedRunInputs = selectedRun?.inputs ?? (selectedRun ? nodeParamValues(selectedRun.node, selectedRunInputContext ?? {}) : undefined)
+  const selectedVoiceReviewOutput = voiceReviewSource(
+    selectedRun?.output,
+    selectedRunInputs?.currentVideo,
+    selectedRunInputContext?.video_shot,
+  )
+  const selectedVoiceReviewTarget = voiceReviewTarget(selectedVoiceReviewOutput)
+  const canContinueAfterVoiceReview = !viewingBranchHistory
+    && selectedRun?.status === 'failed'
+    && String(selectedRun.error ?? '').startsWith('VOICE_REVIEW_REQUIRED:')
+    && selectedVoiceReviewTarget !== null
   const selectedRunInputLabels = useMemo(() => {
     if (!selectedRun) return new Map<string, { chineseName: string; producerTitle?: string }>()
     return new Map(selectedRun.node.params.map((param) => {
@@ -3808,6 +4865,9 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ model, params, taskId, queryMode }),
       })
+      // A result lookup started in the source record must not replace a newly
+      // saved rollback record when the lookup finishes later.
+      if (executionStateIdRef.current !== executionState.id || activeWorkflowIdRef.current !== executionState.workflowId) return
       if (result.status >= 400) throw new Error(`任务查询失败（HTTP ${result.status}）`)
       const inspection = inspectExperienceResponse(result.body, 'video')
       if (inspection.failed) throw new Error(inspection.message || '视频任务生成失败')
@@ -3849,22 +4909,45 @@ function App() {
 
   const selectedLegacyVideoTaskId = selectedRun ? recoverableVideoTaskId(selectedRun.output) : ''
   useEffect(() => {
-    if (runnerInspectorTab !== 'output' || !selectedRun || !selectedLegacyVideoTaskId) return
+    if (viewingBranchHistory || runnerInspectorTab !== 'output' || !selectedRun || !selectedLegacyVideoTaskId) return
     void recoverLegacyVideoOutput(selectedRun, selectedRunIndex)
-  }, [recoverLegacyVideoOutput, runnerInspectorTab, selectedLegacyVideoTaskId, selectedRun, selectedRunIndex])
+  }, [viewingBranchHistory, recoverLegacyVideoOutput, runnerInspectorTab, selectedLegacyVideoTaskId, selectedRun, selectedRunIndex])
 
   const detailModel = modelView.mode === 'detail' ? draftModels.find((model) => model.id === modelView.modelId) : undefined
   const detailReferenceImages = detailModel && Array.isArray(modelTestParams[detailModel.id]?.referenceImages)
     ? modelTestParams[detailModel.id].referenceImages as string[]
     : []
 
+  if (!configLoaded) {
+    return (
+      <main className="config-startup">
+        <section className="config-startup-card" role={configLoadError ? 'alert' : 'status'} aria-live="polite" aria-busy={!configLoadError}>
+          {configLoadError ? <XCircle size={28} /> : <LoaderCircle className="run-status-spinner" size={28} />}
+          <h1>{configLoadError ? '工作流配置加载失败' : '正在加载工作流配置'}</h1>
+          <p>{configLoadError ? '无法读取已保存的配置，暂时无法打开或执行工作流。' : '正在读取已保存的配置，请稍候。'}</p>
+          {configLoadError ? <>
+            <p className="config-startup-error">{configLoadError}</p>
+            <button type="button" className="primary-btn" onClick={() => window.location.reload()}><RotateCcw size={17} />重新加载</button>
+          </> : null}
+        </section>
+      </main>
+    )
+  }
+
   return (
-    <main className="app-shell">
-      <aside className="side-nav">
-        <div className="brand"><Sparkles size={22} /><div><strong>短视频生成系统</strong><span>Workflow AIGC Studio</span></div></div>
-        <button className={page === 'workflow' ? 'nav-item active' : 'nav-item'} onClick={() => setPage('workflow')}><Layers size={18} />工作流编排</button>
-        <button className={page === 'characters' ? 'nav-item active' : 'nav-item'} onClick={() => setPage('characters')}><UsersRound size={18} />人物库</button>
-        <button className={page === 'models' ? 'nav-item active' : 'nav-item'} onClick={() => setPage('models')}><Settings size={18} />模型管理</button>
+    <main className={navCollapsed ? 'app-shell nav-collapsed' : 'app-shell'}>
+      <aside className="side-nav" aria-label="主菜单">
+        <div className="studio-nav-brand"><div className="brand"><Sparkles size={22} /><div><strong>短视频生成系统</strong><span>Workflow AIGC Studio</span></div></div><button className="icon-btn nav-toggle" aria-label={navCollapsed ? '展开菜单' : '折叠菜单'} title={navCollapsed ? '展开菜单' : '折叠菜单'} aria-expanded={!navCollapsed} onClick={() => setNavCollapsed(value => !value)}>{navCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}</button></div>
+        <button className="primary-btn studio-nav-create" type="button" onClick={addWorkflow} disabled={isDebugBusy || hasUnsavedExecution} title="新建工作流" aria-label="新建工作流"><Plus size={19} /><span>新建工作流</span></button>
+        <span className="studio-nav-label">创作空间</span>
+        <button className={page === 'workflow' ? 'nav-item active' : 'nav-item'} onClick={() => setPage('workflow')} title="工作流编排" aria-label="工作流编排" aria-current={page === 'workflow' ? 'page' : undefined}><Layers size={18} /><span>工作流编排</span></button>
+        <button className={page === 'characters' ? 'nav-item active' : 'nav-item'} onClick={() => setPage('characters')} title="人物库" aria-label="人物库" aria-current={page === 'characters' ? 'page' : undefined}><UsersRound size={18} /><span>人物库</span></button>
+        <button className={page === 'models' ? 'nav-item active' : 'nav-item'} onClick={() => setPage('models')} title="模型管理" aria-label="模型管理" aria-current={page === 'models' ? 'page' : undefined}><Settings size={18} /><span>模型管理</span></button>
+        <div className="studio-nav-workspace">
+          <button type="button" onClick={() => { setPage('workflow'); setWorkflowView('list') }}><Layers size={15} /><span>全部工作流</span><span>{workflows.length}</span></button>
+          {executionState.nodeRuns.some(run => run.status !== 'idle') || hasUnsavedExecution ? <button type="button" onClick={returnToExecution}><Activity size={15} /><span>返回当前执行</span><ChevronRight size={14} /></button> : null}
+        </div>
+        <div className="studio-nav-footer"><Clapperboard size={17} /><div><strong>让创作持续发生</strong><span>{workflows.length} 个工作流 · {models.length} 个模型</span></div></div>
       </aside>
 
       {mediaPreview ? (
@@ -3907,44 +4990,96 @@ function App() {
         </div>
       ) : null}
 
+      {rollbackDialogActive ? (
+        <div className="dialog-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget && !rollbackSaveLock.current) setRollbackDialog(null) }}>
+          <form className="dialog-content rollback-dialog" role="dialog" aria-modal="true" aria-labelledby="rollback-dialog-title"
+            aria-describedby="rollback-dialog-description" onSubmit={(event) => { event.preventDefault(); void createBreakpointRollbackExecution() }}>
+            <h2 id="rollback-dialog-title">{rollbackDialog.mode === 'previous' ? '回退到上一个断点' : '回退到指定断点'}</h2>
+            <p id="rollback-dialog-description">{rollbackDialog.mode === 'previous'
+              ? '将回退到当前执行位置之前最近一个已到达的断点。请确认目标和影响范围。'
+              : '选择本次执行已到达的断点。循环节点按具体轮次分别列出，条件断点只列出条件匹配的实例。'}</p>
+            {rollbackDialog.mode === 'previous' && rollbackTarget ? <div className="rollback-target-summary">
+              <span>目标断点</span>
+              <strong>第 {rollbackTarget.index + 1} 步 · {rollbackTarget.run.loopIndex !== undefined ? `第 ${rollbackTarget.run.loopIndex + 1} 轮 · ` : ''}{rollbackTarget.run.node.title} · {runStatusLabels[rollbackTarget.run.status]}</strong>
+            </div> : rollbackDialog.mode === 'specific' && rollbackTargets.length ? <label className="rollback-target-field">
+              <span>目标断点</span>
+              <select autoFocus aria-label="目标断点" value={rollbackDialog.targetRunId} disabled={isDebugBusy || hasUnsavedExecution}
+                onChange={event => setRollbackDialog({ executionId: executionState.id, targetRunId: event.target.value, mode: 'specific' })}>
+                {rollbackTargets.map(({ index, run }) => <option key={run.id} value={run.id}>
+                  第 {index + 1} 步 · {run.loopIndex !== undefined ? `第 ${run.loopIndex + 1} 轮 · ` : ''}{run.node.title} · {runStatusLabels[run.status]}
+                </option>)}
+              </select>
+            </label> : <p role="status">当前没有可回退的断点。请先在 DAG 中为已到达的节点设置断点。</p>}
+            {rollbackImpact ? <div className="rollback-impact">
+              <p>保留目标之前的 {rollbackImpact.preservedRunCount} 个步骤；目标及后续步骤将重新执行，涉及 {rollbackImpact.completedInvalidatedCount} 个已完成结果。</p>
+              <p>原记录及已有输出保留。回退后停在目标断点的执行前，点击“下一步”或“运行到下一断点”继续。</p>
+            </div> : null}
+            {rollbackError || rollbackDialog.error ? <p className="rollback-error" role="alert">{rollbackDialog.error || rollbackError}</p> : null}
+            <div className="dialog-actions">
+              <button type="button" className="ghost-btn" autoFocus={rollbackDialog.mode === 'previous'} disabled={rollbackSaving} onClick={() => setRollbackDialog(null)}>取消</button>
+              <button type="submit" className="primary-btn" disabled={isDebugBusy || hasUnsavedExecution || !rollbackImpact}>
+                {rollbackSaving ? '正在保存回退记录' : '确认回退'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {breakpointEditor ? (
+        <div className="dialog-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) setBreakpointEditor(null) }}>
+          <form className="dialog-content breakpoint-dialog" role="dialog" aria-modal="true" aria-labelledby="breakpoint-dialog-title" onSubmit={(event) => { event.preventDefault(); saveBreakpointEditor() }}>
+            <h2 id="breakpoint-dialog-title">配置条件断点</h2>
+            <p className="breakpoint-dialog-node">{activeWorkflow.nodes.find((node) => node.id === breakpointEditor.nodeId)?.title ?? breakpointEditor.nodeId}</p>
+            <label className="breakpoint-mode-field">
+              <input type="checkbox" checked={breakpointEditor.conditional} onChange={(event) => setBreakpointEditor({ ...breakpointEditor, conditional: event.target.checked })} />
+              <span>仅当条件成立时暂停</span>
+            </label>
+            <div className="breakpoint-condition-fields" aria-disabled={!breakpointEditor.conditional}>
+              <label>
+                <span>变量路径</span>
+                <input autoFocus={breakpointEditor.conditional} value={breakpointEditor.path} disabled={!breakpointEditor.conditional} placeholder="loop.index" onChange={(event) => setBreakpointEditor({ ...breakpointEditor, path: event.target.value })} />
+              </label>
+              <label>
+                <span>运算符</span>
+                <select value={breakpointEditor.operator} disabled={!breakpointEditor.conditional} onChange={(event) => setBreakpointEditor({ ...breakpointEditor, operator: event.target.value as BreakpointOperator })}>
+                  {(Object.keys(breakpointOperatorLabels) as BreakpointOperator[]).map((operator) => <option value={operator} key={operator}>{breakpointOperatorLabels[operator]}</option>)}
+                </select>
+              </label>
+              <label>
+                <span>比较值</span>
+                <input value={breakpointEditor.value} disabled={!breakpointEditor.conditional} placeholder="3" onChange={(event) => setBreakpointEditor({ ...breakpointEditor, value: event.target.value })} />
+              </label>
+            </div>
+            <p className="breakpoint-dialog-help">循环轮次使用 <code>loop.index</code>，从 1 开始；例如值为 3 表示第 3 轮。数字、布尔值和 JSON 会按实际类型比较。</p>
+            <div className="dialog-actions breakpoint-dialog-actions">
+              <button type="button" className="danger-btn" onClick={deleteBreakpointEditor}>删除断点</button>
+              <span />
+              <button type="button" className="ghost-btn" onClick={() => setBreakpointEditor(null)}>取消</button>
+              <button type="submit" className="primary-btn" disabled={breakpointEditor.conditional && !breakpointEditor.path.trim()}>保存</button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
       {page === 'characters' ? (
         <CharacterLibrary workflows={workflows.map(({ id, name }) => ({ id, name }))} />
       ) : page === 'workflow' ? (
         workflowView === 'list' ? (
-          <section className="workspace">
-            <header className="topbar">
-              <div>
-                <h1>短视频工作流</h1>
-                <p>管理和编排视频生成工作流</p>
-              </div>
-              <button className="primary-btn" onClick={addWorkflow}><Plus size={17} />新建工作流</button>
-            </header>
-            <div className="workflow-table-card">
-              {workflows.map((workflow) => (
-                <article key={workflow.id} className="workflow-card">
-                  <div>
-                    <strong>{workflow.name}</strong>
-                    <p>{workflow.description}</p>
-                    <span>{workflow.nodes.length} 节点 · {workflow.edges.length} 连线</span>
-                  </div>
-                  <div className="workflow-card-actions">
-                    <button className="ghost-btn" onClick={() => { setActiveWorkflowId(workflow.id); setSelectedNodeId(workflow.nodes[0]?.id ?? ''); setWorkflowInfoDraft({ name: workflow.name, description: workflow.description }); setWorkflowInfoError(''); workflowInfoOpenRef.current = false; setWorkflowInfoOpen(false); setWorkflowDebug(null); setWorkflowView('edit') }}><Pencil size={16} />编辑</button>
-                    <button className="primary-btn" onClick={() => openWorkflowRun(workflow)}><Play size={16} />执行</button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
+          <WorkflowLibrary workflows={workflows} onCreate={addWorkflow} onDetails={openWorkflowDetail} onEdit={openWorkflowEditor} onRun={openWorkflowRun}
+            onCharacters={() => setPage('characters')} onModels={() => { setPage('models'); setModelView({ mode: 'list' }) }}
+            busy={isDebugBusy || hasUnsavedExecution}
+            blockedReason={hasUnsavedExecution ? '执行记录尚未保存，请返回当前执行重试保存' : '有任务执行中，完成或暂停后可打开其他工作流'}
+            currentExecution={executionState.nodeRuns.some(run => run.status !== 'idle') || hasUnsavedExecution ? { name: executionState.workflowName, onReturn: returnToExecution } : undefined} />
         ) : workflowView === 'run' ? (
           <section className="workspace">
             <header className="topbar">
               <div>
                 <h1>执行工作流</h1>
-                <p>{activeWorkflow.name} · {executionState.historical ? '历史快照' : '当前拓扑'} · 执行记录 ID：{executionState.id}</p>
+                <p>{activeWorkflow.name} · {executionState.historical ? '历史快照' : '当前拓扑'} · {voicePolicyLabel(executionState.voicePolicy)} · 执行记录 ID：{executionState.id}</p>
               </div>
               <div className="topbar-actions">
                 <button className="ghost-btn" onClick={() => setWorkflowView('list')}>返回列表</button>
-                <button className="ghost-btn" onClick={() => setWorkflowView('edit')}><Pencil size={17} />编辑编排</button>
+                <button className="ghost-btn" disabled={isDebugBusy || hasUnsavedExecution} onClick={() => setWorkflowView('edit')}><Pencil size={17} />编辑编排</button>
               </div>
             </header>
             <div className="runner-tabs">
@@ -3983,23 +5118,39 @@ function App() {
                     <span>{activeWorkflow.nodes.length} 个节点，{runtimeParamCount} 个运行参数</span>
                   </div>
                   <div className="run-mode-switch compact">
-                    <button className={runMode === 'step' ? 'tab-btn active' : 'tab-btn'} onClick={() => setRunMode('step')}>单步调试</button>
-                    <button className={runMode === 'run' ? 'tab-btn active' : 'tab-btn'} onClick={() => setRunMode('run')}>完整执行</button>
+                    <button className={runMode === 'step' ? 'tab-btn active' : 'tab-btn'} disabled={isDebugBusy || hasUnsavedExecution} onClick={() => setRunMode('step')}>单步调试</button>
+                    <button className={runMode === 'run' ? 'tab-btn active' : 'tab-btn'} disabled={isDebugBusy || hasUnsavedExecution} onClick={() => setRunMode('run')}>完整执行</button>
                   </div>
                   <div className="runner-control-actions">
                     {runMode === 'run' ? (
-                      <button className="primary-btn" onClick={executeFullRun}><Play size={17} />开始完整执行</button>
+                      <div className="full-run-actions">
+                        <button className="primary-btn" onClick={executeFullRun} disabled={isDebugBusy || hasUnsavedExecution}><Play size={17} />{isDebugBusy ? '完整执行中' : '开始完整执行'}</button>
+                        {fullExecutionLockRef.current ? <button className="ghost-btn" disabled={fullPauseRequested} onClick={() => { fullPauseRequestedRef.current = true; setFullPauseRequested(true) }}>{fullPauseRequested ? '等待当前节点完成后暂停' : '完成当前节点后暂停'}</button> : null}
+                        {executionState.nodeRuns.some(run => run.status === 'success') && executionState.nodeRuns.some(run => run.status === 'idle') && !executionState.nodeRuns.some(run => run.status === 'failed') ? <button className="ghost-btn" disabled={isDebugBusy || hasUnsavedExecution} onClick={() => void continueFullRun(executionState)}>从检查点继续</button> : null}
+                        {rollbackControls}
+                      </div>
                     ) : isStepDebugActive ? (
                       <div className="debug-actions">
-                        <button className="ghost-btn" onClick={() => moveWorkflowDebugStep(-1)} disabled={!workflowDebug || workflowDebug.stepIndex === 0 || isDebugBusy}><ChevronLeft size={17} />上一步</button>
-                        <button className="primary-btn" onClick={() => moveWorkflowDebugStep(1)} disabled={!canMoveToNextStep}>下一步<ChevronRight size={17} /></button>
-                        <button className="ghost-btn continue-btn" onClick={() => void continueToNextBreakpoint()} disabled={!canContinueToBreakpoint} title="连续执行，并在下一个断点节点执行前暂停">
-                          <Play size={17} />{debugContinueRunning ? '运行中' : '运行到下一断点'}
-                        </button>
-                        <button className="ghost-btn icon-only" title="使用当前运行参数重新调试" aria-label="重新调试" onClick={executeStepRun} disabled={isDebugBusy}><RotateCcw size={17} /></button>
+                        <div className="step-navigation-actions">
+                          <button className="ghost-btn" onClick={() => moveWorkflowDebugStep(-1)} disabled={!workflowDebug || workflowDebug.stepIndex === 0 || isDebugBusy}><ChevronLeft size={17} />上一步</button>
+                          <button className="primary-btn" onClick={() => moveWorkflowDebugStep(1)} disabled={!canMoveToNextStep}>下一步<ChevronRight size={17} /></button>
+                        </div>
+                        <div className="breakpoint-actions">
+                          <button className="ghost-btn continue-btn" onClick={() => void continueToNextBreakpoint()} disabled={!canContinueToBreakpoint} title="连续执行，并在下一个断点节点执行前暂停">
+                            <Play size={17} />{debugContinueRunning ? '运行中' : '运行到下一断点'}
+                          </button>
+                          {rollbackControls}
+                        </div>
+                        <div className={fullExecutionLockRef.current ? 'debug-secondary-actions has-pause' : 'debug-secondary-actions'}>
+                          {fullExecutionLockRef.current ? <button className="ghost-btn" disabled={fullPauseRequested} onClick={() => { fullPauseRequestedRef.current = true; setFullPauseRequested(true) }}>{fullPauseRequested ? '等待当前节点完成后暂停' : '完成当前节点后暂停'}</button> : null}
+                          <button className="ghost-btn icon-only" title="使用当前运行参数重新调试" aria-label="重新调试" onClick={executeStepRun} disabled={isDebugBusy || hasUnsavedExecution}><RotateCcw size={17} /></button>
+                        </div>
                       </div>
                     ) : (
-                      <button className="primary-btn" onClick={executeStepRun}><Repeat size={17} />开始单步调试</button>
+                      <div className="debug-start-actions">
+                        <button className="primary-btn" onClick={executeStepRun} disabled={hasUnsavedExecution}><Repeat size={17} />开始单步调试</button>
+                        {rollbackControls}
+                      </div>
                     )}
                   </div>
                   <button className={runtimePanelOpen ? 'params-toggle active' : 'params-toggle'} aria-expanded={runtimePanelOpen} onClick={() => setRuntimePanelOpen((open) => !open)}>
@@ -4009,6 +5160,13 @@ function App() {
                     <ChevronDown className="params-toggle-chevron" size={16} />
                   </button>
                 </div>
+                {hasUnsavedExecution ? (
+                  <div role="alert" className="empty-note">
+                    <strong>{executionState.persistenceError}</strong>
+                    <p>当前节点结果已保留，后续执行已暂停。重试保存成功后可继续。</p>
+                    <button className="primary-btn" disabled={isDebugBusy} onClick={() => void retryExecutionSave()}>重试保存</button>
+                  </div>
+                ) : null}
                 {runtimePanelOpen ? (
                   <div className="runner-params-panel">
                     <div className="runner-params-intro">
@@ -4019,10 +5177,22 @@ function App() {
                       {runtimeInputNodes.map((inputNode) => (
                         <div className="runner-input-group" key={inputNode.id}>
                           <strong>{inputNode.title}</strong>
-                          {inputNode.params.map((param) => (
-                            <label key={param.id}>
-                              <span>{param.name} {param.englishName ? `(${param.englishName})` : ''}</span>
-                              {param.type === 'json' ? (
+                          {inputNode.params.map((param) => {
+                            const paramKey = param.englishName || param.name
+                            const isQualityChoice = activeWorkflow.id === 'wf-sanguo-history-drama' && paramKey === 'qualityDisposition'
+                            return <label key={param.id} className={isQualityChoice ? 'runner-quality-choice' : undefined}
+                              data-runtime-result-var={inputNode.resultVar} data-runtime-param-key={paramKey} data-runtime-param-type={param.type}>
+                              <span>{isQualityChoice ? '质检方式' : <>{param.name} {param.englishName ? `(${param.englishName})` : ''}</>}</span>
+                              {isQualityChoice ? (
+                                <select aria-label="质检方式" value={workflowQualityDisposition(activeWorkflow) ?? 'manual-review-v1'} disabled={isDebugBusy || hasUnsavedExecution}
+                                  onChange={event => {
+                                    const disposition = event.target.value === 'strict-v1' ? 'strict-v1' : 'manual-review-v1'
+                                    updateActiveWorkflow(workflow => setQualityDisposition(workflow, disposition))
+                                    setConfigStatus(disposition === 'manual-review-v1' ? '已切换用户验收：后续内容问题只提示，不自动重拍；已有结果保留。' : '已切换严格质检；后续节点使用原质量门槛，已有结果保留。')
+                                  }}>
+                                  <option value="manual-review-v1">用户验收（推荐）</option><option value="strict-v1">严格质检</option>
+                                </select>
+                              ) : param.type === 'json' ? (
                                 <textarea rows={3} value={param.value} onChange={(event) => updateParam(inputNode.id, param.id, { value: event.target.value })} />
                               ) : (
                                 <input
@@ -4034,7 +5204,7 @@ function App() {
                                 />
                               )}
                             </label>
-                          ))}
+                          })}
                         </div>
                       ))}
                     </div>
@@ -4042,7 +5212,7 @@ function App() {
                 ) : null}
               </section>
 
-              <section className="runner-panel runner-main">
+              <section className={`runner-panel runner-main${isRunnerFullscreen ? ' is-fullscreen' : ''}`} ref={runnerPanelRef}>
                 <div className="panel-title runner-dag-title">
                   <div><h2>执行 DAG</h2><span>{runMode === 'step' && workflowDebug ? `第 ${workflowDebug.stepIndex + 1} / ${executionState.nodeRuns.length} 步${debugLoopLabel} · 当前：${currentStepRun?.node.title ?? '准备中'} · ${breakpointNodeIds.size} 个断点` : `执行顺序 ${executionOrder.ordered.length} 步`}</span></div>
                   <div className="run-state-legend" aria-label="节点状态图例">
@@ -4055,6 +5225,7 @@ function App() {
                 <div
                   className={`runner-dag dag-canvas${isRunnerPanning ? ' is-panning' : ''}`}
                   ref={runnerViewportRef}
+                  style={{ backgroundPosition: `${runnerOffset.x}px ${runnerOffset.y}px`, backgroundSize: `${24 * runnerZoom}px ${24 * runnerZoom}px` }}
                   onPointerDown={startRunnerPan}
                   onPointerMove={moveRunnerPan}
                   onPointerUp={stopRunnerPan}
@@ -4065,80 +5236,95 @@ function App() {
                   }}
                 >
                   <div className="dag-toolbar">
-                    <button className="ghost-btn zoom-fit" onClick={fitRunnerGraph}>适配</button>
+                    <button type="button" className="ghost-btn" aria-pressed={showCanvasMedia} onClick={() => setShowCanvasMedia(value => !value)}><ImageIcon size={16} />媒体预览</button>
+                    <button type="button" className="ghost-btn zoom-step" aria-label="缩小执行 DAG" title="缩小" onClick={() => zoomRunnerBy(0.8)}><ZoomOut size={17} /></button>
                     <span className="zoom-value">{Math.round(runnerZoom * 100)}%</span>
+                    <button type="button" className="ghost-btn zoom-step" aria-label="放大执行 DAG" title="放大" onClick={() => zoomRunnerBy(1.25)}><ZoomIn size={17} /></button>
+                    <button className="ghost-btn zoom-fit" onClick={fitRunnerGraph}>适配</button>
+                    <button type="button" className="ghost-btn runner-fullscreen-toggle" aria-label={isRunnerFullscreen ? '退出执行 DAG 全屏' : '全屏展示执行 DAG'} aria-pressed={isRunnerFullscreen} title={isRunnerFullscreen ? '退出全屏（Esc）' : '全屏展示'} onClick={() => void toggleRunnerFullscreen()}>{isRunnerFullscreen ? <Minimize2 size={17} /> : <Maximize2 size={17} />}<span>{isRunnerFullscreen ? '退出全屏' : '全屏'}</span></button>
+                    {runnerFullscreenError ? <span className="runner-fullscreen-error" role="alert">{runnerFullscreenError}</span> : null}
                   </div>
-                  <div className="dag-zoom-layer" style={{ width: graphWidth * runnerZoom, height: graphHeight * runnerZoom }}>
-                    <div className="dag-surface" style={{ width: graphWidth, height: graphHeight, transform: `scale(${runnerZoom})` }}>
+                  <div className="dag-zoom-layer runner-zoom-layer">
+                    <div className="dag-surface" style={{ width: graphWidth, height: graphHeight, transform: `translate(${runnerOffset.x}px, ${runnerOffset.y}px) scale(${runnerZoom})` }}>
                       <svg className="dag-lines" width={graphWidth} height={graphHeight}>
-                        <defs><marker id="runner-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#78909c" /></marker></defs>
-                        {activeWorkflow.edges.map((edge) => {
-                          const from = activeWorkflow.nodes.find((node) => node.id === edge.from)
-                          const to = activeWorkflow.nodes.find((node) => node.id === edge.to)
+                        <BranchConnections nodes={canvasNodes} edges={activeWorkflow.edges} prefix="runner-branch" nodeHeight={canvasNodeHeight} />
+                        <defs><marker id="runner-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="var(--studio-subtle)" /></marker></defs>
+                        {activeWorkflow.edges.filter(edge => edge.branch === undefined).map((edge) => {
+                          const from = canvasNodes.find((node) => node.id === edge.from)
+                          const to = canvasNodes.find((node) => node.id === edge.to)
                           if (!from || !to) return null
                           const startX = from.position.x + 248, startY = from.position.y + 62, endX = to.position.x, endY = to.position.y + 62
                           const mid = Math.max(48, Math.abs(endX - startX) / 2)
-                          return <path key={edge.id} d={`M ${startX} ${startY} C ${startX + mid} ${startY}, ${endX - mid} ${endY}, ${endX} ${endY}`} fill="none" stroke="#78909c" strokeWidth="2.5" markerEnd="url(#runner-arrow)" />
+                          return <path key={edge.id} d={`M ${startX} ${startY} C ${startX + mid} ${startY}, ${endX - mid} ${endY}, ${endX} ${endY}`} fill="none" stroke="var(--studio-subtle)" strokeWidth="2.5" markerEnd="url(#runner-arrow)" />
                         })}
                       </svg>
-                      {activeWorkflow.nodes.filter((node) => node.kind === 'loop').map((loopNode) => {
-                        const children = getLoopNodes(activeWorkflow, loopNode.id)
+                      {canvasNodes.filter((node) => node.kind === 'loop').map((loopNode) => {
+                        const children = getLoopNodes(canvasWorkflow, loopNode.id)
                         if (!children.length) return null
                         const minX = Math.min(...children.map((node) => node.position.x))
                         const minY = Math.min(...children.map((node) => node.position.y))
                         const maxX = Math.max(...children.map((node) => node.position.x + 248))
-                        const maxY = Math.max(...children.map((node) => node.position.y + 124))
+                        const maxY = Math.max(...children.map((node) => node.position.y + canvasNodeHeight(node)))
                         return (
                           <div key={loopNode.id} className="loop-container" style={{ left: minX - 20, top: minY - 50, width: maxX - minX + 40, height: maxY - minY + 70 }}>
-                            <div className="loop-header"><Repeat size={16} /><strong>{loopNode.title}</strong><span>循环 {loopNode.loop.fallbackCount} 次</span></div>
+                            <div className="loop-header"><Repeat size={16} /><strong>{loopNode.title}</strong><span>循环 {getLoopItems(executionState.context, loopNode).length} 次</span></div>
                           </div>
                         )
                       })}
-                      {activeWorkflow.nodes.map((node) => {
+                      {canvasNodes.map((node) => {
                         const Icon = nodeMeta[node.kind].icon
                         const model = models.find((item) => item.id === node.modelId)
-                        const nodeRuns = executionState.nodeRuns.filter((run) => run.node.id === node.id)
+                        const nodeRuns = inspectedRuns.filter((run) => run.node.id === node.id)
                         const latestRun = nodeRuns.find((run) => run.status === 'running') ?? nodeRuns.filter((run) => run.status !== 'idle').at(-1) ?? nodeRuns[0]
                         const loopSnapshotRun = activeLoopGroupId && activeLoopIteration !== undefined
                           ? nodeRuns.find((run) => run.loopGroupId === activeLoopGroupId && run.loopIndex === activeLoopIteration)
                           : undefined
                         const isRepeatedLoopNode = Boolean(activeLoopGroupId && nodeRuns.some((run) => run.loopGroupId === activeLoopGroupId))
                         const displayRun = isRepeatedLoopNode ? loopSnapshotRun : latestRun
-                        const latestRunIndex = executionState.nodeRuns.findIndex((run) => run.id === displayRun?.id)
-                        const fallbackRunIndex = executionState.nodeRuns.findIndex((run) => run.node.id === node.id)
+                        const latestRunIndex = inspectedRuns.findIndex((run) => run.id === displayRun?.id)
+                        const fallbackRunIndex = inspectedRuns.findIndex((run) => run.node.id === node.id)
                         const runIndex = latestRunIndex >= 0 ? latestRunIndex : fallbackRunIndex
                         const status = displayRun?.status ?? 'idle'
                         const isCurrent = selectedRun?.node.id === node.id
-                        const isStepCursor = isStepDebugActive && !viewingHistoricalLoopSnapshot && currentStepRun?.node.id === node.id
+                        const isStepCursor = isStepDebugActive && !viewingBranchHistory && !viewingHistoricalLoopSnapshot && currentStepRun?.node.id === node.id
                         const isStepCurrent = isStepCursor && status !== 'skipped'
-                        const isStepCompleted = isStepDebugActive && !isStepCurrent && executionState.nodeRuns.some((run, index) => run.node.id === node.id && run.status === 'success' && index < (workflowDebug?.stepIndex ?? 0))
-                        const hasBreakpoint = breakpointNodeIds.has(node.id)
+                        const isStepCompleted = isStepDebugActive && !viewingBranchHistory && !isStepCurrent
+                          && isDisplayedRunCompletedBeforeStep(inspectedRuns, latestRunIndex, workflowDebug?.stepIndex ?? 0)
+                        const nodeBreakpoint = breakpointByNodeId.get(node.id)
+                        const hasBreakpoint = Boolean(nodeBreakpoint)
+                        const breakpointLabel = nodeBreakpoint?.condition
+                          ? `${nodeBreakpoint.condition.path} ${breakpointOperatorLabels[nodeBreakpoint.condition.operator]} ${formatBreakpointValue(nodeBreakpoint.condition.value)}`
+                          : ''
                         const statusLabel = isRepeatedLoopNode && activeLoopIteration !== undefined
                           ? `第 ${activeLoopIteration + 1} 轮 · ${runStatusLabels[status]}`
-                          : isStepCurrent && hasBreakpoint && status === 'idle' ? '断点暂停' : isStepCurrent ? '当前步骤' : isStepCompleted ? '已完成' : runStatusLabels[status]
+                          : isStepCurrent && hasBreakpoint && status === 'idle' ? '断点暂停' : isStepCurrent && status === 'idle' ? '当前步骤' : isStepCompleted ? '已完成' : runStatusLabels[status]
                         return (
                           <Fragment key={node.id}>
-                          <button className={['dag-node', 'runner-dag-node', node.kind === 'loop' ? 'loop-node' : '', status, isCurrent ? 'selected' : '', isStepCurrent ? 'step-current' : '', isStepCompleted ? 'step-completed' : '', isRepeatedLoopNode ? 'loop-snapshot-node' : '', hasBreakpoint ? 'has-breakpoint' : ''].filter(Boolean).join(' ')} style={{ left: node.position.x, top: node.position.y }} onClick={() => inspectRunnerNode(node.id, runIndex)}>
-                            <span className="dag-node-top"><Icon size={20} /><strong>{node.title}</strong></span>
+                          <article tabIndex={0} aria-label={node.title} data-canvas-node-id={node.id} className={['dag-node', 'runner-dag-node', hasCanvasMedia(node) ? 'has-canvas-media' : '', node.kind === 'branch' ? 'branch-node' : '', node.kind === 'loop' ? 'loop-node' : '', status, isCurrent ? 'selected' : '', isStepCurrent ? 'step-current' : '', isStepCompleted ? 'step-completed' : '', isRepeatedLoopNode ? 'loop-snapshot-node' : '', hasBreakpoint ? 'has-breakpoint' : ''].filter(Boolean).join(' ')} style={{ left: node.position.x, top: node.position.y }} onClick={() => inspectRunnerNode(node.id, runIndex)} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); inspectRunnerNode(node.id, runIndex) } }}>
+                            {node.kind === 'branch' && <BranchNodeShape />}<span className="dag-node-top"><Icon size={20} /><strong title={node.title}>{node.title}</strong></span>
                             <small>{nodeMeta[node.kind].label}{model ? ` · ${model.name}` : ''}</small>
                             <code>${'{' + node.resultVar + '}'}</code>
                             <span className="run-status-badge" translate="no">
                               <span className="run-status-icon" aria-hidden="true">
                                 {status === 'running' ? <LoaderCircle className="run-status-spinner" size={14} /> : isStepCurrent ? <Play size={13} /> : status === 'success' ? <CheckCircle2 size={13} /> : status === 'failed' ? <XCircle size={13} /> : null}
                               </span>
-                              <span className="run-status-text">{statusLabel}{status !== 'idle' ? ` · ${displayRun?.durationMs ?? 0}ms` : ''}</span>
+                              <span className="run-status-text">{statusLabel}{status !== 'idle' && displayRun ? <> · <RunDuration run={displayRun} /></> : null}</span>
                             </span>
                             {node.kind === 'loop' ? <span className="loop-badge"><Repeat size={13} />循环 {node.loop.fallbackCount}</span> : null}
-                          </button>
+                            {breakpointLabel ? <span className="breakpoint-condition-label" title={`条件断点：${breakpointLabel}`}>{breakpointLabel}</span> : null}
+                            {renderCanvasMedia(node)}
+                          </article>
                           {runMode === 'step' ? (
                             <button
                               className={hasBreakpoint ? 'breakpoint-toggle active' : 'breakpoint-toggle'}
                               style={{ left: node.position.x + 212, top: node.position.y + 8 }}
                               onPointerDown={(event) => event.stopPropagation()}
-                              onClick={() => toggleBreakpoint(node.id)}
-                              disabled={isDebugBusy}
-                              aria-label={`${hasBreakpoint ? '取消' : '设置'} ${node.title} 的断点`}
-                              title={hasBreakpoint ? '取消断点' : '设置断点'}
+                              onClick={() => openBreakpointEditor(node.id)}
+                              aria-pressed={hasBreakpoint}
+                              aria-label={`${hasBreakpoint ? '编辑' : '设置'} ${node.title} 的断点`}
+                              title={status === 'running'
+                                ? (hasBreakpoint ? '编辑断点；本次节点已开始执行，修改将在下次执行时生效' : '设置断点；本次节点已开始执行，将在下次执行时暂停')
+                                : hasBreakpoint ? (breakpointLabel ? `编辑条件断点：${breakpointLabel}` : '编辑或删除断点') : '设置普通断点；再次点击可配置条件'}
                             ><span aria-hidden="true" /></button>
                           ) : null}
                           </Fragment>
@@ -4150,6 +5336,23 @@ function App() {
               </section>
 
               <section className="runner-panel runner-context">
+                {visibleBranchSceneIndices.length > 0 ? <nav className={viewingBranchHistory ? "loop-snapshot-nav is-history" : "loop-snapshot-nav"} aria-label="分支回跳轮次">
+                  <div className="loop-snapshot-heading"><div><strong>分支回跳轮次</strong><span>{viewingBranchHistory ? '历史现场 · 只读' : '当前执行现场'} · 每次回跳开始新一轮</span></div></div>
+                  <div className="loop-snapshot-rounds">
+                    {[...visibleBranchSceneIndices, branchScenes.length].map((index, roundIndex) => <button type="button" key={index}
+                      className={index === (branchSceneIndex ?? branchScenes.length) ? 'active' : ''}
+                      aria-pressed={index === (branchSceneIndex ?? branchScenes.length)}
+                      aria-label={`第 ${roundIndex + 1} 轮 · ${index === branchScenes.length ? '当前轮' : '已回跳'}`}
+                      onClick={() => {
+                        const current = index === branchScenes.length
+                        const runs = current ? executionState.nodeRuns : branchScenes[index].scene as NodeRunState[]
+                        setBranchSceneSelection(current ? null : { executionId: executionState.id, index })
+                        setRunnerFollowMode(current)
+                        setSelectedLoopSnapshot(null)
+                        setSelectedRunIndex(Math.max(0, runs.findIndex(run => run.node.id === selectedRun?.node.id && run.loopGroupId === selectedRun?.loopGroupId && run.loopIndex === selectedRun?.loopIndex)))
+                      }}><span>{roundIndex + 1}</span><small>{index === branchScenes.length ? '当前轮' : '已回跳'}</small></button>)}
+                  </div>
+                </nav> : null}
                 {activeLoopGroupId && activeLoopIterations.length ? (
                   <nav className={viewingHistoricalLoopSnapshot ? 'loop-snapshot-nav is-history' : 'loop-snapshot-nav'} aria-label="循环轮次现场">
                     <div className="loop-snapshot-heading">
@@ -4157,7 +5360,7 @@ function App() {
                       <div><strong>循环轮次现场</strong><span>{viewingHistoricalLoopSnapshot ? '正在回看历史参数快照' : runnerAutoFollow ? '跟随当前执行轮次' : '已固定当前查看现场'}</span></div>
                       {viewingHistoricalLoopSnapshot ? <em>历史</em> : <em className="live">当前</em>}
                     </div>
-                    <div className="loop-snapshot-rounds" role="list" aria-label="已开始的循环轮次">
+                    <div className="loop-snapshot-rounds loop-snapshot-rounds-wrap" role="list" aria-label="已开始的循环轮次">
                       {activeLoopIterations.map((loopIndex) => (
                         <button
                           type="button"
@@ -4167,7 +5370,7 @@ function App() {
                           key={loopIndex}
                         >
                           <span>{loopIndex + 1}</span>
-                          <small>{loopIndex === latestLoopIteration ? '当前轮' : '已完成'}</small>
+                          <small>{inspectedRuns.some(run => run.loopGroupId === activeLoopGroupId && run.loopIndex === loopIndex && run.status === 'failed') ? '失败' : loopIndex === latestLoopIteration ? '当前轮' : inspectedRuns.some(run => run.loopGroupId === activeLoopGroupId && run.loopIndex === loopIndex && run.status === 'idle') ? '待执行' : '已完成'}</small>
                         </button>
                       ))}
                     </div>
@@ -4178,8 +5381,8 @@ function App() {
                   </nav>
                 ) : null}
                 <div className="panel-title runner-context-title">
-                <div><span className="inspector-kicker">节点检查</span><h2>{selectedRun?.node.title ?? '选择一个节点'}</h2><p>{selectedRun ? `${selectedRun.loopIndex !== undefined ? `第 ${selectedRun.loopIndex + 1} 轮 · ` : ''}${isStepDebugActive && currentStepRun?.id === selectedRun.id && selectedRun.status !== 'skipped' ? '当前步骤' : runStatusLabels[selectedRun.status]}${selectedRun.status !== 'idle' ? ` · ${selectedRun.durationMs}ms` : ''}` : '点击 DAG 节点查看配置、输入和输出'}</p></div>
-                  {selectedRun && selectedRun.status !== 'idle' ? <button className="ghost-btn" onClick={() => retryFromRunIndex(selectedRunIndex)}>从此节点重试</button> : null}
+                <div><span className="inspector-kicker">节点检查</span><h2>{selectedRun?.node.title ?? '选择一个节点'}</h2><p>{selectedRun ? <>{selectedRun.loopIndex !== undefined ? `第 ${selectedRun.loopIndex + 1} 轮 · ` : ''}{isStepDebugActive && !viewingBranchHistory && currentStepRun?.id === selectedRun.id && selectedRun.status === 'idle' ? '当前步骤' : runStatusLabels[selectedRun.status]}{selectedRun.status !== 'idle' ? <> · <RunDuration run={selectedRun} /></> : null}</> : '点击 DAG 节点查看配置、输入和输出'}</p></div>
+                  {selectedRun && !viewingBranchHistory && selectedRun.status !== 'idle' ? <button className="ghost-btn" disabled={isDebugBusy || hasUnsavedExecution} onClick={() => retryFromRunIndex(selectedRunIndex)}>从此节点重试</button> : null}
                 </div>
                 {selectedRun ? (
                   <>
@@ -4188,12 +5391,17 @@ function App() {
                       <button className={runnerInspectorTab === 'input' ? 'active' : ''} role="tab" aria-selected={runnerInspectorTab === 'input'} onClick={() => setRunnerInspectorTab('input')}>输入 / 上下文</button>
                       <button className={runnerInspectorTab === 'output' ? 'active' : ''} role="tab" aria-selected={runnerInspectorTab === 'output'} onClick={() => setRunnerInspectorTab('output')}>输出</button>
                     </div>
+                    {selectedRun.node.kind === 'branch' ? <section className="branch-debug-controls">
+                      <strong>分支调试变量</strong><p>{viewingBranchHistory ? '当前显示该轮保存的变量和路由计数。返回当前轮后可继续调试。' : '修改只应用于本次执行；保留已有路由次数和质检结果，再点击“从此节点重试”重新判断。'}</p>
+                      <small>已路由 {selectedRun.branchState?.visits ?? 0} 次 · true {selectedRun.branchState?.counts.true ?? 0} / false {selectedRun.branchState?.counts.false ?? 0}</small>
+                      {selectedRun.node.params.map(param => <label key={param.id}>{param.englishName || param.name}<input aria-label={`调试变量 ${param.englishName || param.name}`} disabled={viewingBranchHistory || debugContinueRunning || selectedRun.status === 'running'} value={selectedRun.paramOverrides?.[param.id] ?? param.value} onChange={event => updateBranchDebugParam(selectedRunIndex, param.id, event.target.value)} /></label>)}
+                    </section> : null}
                     <div className="inspector-content" role="tabpanel">
                       {runnerInspectorTab === 'config' ? renderNodeConfiguration(selectedRun.node) : null}
                       {runnerInspectorTab === 'input' ? (
                         selectedRun.status === 'idle'
                           ? <div className="inspector-empty"><strong>还没有输入快照</strong><span>执行到该节点后，这里会显示解析后的节点输入与执行前上下文。</span></div>
-                          : <div className="inspector-variable-sections">
+                          : <div className="inspector-variable-sections" key={`${executionState.id}:${selectedRun.id}:${branchSceneIndex ?? 'current'}`}>
                               {selectedRunInputs && displayEntries(selectedRunInputs).length ? (
                                 <section className="variable-section">
                                   <div className="variable-section-title"><strong>节点输入</strong><span>{displayEntries(selectedRunInputs).length} 个变量</span></div>
@@ -4203,7 +5411,7 @@ function App() {
                               {selectedRunInputContext && displayEntries(selectedRunInputContext).length ? (
                                 <section className="variable-section">
                                   <div className="variable-section-title"><strong>流程上下文</strong><span>执行前快照</span></div>
-                                  {renderContextEditor(selectedRunInputContext)}
+                                  {renderContextEditor(selectedRunInputContext, [], [], undefined, !viewingBranchHistory)}
                                 </section>
                               ) : null}
                               {(!selectedRunInputs || !displayEntries(selectedRunInputs).length) && (!selectedRunInputContext || !displayEntries(selectedRunInputContext).length)
@@ -4211,15 +5419,16 @@ function App() {
                                 : null}
                             </div>
                       ) : null}
+                      {runnerInspectorTab === 'output' && selectedRun.attempts?.length ? <section className="variable-section"><strong>历次尝试（当前第 {selectedRun.attempt ?? 1} 次）</strong>{renderContextEditor({ attempts: selectedRun.attempts }, [], [], new Map(), false)}</section> : null}
                       {runnerInspectorTab === 'output' ? (
                         selectedRun.status === 'idle'
                           ? <div className="inspector-empty"><strong>节点尚未执行</strong><span>完成这个步骤后，可在这里检查输出结果。</span></div>
-                          : <div className="result-preview variable-section">
+                          : <div className="result-preview variable-section" key={`${executionState.id}:${selectedRun.id}:${branchSceneIndex ?? 'current'}`}>
                               <div className="variable-section-title output-title">
                                 {renderVariableName(selectedRun.node.resultVar, [selectedRun.node.resultVar], selectedRun.node.title, selectedRun.node.title)}
                                 <div className="output-recovery-actions">
                                   {legacyVideoRecoveryStatus[selectedRun.id] ? <small>{legacyVideoRecoveryStatus[selectedRun.id]}</small> : null}
-                                  {selectedLegacyVideoTaskId ? (
+                                  {!viewingBranchHistory && selectedLegacyVideoTaskId ? (
                                     <button type="button" className="ghost-btn" onClick={() => void recoverLegacyVideoOutput(selectedRun, selectedRunIndex)}>
                                       {legacyVideoRecoveryRef.current.has(`${executionState.id}:${selectedRun.id}:${selectedLegacyVideoTaskId}`)
                                         ? <LoaderCircle className="run-status-spinner" size={14} />
@@ -4229,16 +5438,24 @@ function App() {
                                   ) : <span>节点输出</span>}
                                 </div>
                               </div>
+                              <PrincipleQualitySummary output={selectedRun.output} />
+                              <VoiceListeningReview
+                                key={selectedRun.id + JSON.stringify(selectedVoiceReviewTarget)}
+                                output={selectedVoiceReviewOutput}
+                                readOnly={viewingBranchHistory || isDebugBusy || Boolean(executionState.persistenceError)}
+                                onPassed={canContinueAfterVoiceReview ? () => retryFromRunIndex(selectedRunIndex) : undefined}
+                              />
+                              {executionState.voicePolicy === 'strict' && selectedRun.node.kind === 'video' && !viewingBranchHistory ? <VoiceUpgradePanel key={executionState.id + selectedRun.id} sourceId={executionState.requestScopeId ?? executionState.id} output={selectedRun.output} runs={executionState.nodeRuns} historicalWorkflow={activeWorkflow.id === 'wf-sanguo-history-drama'} disabled={isDebugBusy || Boolean(executionState.persistenceError)} onCreate={createVoiceUpgradeExecution} /> : null}
+                              <DurationDiagnostics context={selectedRun.context ?? selectedRunInputContext ?? {}} output={selectedRun.output} runStatus={selectedRun.status} runError={selectedRun.error} resultVar={selectedRun.node.resultVar} />
                               {renderContextEditor(selectedRun.output, [], [selectedRun.node.resultVar], undefined, false)}
                             </div>
                       ) : null}
                     </div>
                   </>
                 ) : <div className="inspector-empty standalone"><strong>从 DAG 开始检查</strong><span>所有节点都可以点击，尚未执行的节点也能查看配置实现。</span></div>}
-                <details className="run-log-disclosure">
-                  <summary>执行日志 <span>{executionState.logs.length}</span></summary>
-                  <div className="run-log">{executionState.logs.map((log) => <span key={log}><CheckCircle2 size={15} />{log}</span>)}</div>
-                </details>
+                <InspectorDisclosure className="run-log-disclosure" summary={<>执行日志 <span>{executionState.logs.length}</span></>}>
+                  {() => <div className="run-log"><InspectorEntries count={executionState.logs.length} renderEntry={index => <span key={index}><CheckCircle2 size={15} />{executionState.logs[index]}</span>} /></div>}
+                </InspectorDisclosure>
               </section>
             </div>
             )}
@@ -4248,16 +5465,16 @@ function App() {
           <header className="topbar">
             <div className="workflow-edit-heading">
               <h1>{activeWorkflow.name}</h1>
-              <p>{activeWorkflow.description || '暂无工作流描述'}</p>
+              <p>{isWorkflowDetail ? '工作流详情 · ' : ''}{activeWorkflow.description || '暂无工作流描述'}</p>
             </div>
             <div className="topbar-actions">
               <button className="ghost-btn" onClick={() => setWorkflowView('list')}>返回列表</button>
-              <button className="ghost-btn" onClick={openWorkflowInfo} aria-expanded={workflowInfoOpen} aria-controls="workflow-info-editor"><Pencil size={16} />基础信息</button>
-              <button className="ghost-btn" onClick={duplicateWorkflow}><Copy size={16} />复制当前工作流</button>
-              <button className="primary-btn" onClick={() => openWorkflowRun(activeWorkflow)}><Play size={17} />进入执行</button>
+              {isWorkflowDetail ? <button className="ghost-btn" onClick={() => setWorkflowView('edit')}><Pencil size={16} />编辑编排</button> : <button className="ghost-btn" onClick={openWorkflowInfo} aria-expanded={workflowInfoOpen} aria-controls="workflow-info-editor"><Pencil size={16} />基础信息</button>}
+              <button className="ghost-btn" disabled={isDebugBusy || hasUnsavedExecution} onClick={duplicateWorkflow}><Copy size={16} />复制当前工作流</button>
+              <button className="primary-btn" disabled={isDebugBusy || hasUnsavedExecution} onClick={() => openWorkflowRun(activeWorkflow)}><Play size={17} />进入执行</button>
             </div>
           </header>
-          {workflowInfoOpen ? (
+          {!isWorkflowDetail && workflowInfoOpen ? (
             <form
               id="workflow-info-editor"
               className="workflow-info-editor"
@@ -4314,68 +5531,76 @@ function App() {
               </div>
             </form>
           ) : null}
-          <div className="workflow-grid">
+          <div className={`workflow-grid${isWorkflowDetail ? ' workflow-detail-grid' : ''}`}>
             <section className="node-palette">
-              <h2>画布新增节点</h2>
+              <h2>新增节点</h2>
               {(Object.keys(nodeMeta) as NodeKind[]).map((kind) => { const Icon = nodeMeta[kind].icon; return <button className="palette-item" key={kind} onClick={() => addNode(kind)}><Icon size={18} /><span>{nodeMeta[kind].label}</span><Plus size={16} /></button> })}
             </section>
 
             <section className="canvas">
-              <div className="canvas-header"><div><h2>{activeWorkflow.name}</h2><span>{activeWorkflow.description}</span></div><span>{executionOrder.hasCycle ? '存在循环依赖' : `执行顺序 ${executionOrder.ordered.length} 步`}</span></div>
+              <div className="canvas-header"><div><h2>{activeWorkflow.name}</h2><span>{executionState.workflowId === activeWorkflow.id && executionState.nodeRuns.some(run => run.status !== 'idle') ? `当前查看的执行：${executionState.id}${activeLoopIteration !== undefined ? ` · 第 ${activeLoopIteration + 1} 轮` : ''}${viewingBranchHistory ? ' · 历史分支' : ''}` : '图片、视频和声音直接预览；执行后查看生成结果'}</span></div><span>{executionOrder.hasCycle ? '存在循环依赖' : `执行顺序 ${executionOrder.ordered.length} 步`}</span></div>
               <div
                 className={`dag-canvas editable-dag${isCanvasPanning ? ' is-panning' : ''}`}
                 ref={viewportRef}
-                onMouseDown={startCanvasPan}
+                onPointerDown={startCanvasPan}
+                onPointerMove={moveCanvasPan}
+                onPointerUp={() => { if (canvasPanRef.current) stopCanvasPan() }}
+                onPointerCancel={stopCanvasPan}
+                onLostPointerCapture={() => { if (canvasPanRef.current) stopCanvasPan() }}
                 onMouseMove={onSurfaceMove}
                 onMouseUp={stopCanvasPan}
-                onMouseLeave={stopCanvasPan}
+                onMouseLeave={() => { if (!canvasPanRef.current) stopCanvasPan() }}
                 style={{ backgroundPosition: `${canvasOffset.x}px ${canvasOffset.y}px`, backgroundSize: `${24 * zoom}px ${24 * zoom}px` }}
               >
+                <div className="dag-toolbar"><button type="button" className="ghost-btn" aria-pressed={showCanvasMedia} onClick={() => setShowCanvasMedia(value => !value)}><ImageIcon size={16} />媒体预览</button><button type="button" className="ghost-btn zoom-step" aria-label="缩小画布" onClick={() => zoomCanvasBy(0.8)}><ZoomOut size={17} /></button><span className="zoom-value">{Math.round(zoom * 100)}%</span><button type="button" className="ghost-btn zoom-step" aria-label="放大画布" onClick={() => zoomCanvasBy(1.25)}><ZoomIn size={17} /></button><button className="ghost-btn zoom-fit" onClick={fitGraph}>适配画布</button></div>
                 <div className="dag-zoom-layer editable-zoom-layer">
                 <div className="dag-surface" ref={surfaceRef} style={{ width: graphWidth, height: graphHeight, transform: `translate(${canvasOffset.x}px, ${canvasOffset.y}px) scale(${zoom})` }}>
+                  {drag?.type === 'selection' ? <div className="canvas-selection-box" style={(() => { const rect = selectionRect(drag.start, drag.end); return { left: rect.x, top: rect.y, width: rect.width, height: rect.height } })()} /> : null}
                   <svg className="dag-lines" width={graphWidth} height={graphHeight}>
-                    <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#78909c" /></marker></defs>
-                    {activeWorkflow.edges.map((edge) => {
-                      const from = activeWorkflow.nodes.find((node) => node.id === edge.from)
-                      const to = activeWorkflow.nodes.find((node) => node.id === edge.to)
+                    <BranchConnections nodes={canvasNodes} edges={activeWorkflow.edges} prefix="editor-branch" nodeHeight={canvasNodeHeight} onRemove={isWorkflowDetail ? undefined : removeEdge} />
+                    <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="var(--studio-subtle)" /></marker></defs>
+                    {activeWorkflow.edges.filter(edge => edge.branch === undefined).map((edge) => {
+                      const from = canvasNodes.find((node) => node.id === edge.from)
+                      const to = canvasNodes.find((node) => node.id === edge.to)
                       if (!from || !to) return null
                       const startX = from.position.x + 248, startY = from.position.y + 62, endX = to.position.x, endY = to.position.y + 62
                       const mid = Math.max(48, Math.abs(endX - startX) / 2)
-                      return <path key={edge.id} className="edge-path" d={`M ${startX} ${startY} C ${startX + mid} ${startY}, ${endX - mid} ${endY}, ${endX} ${endY}`} fill="none" stroke="#78909c" strokeWidth="2.5" markerEnd="url(#arrow)" onClick={() => removeEdge(edge.id)} />
+                      return <path key={edge.id} className="edge-path" d={`M ${startX} ${startY} C ${startX + mid} ${startY}, ${endX - mid} ${endY}, ${endX} ${endY}`} fill="none" stroke="var(--studio-subtle)" strokeWidth="2.5" markerEnd="url(#arrow)" onClick={isWorkflowDetail ? undefined : () => removeEdge(edge.id)} />
                     })}
                     {drag?.type === 'edge'
                       ? (() => {
-                          const from = activeWorkflow.nodes.find((node) => node.id === drag.from)
-                          return from ? <path d={`M ${from.position.x + 248} ${from.position.y + 62} L ${drag.x} ${drag.y}`} fill="none" stroke="#166f7a" strokeWidth="2.5" strokeDasharray="6 4" /> : null
+                          const from = canvasNodes.find((node) => node.id === drag.from)
+                          const offset = branchOutputOffset(drag.branch)
+                          return from ? <path d={`M ${from.position.x + offset.x} ${from.position.y + offset.y} L ${drag.x} ${drag.y}`} fill="none" stroke="var(--studio-accent)" strokeWidth="2.5" strokeDasharray="6 4" /> : null
                         })()
                       : null}
                   </svg>
-                  {activeWorkflow.nodes.filter((node) => node.kind === 'loop').map((loopNode) => {
-                    const children = getLoopNodes(activeWorkflow, loopNode.id)
+                  {canvasNodes.filter((node) => node.kind === 'loop').map((loopNode) => {
+                    const children = getLoopNodes(canvasWorkflow, loopNode.id)
                     if (!children.length) return null
                     const minX = Math.min(...children.map((n) => n.position.x))
                     const minY = Math.min(...children.map((n) => n.position.y))
                     const maxX = Math.max(...children.map((n) => n.position.x + 248))
-                    const maxY = Math.max(...children.map((n) => n.position.y + 124))
+                    const maxY = Math.max(...children.map((n) => n.position.y + canvasNodeHeight(n)))
                     return (
                       <div key={loopNode.id} className="loop-container" style={{ left: minX - 20, top: minY - 50, width: maxX - minX + 40, height: maxY - minY + 70 }}>
-                        <div className="loop-header"><Repeat size={16} /><strong>{loopNode.title}</strong><span>循环 {loopNode.loop.fallbackCount} 次</span></div>
+                        <div className="loop-header"><Repeat size={16} /><strong>{loopNode.title}</strong><span>循环 {getLoopItems(executionState.context, loopNode).length} 次</span></div>
                       </div>
                     )
                   })}
-                  {activeWorkflow.nodes.map((node) => {
+                  {canvasNodes.map((node) => {
                     const meta = nodeMeta[node.kind]
                     if (!meta) return null
                     const Icon = meta.icon
                     const model = models.find((item) => item.id === node.modelId)
-                    const isInLoop = activeWorkflow.nodes.some((candidate) => candidate.kind === 'loop' && getLoopNodes(activeWorkflow, candidate.id).some((child) => child.id === node.id))
+                    const isInLoop = activeWorkflow.nodes.some((candidate) => candidate.kind === 'loop' && getLoopNodes(canvasWorkflow, candidate.id).some((child) => child.id === node.id))
                     const isDebugCurrent = workflowDebugSnapshot?.currentRun?.node.id === node.id
                     if (node.kind === 'loop') {
                       return (
-                        <article className={['dag-node', 'loop-node', selectedNode?.id === node.id ? 'selected' : '', isDebugCurrent ? 'debug-current' : ''].filter(Boolean).join(' ')} key={node.id} style={{ left: node.position.x, top: node.position.y }} onMouseDown={(e) => startNodeDrag(e, node)} onClick={() => setSelectedNodeId(node.id)}>
+                        <article className={['dag-node', 'loop-node', selectedCanvasIds.includes(node.id) ? 'selected' : '', isDebugCurrent ? 'debug-current' : ''].filter(Boolean).join(' ')} key={node.id} data-canvas-node-id={node.id} style={{ left: node.position.x, top: node.position.y }} onMouseDown={(e) => startNodeDrag(e, node)} onClick={(event) => { if ((event.target as HTMLElement).closest('.port,.node-action,.canvas-node-media')) return; setSelectedNodeId(node.id); setInspectorOpen(!isWorkflowDetail) }}>
                           <button className="port port-in" title="输入连接点" onMouseUp={(e) => finishEdgeDrag(e, node.id)} />
                           <button className="port port-out" title="输出连接点" onMouseDown={(e) => startEdgeDrag(e, node)} />
-                          <span className="dag-node-top"><Icon size={20} /><strong>{node.title}</strong><button className="node-action" title="删除节点" onClick={(e) => { e.stopPropagation(); removeNode(node.id) }}><Trash2 size={14} /></button></span>
+                          <span className="dag-node-top"><Icon size={20} /><strong title={node.title}>{node.title}</strong><button className="node-action" title="删除节点" onClick={(e) => { e.stopPropagation(); removeNode(node.id) }}><Trash2 size={14} /></button></span>
                           <small>{meta.label}</small>
                           <code>${'{' + node.resultVar + '}'}</code>
                           <span className="loop-badge"><Repeat size={13} />循环 {node.loop.fallbackCount}</span>
@@ -4383,12 +5608,13 @@ function App() {
                       )
                     }
                     return (
-                      <article className={['dag-node', selectedNode?.id === node.id ? 'selected' : '', isDebugCurrent ? 'debug-current' : ''].filter(Boolean).join(' ')} key={node.id} style={{ left: node.position.x, top: node.position.y }} onMouseDown={(e) => startNodeDrag(e, node)} onClick={() => setSelectedNodeId(node.id)}>
+                      <article className={['dag-node', hasCanvasMedia(node) ? 'has-canvas-media' : '', node.kind === 'branch' ? 'branch-node' : '', selectedCanvasIds.includes(node.id) ? 'selected' : '', isDebugCurrent ? 'debug-current' : ''].filter(Boolean).join(' ')} key={node.id} data-canvas-node-id={node.id} style={{ left: node.position.x, top: node.position.y }} onMouseDown={(e) => startNodeDrag(e, node)} onClick={(event) => { if ((event.target as HTMLElement).closest('.port,.node-action,.canvas-node-media')) return; setSelectedNodeId(node.id); setInspectorOpen(!isWorkflowDetail) }}>
                         <button className="port port-in" title="输入连接点" onMouseUp={(e) => finishEdgeDrag(e, node.id)} />
-                        <button className="port port-out" title="输出连接点" onMouseDown={(e) => startEdgeDrag(e, node)} />
-                        <span className="dag-node-top"><Icon size={20} /><strong>{node.title}</strong><button className="node-action" title="删除节点" onClick={(e) => { e.stopPropagation(); removeNode(node.id) }}><Trash2 size={14} /></button></span>
+                        {node.kind === 'branch' ? <>{(['true', 'false'] as const).map(port => <button key={port} className={`port port-out branch-port branch-port-${port}`} title={`${port} 输出连接点`} onMouseDown={e => startEdgeDrag(e, node, port)}><span>{port}</span></button>)}</> : <button className="port port-out" title="输出连接点" onMouseDown={(e) => startEdgeDrag(e, node)} />}
+                        {node.kind === 'branch' && <BranchNodeShape />}<span className="dag-node-top"><Icon size={20} /><strong title={node.title}>{node.title}</strong><button className="node-action" title="删除节点" onClick={(e) => { e.stopPropagation(); removeNode(node.id) }}><Trash2 size={14} /></button></span>
                         <small>{meta.label}{model ? ` · ${model.name}` : ''}</small>
                         <code>${'{' + node.resultVar + '}'}</code>
+                        {renderCanvasMedia(node)}
                         {isInLoop ? null : node.loop.enabled ? <span className="loop-badge"><Repeat size={13} />循环 {node.loop.fallbackCount}</span> : null}
                       </article>
                     )
@@ -4398,21 +5624,32 @@ function App() {
               </div>
             </section>
 
-            <section className="inspector">
-              <div className="panel-title"><h2>节点属性</h2><button className="icon-btn danger" title="删除节点" onClick={() => removeNode(selectedNode.id)} disabled={activeWorkflow.nodes.length <= 1}><Trash2 size={17} /></button></div>
+            {!isWorkflowDetail && inspectorOpen && selectedNode ? <section className="inspector node-properties-drawer" role="dialog" aria-modal="false" aria-labelledby="node-properties-title">
+              <div className="panel-title"><h2 id="node-properties-title">节点属性</h2><button className="icon-btn inspector-close" title="关闭节点属性" aria-label="关闭节点属性" onClick={() => setInspectorOpen(false)}><X size={19} /></button><button className="icon-btn danger" title="删除节点" onClick={() => removeNode(selectedNode.id)} disabled={activeWorkflow.nodes.length <= 1}><Trash2 size={17} /></button></div>
               <label>节点名称<input value={selectedNode.title} onChange={(event) => updateNode(selectedNode.id, { title: event.target.value })} /></label>
               <label>结果变量名<input value={selectedNode.resultVar} onChange={(event) => updateNode(selectedNode.id, { resultVar: event.target.value })} /></label>
               {selectedCapability ? <label>使用模型<select value={selectedNode.modelId ?? ''} onChange={(event) => updateNode(selectedNode.id, { modelId: event.target.value || undefined })}>{selectedNode.kind === 'image' ? <option value="">手工上传，不调用模型</option> : null}{availableModels.map((model) => <option key={model.id} value={model.id}>{model.name}</option>)}</select></label> : null}
-              {selectedNode.kind === 'internet' || selectedNode.kind === 'validation' || selectedNode.kind === 'knowledge' || selectedNode.kind === 'asset' || selectedNode.kind === 'compose' || selectedNode.kind === 'text' ? <label>节点操作<input value={selectedNode.operation ?? ''} placeholder="例如 internet.retrieve" onChange={(event) => updateNode(selectedNode.id, { operation: event.target.value || undefined })} /></label> : null}
+              {selectedNode.kind === 'internet' || selectedNode.kind === 'validation' || selectedNode.kind === 'knowledge' || selectedNode.kind === 'asset' || selectedNode.kind === 'compose' || selectedNode.kind === 'videoConcat' || selectedNode.kind === 'text' ? <label>节点操作<input value={selectedNode.operation ?? ''} placeholder="例如 internet.retrieve" onChange={(event) => updateNode(selectedNode.id, { operation: event.target.value || undefined })} /></label> : null}
               {selectedNode.kind === 'text' ? <label>结构化输出<select value={selectedNode.outputMode ?? 'legacy-shots'} onChange={(event) => updateNode(selectedNode.id, { outputMode: event.target.value as TextOutputMode })}><option value="legacy-shots">旧版 shots 数组</option><option value="array">JSON 数组</option><option value="json">JSON 对象</option><option value="text">纯文本</option></select></label> : null}
+              {selectedNode.kind === 'http' ? <label>请求地址<input value={selectedNode.request?.url ?? ''} placeholder="/api/video-evidence" onChange={event => updateNode(selectedNode.id, {request:{url:event.target.value,method:'POST'}})} /></label> : null}
+              {selectedNode.kind === 'branch' ? <div className="branch-config">
+                <label>所属循环<select aria-label="分支所属循环" value={selectedNode.parentId ?? activeWorkflow.nodes.find(n => n.kind === 'loop' && n.childIds?.includes(selectedNode.id))?.id ?? ''} onChange={event => updateActiveWorkflow(w => setBranchLoop(w, selectedNode.id, event.target.value))}><option value="">循环外</option>{activeWorkflow.nodes.filter(n => n.kind === 'loop').map(n => <option key={n.id} value={n.id}>{n.title}</option>)}</select></label>
+                <p>代码返回 true / false，沿对应连线执行。可连接任意节点，包括自身和之前的节点；次数限制由代码及参数决定。抛出错误会停在本节点，单步调试可修改参数后重试。</p>
+                {(['true', 'false'] as const).map(port => <label key={port}>{port} 出口目标<select aria-label={`${port} 出口目标`} value={activeWorkflow.edges.find(e => e.from === selectedNode.id && e.branch === port)?.to ?? ''} onChange={event => updateActiveWorkflow(w => ({ ...w, edges: setBranchEdge(w.edges, selectedNode.id, port, event.target.value, createId('edge')) }))}>
+                  <option value="">未连接</option>{activeWorkflow.nodes.map(n => <option key={n.id} value={n.id}>{n.title}{n.id === selectedNode.id ? '（自身）' : ''}</option>)}
+                </select></label>)}
+                {branchConfigurationErrors(activeWorkflow).filter(e => e.includes(selectedNode.id)).map(e => <p role="alert" key={e}>{e}</p>)}
+              </div> : null}
+              <label><input type="checkbox" checked={Boolean(selectedNode.mapInput)} onChange={event=>updateNode(selectedNode.id,{mapInput:event.target.checked?{sourcePath:'items',itemVar:'item',maxItems:24}:undefined})} />对数组逐项执行</label>
+              {selectedNode.mapInput ? <div className="loop-config"><label>数组来源<input value={selectedNode.mapInput.sourcePath} onChange={event=>updateNode(selectedNode.id,{mapInput:{...selectedNode.mapInput!,sourcePath:event.target.value}})} /></label><label>单项变量<input value={selectedNode.mapInput.itemVar} onChange={event=>updateNode(selectedNode.id,{mapInput:{...selectedNode.mapInput!,itemVar:event.target.value}})} /></label><label>数量上限<input type="number" min="1" max="100" value={selectedNode.mapInput.maxItems??24} onChange={event=>updateNode(selectedNode.id,{mapInput:{...selectedNode.mapInput!,maxItems:Number(event.target.value)}})} /></label></div> : null}
               <div className="long-text-field">
                 <div className="long-text-field-heading">
-                  <label htmlFor={`node-prompt-${selectedNode.id}`}>{selectedNode.kind === 'code' || selectedNode.kind === 'internet' || selectedNode.kind === 'validation' || selectedNode.kind === 'knowledge' || selectedNode.kind === 'asset' || selectedNode.kind === 'compose' ? '处理说明（内置操作不作为文本模型提示词）' : '提示词 / 模板'}</label>
+                  <label htmlFor={`node-prompt-${selectedNode.id}`}>{selectedNode.kind === 'code' || selectedNode.kind === 'internet' || selectedNode.kind === 'validation' || selectedNode.kind === 'knowledge' || selectedNode.kind === 'asset' || selectedNode.kind === 'compose' || selectedNode.kind === 'videoConcat' ? '处理说明（内置操作不作为文本模型提示词）' : '提示词 / 模板'}</label>
                   <button type="button" onClick={() => setTextPreview({ value: selectedNode.prompt, title: `${selectedNode.title} · ${selectedNode.kind === 'code' ? '处理说明' : '提示词 / 模板'}`, eyebrow: '节点内容', editable: true, target: { type: 'node', nodeId: selectedNode.id, field: 'prompt' } })} aria-label="展开编辑提示词或处理说明"><Maximize2 size={14} />展开</button>
                 </div>
                 <textarea id={`node-prompt-${selectedNode.id}`} rows={5} value={selectedNode.prompt} onChange={(event) => updateNode(selectedNode.id, { prompt: event.target.value })} />
               </div>
-              {selectedNode.kind === 'code' ? (
+              {(selectedNode.kind === 'code' || selectedNode.kind === 'branch') ? (
                 <div className="code-config">
                   <div className="code-config-title">
                     <div><strong>JavaScript 代码</strong><span>可用 ${'{变量路径}'} 占位符、context、顶层上下文变量（如 input）、files、prompt、console 和 excel.parse()。return 中的 contextPatch 会合并进流程上下文。</span></div>
@@ -4431,14 +5668,14 @@ function App() {
               ) : null}
               {selectedNode.kind === 'loop' ? <div className="loop-config"><label>循环来源变量<input value={selectedNode.loop.sourcePath} onChange={(event) => updateNode(selectedNode.id, { loop: { ...selectedNode.loop, sourcePath: event.target.value } })} /></label><div className="position-grid"><label>默认次数<input type="number" value={selectedNode.loop.fallbackCount} onChange={(event) => updateNode(selectedNode.id, { loop: { ...selectedNode.loop, fallbackCount: Number(event.target.value) } })} /></label><label>单项变量名<input value={selectedNode.loop.itemVar} onChange={(event) => updateNode(selectedNode.id, { loop: { ...selectedNode.loop, itemVar: event.target.value } })} /></label></div></div> : null}
               {selectedNode.kind === 'input' || selectedNode.kind === 'image' ? <div className="upload-box"><div><strong>{selectedNode.title === '模特图生成' ? '模特参考图' : '上传图片'}</strong><span>上传后的图片会作为该节点的输出数组，可被后续节点通过 ${'{' + selectedNode.resultVar + '.items}'} 引用。</span></div><label className="upload-btn"><ImageIcon size={16} />选择图片<input type="file" accept="image/*" multiple onChange={(event) => { uploadAssets(selectedNode.id, event.target.files); event.currentTarget.value = '' }} /></label>{selectedNode.uploads.length ? <div className="thumb-grid">{selectedNode.uploads.map((asset) => <div className="thumb-item" key={asset.id}><img src={asset.dataUrl} alt={asset.name} /><button className="node-action" title="删除图片" onClick={() => removeUpload(selectedNode.id, asset.id)}><Trash2 size={14} /></button></div>)}</div> : null}</div> : null}
-              {selectedNode.kind === 'code' ? (
+              {(selectedNode.kind === 'code' || selectedNode.kind === 'branch') ? (
                 <div className="upload-box">
                   <div><strong>附件</strong><span>支持 Excel .xlsx，最大 15MB；上传新附件会替换当前附件。代码可通过 files 和 excel.parse() 读取。</span></div>
                   <label className="upload-btn"><FileSpreadsheet size={16} />上传附件<input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={(event) => { uploadAssets(selectedNode.id, event.target.files); event.currentTarget.value = '' }} /></label>
-                  {selectedNode.uploads.length ? <div className="file-upload-list">{selectedNode.uploads.map((asset) => <div className="file-upload-item" key={asset.id}><FileSpreadsheet size={20} /><div><strong>{asset.name}</strong><span>{asset.size ? `${(asset.size / 1024).toFixed(1)} KB` : '随工作流保存'}</span></div><button className="node-action" title="删除附件" onClick={() => removeUpload(selectedNode.id, asset.id)}><Trash2 size={14} /></button></div>)}</div> : <span className="empty-note">尚未上传附件；不调用 excel.parse() 的代码仍可执行。</span>}
+                  {selectedNode.uploads.length ? <div className="file-upload-list">{selectedNode.uploads.map((asset) => <div className="file-upload-item" key={asset.id}><FileSpreadsheet size={20} /><div className="file-upload-copy"><strong>{asset.name}</strong><span>{asset.size ? `${(asset.size / 1024).toFixed(1)} KB` : '随工作流保存'}</span></div><div className="file-upload-actions"><a className="node-action attachment-download" href={assetDownloadUrl(asset.dataUrl, asset.name)} download={asset.name} title="下载附件" aria-label={`下载附件 ${asset.name}`}><Download size={14} /></a><button className="node-action" title="删除附件" aria-label={`删除附件 ${asset.name}`} onClick={() => removeUpload(selectedNode.id, asset.id)}><Trash2 size={14} /></button></div></div>)}</div> : <span className="empty-note">尚未上传附件；不调用 excel.parse() 的代码仍可执行。</span>}
                 </div>
               ) : null}
-              {selectedNode.kind === 'input' || selectedNode.params.length ? <><div className="panel-title compact"><h3>{selectedNode.kind === 'input' ? '入参字段' : '参数配置'}</h3>{selectedNode.kind === 'input' ? <button className="ghost-btn" onClick={addParam}><Plus size={16} />添加</button> : null}</div>
+              {<><div className="panel-title compact"><h3>{selectedNode.kind === 'input' ? '入参字段' : '参数配置'}</h3><button className="ghost-btn" onClick={addParam}><Plus size={16} />添加</button></div>
               <div className="param-list">
                 {selectedNode.params.map((param) => {
                   const valueLength = Array.from(param.value).length
@@ -4447,18 +5684,18 @@ function App() {
                     <div className="param-editor" key={param.id}>
                       <label className="param-field">
                         <span>中文名</span>
-                        <input disabled={selectedNode.kind !== 'input'} value={param.name} onChange={(event) => updateParam(selectedNode.id, param.id, { name: event.target.value })} />
+                        <input value={param.name} onChange={(event) => updateParam(selectedNode.id, param.id, { name: event.target.value })} />
                       </label>
                       <label className="param-field">
                         <span>英文名</span>
-                        <input disabled={selectedNode.kind !== 'input'} value={param.englishName || ''} onChange={(event) => updateParam(selectedNode.id, param.id, { englishName: event.target.value })} />
+                        <input value={param.englishName || ''} onChange={(event) => updateParam(selectedNode.id, param.id, { englishName: event.target.value })} />
                       </label>
                       <label className="param-field param-type-field">
                         <span>类型</span>
-                        <select disabled={selectedNode.kind !== 'input'} value={param.type} onChange={(event) => updateParam(selectedNode.id, param.id, { type: event.target.value as ParamType })}><option value="text">文本</option><option value="number">数字</option><option value="boolean">布尔</option><option value="image">单图</option><option value="images">多图</option><option value="json">JSON</option></select>
+                        <select value={param.type} onChange={(event) => updateParam(selectedNode.id, param.id, { type: event.target.value as ParamType })}><option value="text">文本</option><option value="number">数字</option><option value="boolean">布尔</option><option value="image">单图</option><option value="images">多图</option><option value="json">JSON</option></select>
                       </label>
-                      <label className="check-label param-required-field"><input disabled={selectedNode.kind !== 'input'} type="checkbox" checked={param.required} onChange={(event) => updateParam(selectedNode.id, param.id, { required: event.target.checked })} />必填</label>
-                      {selectedNode.kind === 'input' ? <button className="icon-btn" title="删除入参" aria-label={`删除入参 ${param.name || param.englishName || ''}`} onClick={() => removeParam(param.id)}><Trash2 size={15} /></button> : null}
+                      <label className="check-label param-required-field"><input type="checkbox" checked={param.required} onChange={(event) => updateParam(selectedNode.id, param.id, { required: event.target.checked })} />必填</label>
+                      {<button className="icon-btn" title="删除入参" aria-label={`删除入参 ${param.name || param.englishName || ''}`} onClick={() => removeParam(param.id)}><Trash2 size={15} /></button>}
                       <div className="param-field param-value-field">
                         <div className="long-text-field-heading">
                           <label htmlFor={`param-value-${selectedNode.id}-${param.id}`}>参数值</label>
@@ -4476,8 +5713,8 @@ function App() {
                     </div>
                   )
                 })}
-              </div></> : null}
-            </section>
+              </div></>}
+            </section> : null}
           </div>
         </section>
         )
@@ -4495,7 +5732,9 @@ function App() {
                   <button className="ghost-btn" onClick={addModel}><Plus size={17} />新增模型</button>
                 </div>
               </header>
-              <section className="storage-panel">
+              <details className="studio-storage-disclosure">
+                <summary><Settings size={15} /><span>配置库诊断</span><ChevronDown size={16} /></summary>
+                <section className="storage-panel">
                 <div>
                   <h2>配置库诊断</h2>
                   <p>当前项目使用 PostgreSQL 保存模型配置和工作流配置；这里只显示 key 长度，不显示明文。</p>
@@ -4506,11 +5745,12 @@ function App() {
                   <button className="ghost-btn" onClick={runModelStorageSelfTest}>配置入库自测</button>
                 </div>
                 {storageDiagnostic ? <pre className="storage-result">{storageDiagnostic}</pre> : null}
-              </section>
+                </section>
+              </details>
               <div className="model-tabs">
                 {(['text', 'image', 'video', 'audio'] as ModelCapability[]).map((capability) => (
                   <button key={capability} className={modelTab === capability ? 'tab-btn active' : 'tab-btn'} onClick={() => setModelTab(capability)}>
-                    {capability === 'text' ? '文本推理模型' : capability === 'image' ? '图片生成模型' : capability === 'video' ? '视频生成模型' : '音频生成模型'}
+                    {capability === 'text' ? '文本推理模型' : capability === 'image' ? '图片生成模型' : capability === 'video' ? '视频生成模型' : '语音合成 / TTS'}
                   </button>
                 ))}
               </div>
@@ -4526,7 +5766,7 @@ function App() {
                     </div>
                     <label>模型名称<input value={model.name} onChange={(event) => updateModel(model.id, { name: event.target.value })} /></label>
                     <div className="position-grid">
-                      <label>Provider<select value={model.provider} onChange={(event) => updateModel(model.id, { provider: event.target.value as ModelProvider })}><option value="Anthropic">Anthropic</option><option value="OpenAI">OpenAI</option><option value="Ofox">Ofox</option><option value="Kling">Kling</option><option value="Local">Local</option><option value="Custom">Custom</option></select></label>
+                      <label>Provider<select value={model.provider} onChange={(event) => updateModel(model.id, { provider: event.target.value as ModelProvider })}><option value="Anthropic">Anthropic</option><option value="OpenAI">OpenAI</option>{model.capability === 'text' ? <option value="Codex">Codex（本机 CLI）</option> : null}<option value="Ofox">Ofox</option><option value="Kling">Kling</option><option value="Bailian">百炼 TTS</option><option value="Local">Local</option><option value="Custom">Custom</option></select></label>
                       <label>Model ID<input value={model.settings.model ?? ''} onChange={(event) => updateModelSetting(model.id, 'model', event.target.value)} /></label>
                     </div>
                     {renderModelFields(model)}
@@ -4624,7 +5864,7 @@ function App() {
                     {experienceSource.omittedFields.length ? <p className="experience-source-warning">出于安全与存储限制，{experienceSource.omittedFields.join('、')}中的大体积素材未保留，请重新上传。</p> : null}
                   </aside>
                 ) : null}
-                <label className="experience-prompt"><span className="experience-field-title"><strong>提示词<em>选填</em></strong><code>prompt</code></span><textarea rows={6} value={detailModel.testInput} placeholder={detailModel.provider === 'Kling' && detailModel.capability === 'video' ? '留空时使用默认值：让画面自然运动。' : undefined} onChange={(event) => updateModel(detailModel.id, { testInput: event.target.value })} />{detailReferenceImages.length ? <span className="experience-prompt-references"><em>插入素材引用</em>{detailReferenceImages.map((_, index) => <button type="button" key={index} onClick={(event) => { event.preventDefault(); insertExperienceReference(detailModel, index) }}>@参考附件{index + 1}</button>)}</span> : null}</label>
+                <label className="experience-prompt"><span className="experience-field-title"><strong>{detailModel.capability === 'audio' ? '合成台词' : '提示词'}<em>{detailModel.capability === 'audio' ? '必填' : '选填'}</em></strong><code>prompt</code></span><textarea rows={6} value={detailModel.testInput} placeholder={detailModel.provider === 'Kling' && detailModel.capability === 'video' ? '留空时使用默认值：让画面自然运动。' : undefined} onChange={(event) => updateModel(detailModel.id, { testInput: event.target.value })} />{detailReferenceImages.length ? <span className="experience-prompt-references"><em>插入素材引用</em>{detailReferenceImages.map((_, index) => <button type="button" key={index} onClick={(event) => { event.preventDefault(); insertExperienceReference(detailModel, index) }}>@参考附件{index + 1}</button>)}</span> : null}</label>
                 {renderExperienceParameters(detailModel)}
                 <div className="experience-actions"><span>提交后会自动跟踪任务，生成结果可直接预览和下载。</span><button className="primary-btn" disabled={modelTestRuns[detailModel.id]?.phase === 'submitting' || modelTestRuns[detailModel.id]?.phase === 'processing'} onClick={() => testModel(detailModel)}>{modelTestRuns[detailModel.id]?.phase === 'submitting' || modelTestRuns[detailModel.id]?.phase === 'processing' ? <LoaderCircle className="run-status-spinner" size={17} /> : <FlaskConical size={17} />}{modelTestRuns[detailModel.id]?.phase === 'submitting' ? '正在提交' : modelTestRuns[detailModel.id]?.phase === 'processing' ? '生成中' : '发起测试调用'}</button></div>
                 {renderExperienceResult(detailModel)}

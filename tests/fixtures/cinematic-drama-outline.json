@@ -1,0 +1,82 @@
+{
+  "contentContractVersion": "cinematic-v1",
+  "episodeTitle": "甘陵党议",
+  "episodeDrama": {
+    "centralQuestion": "一支评价人物的歌谣，如何让两家宾客越来越不能相容？",
+    "viewpointCharacters": ["周家宾客", "房家宾客"],
+    "stakes": "周家宾客希望维护所敬之人的声望，房家宾客不肯收回转述；双方失去原有的交谈余地。",
+    "openingPromise": { "description": "一次普通相遇被乡人歌谣打断，周家宾客要求对方回应轻慢。", "beatIds": ["beat-orient", "beat-probe"] },
+    "payoff": { "description": "争执演变为各自结交同道，两家交往圈逐渐分立。", "beatIds": ["beat-consequence"] }
+  },
+  "historicalLocks": [
+    { "id": "fact-identities", "fact": "周福曾教授桓帝而后为尚书，房植有名当朝。", "sourceRefs": ["[史料1]"] },
+    { "id": "fact-guests", "fact": "乡人歌谣对比两人，两家宾客互相讥揣、各树朋徒，形成南北部；宾客行动不能改写为主人授意。", "sourceRefs": ["[史料1]"] }
+  ],
+  "adaptationSpace": {
+    "policy": "守正史，具体对白与场面调度可合理拟制",
+    "sourceLevel": "正史",
+    "allowed": ["用两位概括化宾客呈现群体的交锋与交往变化", "具体相遇、对白、招呼及告辞为拟制"],
+    "forbidden": ["不把宾客行动写成周福或房植授意", "不把这一次拟制相遇写成党议唯一原因", "不编造二人核心政治动机"]
+  },
+  "characterDramas": [
+    {
+      "name": "周家宾客", "goal": "争取对方收回对周福的轻慢", "concern": "自己维护的人被当面贬低", "leverage": "双方此前尚能往来", "tactic": "用追问要求对方承担评价", "speechStyle": "短句直问，克制但不让步", "basis": "performance", "historicalLockIds": ["fact-guests"],
+      "coreMotivation": { "status": "unknown", "description": "概括化人物无可考的个人政治动机", "historicalLockIds": [] },
+      "initialState": { "knowledge": ["周福曾为帝师"], "relationships": ["与房家宾客尚能交谈"], "choices": [] }
+    },
+    {
+      "name": "房家宾客", "goal": "保留评价而不接受对方追责", "concern": "让步使自己失去立场", "leverage": "歌谣来自乡人", "tactic": "借转述回避正面承担", "speechStyle": "以平静短句回避追问", "basis": "performance", "historicalLockIds": ["fact-guests"],
+      "coreMotivation": { "status": "unknown", "description": "史料未记录个人核心动机", "historicalLockIds": [] },
+      "initialState": { "knowledge": ["乡人歌谣对比房植与周福"], "relationships": ["与周家宾客尚能交谈"], "choices": [] }
+    }
+  ],
+  "dramaticScenes": [
+    {
+      "id": "drama-encounter", "function": "conflict", "setting": "甘陵街口", "characters": ["周家宾客", "房家宾客"],
+      "goal": "周家宾客争取对方收回轻慢", "obstacle": "对方以转述乡人之言回避", "tactics": "追问对方评价依据，对方将自己退回转述者位置", "turn": "对方仍不让步，周家宾客撤回招呼", "result": "一次可以继续的交谈被双方结束", "beatIds": ["beat-orient", "beat-probe", "beat-counter", "beat-choice"],
+      "characterStates": [
+        { "name": "周家宾客", "before": { "knowledge": ["周福曾为帝师"], "relationships": ["与房家宾客尚能交谈"], "choices": [] }, "after": { "knowledge": ["周福曾为帝师", "房家宾客不愿收回转述"], "relationships": ["与房家宾客交谈破裂"], "choices": ["结束这次交谈"] } },
+        { "name": "房家宾客", "before": { "knowledge": ["乡人歌谣对比房植与周福"], "relationships": ["与周家宾客尚能交谈"], "choices": [] }, "after": { "knowledge": ["乡人歌谣对比房植与周福", "转述已激怒周家宾客"], "relationships": ["与周家宾客交谈破裂"], "choices": ["没有收回转述"] } }
+      ]
+    },
+    {
+      "id": "drama-consequence", "function": "consequence", "setting": "甘陵市集", "characters": ["周家宾客", "房家宾客"],
+      "goal": "表现宾客交往圈分立的结果", "obstacle": "原来的招呼已不能继续", "tactics": "两人在市集错身，各自向不同方向离开", "turn": "对视后不再相招", "result": "以实际交往变化配合史载后果的简短旁白", "beatIds": ["beat-consequence"],
+      "characterStates": [
+        { "name": "周家宾客", "before": { "knowledge": ["周福曾为帝师", "房家宾客不愿收回转述"], "relationships": ["与房家宾客交谈破裂"], "choices": ["结束这次交谈"] }, "after": { "knowledge": ["周福曾为帝师", "房家宾客不愿收回转述"], "relationships": ["与房家宾客互不相招"], "choices": ["结束这次交谈", "错身时不再招呼"] } },
+        { "name": "房家宾客", "before": { "knowledge": ["乡人歌谣对比房植与周福", "转述已激怒周家宾客"], "relationships": ["与周家宾客交谈破裂"], "choices": ["没有收回转述"] }, "after": { "knowledge": ["乡人歌谣对比房植与周福", "转述已激怒周家宾客"], "relationships": ["与周家宾客互不相招"], "choices": ["没有收回转述", "错身时不再招呼"] } }
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene-01", "sequence": 1, "title": "歌谣打断招呼", "dramaticSceneId": "drama-encounter", "cast": ["周家宾客", "房家宾客"], "purpose": "建立周福身份及宾客立场，周家宾客因听到转述而停步，准备追问。",
+      "requiredBeats": [
+        { "id": "beat-orient", "description": "周家宾客走向房家宾客，旁白：周福曾教授桓帝。乡人歌谣却更推崇房植。", "function": "建立处境", "stateChange": "普通往来被对人物声望的评价打断", "observable": { "visual": ["周家宾客停步"], "audio": ["周福曾教授桓帝", "乡人歌谣却更推崇房植"] }, "setting": "甘陵街口", "mustShow": ["周家宾客停步"] }
+      ],
+      "historicalBasis": "[史料1] 周福曾教授桓帝，乡人作歌谣评价周福与房植。", "adaptationBoundary": "相遇及停步为拟制，不把歌谣评价作为创作者事实判断。", "targetDuration": 8, "continuityMode": "scene_cut", "completionCriteria": ["身份信息通过旁白说出", "周家宾客停步"]
+    },
+    {
+      "id": "scene-02", "sequence": 2, "title": "追问遇到回避", "dramaticSceneId": "drama-encounter", "cast": ["周家宾客", "房家宾客"], "purpose": "前段停步后追问，对方以转述回避；周家宾客准备结束交谈。",
+      "requiredBeats": [
+        { "id": "beat-probe", "description": "周家宾客向对方转身问：一句歌谣，便能断人高下？", "function": "试探", "stateChange": "由听见评价变为要求对方回应", "observable": { "visual": ["周家宾客转身"], "audio": ["一句歌谣，便能断人高下"] }, "setting": "甘陵街口", "mustShow": ["周家宾客转身"] },
+        { "id": "beat-counter", "description": "房家宾客迎着对方目光说：乡人传唱，我只不过学了一句。", "function": "反制", "stateChange": "追问未获让步，对方退回转述者位置", "observable": { "visual": ["房家宾客迎着目光"], "audio": ["乡人传唱，我只不过学了一句"] }, "setting": "甘陵街口", "mustShow": ["房家宾客迎着目光"] }
+      ],
+      "historicalBasis": "[史料1] 两家宾客互相讥揣。", "adaptationBoundary": "具体问答与目光调度为拟制。", "targetDuration": 9, "continuityMode": "tail_continuation", "completionCriteria": ["追问与回避完整说出", "两人暂未结束交谈"]
+    },
+    {
+      "id": "scene-03", "sequence": 3, "title": "撤回招呼", "dramaticSceneId": "drama-encounter", "cast": ["周家宾客", "房家宾客"], "purpose": "承接拒不让步，周家宾客用撤回招呼、离开结束交谈，让关系变化可见。",
+      "requiredBeats": [
+        { "id": "beat-choice", "description": "周家宾客撤回招呼，转身离开；房家宾客把视线移开。", "function": "选择", "stateChange": "从可交谈到主动结束往来", "observable": { "visual": ["周家宾客撤回招呼", "周家宾客转身离开", "房家宾客移开视线"], "audio": [] }, "setting": "甘陵街口", "mustShow": ["撤回招呼", "转身离开"] }
+      ],
+      "historicalBasis": "[史料1] 两家宾客互相讥揣，关系对立。", "adaptationBoundary": "撤回招呼与离开为拟制，不声明这次相遇为党议唯一原因。", "targetDuration": 4, "continuityMode": "coverage_cut", "completionCriteria": ["周家宾客结束交谈并离开", "房家宾客移开视线"]
+    },
+    {
+      "id": "scene-04", "sequence": 4, "title": "交往分途", "dramaticSceneId": "drama-consequence", "cast": ["周家宾客", "房家宾客"], "purpose": "此前破裂在后来的市集相遇中得到延续，以互不相招配合史载结果回应开场问题。",
+      "requiredBeats": [
+        { "id": "beat-consequence", "description": "市集里两人错身，各自离开；旁白：两家宾客互相讥揣，各树朋徒，遂成南北部。", "function": "后果与回应", "stateChange": "一次交谈破裂延续为各自的交往选择；史载群体后果由旁白说明", "observable": { "visual": ["两人错身各自离开"], "audio": ["两家宾客互相讥揣，各树朋徒，遂成南北部"] }, "setting": "甘陵市集", "mustShow": ["两人错身各自离开"] }
+      ],
+      "historicalBasis": "[史料1] 两家宾客互相讥揣，各树朋徒，形成南北部。", "adaptationBoundary": "市集错身为交往变化的拟制，不把局部画面冒称史载群体行动全部已拍出。", "targetDuration": 7, "continuityMode": "scene_cut", "completionCriteria": ["两人错身各自离开", "史载后果旁白完整说出"]
+    }
+  ]
+}

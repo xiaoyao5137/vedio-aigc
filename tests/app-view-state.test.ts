@@ -8,7 +8,7 @@ test('execution view survives a page remount through session storage', () => {
     getItem: (key: string) => values.get(key) ?? null,
     setItem: (key: string, value: string) => values.set(key, value),
   }
-  const expected = { page: 'workflow' as const, workflowView: 'run' as const, activeWorkflowId: 'wf-history', runnerTab: 'execute' as const }
+  const expected = { page: 'workflow' as const, workflowView: 'run' as const, activeWorkflowId: 'wf-history', runnerTab: 'execute' as const, executionId: 'record-12' }
 
   saveAppViewState(storage, expected)
 

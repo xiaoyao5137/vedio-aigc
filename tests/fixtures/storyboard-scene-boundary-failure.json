@@ -1,0 +1,394 @@
+{
+  "scene": {
+    "id": "scene-06",
+    "sequence": 6,
+    "title": "李膺邀请共论",
+    "dramaticSceneId": "drama-03",
+    "cast": [
+      "李膺",
+      "郭泰"
+    ],
+    "purpose": "李膺邀请郭泰共同品评天下士人,开启品评活动",
+    "requiredBeats": [
+      {
+        "id": "beat-06",
+        "description": "李膺向前倾身,说道:当今士林,良莠难辨。林宗既有识人之明,何不与我共论天下人物?",
+        "function": "李膺发起品评邀请",
+        "stateChange": "从认可到提出合作",
+        "observable": {
+          "visual": [
+            "李膺向前倾身"
+          ],
+          "audio": [
+            "当今士林良莠难辨",
+            "林宗既有识人之明何不与我共论天下人物"
+          ]
+        },
+        "setting": "李膺堂内",
+        "mustShow": [
+          "李膺",
+          "向前倾身"
+        ]
+      }
+    ],
+    "historicalBasis": "[史料1] 记载李膺与郭泰共论天下人物",
+    "adaptationBoundary": "李膺邀请的具体措辞与动作为合理拟制",
+    "targetDuration": 6,
+    "continuityMode": "scene_cut",
+    "completionCriteria": [
+      "李膺说出邀请共论的话"
+    ],
+    "contentContractVersion": "cinematic-v1",
+    "dramaticUnitId": "drama-03",
+    "settingId": "drama-03",
+    "closesUnit": false,
+    "continuityFromPrevious": false
+  },
+  "previous": {
+    "id": "scene-05",
+    "storyProgress": {
+      "unitId": "drama-02",
+      "status": "complete",
+      "actionResult": "李膺明确表达对郭泰的认可",
+      "response": "确立二人结交基础，完成试探环节",
+      "pendingActions": []
+    },
+    "worldState": {
+      "settingId": "drama-02",
+      "characters": [
+        {
+          "name": "郭泰",
+          "position": {
+            "status": "unknown"
+          },
+          "heldProps": {
+            "status": "unknown"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        },
+        {
+          "name": "李膺",
+          "position": {
+            "status": "unknown"
+          },
+          "heldProps": {
+            "status": "unknown"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        }
+      ]
+    },
+    "presentCharacters": [
+      "李膺",
+      "郭泰"
+    ],
+    "characters": [
+      "李膺",
+      "郭泰"
+    ],
+    "endCharacters": [
+      "李膺",
+      "郭泰"
+    ],
+    "lastFramePrompt": "李膺站在画面中央偏左，束发高髻插玉簪，长须垂胸，深灰色宽袖长袍，面带赞许神色，双手合于腹前。前景右侧郭泰背影虚焦，面向李膺。背景木柱、格栅窗及门清晰可见。\n【静态尾帧】只呈现动作完成后的单一时间点与最终状态；单幅全画幅画面，禁止分镜、拼贴、分栏、上下三段、连环画、重复人物；画面内禁止字幕、水印、标题、标签及任何可读文字，榜文、竹简、牌匾等文字载体只能虚焦、背向镜头或呈现不可辨纹理。",
+    "continuity": {
+      "mode": "coverage_cut",
+      "previousShotId": "scene-04",
+      "bridgeType": "cut",
+      "bridgeAnchor": "切至李膺反应，呈现其对郭泰谦逊回答的赞许神色"
+    },
+    "contentContractVersion": "cinematic-v1"
+  },
+  "params": {
+    "pacingVersion": "duration-v2",
+    "timingPolicy": {
+      "version": "duration-policy-v2.1",
+      "speech": {
+        "dialogue": {
+          "referenceRate": 4.5,
+          "minimumNaturalRate": 3.3,
+          "maximumRate": 5,
+          "startupAllowance": 0.25
+        },
+        "narration": {
+          "referenceRate": 4.5,
+          "minimumNaturalRate": 3.3,
+          "maximumRate": 5,
+          "startupAllowance": 0.25
+        },
+        "chant": {
+          "referenceRate": 3.3,
+          "minimumNaturalRate": 2.8,
+          "maximumRate": 4.5,
+          "startupAllowance": 0.25
+        },
+        "singing": {
+          "referenceRate": 2.8,
+          "minimumNaturalRate": 2,
+          "maximumRate": 3.5,
+          "startupAllowance": 0.35
+        }
+      },
+      "shortPauseSeconds": 0.15,
+      "sentencePauseSeconds": 0.25,
+      "linePauseSeconds": 0.2,
+      "measurementToleranceSeconds": 0.25,
+      "endingReadabilityReserve": 0.5,
+      "maxConservativeExtraSeconds": 1,
+      "minimumProviderDuration": 3,
+      "maximumProviderDuration": 15,
+      "minimumVocalizationSeconds": 0.8,
+      "minimumActionSeconds": 0.3,
+      "minimumReactionSeconds": 0.5
+    },
+    "qualityMode": "principle-v1",
+    "maxGenerationAttempts": 20
+  },
+  "candidate": {
+    "contentContractVersion": "cinematic-v1",
+    "dramaticSceneId": "drama-03",
+    "id": "scene-06",
+    "title": "李膺邀请共论",
+    "duration": 11,
+    "pacing": {
+      "version": "duration-v2",
+      "timingPolicy": {
+        "version": "duration-policy-v2.1",
+        "speech": {
+          "dialogue": {
+            "referenceRate": 4.5,
+            "minimumNaturalRate": 3.3,
+            "maximumRate": 5,
+            "startupAllowance": 0.25
+          },
+          "narration": {
+            "referenceRate": 4.5,
+            "minimumNaturalRate": 3.3,
+            "maximumRate": 5,
+            "startupAllowance": 0.25
+          },
+          "chant": {
+            "referenceRate": 3.3,
+            "minimumNaturalRate": 2.8,
+            "maximumRate": 4.5,
+            "startupAllowance": 0.25
+          },
+          "singing": {
+            "referenceRate": 2.8,
+            "minimumNaturalRate": 2,
+            "maximumRate": 3.5,
+            "startupAllowance": 0.35
+          }
+        },
+        "shortPauseSeconds": 0.15,
+        "sentencePauseSeconds": 0.25,
+        "linePauseSeconds": 0.2,
+        "measurementToleranceSeconds": 0.25,
+        "endingReadabilityReserve": 0.5,
+        "maxConservativeExtraSeconds": 1,
+        "minimumProviderDuration": 3,
+        "maximumProviderDuration": 15,
+        "minimumVocalizationSeconds": 0.8,
+        "minimumActionSeconds": 0.3,
+        "minimumReactionSeconds": 0.5
+      },
+      "actorGroups": [],
+      "beats": [
+        {
+          "id": "b06-01",
+          "sourceBeatId": "beat-06",
+          "actorIds": [
+            "李膺"
+          ],
+          "kind": "action",
+          "textOrVocalization": "李膺向前倾身",
+          "dependsOn": [],
+          "overlapAllowedWith": [],
+          "resources": [
+            "body"
+          ],
+          "durationEstimate": {
+            "lower": 0.8,
+            "expected": 1,
+            "upper": 1.2,
+            "source": "上身前倾约30度所需时间",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "李膺上身前倾,面向郭泰",
+            "modality": "visual",
+            "evidenceAnchor": "李膺向前倾身"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "b06-02",
+          "sourceBeatId": "beat-06",
+          "actorIds": [
+            "李膺"
+          ],
+          "kind": "speech",
+          "deliveryStyle": "dialogue",
+          "textOrVocalization": "当今士林,良莠难辨。",
+          "dependsOn": [
+            "b06-01"
+          ],
+          "overlapAllowedWith": [],
+          "resources": [
+            "voice"
+          ],
+          "durationEstimate": {
+            "lower": 2,
+            "expected": 2.178,
+            "upper": 3.075,
+            "source": "9字对白,按4.5字/秒参考语速加启动和停顿",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "李膺说完第一句",
+            "modality": "audio",
+            "evidenceAnchor": "当今士林良莠难辨"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "b06-03",
+          "sourceBeatId": "beat-06",
+          "actorIds": [
+            "李膺"
+          ],
+          "kind": "speech",
+          "deliveryStyle": "dialogue",
+          "textOrVocalization": "林宗既有识人之明,何不与我共论天下人物?",
+          "dependsOn": [
+            "b06-02"
+          ],
+          "overlapAllowedWith": [],
+          "resources": [
+            "voice"
+          ],
+          "durationEstimate": {
+            "lower": 4,
+            "expected": 4.4,
+            "upper": 6.105,
+            "source": "18字对白,按4.5字/秒参考语速加停顿",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "李膺说完邀请之语",
+            "modality": "audio",
+            "evidenceAnchor": "林宗既有识人之明何不与我共论天下人物"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        }
+      ]
+    },
+    "shotIntent": {
+      "viewpointCharacter": "李膺",
+      "purpose": "李膺向郭泰发出共同品评天下士人的邀请",
+      "cameraReason": "中近景正面拍摄李膺,捕捉其向前倾身的动作和说话时的神态,前景保留郭泰背影以呈现对话关系"
+    },
+    "beatDramaturgy": [
+      {
+        "beatId": "beat-06",
+        "function": "李膺发起品评邀请",
+        "stateChange": "从认可到提出合作",
+        "visual": [
+          "李膺向前倾身"
+        ],
+        "audio": [
+          "当今士林良莠难辨",
+          "林宗既有识人之明何不与我共论天下人物"
+        ]
+      }
+    ],
+    "storyProgress": {
+      "unitId": "drama-03",
+      "status": "continuing",
+      "actionResult": "李膺发出邀请",
+      "response": "李膺向郭泰提出共同品评天下人物的建议",
+      "pendingActions": [
+        "郭泰对邀请的回应",
+        "二人开始实际品评活动"
+      ]
+    },
+    "characters": [
+      "李膺",
+      "郭泰"
+    ],
+    "presentCharacters": [
+      "李膺",
+      "郭泰"
+    ],
+    "initialCharacters": [
+      "李膺",
+      "郭泰"
+    ],
+    "enteringCharacters": [],
+    "endCharacters": [
+      "李膺",
+      "郭泰"
+    ],
+    "worldState": {
+      "settingId": "drama-03",
+      "characters": [
+        {
+          "name": "李膺",
+          "position": {
+            "status": "unknown"
+          },
+          "heldProps": {
+            "status": "unknown"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        },
+        {
+          "name": "郭泰",
+          "position": {
+            "status": "unknown"
+          },
+          "heldProps": {
+            "status": "unknown"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        }
+      ]
+    },
+    "continuity": {
+      "mode": "coverage_cut",
+      "previousShotId": "scene-05",
+      "bridgeType": "cut",
+      "bridgeAnchor": ""
+    },
+    "coveredBeatIds": [
+      "beat-06"
+    ],
+    "visualPrompt": "李膺站在画面中央偏左,束发高髻插玉簪,长须垂胸,深灰色宽袖长袍,面带郑重神色,双手合于腹前。前景右侧郭泰背影虚焦,面向李膺。背景木柱、格栅窗及门清晰可见。东汉室内,自然光。",
+    "camera": "中近景,机位正对李膺,略高于平视,前景保留郭泰背影,视线轴线沿两人连线",
+    "mood": "郑重而期待",
+    "firstFrameMode": "reference",
+    "lastFramePrompt": "李膺站在画面中央偏左,束发高髻插玉簪,长须垂胸,深灰色宽袖长袍,上身前倾约30度,面向郭泰,双手自然下垂。前景右侧郭泰背影虚焦,面向李膺。背景木柱、格栅窗及门清晰可见。",
+    "videoPrompt": "0-1.2秒：李膺向前倾身,上身前倾约30度,面向郭泰,双手自然下垂,完成前倾动作。1.2-3.6秒：李膺保持前倾姿态,自然开口说出：当今士林,良莠难辨。嘴唇动作与台词同步,说完后短暂停顿。3.6-8秒：李膺继续说出：林宗既有识人之明,何不与我共论天下人物?语气诚恳而郑重,嘴唇动作与台词同步,说完后保持前倾姿态。8-10.5秒：保留前述已完成动作的自然结果供观众看清,允许呼吸与微动。前景郭泰背影始终虚焦,面向李膺。",
+    "audioType": "对白",
+    "audioText": "李膺：当今士林,良莠难辨。\n李膺：林宗既有识人之明,何不与我共论天下人物?",
+    "historicalBasis": "[史料1]记载李膺与郭泰共论天下人物",
+    "adaptationBoundary": "李膺邀请的具体措辞、向前倾身动作及说话时的神态为合理拟制,不改变李膺主动邀请郭泰共论人物的史实"
+  }
+}

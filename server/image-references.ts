@@ -1,4 +1,6 @@
 import sharp from 'sharp'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
 
 const MAX_REFERENCE_BYTES = 20 * 1024 * 1024
 
@@ -10,6 +12,11 @@ function decodeImageDataUrl(value: string) {
 
 async function readReferenceImage(value: string, fetchImpl: typeof fetch) {
   if (value.startsWith('data:image/')) return decodeImageDataUrl(value)
+  if (/^\/generated\/[\w.-]+\.(?:png|jpg|jpeg|webp)$/i.test(value)) {
+    const bytes = await readFile(path.join(process.cwd(), 'public', value))
+    if (bytes.length > MAX_REFERENCE_BYTES) throw new Error('三视图参考图超过 20MB 限制')
+    return bytes
+  }
   if (!/^https?:\/\//i.test(value)) throw new Error('三视图拆分仅支持 HTTP(S) URL 或图片 data URL')
   const response = await fetchImpl(value, { signal: AbortSignal.timeout(15_000) })
   if (!response.ok) throw new Error(`三视图参考图下载失败：HTTP ${response.status}`)
@@ -107,6 +114,16 @@ export function extractFrontViewReference(value: string, fetchImpl: typeof fetch
   return extractThreeViewPanel(value, 'front', fetchImpl)
 }
 
+/** Decode the real pixels without imposing a portrait layout or appearance. */
+export async function validateReadableImageReference(value: string, fetchImpl: typeof fetch = fetch) {
+  const source = await readReferenceImage(value, fetchImpl)
+  const image = sharp(source, { failOn: 'error' })
+  const metadata = await image.metadata()
+  if (!metadata.width || !metadata.height) throw new Error('IMAGE_DECODE_FAILED: 图片缺少有效尺寸')
+  await image.stats()
+  return { decoded: true, width: metadata.width, height: metadata.height }
+}
+
 export async function validateThreeViewReference(value: string, fetchImpl: typeof fetch = fetch) {
   const source = await readReferenceImage(value, fetchImpl)
   const geometry = await horizontalThreeViewGeometry(source)
@@ -140,9 +157,9 @@ function median(values: number[]) {
 }
 
 /**
- * Reject the exact equal-height montage layout repeatedly produced when a visual
- * identity board leaks into a portrait request. Both seams must occur at the
- * one-third boundaries and be much sharper than normal adjacent-row changes.
+ * Reject the near-equal-height montage layout repeatedly produced by portrait
+ * generation. Generated panels are not always exactly one third high, so search
+ * a bounded region around both expected seams instead of checking one scanline.
  */
 export async function detectVerticalTriptych(value: string, fetchImpl: typeof fetch = fetch) {
   const source = await readReferenceImage(value, fetchImpl)
@@ -163,15 +180,38 @@ export async function detectVerticalTriptych(value: string, fetchImpl: typeof fe
     rowScores.push(difference / info.width)
   }
   const baseline = median(rowScores)
+  const searchRadius = Math.max(3, Math.round(info.height * 0.05))
   const boundaryScores = [1, 2].map((part) => {
     const boundary = Math.round(info.height * part / 3)
-    return Math.max(...[-1, 0, 1].map((offset) => rowScores[boundary + offset - 1] ?? 0))
+    const candidates: number[] = []
+    for (let offset = -searchRadius; offset <= searchRadius; offset += 1) {
+      candidates.push(rowScores[boundary + offset - 1] ?? 0)
+    }
+    return Math.max(...candidates)
   })
-  const detected = boundaryScores.every((score) => score >= 4 && score >= baseline * 2.5)
-  return { detected, boundaryScores, baseline }
+  const detected = boundaryScores.every((score) => score >= 2.5 && score >= baseline * 2.25)
+  return { detected, boundaryScores, baseline, searchRadius }
+}
+
+/** Principle acceptance does not establish panel count or angle boundaries.
+ * Keep the complete supplied identity image until a layout has been verified;
+ * the legacy strict paths below retain their existing three-panel contract. */
+function preservePrincipleIdentitySheets(params: Record<string, unknown>) {
+  if (params.qualityMode !== 'principle-v1') return undefined
+  const references = Array.isArray(params.referenceImages) ? params.referenceImages.flat(Infinity) : [params.referenceImages]
+  const sheets = references.filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+  if (!sheets.length) return params
+  const bindings = Array.isArray(params.referenceBindings) ? params.referenceBindings : []
+  if (bindings.length && bindings.length !== sheets.length) throw new Error(`人物参考绑定数量不匹配：${sheets.length} 张完整参考图收到 ${bindings.length} 个角色绑定`)
+  if (sheets.length > 7) throw new Error(`人物参考超过当前请求可保留的 7 张上限，实际 ${sheets.length} 张；必须调整参考策略，不能静默裁切或丢弃人物`)
+  return { ...params, referenceMode: 'identity-sheet', referenceImages: sheets,
+    referenceDiagnostics: { requestedSheets: sheets.length, extractedPanels: 0, sentImages: sheets.length,
+      composition: 'whole-identity-sheets', layoutVerified: false } }
 }
 
 export async function prepareThreeViewFrontReference(params: Record<string, unknown>, fetchImpl: typeof fetch = fetch) {
+  const wholeSheets = preservePrincipleIdentitySheets(params)
+  if (wholeSheets) return wholeSheets
   const match = typeof params.referenceMode === 'string' && params.referenceMode.match(/^three-view-(front|side|back)$/)
   if (!match) return params
   const references = Array.isArray(params.referenceImages) ? params.referenceImages : [params.referenceImages]
@@ -182,25 +222,30 @@ export async function prepareThreeViewFrontReference(params: Record<string, unkn
     throw new Error(`人物参考绑定数量不匹配：${sheets.length} 张三视图仅收到 ${bindings.length} 个角色绑定`)
   }
   const panels = await Promise.all(sheets.map((sheet) => extractThreeViewPanel(sheet.trim(), match[1] as CharacterView, fetchImpl)))
-  // Kling's standard image endpoint accepts one reference image. Combining several
-  // portraits into a single board teaches the model a multi-panel composition, so
-  // a multi-character scene must use only its primary (first-listed) identity here.
-  // The video node still receives each character reference independently.
-  const referenceImages = panels.slice(0, 1)
+  // A single-reference image-to-image request cannot represent several distinct
+  // people reliably: Kling tends to repeat the referenced subject as a storyboard.
+  // Multi-character tail frames therefore use text-to-image; their video node still
+  // receives every character reference independently through the Omni endpoint.
+  const multiCharacter = panels.length > 1
+  const referenceImages = multiCharacter ? [] : panels
+  const montageNegativePrompt = '纵向三段式，上下三段，分镜板，故事板，拼贴，分栏，连环画，画中画，多幅图，重复画面，重复人物，字幕，水印，标题，标签，文字'
   return {
     ...params,
     referenceImages,
+    ...(multiCharacter && !params.negativePrompt && !params.negative_prompt ? { negativePrompt: montageNegativePrompt } : {}),
     referenceDiagnostics: {
       requestedSheets: sheets.length,
       extractedPanels: panels.length,
       sentImages: referenceImages.length,
       omittedPanels: Math.max(0, panels.length - referenceImages.length),
-      composition: panels.length === 1 ? 'single-panel' : 'primary-panel',
+      composition: panels.length === 1 ? 'single-panel' : 'text-only-multi-character',
     },
   }
 }
 
 export async function prepareThreeViewVideoReferences(params: Record<string, unknown>, fetchImpl: typeof fetch = fetch) {
+  const wholeSheets = preservePrincipleIdentitySheets(params)
+  if (wholeSheets) return wholeSheets
   if (params.referenceMode !== 'three-view-all') return params
   const references = Array.isArray(params.referenceImages) ? params.referenceImages.flat(Infinity) : [params.referenceImages]
   const sheets = references.filter((value): value is string => typeof value === 'string' && value.trim().length > 0)

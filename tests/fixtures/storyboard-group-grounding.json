@@ -1,0 +1,463 @@
+{
+  "expected": {
+    "pacingVersion": "duration-v2",
+    "timingPolicy": {
+      "version": "duration-policy-v2.2-brisk-narration",
+      "speech": {
+        "dialogue": {
+          "referenceRate": 4.5,
+          "minimumNaturalRate": 3.3,
+          "maximumRate": 5,
+          "startupAllowance": 0.25
+        },
+        "narration": {
+          "referenceRate": 5.8,
+          "minimumNaturalRate": 5.5,
+          "maximumRate": 6.5,
+          "startupAllowance": 0.25
+        },
+        "chant": {
+          "referenceRate": 3.3,
+          "minimumNaturalRate": 2.8,
+          "maximumRate": 4.5,
+          "startupAllowance": 0.25
+        },
+        "singing": {
+          "referenceRate": 2.8,
+          "minimumNaturalRate": 2,
+          "maximumRate": 3.5,
+          "startupAllowance": 0.35
+        }
+      },
+      "shortPauseSeconds": 0.15,
+      "sentencePauseSeconds": 0.25,
+      "linePauseSeconds": 0.2,
+      "measurementToleranceSeconds": 0.25,
+      "endingReadabilityReserve": 0.5,
+      "maxConservativeExtraSeconds": 1,
+      "minimumProviderDuration": 3,
+      "maximumProviderDuration": 15,
+      "minimumVocalizationSeconds": 0.8,
+      "minimumActionSeconds": 0.3,
+      "minimumReactionSeconds": 0.5
+    },
+    "primaryTransportAttempts": 5,
+    "transportFallbackModelId": "codex-local-vision",
+    "transportFallbackTimeoutMs": 240000,
+    "transportFallbackReasoningEffort": "medium",
+    "primaryTransportAttemptTimeoutMs": 240000,
+    "qualityMode": "principle-v1",
+    "maxGenerationAttempts": 5,
+    "scene": {
+      "id": "scene-10",
+      "sequence": 10,
+      "title": "弟子为病患施符水",
+      "dramaticSceneId": "drama-05",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "cast": [],
+      "purpose": "承接上段,弟子邀请围观中的病患试服符水,病患犹豫后接受,周围人群增多",
+      "requiredBeats": [
+        {
+          "id": "beat-10",
+          "description": "弟子从身旁取出符水,向围观人群示意;一病患犹豫后上前;弟子为其施符水;围观人群增多",
+          "function": "呈现弟子实际施符水疗病,吸引更多百姓",
+          "stateChange": "从讲述到实际施符水,围观人群从好奇变为增多围拢",
+          "observable": {
+            "visual": [
+              "弟子取出符水",
+              "病患上前",
+              "弟子施符水",
+              "围观人群增多"
+            ],
+            "audio": []
+          },
+          "setting": "某郡县集市",
+          "mustShow": [
+            "弟子施符水",
+            "围观人群增多"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]张角以符水咒说疗病,病者颇愈,百姓信向之",
+      "adaptationBoundary": "拟制弟子施符水、病患接受、人群反应的场面调度,符水疗病、百姓信向史实不变",
+      "targetDuration": 7,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "弟子施符水已呈现",
+        "围观人群增多已呈现"
+      ],
+      "contentContractVersion": "cinematic-v1",
+      "dramaticUnitId": "drama-05",
+      "settingId": "drama-05",
+      "closesUnit": true,
+      "continuityFromPrevious": true
+    },
+    "previousShot": {
+      "id": "scene-09",
+      "contentContractVersion": "cinematic-v1",
+      "characters": [],
+      "presentCharacters": [],
+      "endCharacters": [],
+      "worldState": {
+        "settingId": "drama-05",
+        "characters": []
+      },
+      "worldStateEvidence": {
+        "method": "actual-tail-image",
+        "frame": "/generated/verified-a39b96d774f5da8f072e-sampling-01e11fe111c6ad60-frame-7.jpg",
+        "qualityPolicy": "principle-v1"
+      },
+      "storyProgress": {
+        "status": "continuing",
+        "unitId": "drama-05",
+        "response": "从沙盘路径到实际传道场景的转换完成,百姓围观已形成",
+        "actionResult": "弟子在集市传道场景已建立,讲述张角疗病事迹,百姓开始围拢听讲",
+        "pendingActions": [
+          "有病患愿意尝试符水",
+          "围观者增多"
+        ]
+      },
+      "visualPrompt": "东汉某郡县集市,日间自然光;空地上一名身着布衣的张角弟子站在集市空地正向周围讲述,周围是木质摊位、货物、农具等集市陈设;数名身着东汉平民服饰的百姓正从不同方向停下围拢过来,有的手持农具或货物;中景,能看清弟子全身与周围空地及百姓停下围拢过程",
+      "lastFramePrompt": "以上一镜实际尾帧图片为开场依据；未得到可靠文字观察的人物位置、持物与动作状态保持未知，不按计划尾帧补写。",
+      "videoPrompt": "上一镜批准的台词：传道弟子(画外):诸位父老乡亲,在下受大贤良师张角之命,四方传道。大贤良师以符水疗病,病者颇愈,已救活无数百姓。。以实际尾帧图片续接；尾帧报告原文（未确认部分保持未知）：以上一镜实际尾帧图片为开场依据；未得到可靠文字观察的人物位置、持物与动作状态保持未知，不按计划尾帧补写。。原则通行不代表每项动作或人声已实测通过。",
+      "beatDramaturgy": [
+        {
+          "audio": [
+            "诸位父老乡亲,在下受大贤良师张角之命,四方传道。大贤良师以符水疗病,病者颇愈,已救活无数百姓。"
+          ],
+          "beatId": "beat-09",
+          "visual": [
+            "弟子站在集市空地",
+            "向百姓讲述",
+            "百姓停下围拢"
+          ],
+          "function": "呈现弟子在新地点传道的场景",
+          "stateChange": "从沙盘路径到弟子实际在集市传道,百姓开始围观"
+        }
+      ]
+    },
+    "requireContinuityContract": true,
+    "requireDynamicPacing": true,
+    "requireNarrativeClosure": true,
+    "requireDramaContract": true
+  },
+  "candidate": {
+    "contentContractVersion": "cinematic-v1",
+    "dramaticSceneId": "drama-05",
+    "id": "scene-10",
+    "title": "弟子施符水疗病",
+    "editorialRole": "story",
+    "visualTreatment": "live_action",
+    "duration": 12,
+    "pacing": {
+      "version": "duration-v2",
+      "timingPolicy": {
+        "version": "duration-policy-v2.2-brisk-narration",
+        "speech": {
+          "dialogue": {
+            "referenceRate": 4.5,
+            "minimumNaturalRate": 3.3,
+            "maximumRate": 5,
+            "startupAllowance": 0.25
+          },
+          "narration": {
+            "referenceRate": 5.8,
+            "minimumNaturalRate": 5.5,
+            "maximumRate": 6.5,
+            "startupAllowance": 0.25
+          },
+          "chant": {
+            "referenceRate": 3.3,
+            "minimumNaturalRate": 2.8,
+            "maximumRate": 4.5,
+            "startupAllowance": 0.25
+          },
+          "singing": {
+            "referenceRate": 2.8,
+            "minimumNaturalRate": 2,
+            "maximumRate": 3.5,
+            "startupAllowance": 0.35
+          }
+        },
+        "shortPauseSeconds": 0.15,
+        "sentencePauseSeconds": 0.25,
+        "linePauseSeconds": 0.2,
+        "measurementToleranceSeconds": 0.25,
+        "endingReadabilityReserve": 0.5,
+        "maxConservativeExtraSeconds": 1,
+        "minimumProviderDuration": 3,
+        "maximumProviderDuration": 15,
+        "minimumVocalizationSeconds": 0.8,
+        "minimumActionSeconds": 0.3,
+        "minimumReactionSeconds": 0.5
+      },
+      "actorGroups": [
+        {
+          "id": "disciple-group",
+          "label": "传道弟子",
+          "memberDescription": "受张角派遣传道的弟子"
+        },
+        {
+          "id": "sick-person-group",
+          "label": "病患",
+          "memberDescription": "愿意尝试符水的病患"
+        },
+        {
+          "id": "onlooker-group",
+          "label": "围观百姓",
+          "memberDescription": "集市上围观的百姓"
+        }
+      ],
+      "beats": [
+        {
+          "id": "beat-10-01",
+          "sourceBeatId": "beat-10",
+          "actorIds": [
+            "disciple-group"
+          ],
+          "kind": "action",
+          "textOrVocalization": "弟子从身旁取出符水",
+          "resources": [
+            "body"
+          ],
+          "dependsOn": [],
+          "overlapAllowedWith": [],
+          "durationEstimate": {
+            "lower": 1.2,
+            "expected": 1.5,
+            "upper": 1.8,
+            "source": "从身旁布袋取出陶碗符水动作",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "弟子手持符水陶碗",
+            "modality": "visual",
+            "evidenceAnchor": "弟子取出符水"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-10-02",
+          "sourceBeatId": "beat-10",
+          "actorIds": [
+            "disciple-group"
+          ],
+          "kind": "action",
+          "textOrVocalization": "向围观人群示意",
+          "resources": [
+            "body"
+          ],
+          "dependsOn": [
+            "beat-10-01"
+          ],
+          "overlapAllowedWith": [],
+          "durationEstimate": {
+            "lower": 1,
+            "expected": 1.3,
+            "upper": 1.6,
+            "source": "举起符水向人群展示示意动作",
+            "confidence": "medium"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "弟子向人群展示符水",
+            "modality": "visual",
+            "evidenceAnchor": "向围观人群示意"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-10-03",
+          "sourceBeatId": "beat-10",
+          "actorIds": [
+            "sick-person-group"
+          ],
+          "kind": "reaction",
+          "textOrVocalization": "一病患犹豫",
+          "resources": [
+            "body"
+          ],
+          "dependsOn": [
+            "beat-10-02"
+          ],
+          "overlapAllowedWith": [],
+          "durationEstimate": {
+            "lower": 0.8,
+            "expected": 1,
+            "upper": 1.3,
+            "source": "病患犹豫挣扎表情反应",
+            "confidence": "medium"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "病患表现犹豫神情",
+            "modality": "visual",
+            "evidenceAnchor": "一病患犹豫"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-10-04",
+          "sourceBeatId": "beat-10",
+          "actorIds": [
+            "sick-person-group"
+          ],
+          "kind": "action",
+          "textOrVocalization": "病患上前",
+          "resources": [
+            "body"
+          ],
+          "dependsOn": [
+            "beat-10-03"
+          ],
+          "overlapAllowedWith": [],
+          "durationEstimate": {
+            "lower": 1.8,
+            "expected": 2.2,
+            "upper": 2.6,
+            "source": "病患从人群中走出到弟子面前",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "病患走到弟子面前",
+            "modality": "visual",
+            "evidenceAnchor": "病患上前"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-10-05",
+          "sourceBeatId": "beat-10",
+          "actorIds": [
+            "disciple-group"
+          ],
+          "kind": "action",
+          "textOrVocalization": "弟子施符水",
+          "resources": [
+            "body"
+          ],
+          "dependsOn": [
+            "beat-10-04"
+          ],
+          "overlapAllowedWith": [],
+          "durationEstimate": {
+            "lower": 2.2,
+            "expected": 2.8,
+            "upper": 3.4,
+            "source": "弟子将符水递给病患并让其饮下",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "弟子完成施符水，病患饮下符水",
+            "modality": "visual",
+            "evidenceAnchor": "弟子施符水"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-10-06",
+          "sourceBeatId": "beat-10",
+          "actorIds": [
+            "onlooker-group"
+          ],
+          "kind": "action",
+          "textOrVocalization": "围观人群增多",
+          "resources": [
+            "body"
+          ],
+          "dependsOn": [
+            "beat-10-05"
+          ],
+          "overlapAllowedWith": [],
+          "durationEstimate": {
+            "lower": 1.5,
+            "expected": 2,
+            "upper": 2.5,
+            "source": "周围百姓向前围拢，人群密度增加",
+            "confidence": "medium"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "围观人群明显增多密集",
+            "modality": "visual",
+            "evidenceAnchor": "围观人群增多"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        }
+      ]
+    },
+    "shotIntent": {
+      "viewpointCharacter": "观众",
+      "purpose": "呈现弟子实际为病患施符水的完整过程，围观人群从好奇到增多围拢",
+      "cameraReason": "使用中景至近景的推进机位，既能展现弟子取出符水和施符水的动作细节，又能捕捉病患犹豫上前的反应，以及周围人群逐渐围拢的变化"
+    },
+    "beatDramaturgy": [
+      {
+        "beatId": "beat-10",
+        "function": "呈现弟子实际施符水疗病,吸引更多百姓",
+        "stateChange": "从讲述到实际施符水,围观人群从好奇变为增多围拢",
+        "visual": [
+          "弟子取出符水",
+          "向围观人群示意",
+          "一病患犹豫",
+          "病患上前",
+          "弟子施符水",
+          "围观人群增多"
+        ],
+        "audio": []
+      }
+    ],
+    "storyProgress": {
+      "unitId": "drama-05",
+      "status": "complete",
+      "actionResult": "弟子成功为病患施符水，围观百姓增多",
+      "response": "通过实际施符水的场面，展现弟子传道的具体方式，吸引更多百姓聚集",
+      "pendingActions": []
+    },
+    "characters": [],
+    "presentCharacters": [],
+    "initialCharacters": [],
+    "enteringCharacters": [],
+    "endCharacters": [],
+    "illustrationLayers": [],
+    "worldState": {
+      "settingId": "drama-05",
+      "characters": []
+    },
+    "continuity": {
+      "mode": "tail_continuation",
+      "previousShotId": "scene-09",
+      "bridgeType": "same_frame",
+      "bridgeAnchor": ""
+    },
+    "coveredBeatIds": [
+      "beat-10"
+    ],
+    "visualPrompt": "某郡县集市空地，东汉建筑背景，木质摊位和货物陈列，传道弟子身着灰色长袍站在人群中央，周围围拢着数十名身着各色布衣的百姓，自然光照明，写实历史影像风格，16:9构图，中景至近景",
+    "camera": "固定机位，从中景缓慢推至近景，聚焦弟子和病患的互动，保持视线轴线在弟子与病患之间，同时包含周围围观人群的反应",
+    "mood": "克制的期待与好奇，百姓对符水疗病的半信半疑逐渐转为关注",
+    "firstFrameMode": "reuse_previous_tail",
+    "lastFramePrompt": "某郡县集市空地，传道弟子站在中央已完成施符水动作，一名病患站在其面前手持空陶碗，周围聚集了更多身着各色布衣的百姓围观，人群比开始时明显增多密集，东汉建筑和摊位背景，自然光，近景",
+    "videoPrompt": "0.0-1.8秒：传道弟子从身旁布袋中取出符水，弟子取出符水，陶碗中盛有符水；1.8-3.4秒：弟子举起陶碗向围观人群示意，目光扫视周围百姓；3.4-4.7秒：人群中一病患犹豫，面色憔悴的病患犹豫不决，神情挣扎；4.7-7.3秒：病患上前，病患缓慢从人群中走出，来到弟子面前；7.3-10.7秒：弟子施符水，弟子将陶碗递给病患，病患双手接过符水饮下；10.7-12.0秒：围观人群增多，周围原本保持距离的百姓开始向前围拢，人群密度明显增加",
+    "audioType": "环境声",
+    "audioText": "",
+    "historicalBasis": "[史料2]张角以符水咒说疗病,病者颇愈,百姓信向之",
+    "adaptationBoundary": "拟制弟子从身旁取出符水、向人群示意、病患犹豫上前、弟子为其施符水、围观人群增多的具体场面调度，符水疗病、百姓信向的史实不变"
+  }
+}

@@ -27,3 +27,15 @@ logs/
 # Local planning and generated workflow artifacts
 .claude/
 public/generated/
+.runtime/
+
+# Local speech QA runtime
+.venv-quality/
+
+# Official TTS preview pack (install with scripts/setup-bailian-voice-previews.py)
+public/tts-previews/
+
+# Local preview state and Python bytecode
+.myflicker/
+__pycache__/
+*.pyc

@@ -8,6 +8,9 @@ const server = await createServer({
     host,
     port,
     strictPort: true,
+    // This process hosts long-running workflow executions. Source edits must not
+    // make Vite reload an active browser tab; developers can still use `npm run dev`.
+    hmr: false,
   },
 })
 

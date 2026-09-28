@@ -1,0 +1,50 @@
+.character-voice-panel {
+  min-width: 0;
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid var(--studio-line);
+  border-radius: 12px;
+  background: var(--studio-surface);
+  color: var(--studio-text);
+  color-scheme: dark;
+}
+
+.character-voice-panel header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0; border: 0; }
+.character-voice-panel header > span { color: var(--studio-muted); font-size: 12px; }
+.character-voice-panel h3, .character-voice-panel h4 { margin: 0 0 10px; color: var(--studio-text); }
+.character-voice-panel p { color: var(--studio-muted); font-size: 13px; line-height: 1.75; overflow-wrap: anywhere; }
+.character-voice-panel small { color: var(--studio-muted); overflow-wrap: anywhere; }
+.character-voice-panel label { display: grid; gap: 8px; margin: 16px 0; font-size: 13px; }
+.character-voice-panel input, .character-voice-panel select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--studio-line-strong);
+  border-radius: 8px;
+  background: var(--studio-raised);
+  color: var(--studio-text);
+}
+.character-voice-panel :is(input, select, button, summary):focus-visible { outline: 2px solid var(--studio-accent); outline-offset: 3px; }
+.character-voice-panel audio { display: block; width: 100%; max-width: 400px; margin: 12px 0; }
+.voice-current { margin-block: 16px; padding: 16px; border: 1px solid var(--studio-line); border-radius: 10px; background: var(--studio-raised); }
+.voice-current > strong { color: var(--studio-text); }
+.voice-actions, .voice-audition { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.character-voice-panel details { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--studio-line); }
+.character-voice-panel summary { color: var(--studio-text); cursor: pointer; font-size: 14px; line-height: 1.6; }
+.character-voice-panel summary::marker { color: var(--studio-muted); }
+.character-voice-panel summary:hover, .character-voice-panel details[open] > summary { color: var(--studio-accent); }
+.voice-jobs { margin-top: 20px; }
+.voice-jobs > div { display: flex; gap: 10px; flex-wrap: wrap; padding: 12px 0; border-top: 1px solid var(--studio-line); font-size: 13px; }
+.voice-jobs small { flex-basis: 100%; overflow-wrap: anywhere; color: var(--studio-danger); }
+.character-voice-panel .voice-message { padding: 12px; border-radius: 8px; background: var(--studio-raised); color: var(--studio-text); overflow-wrap: anywhere; }
+.character-voice-panel button:not(.primary-btn):not(.ghost-btn) { min-height: 34px; padding: 7px 11px; border: 1px solid var(--studio-line-strong); border-radius: 7px; background: var(--studio-raised); color: var(--studio-text); cursor: pointer; }
+.character-voice-panel button:not(.primary-btn):not(.ghost-btn):hover:not(:disabled) { background: var(--studio-hover); }
+.character-voice-panel button:disabled { cursor: not-allowed; opacity: 0.45; }
+
+@media (max-width: 720px) {
+  .character-voice-panel { padding: 16px; }
+  .character-voice-panel header { align-items: flex-start; flex-wrap: wrap; }
+  .voice-actions > button, .voice-audition > button { flex: 1 1 auto; }
+}

@@ -1,0 +1,129 @@
+{
+  "id": "scene-15",
+  "dramaticSceneId": "drama-08",
+  "duration": 8,
+  "characters": [
+    "张角"
+  ],
+  "audioType": "对白",
+  "audioText": "张角：苍天已死，黄天当立！岁在甲子，天下大吉！\n万余信众：苍天已死，黄天当立！岁在甲子，天下大吉！",
+  "videoPrompt": "0-1秒：张角立于高台前沿，保持前镜姿态，从身后偏右侧方拍摄可见其右侧脸轮廓，下方万余跪拜信众密密麻麻延伸至远方。1-5秒：张角环视下方人群后高声宣示「苍天已死，黄天当立！岁在甲子，天下大吉！」，声音洪亮清晰，可见其嘴部动作与身体微微前倾的姿态；下方信众保持跪拜静默。5-8秒：张角宣示完毕后身体略微后仰，万人齐声应和「苍天已死，黄天当立！岁在甲子，天下大吉！」，所有人抬起头来齐声高呼，声浪震撼汇成洪流；张角保持宣示姿态聆听众人应和。",
+  "pacing": {
+    "version": "duration-v2",
+    "timingPolicy": {
+      "version": "duration-policy-v2.2-brisk-narration",
+      "speech": {
+        "dialogue": {
+          "referenceRate": 4.5,
+          "minimumNaturalRate": 3.3,
+          "maximumRate": 5,
+          "startupAllowance": 0.25
+        },
+        "narration": {
+          "referenceRate": 5.8,
+          "minimumNaturalRate": 5.5,
+          "maximumRate": 6.5,
+          "startupAllowance": 0.25
+        },
+        "chant": {
+          "referenceRate": 3.3,
+          "minimumNaturalRate": 2.8,
+          "maximumRate": 4.5,
+          "startupAllowance": 0.25
+        },
+        "singing": {
+          "referenceRate": 2.8,
+          "minimumNaturalRate": 2,
+          "maximumRate": 3.5,
+          "startupAllowance": 0.35
+        }
+      },
+      "shortPauseSeconds": 0.15,
+      "sentencePauseSeconds": 0.25,
+      "linePauseSeconds": 0.2,
+      "measurementToleranceSeconds": 0.25,
+      "endingReadabilityReserve": 0.5,
+      "maxConservativeExtraSeconds": 1,
+      "minimumProviderDuration": 3,
+      "maximumProviderDuration": 15,
+      "minimumVocalizationSeconds": 0.8,
+      "minimumActionSeconds": 0.3,
+      "minimumReactionSeconds": 0.5
+    },
+    "actorGroups": [
+      {
+        "id": "crowd-believers",
+        "label": "万余信众",
+        "memberDescription": "身着东汉平民服装的男女老幼，密密麻麻跪伏于高台下方广场"
+      }
+    ],
+    "beats": [
+      {
+        "id": "beat-15-speech",
+        "sourceBeatId": "beat-15",
+        "actorIds": [
+          "张角"
+        ],
+        "kind": "speech",
+        "deliveryStyle": "dialogue",
+        "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+        "performanceInstruction": "张角在高台上环视众人后高声宣示",
+        "dependsOn": [],
+        "overlapAllowedWith": [],
+        "resources": [
+          "voice"
+        ],
+        "durationEstimate": {
+          "lower": 4,
+          "expected": 4.36,
+          "upper": 5.9,
+          "source": "20字台词，deliveryStyle=dialogue，minimumNaturalRate=3.3字/秒加startupAllowance=0.25秒及sentencePauseSeconds=0.25秒",
+          "confidence": "high"
+        },
+        "completion": {
+          "requiredThisClip": true,
+          "finalState": "张角宣示完成",
+          "modality": "audio-visual",
+          "evidenceAnchor": "张角在高台宣示"
+        },
+        "timingConstraint": {
+          "mode": "reference"
+        }
+      },
+      {
+        "id": "beat-15-crowd-response",
+        "sourceBeatId": "beat-15",
+        "actorIds": [
+          "crowd-believers"
+        ],
+        "kind": "speech",
+        "deliveryStyle": "dialogue",
+        "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+        "performanceInstruction": "万人齐声应和，下方万余信众齐声高呼，声浪震撼",
+        "dependsOn": [
+          "beat-15-speech"
+        ],
+        "overlapAllowedWith": [],
+        "resources": [
+          "voice"
+        ],
+        "durationEstimate": {
+          "lower": 5.35,
+          "expected": 5.84,
+          "upper": 7.87,
+          "source": "20字台词群体齐声应和，minimumNaturalRate=3.3字/秒加startupAllowance=0.25秒及群体发声minimumReactionSeconds=0.5秒",
+          "confidence": "medium"
+        },
+        "completion": {
+          "requiredThisClip": true,
+          "finalState": "万人齐声应和完成",
+          "modality": "audio-visual",
+          "evidenceAnchor": "万人齐声应和"
+        },
+        "timingConstraint": {
+          "mode": "reference"
+        }
+      }
+    ]
+  }
+}

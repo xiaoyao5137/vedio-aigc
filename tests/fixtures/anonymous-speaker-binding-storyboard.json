@@ -1,0 +1,217 @@
+{
+  "contentContractVersion": "cinematic-v1",
+  "dramaticSceneId": "drama-05",
+  "id": "scene-09",
+  "title": "弟子集市传道",
+  "editorialRole": "story",
+  "visualTreatment": "live_action",
+  "animationStyle": "",
+  "animationAesthetic": "",
+  "duration": 8,
+  "pacing": {
+    "version": "duration-v2",
+    "timingPolicy": {
+      "version": "duration-policy-v2.2-brisk-narration",
+      "speech": {
+        "dialogue": {
+          "referenceRate": 4.5,
+          "minimumNaturalRate": 3.3,
+          "maximumRate": 5,
+          "startupAllowance": 0.25
+        },
+        "narration": {
+          "referenceRate": 5.8,
+          "minimumNaturalRate": 5.5,
+          "maximumRate": 6.5,
+          "startupAllowance": 0.25
+        },
+        "chant": {
+          "referenceRate": 3.3,
+          "minimumNaturalRate": 2.8,
+          "maximumRate": 4.5,
+          "startupAllowance": 0.25
+        },
+        "singing": {
+          "referenceRate": 2.8,
+          "minimumNaturalRate": 2,
+          "maximumRate": 3.5,
+          "startupAllowance": 0.35
+        }
+      },
+      "shortPauseSeconds": 0.15,
+      "sentencePauseSeconds": 0.25,
+      "linePauseSeconds": 0.2,
+      "measurementToleranceSeconds": 0.25,
+      "endingReadabilityReserve": 0.5,
+      "maxConservativeExtraSeconds": 1,
+      "minimumProviderDuration": 3,
+      "maximumProviderDuration": 15,
+      "minimumVocalizationSeconds": 0.8,
+      "minimumActionSeconds": 0.3,
+      "minimumReactionSeconds": 0.5
+    },
+    "actorGroups": [
+      {
+        "id": "market-crowd",
+        "label": "集市百姓",
+        "memberDescription": "过往的集市百姓，男女老少，穿东汉平民麻布衣衫"
+      }
+    ],
+    "beats": [
+      {
+        "id": "beat-09-establish",
+        "sourceBeatId": "beat-09",
+        "actorIds": [
+          "market-crowd"
+        ],
+        "kind": "action",
+        "textOrVocalization": "一弟子站在集市空地上",
+        "dependsOn": [],
+        "overlapAllowedWith": [],
+        "resources": [
+          "body"
+        ],
+        "durationEstimate": {
+          "lower": 0.3,
+          "expected": 0.5,
+          "upper": 0.7,
+          "source": "establishing-visual",
+          "confidence": "medium"
+        },
+        "completion": {
+          "requiredThisClip": true,
+          "finalState": "弟子站在集市空地已呈现",
+          "modality": "visual",
+          "evidenceAnchor": "弟子站在集市空地"
+        },
+        "timingConstraint": {
+          "mode": "reference"
+        }
+      },
+      {
+        "id": "beat-09-speech",
+        "sourceBeatId": "beat-09",
+        "actorIds": [
+          "market-crowd"
+        ],
+        "kind": "speech",
+        "deliveryStyle": "dialogue",
+        "textOrVocalization": "我师张角，以符水疗病，病者颇愈。",
+        "performanceInstruction": "向过往百姓讲述张角以符水疗病、病者颇愈之事",
+        "dependsOn": [
+          "beat-09-establish"
+        ],
+        "overlapAllowedWith": [],
+        "resources": [
+          "voice"
+        ],
+        "durationEstimate": {
+          "lower": 3.4,
+          "expected": 4,
+          "upper": 5.4,
+          "source": "dialogue-rate: 17字 / 3.3字每秒下界 + 0.25秒启动 + 0.25秒句停",
+          "confidence": "high"
+        },
+        "completion": {
+          "requiredThisClip": true,
+          "finalState": "弟子向百姓讲述完毕",
+          "modality": "audio-visual",
+          "evidenceAnchor": "向百姓讲述"
+        },
+        "timingConstraint": {
+          "mode": "reference"
+        }
+      },
+      {
+        "id": "beat-09-gather",
+        "sourceBeatId": "beat-09",
+        "actorIds": [
+          "market-crowd"
+        ],
+        "kind": "reaction",
+        "textOrVocalization": "有百姓停下脚步围拢听讲",
+        "dependsOn": [
+          "beat-09-speech"
+        ],
+        "overlapAllowedWith": [],
+        "resources": [
+          "body"
+        ],
+        "durationEstimate": {
+          "lower": 1.5,
+          "expected": 2,
+          "upper": 2.5,
+          "source": "group-movement-reaction",
+          "confidence": "medium"
+        },
+        "completion": {
+          "requiredThisClip": true,
+          "finalState": "百姓停下围拢已完成",
+          "modality": "visual",
+          "evidenceAnchor": "百姓停下围拢"
+        },
+        "timingConstraint": {
+          "mode": "reference"
+        }
+      }
+    ]
+  },
+  "shotIntent": {
+    "viewpointCharacter": "观众",
+    "purpose": "承接传道沙盘路径，呈现弟子在郡县集市实际传道并吸引百姓围观",
+    "cameraReason": "中景建立集市空间与弟子位置，能看清弟子站在集市讲述和百姓围拢动作"
+  },
+  "beatDramaturgy": [
+    {
+      "beatId": "beat-09",
+      "function": "呈现弟子在新地点传道的场景",
+      "stateChange": "从沙盘路径到弟子实际在集市传道,百姓开始围观",
+      "visual": [
+        "弟子站在集市空地",
+        "向百姓讲述",
+        "百姓停下围拢"
+      ],
+      "audio": []
+    }
+  ],
+  "storyProgress": {
+    "unitId": "drama-05",
+    "status": "continuing",
+    "actionResult": "弟子在集市传道场景已建立，百姓开始围观",
+    "response": "弟子讲述张角符水疗病事迹，百姓停下围拢",
+    "pendingActions": [
+      "弟子邀请病患试服符水",
+      "有病患愿意尝试",
+      "围观者继续增多"
+    ]
+  },
+  "characters": [],
+  "presentCharacters": [],
+  "initialCharacters": [],
+  "enteringCharacters": [],
+  "endCharacters": [],
+  "illustrationLayers": [],
+  "worldState": {
+    "settingId": "drama-05",
+    "characters": []
+  },
+  "continuity": {
+    "mode": "scene_cut",
+    "previousShotId": "scene-08",
+    "bridgeType": "cut",
+    "bridgeAnchor": "从八州传道路径沙盘完整辐射的最终画面，切到某郡县集市弟子实际传道的具体场景"
+  },
+  "coveredBeatIds": [
+    "beat-09"
+  ],
+  "visualPrompt": "东汉郡县集市，晴日自然光；木制摊位、土路、麻布帐篷；集市空地中央，一名身穿灰色道袍的弟子站在集市空地上，手持竹简；周围稀疏分布着穿麻布衣衫的过往百姓，有挑担的、有推车的、有牵孩童的；俯仰视角，中景构图。",
+  "camera": "固定机位，中景，略高于人眼视角俯拍，视线轴线从弟子朝向集市人流方向",
+  "mood": "平实纪录集市日常中的新事件",
+  "firstFrameMode": "reference",
+  "lastFramePrompt": "东汉郡县集市空地，晴日自然光；灰色道袍弟子站在空地中央，手持竹简；十余名百姓已停下脚步围拢成半圆形，面向弟子，有的倚着扁担，有的放下背篓，有的牵着孩童；弟子和百姓保持三四步距离；中景构图。",
+  "videoPrompt": "0-0.7秒：东汉郡县集市空地，灰色道袍弟子站在集市空地上，手持竹简，周围是过往百姓和木制摊位；弟子站在集市空地。0.7-6.1秒：弟子转向过往百姓，举起竹简，开口向百姓讲述，完整说出：我师张角，以符水疗病，病者颇愈；过往百姓中有人放慢脚步侧目。6.1-7.5秒：陆续有百姓停下脚步围拢听讲，放下挑担或背篓，转身面向弟子，从不同方向走近并围成半圆形；最终十余名百姓站成半圆，面向弟子。7.5-8秒：保留百姓围拢完成状态供观众看清。",
+  "audioType": "对白",
+  "audioText": "弟子：我师张角，以符水疗病，病者颇愈。",
+  "historicalBasis": "[史料2]张角遣弟子八人使于四方,以善道教化天下,转相诳惑;符水呪说以疗病,病者颇愈,百姓信向之",
+  "adaptationBoundary": "拟制弟子在集市传道的场面调度与简短讲述内容，弟子四方传道、以符水疗病、病者颇愈、百姓信向的史实不变"
+}

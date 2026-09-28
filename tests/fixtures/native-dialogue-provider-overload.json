@@ -1,0 +1,493 @@
+{
+  "prompt": "【本镜影视处理】live_action / story\n【动画叙事类型与美术风格】 / \n【场景与开场画面】16:9，真人实景，自然散射日光。当阳长坂附近撤退土路的一处弯口，沿用附件的浅色土路、枯草、疏林及两匹棕马。开场单一时刻：刘备、张飞已并骑停在弯口，尚未开始本镜转身交谈。刘备中等身形、面容清瘦，深色髭须和下颏胡须，黑发束髻，按本镜characterVisuals穿灰褐交领短袍、深褐皮札甲、暗色束带与黑靴。张飞沿用指定资产的成熟壮实身形、浅肤自然红润、黑色髭须、黑发束髻与披背余发，身穿深灰交领战袍、黑色披风、深色腰封护腕和黑靴。手部及马具沿用参考中的承接关系，不补造兵器。斜侧中全景同时容纳两名主角；二十名匿名真人骑士原在主角后方来路近旁随行，散落于未成行的队伍中，反打扩大取景可见其前部，后部沿道路纵深延伸。动作覆盖要求：刘备转向张飞；张飞抬手招拢骑士；二十名骑士在张飞身后分列两行。队列形成过程在后续运动画面中完成，首帧不预置完成态。无现代物件、水印及关键信息文字。\n【视觉处理硬约束】live_action 必须生成具有真实空间深度、自然光影和可信时代环境的完整实景；animated 严格执行 animationStyle 与 animationAesthetic，可使用历史人物插画、历史场景、象征物、时间或环境动画，不默认地图。character_illustration 使用系统二维插画编排路线：人物素材内部姿态、表情、嘴部和衣物全程不变，只允许整个人物图层在合适的历史背景上淡入、平移、缩放、淡出；historical_tableau 仅允许整幅定格画面轻微缩放、平移或渐变。二者均不向视频模型请求人物走路、转身、说话等肢体动画，背景由独立画外旁白讲清。其他动画按分镜运动。禁止低幼卡通、Q版、现代动漫符号、游戏CG和玄幻光效。旧 animated_map/historical_montage 分别按 historical_map/historical_tableau 兼容。人物参考附件只用于身份、脸部、体型和服装。\n0-0.7秒：（节拍 b03-turn，0至0.7秒，导演参考）场景：当阳长坂附近撤退土路的一处弯口；刘备转向张飞，在已经收马的状态下转动上身和视线，正对张飞交付任务。；完成态：刘备面向张飞，军令即将直接交付。。\n0.7-4.381秒：（节拍 b03-order，0.7至4.381秒，导演参考）刘备看着张飞同期说出军令，姓名后短停，将重音落在“二十骑”和“挡住追兵”，声音急而清楚。张飞看着刘备听完。；刘备自然开口说出：张飞，带二十骑挡住追兵！；完成态：刘备完整交付由张飞带二十骑挡住追兵的任务。；动作依据：刘备：张飞，带二十骑挡住追兵！。\n4.381-5.791秒：（节拍 b03-answer，4.381至5.791秒，导演参考）张飞迎着刘备的目光简短答复，语气坚定、直接催行，不拔高成喊叫。刘备停止语言口型，接住这句回应，仍留在原处。；张飞自然开口说出：你先走。；完成态：张飞以催刘备先走的直接回应接下任务。；动作依据：张飞：你先走。。\n5.791-6.691秒：（节拍 b03-signal，5.791至6.691秒，导演参考）张飞抬手招拢骑士，答复收音后将示意手抬至胸肩之间，朝身后骑士做一次明确的招拢手势。；完成态：张飞已向骑士发出明确的集合手势。。\n6.691-12.491秒：（节拍 b03-riders-form，6.691至12.491秒，导演参考）二十名骑士在张飞身后分列两行：原本已在近旁土路上随行的骑士看到手势后，各自以短程步行马速调整间隔，分为每行十骑的两条纵行，逐步收住坐骑，实际留下。二十名骑士全部由真人骑马完成，不包含张飞。；完成态：张飞身后实际保留两行各十名真人骑士，队列与刘备所在位置形成明确区分。。\n12.491-13秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.2-brisk-narration 和已编译节拍分别完成下列声部：[{\"beatId\":\"b03-order\",\"actorIds\":[\"刘备\"],\"kind\":\"speech\",\"deliveryStyle\":\"dialogue\",\"textOrVocalization\":\"张飞，带二十骑挡住追兵！\"},{\"beatId\":\"b03-answer\",\"actorIds\":[\"张飞\"],\"kind\":\"speech\",\"deliveryStyle\":\"dialogue\",\"textOrVocalization\":\"你先走。\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。\n【本镜结束时的自然动作结果】16:9真人实景单一末帧，同一土路弯口、自然日光。刘备仍骑棕马停在张飞侧前方，尚未开始离开；张飞仍骑棕马位于留下队伍前端，示意手停在胸肩之间。刘备、张飞脸部、体型、须发和服装均沿用本镜批准造型，手持物与马具保持开场承接关系。张飞身后为二十名实际真人骑士，每人一马，分列两条纵行，每行十骑，不包含张飞；略高斜侧全景使所有骑士可辨且不被主角完全遮住。两行坐骑已收住，土路前方仍留通行空间。无拼贴、分栏或重复人物。\n运镜：同场coverage_cut，保持在前镜刘备与张飞连线的同一侧，以土路走向维持撤离方向。斜侧中全景拍清刘备转向、两人三分之二侧脸与张飞示意手；对白期间机位稳定，视线互接，不越轴。张飞招手时开始平缓后拉并略升高，连续显露后方骑士的实际调位。末段为略高斜侧全景，两行各十骑错开遮挡、留出可辨间隙，两名主角仍可见。\n人声类型：对白\n【音轨文本；环境声模式为空且禁止人声】刘备：张飞，带二十骑挡住追兵！\n张飞：你先走。",
+  "params": {
+    "duration": 13,
+    "pacingVersion": "duration-v2",
+    "audioType": "对白",
+    "audioText": "刘备：张飞，带二十骑挡住追兵！\n张飞：你先走。",
+    "pacing": {
+      "beats": [
+        {
+          "id": "b03-turn",
+          "kind": "action",
+          "actorIds": [
+            "刘备"
+          ],
+          "dependsOn": [],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "刘备面向张飞，军令即将直接交付。",
+            "evidenceAnchor": "刘备转向张飞",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-03",
+          "durationEstimate": {
+            "lower": 0.4,
+            "upper": 0.7,
+            "source": "马背上短幅转身并建立对视的动作估计",
+            "expected": 0.6,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "刘备转向张飞，在已经收马的状态下转动上身和视线，正对张飞交付任务。"
+        },
+        {
+          "id": "b03-order",
+          "kind": "speech",
+          "actorIds": [
+            "刘备"
+          ],
+          "dependsOn": [
+            "b03-turn"
+          ],
+          "resources": [
+            "voice"
+          ],
+          "completion": {
+            "modality": "audio-visual",
+            "finalState": "刘备完整交付由张飞带二十骑挡住追兵的任务。",
+            "evidenceAnchor": "刘备：张飞，带二十骑挡住追兵！",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-03",
+          "deliveryStyle": "dialogue",
+          "durationEstimate": {
+            "lower": 2.5,
+            "upper": 3.681,
+            "source": "十字对白，计入发声启动、姓名后停顿及句尾收音的自然表演预算",
+            "expected": 3,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "张飞，带二十骑挡住追兵！",
+          "performanceInstruction": "刘备看着张飞同期说出军令，姓名后短停，将重音落在“二十骑”和“挡住追兵”，声音急而清楚。张飞看着刘备听完。"
+        },
+        {
+          "id": "b03-answer",
+          "kind": "speech",
+          "actorIds": [
+            "张飞"
+          ],
+          "dependsOn": [
+            "b03-order"
+          ],
+          "resources": [
+            "voice"
+          ],
+          "completion": {
+            "modality": "audio-visual",
+            "finalState": "张飞以催刘备先走的直接回应接下任务。",
+            "evidenceAnchor": "张飞：你先走。",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-03",
+          "deliveryStyle": "dialogue",
+          "durationEstimate": {
+            "lower": 0.9,
+            "upper": 1.41,
+            "source": "三字简短回应，计入换人接话、发声启动和收音",
+            "expected": 1.1,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "你先走。",
+          "performanceInstruction": "张飞迎着刘备的目光简短答复，语气坚定、直接催行，不拔高成喊叫。刘备停止语言口型，接住这句回应，仍留在原处。"
+        },
+        {
+          "id": "b03-signal",
+          "kind": "action",
+          "actorIds": [
+            "张飞"
+          ],
+          "dependsOn": [
+            "b03-answer"
+          ],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "张飞已向骑士发出明确的集合手势。",
+            "evidenceAnchor": "张飞抬手招拢骑士",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-03",
+          "durationEstimate": {
+            "lower": 0.6,
+            "upper": 0.9,
+            "source": "抬臂并完成一次可辨认招拢手势的动作估计",
+            "expected": 0.75,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "张飞抬手招拢骑士，答复收音后将示意手抬至胸肩之间，朝身后骑士做一次明确的招拢手势。"
+        },
+        {
+          "id": "b03-riders-form",
+          "kind": "action",
+          "actorIds": [
+            "rear_guard_riders"
+          ],
+          "dependsOn": [
+            "b03-signal"
+          ],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "张飞身后实际保留两行各十名真人骑士，队列与刘备所在位置形成明确区分。",
+            "evidenceAnchor": "二十名骑士在张飞身后分列两行",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-03",
+          "durationEstimate": {
+            "lower": 4.4,
+            "upper": 5.8,
+            "source": "二十骑原已近距随行，分别短程调位、形成两行并收马的群体调度估计",
+            "expected": 5.2,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "二十名骑士在张飞身后分列两行：原本已在近旁土路上随行的骑士看到手势后，各自以短程步行马速调整间隔，分为每行十骑的两条纵行，逐步收住坐骑，实际留下。二十名骑士全部由真人骑马完成，不包含张飞。"
+        }
+      ],
+      "version": "duration-v2",
+      "schedule": [
+        {
+          "kind": "action",
+          "beatId": "b03-turn",
+          "actorIds": [
+            "刘备"
+          ],
+          "endSecond": 0.7,
+          "startSecond": 0,
+          "sourceBeatId": "beat-03",
+          "budgetSeconds": 0.7,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "speech",
+          "beatId": "b03-order",
+          "actorIds": [
+            "刘备"
+          ],
+          "endSecond": 4.381,
+          "startSecond": 0.7,
+          "sourceBeatId": "beat-03",
+          "budgetSeconds": 3.681,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "speech",
+          "beatId": "b03-answer",
+          "actorIds": [
+            "张飞"
+          ],
+          "endSecond": 5.791,
+          "startSecond": 4.381,
+          "sourceBeatId": "beat-03",
+          "budgetSeconds": 1.41,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "action",
+          "beatId": "b03-signal",
+          "actorIds": [
+            "张飞"
+          ],
+          "endSecond": 6.691,
+          "startSecond": 5.791,
+          "sourceBeatId": "beat-03",
+          "budgetSeconds": 0.9,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "action",
+          "beatId": "b03-riders-form",
+          "actorIds": [
+            "rear_guard_riders"
+          ],
+          "endSecond": 12.491,
+          "startSecond": 6.691,
+          "sourceBeatId": "beat-03",
+          "budgetSeconds": 5.8,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        }
+      ],
+      "actorGroups": [
+        {
+          "id": "rear_guard_riders",
+          "label": "二十名骑士",
+          "memberDescription": "二十名匿名真人骑士，每人一马，不包含张飞。身着东汉军士服装，原本随撤退队伍处在两名主角后方的土路上；本镜扩大取景显现，尚未分列成行，无新增具名军士。"
+        }
+      ],
+      "sampleTimes": [
+        0,
+        0.35,
+        0.7,
+        2.541,
+        4.381,
+        5.086,
+        5.791,
+        6.241,
+        6.691,
+        9.591,
+        12.491,
+        12.92
+      ],
+      "scheduleHash": "duration-v2-sha256-279f890e3b79b379fcfe89fe2f30bdf7553c0bb085b4deadda8140aacc01004b",
+      "timingPolicy": {
+        "speech": {
+          "chant": {
+            "maximumRate": 4.5,
+            "referenceRate": 3.3,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 2.8
+          },
+          "singing": {
+            "maximumRate": 3.5,
+            "referenceRate": 2.8,
+            "startupAllowance": 0.35,
+            "minimumNaturalRate": 2
+          },
+          "dialogue": {
+            "maximumRate": 5,
+            "referenceRate": 4.5,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 3.3
+          },
+          "narration": {
+            "maximumRate": 6.5,
+            "referenceRate": 5.8,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 5.5
+          }
+        },
+        "version": "duration-policy-v2.2-brisk-narration",
+        "linePauseSeconds": 0.2,
+        "shortPauseSeconds": 0.15,
+        "minimumActionSeconds": 0.3,
+        "sentencePauseSeconds": 0.25,
+        "minimumReactionSeconds": 0.5,
+        "maximumProviderDuration": 15,
+        "minimumProviderDuration": 3,
+        "endingReadabilityReserve": 0.5,
+        "minimumVocalizationSeconds": 0.8,
+        "maxConservativeExtraSeconds": 1,
+        "measurementToleranceSeconds": 0.25
+      },
+      "sourceBeatIds": [
+        "beat-03"
+      ],
+      "speechWindows": [
+        {
+          "end": 4.381,
+          "text": "张飞，带二十骑挡住追兵！",
+          "start": 0.7,
+          "beatId": "b03-order",
+          "actorIds": [
+            "刘备"
+          ],
+          "sourceBeatId": "beat-03",
+          "deliveryStyle": "dialogue"
+        },
+        {
+          "end": 5.791,
+          "text": "你先走。",
+          "start": 4.381,
+          "beatId": "b03-answer",
+          "actorIds": [
+            "张飞"
+          ],
+          "sourceBeatId": "beat-03",
+          "deliveryStyle": "dialogue"
+        }
+      ],
+      "timelineWindows": [
+        {
+          "beatIds": [
+            "b03-turn"
+          ],
+          "endSecond": 0.7,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 b03-turn，0至0.7秒，导演参考）场景：当阳长坂附近撤退土路的一处弯口；刘备转向张飞，在已经收马的状态下转动上身和视线，正对张飞交付任务。；完成态：刘备面向张飞，军令即将直接交付。。",
+              "beatId": "b03-turn"
+            }
+          ],
+          "startSecond": 0
+        },
+        {
+          "beatIds": [
+            "b03-order"
+          ],
+          "endSecond": 4.381,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 b03-order，0.7至4.381秒，导演参考）刘备看着张飞同期说出军令，姓名后短停，将重音落在“二十骑”和“挡住追兵”，声音急而清楚。张飞看着刘备听完。；刘备自然开口说出：张飞，带二十骑挡住追兵！；完成态：刘备完整交付由张飞带二十骑挡住追兵的任务。；动作依据：刘备：张飞，带二十骑挡住追兵！。",
+              "beatId": "b03-order"
+            }
+          ],
+          "startSecond": 0.7
+        },
+        {
+          "beatIds": [
+            "b03-answer"
+          ],
+          "endSecond": 5.791,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 b03-answer，4.381至5.791秒，导演参考）张飞迎着刘备的目光简短答复，语气坚定、直接催行，不拔高成喊叫。刘备停止语言口型，接住这句回应，仍留在原处。；张飞自然开口说出：你先走。；完成态：张飞以催刘备先走的直接回应接下任务。；动作依据：张飞：你先走。。",
+              "beatId": "b03-answer"
+            }
+          ],
+          "startSecond": 4.381
+        },
+        {
+          "beatIds": [
+            "b03-signal"
+          ],
+          "endSecond": 6.691,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 b03-signal，5.791至6.691秒，导演参考）张飞抬手招拢骑士，答复收音后将示意手抬至胸肩之间，朝身后骑士做一次明确的招拢手势。；完成态：张飞已向骑士发出明确的集合手势。。",
+              "beatId": "b03-signal"
+            }
+          ],
+          "startSecond": 5.791
+        },
+        {
+          "beatIds": [
+            "b03-riders-form"
+          ],
+          "endSecond": 12.491,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 b03-riders-form，6.691至12.491秒，导演参考）二十名骑士在张飞身后分列两行：原本已在近旁土路上随行的骑士看到手势后，各自以短程步行马速调整间隔，分为每行十骑的两条纵行，逐步收住坐骑，实际留下。二十名骑士全部由真人骑马完成，不包含张飞。；完成态：张飞身后实际保留两行各十名真人骑士，队列与刘备所在位置形成明确区分。。",
+              "beatId": "b03-riders-form"
+            }
+          ],
+          "startSecond": 6.691
+        },
+        {
+          "beatIds": [],
+          "endSecond": 13,
+          "beatQuotes": [],
+          "startSecond": 12.491
+        }
+      ],
+      "compiledVideoPrompt": "0-0.7秒：（节拍 b03-turn，0至0.7秒，导演参考）场景：当阳长坂附近撤退土路的一处弯口；刘备转向张飞，在已经收马的状态下转动上身和视线，正对张飞交付任务。；完成态：刘备面向张飞，军令即将直接交付。。\n0.7-4.381秒：（节拍 b03-order，0.7至4.381秒，导演参考）刘备看着张飞同期说出军令，姓名后短停，将重音落在“二十骑”和“挡住追兵”，声音急而清楚。张飞看着刘备听完。；刘备自然开口说出：张飞，带二十骑挡住追兵！；完成态：刘备完整交付由张飞带二十骑挡住追兵的任务。；动作依据：刘备：张飞，带二十骑挡住追兵！。\n4.381-5.791秒：（节拍 b03-answer，4.381至5.791秒，导演参考）张飞迎着刘备的目光简短答复，语气坚定、直接催行，不拔高成喊叫。刘备停止语言口型，接住这句回应，仍留在原处。；张飞自然开口说出：你先走。；完成态：张飞以催刘备先走的直接回应接下任务。；动作依据：张飞：你先走。。\n5.791-6.691秒：（节拍 b03-signal，5.791至6.691秒，导演参考）张飞抬手招拢骑士，答复收音后将示意手抬至胸肩之间，朝身后骑士做一次明确的招拢手势。；完成态：张飞已向骑士发出明确的集合手势。。\n6.691-12.491秒：（节拍 b03-riders-form，6.691至12.491秒，导演参考）二十名骑士在张飞身后分列两行：原本已在近旁土路上随行的骑士看到手势后，各自以短程步行马速调整间隔，分为每行十骑的两条纵行，逐步收住坐骑，实际留下。二十名骑士全部由真人骑马完成，不包含张飞。；完成态：张飞身后实际保留两行各十名真人骑士，队列与刘备所在位置形成明确区分。。\n12.491-13秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+      "sourceBeatRequirements": [
+        {
+          "id": "beat-03",
+          "anchors": [
+            "刘备转向张飞",
+            "张飞抬手招拢骑士",
+            "二十名骑士在张飞身后分列两行"
+          ],
+          "setting": "当阳长坂附近撤退土路的一处弯口"
+        }
+      ]
+    },
+    "qualityMode": "principle-v1",
+    "qualityDisposition": "manual-review-v1",
+    "referenceMode": "three-view-all",
+    "sound": "on",
+    "subtitlePolicy": "none",
+    "visualTreatment": "live_action",
+    "editorialRole": "story",
+    "characters": [
+      "刘备",
+      "张飞"
+    ],
+    "initialCharacters": [
+      "刘备",
+      "张飞"
+    ],
+    "presentCharacters": [
+      "刘备",
+      "张飞"
+    ],
+    "multiShot": false,
+    "videoTimeline": "0-0.7秒：（节拍 b03-turn，0至0.7秒，导演参考）场景：当阳长坂附近撤退土路的一处弯口；刘备转向张飞，在已经收马的状态下转动上身和视线，正对张飞交付任务。；完成态：刘备面向张飞，军令即将直接交付。。\n0.7-4.381秒：（节拍 b03-order，0.7至4.381秒，导演参考）刘备看着张飞同期说出军令，姓名后短停，将重音落在“二十骑”和“挡住追兵”，声音急而清楚。张飞看着刘备听完。；刘备自然开口说出：张飞，带二十骑挡住追兵！；完成态：刘备完整交付由张飞带二十骑挡住追兵的任务。；动作依据：刘备：张飞，带二十骑挡住追兵！。\n4.381-5.791秒：（节拍 b03-answer，4.381至5.791秒，导演参考）张飞迎着刘备的目光简短答复，语气坚定、直接催行，不拔高成喊叫。刘备停止语言口型，接住这句回应，仍留在原处。；张飞自然开口说出：你先走。；完成态：张飞以催刘备先走的直接回应接下任务。；动作依据：张飞：你先走。。\n5.791-6.691秒：（节拍 b03-signal，5.791至6.691秒，导演参考）张飞抬手招拢骑士，答复收音后将示意手抬至胸肩之间，朝身后骑士做一次明确的招拢手势。；完成态：张飞已向骑士发出明确的集合手势。。\n6.691-12.491秒：（节拍 b03-riders-form，6.691至12.491秒，导演参考）二十名骑士在张飞身后分列两行：原本已在近旁土路上随行的骑士看到手势后，各自以短程步行马速调整间隔，分为每行十骑的两条纵行，逐步收住坐骑，实际留下。二十名骑士全部由真人骑马完成，不包含张飞。；完成态：张飞身后实际保留两行各十名真人骑士，队列与刘备所在位置形成明确区分。。\n12.491-13秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.2-brisk-narration 和已编译节拍分别完成下列声部：[{\"beatId\":\"b03-order\",\"actorIds\":[\"刘备\"],\"kind\":\"speech\",\"deliveryStyle\":\"dialogue\",\"textOrVocalization\":\"张飞，带二十骑挡住追兵！\"},{\"beatId\":\"b03-answer\",\"actorIds\":[\"张飞\"],\"kind\":\"speech\",\"deliveryStyle\":\"dialogue\",\"textOrVocalization\":\"你先走。\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。",
+    "referenceImages": [
+      "https://media.example.test/liubei-three-view.png",
+      "https://media.example.test/zhangfei-three-view.png"
+    ],
+    "referenceBindings": [
+      {
+        "characterName": "刘备",
+        "assetId": "character-6fedef81d39f710e",
+        "role": "identity"
+      },
+      {
+        "characterName": "张飞",
+        "assetId": "character-ea33d0a323ed1345",
+        "role": "identity"
+      }
+    ],
+    "characterVoices": [
+      {
+        "characterId": "mock-character-0",
+        "characterName": "刘备",
+        "voiceId": "mock-voice-0",
+        "version": 1,
+        "elementId": "12345",
+        "modelId": "offline-fixture",
+        "accountScope": "offline",
+        "voiceName": "刘备",
+        "previewUrl": "https://media.example.test/voice.wav"
+      },
+      {
+        "characterId": "mock-character-1",
+        "characterName": "张飞",
+        "voiceId": "mock-voice-1",
+        "version": 1,
+        "elementId": "12346",
+        "modelId": "offline-fixture",
+        "accountScope": "offline",
+        "voiceName": "张飞",
+        "previewUrl": "https://media.example.test/voice.wav"
+      }
+    ]
+  },
+  "model": {
+    "id": "offline-fixture",
+    "provider": "Kling",
+    "capability": "video",
+    "settings": {
+      "model": "kling-v3",
+      "endpoint": "https://provider.example.test/v1/videos",
+      "apiKey": "test"
+    }
+  }
+}

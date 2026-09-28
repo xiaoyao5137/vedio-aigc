@@ -1,5 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { createServer } from 'node:http'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import sharp from 'sharp'
 import {
   buildKlingImageRequest,
@@ -9,18 +13,34 @@ import {
   callKlingVideo,
   callOpenAiImage,
   createKlingToken,
+  hardenKlingDialoguePrompt,
   imageSizeToAspectRatio,
   klingAuthorization,
   klingIdentityReferencePrompt,
   klingThreeViewVideoPrompt,
   KLING_PROMPT_MAX_LENGTH,
   limitKlingPrompt,
+  omitGenericCrowdVideoReferences,
+  parseResponseBody,
   parseMacOsHttpsProxy,
+  resolveKlingLocalImage,
   resolveModelProxyUrl,
   resolveKlingOmniVideoEndpoint,
   resolveKlingVideoEndpoint,
+  fetchWithModelNetwork,
   usesTrustedModelDns,
 } from '../server/model-adapters.ts'
+
+test('provider response bodies are read once and preserve non-JSON errors', async () => {
+  const jsonResponse = new Response(JSON.stringify({ error: 'structured failure' }))
+  assert.deepEqual(await parseResponseBody(jsonResponse), { error: 'structured failure' })
+
+  const textResponse = new Response('upstream gateway failure')
+  assert.equal(await parseResponseBody(textResponse), 'upstream gateway failure')
+
+  const emptyResponse = new Response(null, { status: 204 })
+  assert.deepEqual(await parseResponseBody(emptyResponse), {})
+})
 
 test('known model gateways bypass polluted system DNS', () => {
   assert.equal(usesTrustedModelDns('https://api.ofox.ai/v1/images/generations'), true)
@@ -43,6 +63,25 @@ test('model requests discover an enabled macOS HTTPS proxy', () => {
   assert.equal(parseMacOsHttpsProxy(systemProxy), 'http://127.0.0.1:7890')
   assert.equal(resolveModelProxyUrl(new URL('https://doro.lol'), {}, systemProxy), 'http://127.0.0.1:7890')
   assert.equal(parseMacOsHttpsProxy(systemProxy.replace('HTTPSEnable : 1', 'HTTPSEnable : 0')), '')
+})
+
+test('trusted model transport aborts a live response body after headers, even when SSE heartbeats keep the socket active', async (t) => {
+  const server = createServer((_request, response) => {
+    response.writeHead(200, { 'content-type': 'text/event-stream' })
+    response.write('event: ping\ndata: {}\n\n')
+    const heartbeat = setInterval(() => response.write('event: ping\ndata: {}\n\n'), 10)
+    response.once('close', () => clearInterval(heartbeat))
+  })
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
+  t.after(() => new Promise<void>(resolve => server.close(() => resolve())))
+  const address = server.address()
+  assert.ok(address && typeof address === 'object')
+  const response = await fetchWithModelNetwork(`http://127.0.0.1:${address.port}/messages`, {
+    signal: AbortSignal.timeout(80),
+  })
+  const started = Date.now()
+  await assert.rejects(response.text(), /abort|timeout|operation was aborted/i)
+  assert.ok(Date.now() - started < 1000, 'body read must not outlive the request deadline')
 })
 
 const qwenModel = {
@@ -170,6 +209,56 @@ test('Kling image-to-video request uses only provider-standard fields and native
   })
 })
 
+test('Kling final request preserves validated actions, gaze, prop transfer, and the ending', () => {
+  const source = '【场景与开场实景】两人隔案相对。0-5秒：甲将拜帖递至乙面前，目光注视乙。5-10秒：甲开口说出“请过目”，手仍持拜帖。10-13.5秒：乙拒接，甲收回拜帖。13.5-15秒：甲保持冷笑，手握拜帖，乙避开目光。\n【同期对白硬约束】按时发声。\n运镜：保持两人的侧面关系\n【必须生成的同期人声原文】甲：请过目'
+  const hardened = hardenKlingDialoguePrompt(source)
+  assert(hardened.startsWith(source))
+  assert.match(hardened, /手仍持拜帖/)
+  assert.match(hardened, /甲保持冷笑/)
+  assert.match(hardened, /保持两人的侧面关系/)
+  assert.doesNotMatch(hardened, /正对镜头保持头肩中近景/)
+  assert.throws(() => buildKlingVideoRequest({ id: 'kling', provider: 'Kling', capability: 'video', settings: { model: 'kling-v3' } }, source + '布景'.repeat(1600), { referenceImage: 'https://cdn.example.com/first.png', duration: 15 }), /已阻止截断剧情/)
+})
+
+
+test('Kling adapter converts browser-relative runtime images to valid base64 before submission', async (t) => {
+  const generatedAssetsDirectory = await mkdtemp(path.join(tmpdir(), 'video-aigc-generated-'))
+  t.after(() => rm(generatedAssetsDirectory, { recursive: true, force: true }))
+  const tailBytes = await sharp({ create: { width: 2, height: 2, channels: 3, background: '#334455' } }).jpeg().toBuffer()
+  await writeFile(path.join(generatedAssetsDirectory, 'tail.jpg'), tailBytes)
+
+  const resolved = await resolveKlingLocalImage('/generated/tail.jpg', generatedAssetsDirectory)
+  assert.equal(resolved, `data:image/jpeg;base64,${tailBytes.toString('base64')}`)
+
+  let submitted: Record<string, unknown> | undefined
+  const result = await callKlingVideo({
+    ...klingImageModel,
+    id: 'keling3',
+    capability: 'video',
+    settings: { ...klingImageModel.settings, endpoint: 'https://api-singapore.klingai.com/v1/videos', model: 'kling-v3' },
+  }, '人物自然运动', {
+    referenceImages: ['data:image/png;base64,Y2hhcmFjdGVy'],
+    referenceImage: '/generated/tail.jpg',
+  }, {
+    generatedAssetsDirectory,
+    fetch: async (_input, init) => {
+      submitted = JSON.parse(String(init?.body)) as Record<string, unknown>
+      return new Response(JSON.stringify({
+        code: 0,
+        data: { task_id: 'local-tail-task', task_status: 'succeed', task_result: { videos: [{ url: 'https://example.com/video.mp4' }] } },
+      }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    },
+  })
+
+  assert.equal(result.status, 200)
+  const imageList = submitted?.image_list as Array<{ image_url: string; type?: string }>
+  assert.deepEqual(imageList, [
+    { image_url: 'Y2hhcmFjdGVy' },
+    { image_url: tailBytes.toString('base64'), type: 'first_frame' },
+  ])
+  assert.ok(imageList.every((item) => !item.image_url.startsWith('/generated/')))
+})
+
 test('Kling reference attachments use the Omni endpoint, image list, and prompt references', () => {
   const request = buildKlingVideoRequest({
     ...klingImageModel,
@@ -195,6 +284,29 @@ test('Kling reference attachments use the Omni endpoint, image list, and prompt 
   assert.equal(resolveKlingOmniVideoEndpoint('https://api-singapore.klingai.com/v1/videos/image2video'), 'https://api-singapore.klingai.com/v1/videos/omni-video')
 })
 
+test('formal 4K profile forces Kling Omni and the native 4K request field', () => {
+  const request = buildKlingVideoRequest({
+    ...klingImageModel,
+    id: 'keling3',
+    capability: 'video',
+    settings: { endpoint: 'https://api-singapore.klingai.com/v1/videos', apiKey: 'key', model: 'kling-v3' },
+  }, '汉代城门远景，镜头缓慢推进', {
+    outputProfile: 'production-omni-4k', model_name: 'kling-v3-omni', resolution: '4k', mode: 'pro', aspectRatio: '16:9', duration: 5,
+  })
+  assert.equal(request.model_name, 'kling-v3-omni')
+  assert.equal(request.resolution, '4k')
+  assert.equal(request.mode, 'pro')
+  assert.equal(request.aspect_ratio, '16:9')
+  assert.deepEqual(request.image_list, [])
+
+  const debug = buildKlingVideoRequest({
+    ...klingImageModel, capability: 'video', settings: { ...klingImageModel.settings, model: 'kling-v3' },
+  }, '低成本调试镜头', { outputProfile: 'debug-720p', resolution: '720p', mode: 'std' })
+  assert.equal(debug.model_name, 'kling-v3')
+  assert.equal(debug.mode, 'std')
+  assert.equal('resolution' in debug, false)
+})
+
 test('Kling video prompt binds independently derived front, side, and back identity references', () => {
   const prompt = klingThreeViewVideoPrompt('人物挥剑转身', {
     referenceMode: 'three-view-all',
@@ -202,12 +314,74 @@ test('Kling video prompt binds independently derived front, side, and back ident
   })
   assert.match(prompt, /@参考附件1正面、@参考附件2侧面、@参考附件3背面/)
   assert.match(prompt, /只定义人物身份，不代表分镜或画面分栏/)
+  assert.match(prompt, /参考图背景隔离/)
+  assert.match(prompt, /纯色底.*不是故事场景/)
+  assert.match(prompt, /不得生成幕布、棚拍/)
+  assert.match(prompt, /中性站姿、手臂姿势和朝向不是本镜动作要求/)
+  assert.match(prompt, /对应时段执行.*持续到该时段结束/)
   const request = buildKlingVideoRequest({
     ...klingImageModel,
     capability: 'video',
     settings: { ...klingImageModel.settings, model: 'kling-v3' },
   }, prompt, { referenceImages: ['front', 'side', 'back'], referenceImage: 'start' })
   assert.match(String(request.prompt), /<<<image_1>>>正面、<<<image_2>>>侧面、<<<image_3>>>背面/)
+  const continuous = klingThreeViewVideoPrompt('同场回应', {
+    referenceMode: 'three-view-all', referenceImages: ['front', 'side', 'back'], referenceImage: '/generated/tail.jpg',
+  })
+  assert.match(continuous, /实际首帧优先/)
+  assert.match(continuous, /不改变首帧环境/)
+  assert.match(continuous, /开场仍以该首帧为准/)
+  assert.match(continuous, /衣襟和开合结构保持附件原貌/)
+  assert.doesNotMatch(continuous, /重建完整环境/)
+})
+
+test('Kling entrant references preserve identity without allowing a frame-one appearance', () => {
+  const prompt = klingThreeViewVideoPrompt('0-3秒：年长党人从门口连续步入。', {
+    referenceMode: 'three-view-all',
+    referenceImages: ['front', 'side', 'back'],
+    referenceBindings: [{
+      characterName: '年长党人',
+      role: 'entering',
+      entrance: { name: '年长党人', startSecond: 0, endSecond: 3, path: '门口' },
+    }],
+  })
+
+  assert.match(prompt, /年长党人：@参考附件1正面/)
+  assert.match(prompt, /入场人物在首帧不得出现/)
+  assert.match(prompt, /0-3秒从门口连续走入/)
+  assert.match(prompt, /禁止闪现、变形生成、切镜补人或提前出现/)
+})
+
+test('Kling front-only identity references also isolate their studio background', () => {
+  const prompt = klingThreeViewVideoPrompt('【场景与开场实景】东汉宫殿内真人实景。', {
+    referenceMode: 'three-view-front',
+    referenceImages: ['front-a', 'front-b', 'front-c'],
+    referenceBindings: [{ characterName: '桓帝' }, { characterName: '周福' }, { characterName: '侍从' }],
+  })
+
+  assert.match(prompt, /参考图背景隔离/)
+  assert.match(prompt, /以文字中的“场景与开场实景”重建完整环境/)
+  assert.match(prompt, /东汉宫殿内真人实景/)
+  assert.match(prompt, /身份参考与动作分离/)
+})
+
+test('generic numbered crowd entrants keep identity attachments beside the previous tail', () => {
+  const params = omitGenericCrowdVideoReferences({
+    referenceMode: 'three-view-all', referenceImages: ['a', 'b', 'c', 'd', 'e', 'f'],
+    referenceBindings: [
+      { role: 'entering', characterName: '饥民甲', entrance: { startSecond: 0, endSecond: 3, path: '画面左后方' } },
+      { role: 'entering', characterName: '饥民乙', entrance: { startSecond: 0, endSecond: 3, path: '画面右后方' } },
+    ],
+  })
+  assert.equal(params.referenceMode, 'three-view-all')
+  assert.deepEqual(params.referenceImages, ['a', 'b', 'c', 'd', 'e', 'f'])
+  assert.match(klingThreeViewVideoPrompt('0-3秒：二人连续入画。', params), /首帧人物锁定.*饥民甲只能在0-3秒.*饥民乙只能在0-3秒/)
+
+  const named = omitGenericCrowdVideoReferences({
+    referenceMode: 'three-view-all', referenceImages: ['a', 'b', 'c'],
+    referenceBindings: [{ role: 'entering', characterName: '张角' }],
+  })
+  assert.equal(named.referenceMode, 'three-view-all')
 })
 
 test('Kling omni video omits a target tail when no first frame is available', () => {
@@ -245,11 +419,11 @@ test('Kling tail-only input falls back to text-to-video instead of sending an in
 
 test('Kling prompts bind reference groups to explicit character names', () => {
   const imagePrompt = klingIdentityReferencePrompt('许劭俯视求评者', {
-    referenceDiagnostics: { composition: 'primary-panel' },
+    referenceDiagnostics: { composition: 'text-only-multi-character' },
     referenceBindings: [{ characterName: '许劭' }, { characterName: '求评者' }],
   })
-  assert.match(imagePrompt, /只包含许劭的单人正面参考/)
-  assert.match(imagePrompt, /求评者必须与其共同出现在同一个连续场景内/)
+  assert.match(imagePrompt, /本次不使用会诱导拼版的单人人物附件/)
+  assert.match(imagePrompt, /许劭、求评者/)
   assert.match(imagePrompt, /上下三段/)
   assert.match(imagePrompt, /任何可读文字/)
 
@@ -376,6 +550,32 @@ test('Kling Image 3 adapter creates and polls a task until image URLs are ready'
   assert.equal((result.body as { data: { task_result: { images: Array<{ url: string }> } } }).data.task_result.images[0].url, 'https://example.com/result.png')
 })
 
+test('Kling image and video content rejections preserve the provider task and stop without resubmitting', async () => {
+  const videoModel = { ...klingImageModel, capability: 'video', settings: { ...klingImageModel.settings, endpoint: 'https://api-beijing.klingai.com/v1/videos/image2video' } }
+  const failure = { code: 0, data: { task_id: 'rejected-task', task_status: 'failed', task_status_msg: 'Failure to pass the risk control system' } }
+  for (const [call, model] of [[callKlingImage, klingImageModel], [callKlingVideo, videoModel]] as const) {
+    for (const mode of ['immediate', 'poll', 'resume', 'gateway-poll']) {
+      const methods: string[] = []
+      const result = await call(model, 'original request', mode === 'resume' ? { resumeTaskId: 'rejected-task' } : {}, {
+        sleep: async () => {},
+        fetch: async (_url, init) => {
+          methods.push(String(init?.method))
+          if (init?.method === 'POST' && mode !== 'immediate') return Response.json({ code: 0, data: { task_id: 'rejected-task', task_status: 'submitted' } })
+          return Response.json(failure, { status: mode === 'gateway-poll' ? 502 : 200 })
+        },
+      })
+      assert.equal(result.status, 422, `${model.capability}/${mode}`)
+      const body = result.body as { error: { type: string; retryable: boolean; provider: string }; task_id: string; provider_response: unknown }
+      assert.equal(body.error.type, 'MODEL_CONTENT_REJECTED')
+      assert.equal(body.error.retryable, false)
+      assert.equal(body.error.provider, 'Kling')
+      assert.equal(body.task_id, 'rejected-task')
+      assert.deepEqual(body.provider_response, failure)
+      assert.deepEqual(methods, mode === 'immediate' ? ['POST'] : mode === 'resume' ? ['GET'] : ['POST', 'GET'])
+    }
+  }
+})
+
 test('Kling tail-frame adapter rejects a successful vertical triptych result', async () => {
   const referenceSheet = await sharp({ create: { width: 900, height: 300, channels: 3, background: '#777777' } }).png().toBuffer()
   const output = await sharp({ create: { width: 300, height: 900, channels: 3, background: '#ffffff' } })
@@ -455,4 +655,130 @@ test('Kling authentication supports the new API key and legacy JWT credentials',
   const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8')) as Record<string, unknown>
   assert.deepEqual(payload, { iss: 'access', exp: 1_700_001_800, nbf: 1_699_999_995 })
   assert.equal(klingAuthorization({ accessKey: 'access', secretKey: 'secret' }), `Bearer ${createKlingToken('access', 'secret')}`)
+})
+
+test('Kling persists an accepted task before polling and resumes without another POST', async () => {
+  const model = { ...klingImageModel, capability: 'video', settings: { ...klingImageModel.settings, endpoint: 'https://api-beijing.klingai.com/v1/videos/image2video' } }
+  let saved = false
+  const result = await callKlingVideo(model, '动作', {}, {
+    onTaskSubmitted: async (result, endpoint) => {
+      assert.equal((result.body as { data: { task_id: string } }).data.task_id, 'accepted')
+      assert.match(endpoint, /text2video$/)
+      saved = true
+    },
+    sleep: async () => { assert.equal(saved, true) },
+    fetch: async (_url, init) => new Response(JSON.stringify({ code: 0, data: init?.method === 'POST'
+      ? { task_id: 'accepted', task_status: 'submitted' }
+      : { task_id: 'accepted', task_status: 'succeed', task_result: { videos: [{ url: 'https://example.com/clip.mp4' }] } } })),
+  })
+  assert.equal(result.status, 200)
+  const methods: string[] = []
+  await callKlingVideo(model, '动作', { resumeTaskId: 'accepted', resumeQueryMode: 'omni' }, {
+    fetch: async (url, init) => {
+      assert.match(String(url), /omni-video\/accepted$/)
+      methods.push(String(init?.method))
+      return new Response(JSON.stringify({ code: 0, data: { task_id: 'accepted', task_status: 'succeed', task_result: { videos: [{ url: 'https://example.com/clip.mp4' }] } } }))
+    },
+  })
+  assert.deepEqual(methods, ['GET'])
+})
+
+test('Kling query 524 and socket reset recover against the same task with one POST', async () => {
+  const model = { ...klingImageModel, capability: 'video', settings: { ...klingImageModel.settings, endpoint: 'https://api-beijing.klingai.com/v1/videos/image2video' } }
+  let posts = 0
+  let gets = 0
+  const result = await callKlingVideo(model, '动作', {}, { sleep: async () => {}, fetch: async (url, init) => {
+    if (init?.method === 'POST') { posts++; return new Response(JSON.stringify({ code: 0, data: { task_id: 'paid-once', task_status: 'submitted' } })) }
+    assert.match(String(url), /paid-once$/)
+    gets++
+    if (gets === 1) return new Response('error code: 524\n', { status: 524 })
+    if (gets === 2) throw new Error('ECONNRESET')
+    return new Response(JSON.stringify({ code: 0, data: { task_id: 'paid-once', task_status: 'succeed', task_result: { videos: [{ url: 'https://example.com/clip.mp4' }] } } }))
+  } })
+  assert.equal(result.status, 200)
+  assert.equal(posts, 1)
+  assert.equal(gets, 3)
+})
+
+test('Kling transient task queries recover on attempt five without repeating the paid POST', async () => {
+  const model = { ...klingImageModel, capability: 'video', settings: { ...klingImageModel.settings, endpoint: 'https://api-beijing.klingai.com/v1/videos/image2video' } }
+  let posts = 0, gets = 0
+  const delays: number[] = []
+  const result = await callKlingVideo(model, '动作', {}, { sleep: async delay => { delays.push(delay) }, fetch: async (url, init) => {
+    if (init?.method === 'POST') { posts++; return new Response(JSON.stringify({ code: 0, data: { task_id: 'twenty-query', task_status: 'submitted' } })) }
+    assert.match(String(url), /twenty-query$/)
+    gets++
+    if (gets < 5) {
+      if (gets % 2) throw Error('ECONNRESET')
+      return new Response('error code: 524', { status: 524 })
+    }
+    return new Response(JSON.stringify({ code: 0, data: { task_id: 'twenty-query', task_status: 'succeed', task_result: { videos: [{ url: 'https://example.com/clip.mp4' }] } } }))
+  } })
+  assert.equal(result.status, 200)
+  assert.equal(posts, 1)
+  assert.equal(gets, 5)
+  assert.ok(delays.every(delay => delay <= 30_000), 'larger retry budget must not create exponentially unbounded sleeps')
+})
+
+test('Kling failed task queries stop at five while permanent failures stop immediately', async () => {
+  const model = { ...klingImageModel, capability: 'video', settings: { ...klingImageModel.settings, endpoint: 'https://api-beijing.klingai.com/v1/videos/image2video' } }
+  for (const status of [524, 401]) {
+    let gets = 0
+    const result = await callKlingVideo(model, '动作', { resumeTaskId: 'accepted-before-test' }, { sleep: async () => {}, fetch: async (_url, init) => {
+      assert.equal(init?.method, 'GET')
+      gets++
+      return new Response('upstream failure', { status })
+    } })
+    assert.equal(result.status, status)
+    assert.equal(gets, status === 524 ? 5 : 1)
+  }
+})
+
+test('Image 3.0 directed correction uses the documented Omni endpoint and image_list', async () => {
+  const model = { id: 'image', provider: 'Kling', capability: 'image', settings: { apiKey: 'test', model: 'kling-v3', endpoint: 'https://example.test/v1/images/generations' } }
+  const requests: { url: string; body: Record<string, unknown> }[] = []
+  await callKlingImage(model, '修改<<<image_1>>>的面部', { referenceImage: 'https://example.test/reference.png', imageEdit: true, aspectRatio: '16:9' }, {
+    fetch: async (url, init) => {
+      requests.push({ url: String(url), body: JSON.parse(String(init?.body)) })
+      return new Response(JSON.stringify({ code: 0, data: { task_id: 'edit-task', task_status: 'succeed', task_result: { images: [{ url: 'https://example.test/result.png' }] } } }))
+    },
+  })
+  assert.equal(requests.length, 1)
+  assert.equal(requests[0].url, 'https://example.test/v1/images/omni-image')
+  assert.equal(requests[0].body.model_name, 'kling-v3-omni')
+  assert.deepEqual(requests[0].body.image_list, [{ image: 'https://example.test/reference.png' }])
+  assert.equal(requests[0].body.image, undefined)
+  const ordinary = buildKlingImageRequest(model, '普通图生图', { referenceImage: 'https://example.test/reference.png' })
+  assert.equal(ordinary.model_name, 'kling-v3')
+  assert.equal(ordinary.image_list, undefined)
+})
+
+test('accepted Kling images retain task identity and resume with GET only', async () => {
+  const calls: Array<{ url: string; method: string }> = []
+  const accepted: string[] = []
+  const model = { ...klingImageModel, settings: { ...klingImageModel.settings, model: 'kling-v3', endpoint: 'https://api-beijing.klingai.com/v1/images/generations' } }
+  const params = { referenceImage: 'data:image/png;base64,aGVsbG8=', imageEdit: true }
+  await assert.rejects(callKlingImage(model, '修正角色外观', params, {
+    fetch: async (url, init) => {
+      calls.push({ url: String(url), method: String(init?.method) })
+      return new Response(JSON.stringify({ code: 0, data: { task_id: 'persisted-image', task_status: 'submitted' } }), { status: 200 })
+    },
+    onTaskSubmitted: async (result, endpoint) => {
+      accepted.push(endpoint)
+      assert.equal((result.body as { data: { task_id: string } }).data.task_id, 'persisted-image')
+      throw new Error('simulated process interruption after checkpoint')
+    },
+  }), /simulated process interruption/)
+  const resumed = await callKlingImage(model, '修正角色外观', { ...params, resumeTaskId: 'persisted-image' }, {
+    fetch: async (url, init) => {
+      calls.push({ url: String(url), method: String(init?.method) })
+      return new Response(JSON.stringify({ code: 0, data: { task_id: 'persisted-image', task_status: 'succeed', task_result: { images: [{ url: 'https://example.test/accepted.png' }] } } }), { status: 200 })
+    },
+  })
+  assert.equal(resumed.status, 200)
+  assert.deepEqual(accepted, ['https://api-beijing.klingai.com/v1/images/omni-image'])
+  assert.deepEqual(calls, [
+    { url: 'https://api-beijing.klingai.com/v1/images/omni-image', method: 'POST' },
+    { url: 'https://api-beijing.klingai.com/v1/images/omni-image/persisted-image', method: 'GET' },
+  ])
 })

@@ -1,0 +1,366 @@
+{
+  "recordId": "record-d2l7fp",
+  "generation": 20,
+  "scene": {
+    "id": "scene-01",
+    "sequence": 1,
+    "title": "街市传谣",
+    "dramaticSceneId": "drama-01",
+    "cast": [
+      "周氏门生",
+      "房氏宾客"
+    ],
+    "purpose": "建立桓帝时期甘陵的处境,引出歌谣与二家对立",
+    "requiredBeats": [
+      {
+        "id": "beat-01",
+        "description": "周氏门生与房氏宾客在街市相遇,周氏门生听到房氏宾客正在与他人复述歌谣:'天下规矩房伯武,因师获印周仲进。'",
+        "function": "建立歌谣存在与内容",
+        "stateChange": "从无人知晓到歌谣公开传播",
+        "observable": {
+          "visual": [
+            "两人在街市相遇",
+            "房氏宾客向他人复述"
+          ],
+          "audio": [
+            "天下规矩房伯武,因师获印周仲进"
+          ]
+        },
+        "setting": "甘陵街市",
+        "mustShow": [
+          "两人相遇",
+          "复述歌谣",
+          "街市"
+        ]
+      }
+    ],
+    "historicalBasis": "[史料2]记载乡人为周福与房植作歌谣:'天下规矩房伯武,因师获印周仲进'",
+    "adaptationBoundary": "歌谣内容据史直接呈现;周氏门生与房氏宾客在街市相遇为合理拟制的场面调度",
+    "targetDuration": 8,
+    "continuityMode": "scene_cut",
+    "completionCriteria": [
+      "歌谣完整说出",
+      "两人身份通过称呼建立"
+    ],
+    "contentContractVersion": "cinematic-v1",
+    "dramaticUnitId": "drama-01",
+    "settingId": "drama-01",
+    "closesUnit": false,
+    "continuityFromPrevious": false
+  },
+  "candidate": {
+    "contentContractVersion": "cinematic-v1",
+    "dramaticSceneId": "drama-01",
+    "id": "scene-01-shot-01",
+    "title": "街市传谣",
+    "duration": 9,
+    "pacing": {
+      "version": "duration-v2",
+      "timingPolicy": {
+        "version": "duration-policy-v2.1",
+        "speech": {
+          "dialogue": {
+            "referenceRate": 4.5,
+            "minimumNaturalRate": 3.3,
+            "maximumRate": 5,
+            "startupAllowance": 0.25
+          },
+          "narration": {
+            "referenceRate": 4.5,
+            "minimumNaturalRate": 3.3,
+            "maximumRate": 5,
+            "startupAllowance": 0.25
+          },
+          "chant": {
+            "referenceRate": 3.3,
+            "minimumNaturalRate": 2.8,
+            "maximumRate": 4.5,
+            "startupAllowance": 0.25
+          },
+          "singing": {
+            "referenceRate": 2.8,
+            "minimumNaturalRate": 2,
+            "maximumRate": 3.5,
+            "startupAllowance": 0.35
+          }
+        },
+        "shortPauseSeconds": 0.15,
+        "sentencePauseSeconds": 0.25,
+        "linePauseSeconds": 0.2,
+        "measurementToleranceSeconds": 0.25,
+        "endingReadabilityReserve": 0.5,
+        "maxConservativeExtraSeconds": 1,
+        "minimumProviderDuration": 3,
+        "maximumProviderDuration": 15,
+        "minimumVocalizationSeconds": 0.8,
+        "minimumActionSeconds": 0.3,
+        "minimumReactionSeconds": 0.5
+      },
+      "actorGroups": [],
+      "beats": [
+        {
+          "id": "beat-001-01",
+          "sourceBeatId": "beat-01",
+          "actorIds": [
+            "周氏门生"
+          ],
+          "kind": "action",
+          "textOrVocalization": "周氏门生着青灰色长袍从街市东端沿青石板路走来,穿行于木质店铺之间,行至街市中段",
+          "dependsOn": [],
+          "overlapAllowedWith": [
+            "beat-001-02"
+          ],
+          "resources": [
+            "body"
+          ],
+          "durationEstimate": {
+            "lower": 2.5,
+            "expected": 3,
+            "upper": 3.5,
+            "source": "步行进入街市中段的行动时间",
+            "confidence": "medium"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "周氏门生已进入街市中段",
+            "modality": "visual",
+            "evidenceAnchor": "周氏门生从街市东端走至中段"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-001-02",
+          "sourceBeatId": "beat-01",
+          "actorIds": [
+            "房氏宾客"
+          ],
+          "kind": "action",
+          "textOrVocalization": "房氏宾客着深褐色长袍站在街市中段,面向身边行人,房氏宾客向他人复述,做出讲述手势",
+          "dependsOn": [],
+          "overlapAllowedWith": [
+            "beat-001-01"
+          ],
+          "resources": [
+            "body"
+          ],
+          "durationEstimate": {
+            "lower": 0.8,
+            "expected": 1,
+            "upper": 1.2,
+            "source": "摆出讲述姿态的动作时间",
+            "confidence": "medium"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "房氏宾客已摆出向他人复述的讲述姿态",
+            "modality": "visual",
+            "evidenceAnchor": "房氏宾客向他人复述"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-001-03",
+          "sourceBeatId": "beat-01",
+          "actorIds": [
+            "房氏宾客"
+          ],
+          "kind": "speech",
+          "deliveryStyle": "dialogue",
+          "textOrVocalization": "天下规矩房伯武,因师获印周仲进。",
+          "performanceInstruction": "复述歌谣给街市行人",
+          "dependsOn": [
+            "beat-001-02"
+          ],
+          "overlapAllowedWith": [],
+          "resources": [
+            "voice"
+          ],
+          "durationEstimate": {
+            "lower": 3.2,
+            "expected": 3.512,
+            "upper": 4.893,
+            "source": "15字对白按referenceRate 4.5字/秒加启动和停顿",
+            "confidence": "high"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "歌谣完整说出",
+            "modality": "audio",
+            "evidenceAnchor": "天下规矩房伯武,因师获印周仲进"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-001-04",
+          "sourceBeatId": "beat-01",
+          "actorIds": [
+            "周氏门生"
+          ],
+          "kind": "action",
+          "textOrVocalization": "周氏门生听到歌谣后停步转身",
+          "dependsOn": [
+            "beat-001-01",
+            "beat-001-03"
+          ],
+          "overlapAllowedWith": [],
+          "resources": [
+            "body"
+          ],
+          "durationEstimate": {
+            "lower": 0.5,
+            "expected": 0.7,
+            "upper": 1,
+            "source": "停步转身动作时间",
+            "confidence": "medium"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "周氏门生已转身面向房氏宾客",
+            "modality": "visual",
+            "evidenceAnchor": "周氏门生停步转身"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "id": "beat-001-05",
+          "sourceBeatId": "beat-01",
+          "actorIds": [
+            "周氏门生",
+            "房氏宾客"
+          ],
+          "kind": "action",
+          "textOrVocalization": "两人在街市相遇,周氏门生与房氏宾客面对面近距离站立",
+          "dependsOn": [
+            "beat-001-04"
+          ],
+          "overlapAllowedWith": [],
+          "resources": [
+            "body"
+          ],
+          "durationEstimate": {
+            "lower": 0.5,
+            "expected": 0.7,
+            "upper": 1,
+            "source": "两人在街市相遇形成面对面站位的时间",
+            "confidence": "medium"
+          },
+          "completion": {
+            "requiredThisClip": true,
+            "finalState": "两人在街市相遇,面对面站位关系建立",
+            "modality": "visual",
+            "evidenceAnchor": "两人在街市相遇"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        }
+      ]
+    },
+    "shotIntent": {
+      "viewpointCharacter": "周氏门生",
+      "purpose": "建立歌谣存在与内容,周氏门生首次听到贬抑周福的歌谣,两人在街市相遇",
+      "cameraReason": "采用中景横摇镜头,从周氏门生进入街市开始,捕捉到房氏宾客向他人复述歌谣的场景,再通过周氏门生的停步转身完成两人在街市相遇并形成面对面空间关系"
+    },
+    "beatDramaturgy": [
+      {
+        "beatId": "beat-01",
+        "function": "建立歌谣存在与内容",
+        "stateChange": "从无人知晓到歌谣公开传播",
+        "visual": [
+          "两人在街市相遇",
+          "房氏宾客向他人复述"
+        ],
+        "audio": [
+          "天下规矩房伯武,因师获印周仲进"
+        ]
+      }
+    ],
+    "storyProgress": {
+      "unitId": "drama-01",
+      "status": "continuing",
+      "actionResult": "歌谣内容完整呈现,周氏门生听到贬抑周福的歌谣,两人在街市相遇",
+      "response": "周氏门生在街市听到房氏宾客向他人复述歌谣,歌谣内容为'天下规矩房伯武,因师获印周仲进',两人在街市相遇",
+      "pendingActions": [
+        "周氏门生对歌谣的反应",
+        "双方进一步的互动或对立显现"
+      ]
+    },
+    "characters": [
+      "周氏门生",
+      "房氏宾客"
+    ],
+    "presentCharacters": [
+      "周氏门生",
+      "房氏宾客"
+    ],
+    "initialCharacters": [],
+    "enteringCharacters": [
+      {
+        "name": "周氏门生",
+        "startSecond": 0,
+        "endSecond": 3,
+        "path": "从街市东端沿青石板路走入画面"
+      }
+    ],
+    "endCharacters": [
+      "周氏门生",
+      "房氏宾客"
+    ],
+    "worldState": {
+      "settingId": "drama-01",
+      "characters": [
+        {
+          "name": "周氏门生",
+          "position": {
+            "status": "unknown"
+          },
+          "heldProps": {
+            "status": "unknown"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        },
+        {
+          "name": "房氏宾客",
+          "position": {
+            "status": "unknown"
+          },
+          "heldProps": {
+            "status": "unknown"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        }
+      ]
+    },
+    "continuity": {
+      "mode": "scene_cut",
+      "previousShotId": "",
+      "bridgeType": "opening",
+      "bridgeAnchor": ""
+    },
+    "coveredBeatIds": [
+      "beat-01"
+    ],
+    "visualPrompt": "东汉甘陵街市,木质店铺沿街排列,青石板路面,街市中有行人往来。房氏宾客着深褐色长袍站在街市中段,面向身边行人。自然光线,16:9画幅真人实景。周氏门生着青灰色长袍从街市东端沿青石板路走入画面。",
+    "camera": "中景横摇镜头,机位设于街市一侧,视线与街道平行。镜头从周氏门生进入开始,横摇跟随其行进,捕捉到房氏宾客向他人复述的场景,再定格在两人在街市相遇并形成面对面空间关系的画面。",
+    "mood": "日常街市氛围,带有隐含的紧张感",
+    "firstFrameMode": "reference",
+    "lastFramePrompt": "周氏门生着青灰色长袍站在街市中段,身体转向房氏宾客,与房氏宾客面对面近距离站立。房氏宾客着深褐色长袍站在街市中段,面向周氏门生。两人在街市相遇,空间关系为面对面近距离站位。街市背景,青石板路面,木质店铺。",
+    "videoPrompt": "0-3秒:周氏门生着青灰色长袍从街市东端沿青石板路走来,穿行于木质店铺之间,步伐平稳,行至街市中段。同时房氏宾客着深褐色长袍站在街市中段,面向身边行人,房氏宾客向他人复述,做出讲述手势。街市中有行人往来。3-6.5秒:房氏宾客说道:'天下规矩房伯武,因师获印周仲进。'语调平和,清晰复述歌谣给街市行人。6.5-7.5秒:周氏门生听到歌谣后停步转身。7.5-8.5秒:两人在街市相遇,周氏门生与房氏宾客面对面近距离站立,周氏门生面露疑虑神色。",
+    "audioType": "对白",
+    "audioText": "房氏宾客:天下规矩房伯武,因师获印周仲进。",
+    "historicalBasis": "沿用[史料2]记载:'乡人为周福与房植作歌谣:天下规矩房伯武,因师获印周仲进'",
+    "adaptationBoundary": "歌谣内容据史直接呈现;周氏门生与房氏宾客在街市相遇、房氏宾客向他人复述歌谣为合理拟制的场面调度,用以建立歌谣公开传播的状态"
+  }
+}

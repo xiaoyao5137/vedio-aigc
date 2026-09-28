@@ -1,0 +1,1308 @@
+{
+  "recordId": "record-vv6qaz",
+  "scene": {
+    "id": "scene-01-beat-1",
+    "sequence": 1,
+    "title": "周福坐于案前批阅文书,属吏持简册入内",
+    "dramaticSceneId": "drama-01",
+    "cast": [
+      "周福"
+    ],
+    "purpose": "周福坐于案前批阅文书,属吏持简册入内",
+    "requiredBeats": [
+      {
+        "id": "beat-01",
+        "description": "周福坐于案前批阅文书,属吏持简册入内",
+        "function": "建立周福尚书身份与工作场景",
+        "stateChange": "从无人物信息到观众知晓周福为尚书",
+        "observable": {
+          "visual": [
+            "周福坐于案前",
+            "批阅文书",
+            "属吏持简册入内"
+          ],
+          "audio": []
+        },
+        "setting": "洛阳尚书台内室",
+        "mustShow": [
+          "周福坐于案前",
+          "批阅文书",
+          "属吏入内"
+        ]
+      }
+    ],
+    "historicalBasis": "[史料2]载桓帝为蠡吾侯时受学于甘陵周福,即帝位后擢福为尚书",
+    "adaptationBoundary": "属吏禀报与周福回应为合理拟制,用于建立周福身份与传达歌谣内容",
+    "targetDuration": 12,
+    "continuityMode": "scene_cut",
+    "completionCriteria": [
+      "原节拍表演：周福坐于案前批阅文书,属吏持简册入内",
+      "画面呈现：周福坐于案前",
+      "画面呈现：批阅文书",
+      "画面呈现：属吏持简册入内",
+      "原锚点已呈现：属吏入内"
+    ],
+    "contentContractVersion": "cinematic-v1",
+    "dramaticUnitId": "drama-01",
+    "settingId": "drama-01",
+    "closesUnit": false,
+    "continuityFromPrevious": false
+  },
+  "rounds": [
+    {
+      "ledgerId": "model-run-mttnuc8k-1xi8k1a",
+      "candidate": {
+        "contentContractVersion": "cinematic-v1",
+        "dramaticSceneId": "drama-01",
+        "id": "scene-01-beat-1",
+        "title": "尚书台内室 周福批阅文书",
+        "duration": 8,
+        "pacing": {
+          "version": "duration-v2",
+          "timingPolicy": {
+            "version": "duration-policy-v2.1",
+            "speech": {
+              "dialogue": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "narration": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "chant": {
+                "referenceRate": 3.3,
+                "minimumNaturalRate": 2.8,
+                "maximumRate": 4.5,
+                "startupAllowance": 0.25
+              },
+              "singing": {
+                "referenceRate": 2.8,
+                "minimumNaturalRate": 2,
+                "maximumRate": 3.5,
+                "startupAllowance": 0.35
+              }
+            },
+            "shortPauseSeconds": 0.15,
+            "sentencePauseSeconds": 0.25,
+            "linePauseSeconds": 0.2,
+            "measurementToleranceSeconds": 0.25,
+            "endingReadabilityReserve": 0.5,
+            "maxConservativeExtraSeconds": 1,
+            "minimumProviderDuration": 3,
+            "maximumProviderDuration": 15,
+            "minimumVocalizationSeconds": 0.8,
+            "minimumActionSeconds": 0.3,
+            "minimumReactionSeconds": 0.5
+          },
+          "actorGroups": [],
+          "beats": [
+            {
+              "id": "beat-01-action-1",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "周福"
+              ],
+              "kind": "action",
+              "textOrVocalization": "周福坐于案前批阅文书",
+              "performanceInstruction": "周福坐姿端正，手持木简，目光专注地审阅",
+              "dependsOn": [],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2,
+                "expected": 2.5,
+                "upper": 3,
+                "source": "周福坐于案前建立场景，批阅文书的手部动作需呈现",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "周福坐于案前,正在批阅文书",
+                "modality": "visual",
+                "evidenceAnchor": "周福坐于案前批阅文书"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-01-action-2",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "属吏"
+              ],
+              "kind": "action",
+              "textOrVocalization": "属吏持简册入内",
+              "performanceInstruction": "属吏从门外进入室内，双手持简册，行至周福案前",
+              "dependsOn": [
+                "beat-01-action-1"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2.5,
+                "expected": 3,
+                "upper": 3.5,
+                "source": "属吏从门外完整走入室内至案前的完整路径动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "属吏持简册站在周福案前",
+                "modality": "visual",
+                "evidenceAnchor": "属吏持简册入内"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-01-reaction",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "周福"
+              ],
+              "kind": "reaction",
+              "textOrVocalization": "周福微微抬眼看向属吏",
+              "performanceInstruction": "周福察觉属吏入内，抬眼观察",
+              "dependsOn": [
+                "beat-01-action-2"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 0.5,
+                "expected": 0.8,
+                "upper": 1,
+                "source": "周福察觉属吏入内的反应动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "周福已注意到属吏入内",
+                "modality": "visual",
+                "evidenceAnchor": "周福抬眼看向属吏"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            }
+          ]
+        },
+        "shotIntent": {
+          "viewpointCharacter": "周福",
+          "purpose": "建立周福尚书身份与工作场景",
+          "cameraReason": "中景正面机位展现周福坐于案前的尚书身份，景深包含门口以容纳属吏入内动作"
+        },
+        "beatDramaturgy": [
+          {
+            "beatId": "beat-01",
+            "function": "建立周福尚书身份与工作场景",
+            "stateChange": "从无人物信息到观众知晓周福为尚书",
+            "visual": [
+              "周福坐于案前",
+              "批阅文书",
+              "属吏持简册入内"
+            ],
+            "audio": []
+          }
+        ],
+        "storyProgress": {
+          "unitId": "drama-01",
+          "status": "continuing",
+          "actionResult": "周福尚书身份已建立，属吏持简册入内",
+          "response": "周福正在批阅文书，属吏入内",
+          "pendingActions": [
+            "属吏禀报歌谣内容",
+            "周福听闻后作出回应"
+          ]
+        },
+        "characters": [
+          "周福",
+          "属吏"
+        ],
+        "presentCharacters": [
+          "周福",
+          "属吏"
+        ],
+        "initialCharacters": [
+          "周福"
+        ],
+        "enteringCharacters": [
+          {
+            "name": "属吏",
+            "startSecond": 2.5,
+            "endSecond": 6,
+            "path": "从门外穿过门廊进入室内，走至周福案前"
+          }
+        ],
+        "endCharacters": [
+          "周福",
+          "属吏"
+        ],
+        "worldState": {
+          "settingId": "drama-01",
+          "characters": [
+            {
+              "name": "周福",
+              "position": {
+                "status": "observed",
+                "value": "坐于案前"
+              },
+              "heldProps": {
+                "status": "observed",
+                "value": "手持木简文书"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            },
+            {
+              "name": "属吏",
+              "position": {
+                "status": "observed",
+                "value": "站在周福案前"
+              },
+              "heldProps": {
+                "status": "observed",
+                "value": "双手持简册"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            }
+          ]
+        },
+        "continuity": {
+          "mode": "scene_cut",
+          "previousShotId": "",
+          "bridgeType": "opening",
+          "bridgeAnchor": ""
+        },
+        "coveredBeatIds": [
+          "beat-01"
+        ],
+        "visualPrompt": "洛阳尚书台内室，东汉建筑风格，木质案几，墙面素雅。周福坐于案前，方形脸，留有短须，黑色高冠，冠顶有横向装饰，穿深灰色交领长袍，外罩黑色对襟外袍，胸前有灰色云纹刺绣，腰系黑色宽腰带，手持木简，批阅文书，神情专注。案上摆放文书简册。室内光线柔和，从侧窗透入。门口可见，景深足以容纳人物从门外入内。属吏穿浅色官服，腰系带。",
+        "camera": "中景，正面偏侧机位，机位位于周福案前斜侧方，视线平视略高，景深包含门口区域，固定机位",
+        "mood": "安静专注的公务氛围",
+        "firstFrameMode": "reference",
+        "lastFramePrompt": "周福坐于案前，手持木简保持批阅姿态，目光已从文书移至前方。属吏站在周福案前，双手持简册，身体微微前倾，面向周福。",
+        "videoPrompt": "0-2.5秒：周福坐于案前，手持木简，目光专注地批阅文书，手部有翻阅动作，案上摆放多卷简册。2.5-6秒：属吏持简册从门外进入室内，穿过门廊，走至周福案前，双手持简册，行进中保持恭敬姿态。6-7.5秒：周福察觉属吏入内，微微抬眼，目光从文书移向属吏，手中木简仍保持。属吏站定于案前，身体微微前倾，准备禀报。",
+        "audioType": "无",
+        "audioText": "",
+        "historicalBasis": "[史料2]载桓帝为蠡吾侯时受学于甘陵周福,即帝位后擢福为尚书",
+        "adaptationBoundary": "属吏入内动作为合理拟制，用于建立周福尚书身份的工作场景，不改变周福为尚书的史实"
+      }
+    },
+    {
+      "ledgerId": "model-run-mttnv6o5-o9iux2e",
+      "candidate": {
+        "contentContractVersion": "cinematic-v1",
+        "dramaticSceneId": "drama-01",
+        "id": "scene-01-beat-1",
+        "title": "尚书台内室 周福批阅文书",
+        "duration": 8,
+        "pacing": {
+          "version": "duration-v2",
+          "timingPolicy": {
+            "version": "duration-policy-v2.1",
+            "speech": {
+              "dialogue": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "narration": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "chant": {
+                "referenceRate": 3.3,
+                "minimumNaturalRate": 2.8,
+                "maximumRate": 4.5,
+                "startupAllowance": 0.25
+              },
+              "singing": {
+                "referenceRate": 2.8,
+                "minimumNaturalRate": 2,
+                "maximumRate": 3.5,
+                "startupAllowance": 0.35
+              }
+            },
+            "shortPauseSeconds": 0.15,
+            "sentencePauseSeconds": 0.25,
+            "linePauseSeconds": 0.2,
+            "measurementToleranceSeconds": 0.25,
+            "endingReadabilityReserve": 0.5,
+            "maxConservativeExtraSeconds": 1,
+            "minimumProviderDuration": 3,
+            "maximumProviderDuration": 15,
+            "minimumVocalizationSeconds": 0.8,
+            "minimumActionSeconds": 0.3,
+            "minimumReactionSeconds": 0.5
+          },
+          "actorGroups": [],
+          "beats": [
+            {
+              "id": "beat-01-action-1",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "周福"
+              ],
+              "kind": "action",
+              "textOrVocalization": "周福坐于案前批阅文书",
+              "dependsOn": [],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2,
+                "expected": 2.5,
+                "upper": 3,
+                "source": "周福坐于案前建立场景，批阅文书的手部动作需呈现",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "周福坐于案前,正在批阅文书",
+                "modality": "visual",
+                "evidenceAnchor": "周福坐于案前批阅文书"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-01-action-2",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "属吏"
+              ],
+              "kind": "action",
+              "textOrVocalization": "属吏持简册入内",
+              "dependsOn": [
+                "beat-01-action-1"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2.5,
+                "expected": 3,
+                "upper": 3.5,
+                "source": "属吏从门外完整走入室内至案前的完整路径动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "属吏持简册站在周福案前",
+                "modality": "visual",
+                "evidenceAnchor": "属吏持简册入内"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-01-reaction",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "周福"
+              ],
+              "kind": "reaction",
+              "textOrVocalization": "周福微微抬眼看向属吏",
+              "dependsOn": [
+                "beat-01-action-2"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 0.5,
+                "expected": 0.8,
+                "upper": 1,
+                "source": "周福察觉属吏入内的反应动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "周福已注意到属吏入内",
+                "modality": "visual",
+                "evidenceAnchor": "周福抬眼看向属吏"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            }
+          ]
+        },
+        "shotIntent": {
+          "viewpointCharacter": "周福",
+          "purpose": "建立周福尚书身份与工作场景",
+          "cameraReason": "中景正面机位展现周福坐于案前的尚书身份，景深包含门口以容纳属吏入内动作"
+        },
+        "beatDramaturgy": [
+          {
+            "beatId": "beat-01",
+            "function": "建立周福尚书身份与工作场景",
+            "stateChange": "从无人物信息到观众知晓周福为尚书",
+            "visual": [
+              "周福坐于案前",
+              "批阅文书",
+              "属吏持简册入内"
+            ],
+            "audio": []
+          }
+        ],
+        "storyProgress": {
+          "unitId": "drama-01",
+          "status": "continuing",
+          "actionResult": "周福尚书身份已建立，属吏持简册入内",
+          "response": "周福正在批阅文书，属吏入内",
+          "pendingActions": [
+            "属吏禀报歌谣内容",
+            "周福听闻后作出回应"
+          ]
+        },
+        "characters": [
+          "周福",
+          "属吏"
+        ],
+        "presentCharacters": [
+          "周福",
+          "属吏"
+        ],
+        "initialCharacters": [
+          "周福"
+        ],
+        "enteringCharacters": [
+          {
+            "name": "属吏",
+            "startSecond": 2.5,
+            "endSecond": 6,
+            "path": "从门外穿过门廊进入室内，走至周福案前"
+          }
+        ],
+        "endCharacters": [
+          "周福",
+          "属吏"
+        ],
+        "worldState": {
+          "settingId": "drama-01",
+          "characters": [
+            {
+              "name": "周福",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            },
+            {
+              "name": "属吏",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            }
+          ]
+        },
+        "continuity": {
+          "mode": "scene_cut",
+          "previousShotId": "",
+          "bridgeType": "opening",
+          "bridgeAnchor": ""
+        },
+        "coveredBeatIds": [
+          "beat-01"
+        ],
+        "visualPrompt": "洛阳尚书台内室，东汉建筑风格，木质案几，墙面素雅。周福坐于案前，方形脸，留有短须，黑色高冠，冠顶有横向装饰，穿深灰色交领长袍，外罩黑色对襟外袍，胸前有灰色云纹刺绣，腰系黑色宽腰带，手持木简，批阅文书，神情专注。案上摆放文书简册。室内光线柔和，从侧窗透入。门口可见，景深足以容纳人物从门外入内。属吏穿浅色官服，腰系带。",
+        "camera": "中景，正面偏侧机位，机位位于周福案前斜侧方，视线平视略高，景深包含门口区域，固定机位",
+        "mood": "安静专注的公务氛围",
+        "firstFrameMode": "reference",
+        "lastFramePrompt": "周福坐于案前，手持木简保持批阅姿态，目光已从文书移至前方。属吏站在周福案前，双手持简册，身体微微前倾，面向周福。",
+        "videoPrompt": "0-2.5秒：周福坐于案前，手持木简，目光专注地批阅文书，手部有翻阅动作，案上摆放多卷简册。2.5-6秒：属吏持简册从门外进入室内，穿过门廊，走至周福案前，双手持简册，行进中保持恭敬姿态。6-7.5秒：周福察觉属吏入内，微微抬眼，目光从文书移向属吏，手中木简仍保持。属吏站定于案前，身体微微前倾，准备禀报。",
+        "audioType": "环境声",
+        "audioText": "",
+        "historicalBasis": "[史料2]载桓帝为蠡吾侯时受学于甘陵周福,即帝位后擢福为尚书",
+        "adaptationBoundary": "属吏入内动作为合理拟制，用于建立周福尚书身份的工作场景，不改变周福为尚书的史实"
+      }
+    },
+    {
+      "ledgerId": "model-run-mttnvopr-l4i0mzf",
+      "candidate": {
+        "contentContractVersion": "cinematic-v1",
+        "dramaticSceneId": "drama-01",
+        "id": "scene-01-beat-1",
+        "title": "尚书台内室 周福批阅文书",
+        "duration": 8,
+        "pacing": {
+          "version": "duration-v2",
+          "timingPolicy": {
+            "version": "duration-policy-v2.1",
+            "speech": {
+              "dialogue": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "narration": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "chant": {
+                "referenceRate": 3.3,
+                "minimumNaturalRate": 2.8,
+                "maximumRate": 4.5,
+                "startupAllowance": 0.25
+              },
+              "singing": {
+                "referenceRate": 2.8,
+                "minimumNaturalRate": 2,
+                "maximumRate": 3.5,
+                "startupAllowance": 0.35
+              }
+            },
+            "shortPauseSeconds": 0.15,
+            "sentencePauseSeconds": 0.25,
+            "linePauseSeconds": 0.2,
+            "measurementToleranceSeconds": 0.25,
+            "endingReadabilityReserve": 0.5,
+            "maxConservativeExtraSeconds": 1,
+            "minimumProviderDuration": 3,
+            "maximumProviderDuration": 15,
+            "minimumVocalizationSeconds": 0.8,
+            "minimumActionSeconds": 0.3,
+            "minimumReactionSeconds": 0.5
+          },
+          "actorGroups": [],
+          "beats": [
+            {
+              "id": "beat-01-action-1",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "周福"
+              ],
+              "kind": "action",
+              "textOrVocalization": "周福坐于案前批阅文书",
+              "dependsOn": [],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2,
+                "expected": 2.5,
+                "upper": 3,
+                "source": "周福坐于案前建立场景，批阅文书的手部动作需呈现",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "周福坐于案前,正在批阅文书",
+                "modality": "visual",
+                "evidenceAnchor": "周福坐于案前批阅文书"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-01-action-2",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "属吏"
+              ],
+              "kind": "action",
+              "textOrVocalization": "属吏持简册入内",
+              "performanceInstruction": "属吏入内",
+              "dependsOn": [
+                "beat-01-action-1"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2.5,
+                "expected": 3,
+                "upper": 3.5,
+                "source": "属吏从门外完整走入室内至案前的完整路径动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "属吏持简册站在周福案前",
+                "modality": "visual",
+                "evidenceAnchor": "属吏持简册入内 属吏入内"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-01-reaction",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "周福"
+              ],
+              "kind": "reaction",
+              "textOrVocalization": "周福微微抬眼看向属吏",
+              "dependsOn": [
+                "beat-01-action-2"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 0.5,
+                "expected": 0.8,
+                "upper": 1,
+                "source": "周福察觉属吏入内的反应动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "周福已注意到属吏入内",
+                "modality": "visual",
+                "evidenceAnchor": "周福抬眼看向属吏"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            }
+          ]
+        },
+        "shotIntent": {
+          "viewpointCharacter": "周福",
+          "purpose": "建立周福尚书身份与工作场景",
+          "cameraReason": "中景正面机位展现周福坐于案前的尚书身份，景深包含门口以容纳属吏入内动作"
+        },
+        "beatDramaturgy": [
+          {
+            "beatId": "beat-01",
+            "function": "建立周福尚书身份与工作场景",
+            "stateChange": "从无人物信息到观众知晓周福为尚书",
+            "visual": [
+              "周福坐于案前",
+              "批阅文书",
+              "属吏持简册入内"
+            ],
+            "audio": []
+          }
+        ],
+        "storyProgress": {
+          "unitId": "drama-01",
+          "status": "continuing",
+          "actionResult": "周福尚书身份已建立，属吏持简册入内",
+          "response": "周福正在批阅文书，属吏入内",
+          "pendingActions": [
+            "属吏禀报歌谣内容",
+            "周福听闻后作出回应"
+          ]
+        },
+        "characters": [
+          "周福",
+          "属吏"
+        ],
+        "presentCharacters": [
+          "周福",
+          "属吏"
+        ],
+        "initialCharacters": [
+          "周福"
+        ],
+        "enteringCharacters": [
+          {
+            "name": "属吏",
+            "startSecond": 2.5,
+            "endSecond": 6,
+            "path": "从门外穿过门廊进入室内，走至周福案前"
+          }
+        ],
+        "endCharacters": [
+          "周福",
+          "属吏"
+        ],
+        "worldState": {
+          "settingId": "drama-01",
+          "characters": [
+            {
+              "name": "周福",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            },
+            {
+              "name": "属吏",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            }
+          ]
+        },
+        "continuity": {
+          "mode": "scene_cut",
+          "previousShotId": "",
+          "bridgeType": "opening",
+          "bridgeAnchor": ""
+        },
+        "coveredBeatIds": [
+          "beat-01"
+        ],
+        "visualPrompt": "洛阳尚书台内室，东汉建筑风格，木质案几，墙面素雅。周福坐于案前，方形脸，留有短须，黑色高冠，冠顶有横向装饰，穿深灰色交领长袍，外罩黑色对襟外袍，胸前有灰色云纹刺绣，腰系黑色宽腰带，手持木简，批阅文书，神情专注。案上摆放文书简册。室内光线柔和，从侧窗透入。门口可见，景深足以容纳人物从门外入内。属吏穿浅色官服，腰系带。",
+        "camera": "中景，正面偏侧机位，机位位于周福案前斜侧方，视线平视略高，景深包含门口区域，固定机位",
+        "mood": "安静专注的公务氛围",
+        "firstFrameMode": "reference",
+        "lastFramePrompt": "周福坐于案前，手持木简保持批阅姿态，目光已从文书移至前方。属吏站在周福案前，双手持简册，身体微微前倾，面向周福。",
+        "videoPrompt": "0-2.5秒：周福坐于案前，手持木简，目光专注地批阅文书，手部有翻阅动作，案上摆放多卷简册。2.5-6秒：属吏持简册入内，从门外穿过门廊进入室内，走至周福案前，双手持简册，行进中保持恭敬姿态。6-7.5秒：周福察觉属吏入内，微微抬眼，目光从文书移向属吏，手中木简仍保持。属吏站定于案前，身体微微前倾，准备禀报。",
+        "audioType": "环境声",
+        "audioText": "",
+        "historicalBasis": "[史料2]载桓帝为蠡吾侯时受学于甘陵周福,即帝位后擢福为尚书",
+        "adaptationBoundary": "属吏入内动作为合理拟制，用于建立周福尚书身份的工作场景，不改变周福为尚书的史实"
+      }
+    },
+    {
+      "ledgerId": "model-run-mttnw6r0-1928owc",
+      "candidate": {
+        "contentContractVersion": "cinematic-v1",
+        "dramaticSceneId": "drama-01",
+        "id": "scene-01-beat-1",
+        "title": "尚书台内室 周福批阅文书",
+        "duration": 8,
+        "pacing": {
+          "version": "duration-v2",
+          "timingPolicy": {
+            "version": "duration-policy-v2.1",
+            "speech": {
+              "dialogue": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "narration": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "chant": {
+                "referenceRate": 3.3,
+                "minimumNaturalRate": 2.8,
+                "maximumRate": 4.5,
+                "startupAllowance": 0.25
+              },
+              "singing": {
+                "referenceRate": 2.8,
+                "minimumNaturalRate": 2,
+                "maximumRate": 3.5,
+                "startupAllowance": 0.35
+              }
+            },
+            "shortPauseSeconds": 0.15,
+            "sentencePauseSeconds": 0.25,
+            "linePauseSeconds": 0.2,
+            "measurementToleranceSeconds": 0.25,
+            "endingReadabilityReserve": 0.5,
+            "maxConservativeExtraSeconds": 1,
+            "minimumProviderDuration": 3,
+            "maximumProviderDuration": 15,
+            "minimumVocalizationSeconds": 0.8,
+            "minimumActionSeconds": 0.3,
+            "minimumReactionSeconds": 0.5
+          },
+          "actorGroups": [],
+          "beats": [
+            {
+              "id": "beat-01-action-1",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "周福"
+              ],
+              "kind": "action",
+              "textOrVocalization": "周福坐于案前批阅文书",
+              "dependsOn": [],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2,
+                "expected": 2.5,
+                "upper": 3,
+                "source": "周福坐于案前建立场景，批阅文书的手部动作需呈现",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "周福坐于案前,正在批阅文书",
+                "modality": "visual",
+                "evidenceAnchor": "周福坐于案前批阅文书"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-01-action-2",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "属吏"
+              ],
+              "kind": "action",
+              "textOrVocalization": "属吏持简册入内",
+              "performanceInstruction": "属吏入内",
+              "dependsOn": [
+                "beat-01-action-1"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2.5,
+                "expected": 3,
+                "upper": 3.5,
+                "source": "属吏从门外完整走入室内至案前的完整路径动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "属吏持简册站在周福案前",
+                "modality": "visual",
+                "evidenceAnchor": "属吏持简册入内 属吏入内"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-01-reaction",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "周福"
+              ],
+              "kind": "reaction",
+              "textOrVocalization": "周福微微抬眼看向属吏",
+              "dependsOn": [
+                "beat-01-action-2"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 0.5,
+                "expected": 0.8,
+                "upper": 1,
+                "source": "周福察觉属吏入内的反应动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "周福已注意到属吏入内",
+                "modality": "visual",
+                "evidenceAnchor": "周福抬眼看向属吏"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            }
+          ]
+        },
+        "shotIntent": {
+          "viewpointCharacter": "周福",
+          "purpose": "建立周福尚书身份与工作场景",
+          "cameraReason": "中景正面机位展现周福坐于案前的尚书身份，景深包含门口以容纳属吏入内动作"
+        },
+        "beatDramaturgy": [
+          {
+            "beatId": "beat-01",
+            "function": "建立周福尚书身份与工作场景",
+            "stateChange": "从无人物信息到观众知晓周福为尚书",
+            "visual": [
+              "周福坐于案前",
+              "批阅文书",
+              "属吏持简册入内"
+            ],
+            "audio": []
+          }
+        ],
+        "storyProgress": {
+          "unitId": "drama-01",
+          "status": "continuing",
+          "actionResult": "周福尚书身份已建立，属吏持简册入内",
+          "response": "周福正在批阅文书，属吏入内",
+          "pendingActions": [
+            "属吏禀报歌谣内容",
+            "周福听闻后作出回应"
+          ]
+        },
+        "characters": [
+          "周福",
+          "属吏"
+        ],
+        "presentCharacters": [
+          "周福",
+          "属吏"
+        ],
+        "initialCharacters": [
+          "周福"
+        ],
+        "enteringCharacters": [
+          {
+            "name": "属吏",
+            "startSecond": 3,
+            "endSecond": 6.5,
+            "path": "从门外穿过门廊进入室内，走至周福案前"
+          }
+        ],
+        "endCharacters": [
+          "周福",
+          "属吏"
+        ],
+        "worldState": {
+          "settingId": "drama-01",
+          "characters": [
+            {
+              "name": "周福",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            },
+            {
+              "name": "属吏",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            }
+          ]
+        },
+        "continuity": {
+          "mode": "scene_cut",
+          "previousShotId": "",
+          "bridgeType": "opening",
+          "bridgeAnchor": ""
+        },
+        "coveredBeatIds": [
+          "beat-01"
+        ],
+        "visualPrompt": "洛阳尚书台内室，东汉建筑风格，木质案几，墙面素雅。周福坐于案前，方形脸，留有短须，黑色高冠，冠顶有横向装饰，穿深灰色交领长袍，外罩黑色对襟外袍，胸前有灰色云纹刺绣，腰系黑色宽腰带，手持木简，批阅文书，神情专注。案上摆放文书简册。室内光线柔和，从侧窗透入。门口可见，景深足以容纳人物从门外入内。属吏穿浅色官服，腰系带。",
+        "camera": "中景，正面偏侧机位，机位位于周福案前斜侧方，视线平视略高，景深包含门口区域，固定机位",
+        "mood": "安静专注的公务氛围",
+        "firstFrameMode": "reference",
+        "lastFramePrompt": "周福坐于案前，手持木简保持批阅姿态，目光已从文书移至前方。属吏站在周福案前，双手持简册，身体微微前倾，面向周福。",
+        "videoPrompt": "0-3秒：周福坐于案前，手持木简，目光专注地批阅文书，手部有翻阅动作，案上摆放多卷简册。3-6.5秒：属吏持简册入内，从门外穿过门廊进入室内，走至周福案前，双手持简册，行进中保持恭敬姿态。6.5-7.5秒：周福察觉属吏入内，微微抬眼，目光从文书移向属吏，手中木简仍保持。属吏站定于案前，身体微微前倾，准备禀报。",
+        "audioType": "环境声",
+        "audioText": "",
+        "historicalBasis": "[史料2]载桓帝为蠡吾侯时受学于甘陵周福,即帝位后擢福为尚书",
+        "adaptationBoundary": "属吏入内动作为合理拟制，用于建立周福尚书身份的工作场景，不改变周福为尚书的史实"
+      }
+    },
+    {
+      "ledgerId": "model-run-mttnwom5-clidbth",
+      "candidate": {
+        "contentContractVersion": "cinematic-v1",
+        "dramaticSceneId": "drama-01",
+        "id": "scene-01-beat-1",
+        "title": "尚书台内室 周福批阅文书",
+        "duration": 8,
+        "pacing": {
+          "version": "duration-v2",
+          "timingPolicy": {
+            "version": "duration-policy-v2.1",
+            "speech": {
+              "dialogue": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "narration": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "chant": {
+                "referenceRate": 3.3,
+                "minimumNaturalRate": 2.8,
+                "maximumRate": 4.5,
+                "startupAllowance": 0.25
+              },
+              "singing": {
+                "referenceRate": 2.8,
+                "minimumNaturalRate": 2,
+                "maximumRate": 3.5,
+                "startupAllowance": 0.35
+              }
+            },
+            "shortPauseSeconds": 0.15,
+            "sentencePauseSeconds": 0.25,
+            "linePauseSeconds": 0.2,
+            "measurementToleranceSeconds": 0.25,
+            "endingReadabilityReserve": 0.5,
+            "maxConservativeExtraSeconds": 1,
+            "minimumProviderDuration": 3,
+            "maximumProviderDuration": 15,
+            "minimumVocalizationSeconds": 0.8,
+            "minimumActionSeconds": 0.3,
+            "minimumReactionSeconds": 0.5
+          },
+          "actorGroups": [],
+          "beats": [
+            {
+              "id": "beat-01-action-1",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "周福"
+              ],
+              "kind": "action",
+              "textOrVocalization": "周福坐于案前批阅文书",
+              "dependsOn": [],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 2.5,
+                "expected": 3,
+                "upper": 3.5,
+                "source": "周福坐于案前建立场景，批阅文书的手部动作需呈现",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "周福坐于案前,正在批阅文书",
+                "modality": "visual",
+                "evidenceAnchor": "周福坐于案前 批阅文书"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-01-action-2",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "属吏"
+              ],
+              "kind": "action",
+              "textOrVocalization": "属吏持简册从门外穿过门廊进入室内，走至周福案前",
+              "performanceInstruction": "属吏持简册入内",
+              "dependsOn": [
+                "beat-01-action-1"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 3,
+                "expected": 3.5,
+                "upper": 4,
+                "source": "属吏从门外完整走入室内至案前的完整路径动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "属吏持简册站在周福案前",
+                "modality": "visual",
+                "evidenceAnchor": "属吏持简册入内 属吏入内"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-01-reaction",
+              "sourceBeatId": "beat-01",
+              "actorIds": [
+                "周福"
+              ],
+              "kind": "reaction",
+              "textOrVocalization": "周福微微抬眼看向属吏",
+              "dependsOn": [
+                "beat-01-action-2"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 0.5,
+                "expected": 0.8,
+                "upper": 1,
+                "source": "周福察觉属吏入内的反应动作",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "周福已注意到属吏入内",
+                "modality": "visual",
+                "evidenceAnchor": "周福抬眼看向属吏"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            }
+          ]
+        },
+        "shotIntent": {
+          "viewpointCharacter": "周福",
+          "purpose": "建立周福尚书身份与工作场景",
+          "cameraReason": "中景正面机位展现周福坐于案前的尚书身份，景深包含门口以容纳属吏入内动作"
+        },
+        "beatDramaturgy": [
+          {
+            "beatId": "beat-01",
+            "function": "建立周福尚书身份与工作场景",
+            "stateChange": "从无人物信息到观众知晓周福为尚书",
+            "visual": [
+              "周福坐于案前",
+              "批阅文书",
+              "属吏持简册入内"
+            ],
+            "audio": []
+          }
+        ],
+        "storyProgress": {
+          "unitId": "drama-01",
+          "status": "continuing",
+          "actionResult": "周福尚书身份已建立，属吏持简册入内",
+          "response": "周福正在批阅文书，属吏入内",
+          "pendingActions": [
+            "属吏禀报歌谣内容",
+            "周福听闻后作出回应"
+          ]
+        },
+        "characters": [
+          "周福",
+          "属吏"
+        ],
+        "presentCharacters": [
+          "周福",
+          "属吏"
+        ],
+        "initialCharacters": [
+          "周福"
+        ],
+        "enteringCharacters": [
+          {
+            "name": "属吏",
+            "startSecond": 3,
+            "endSecond": 6.5,
+            "path": "从门外穿过门廊进入室内，走至周福案前"
+          }
+        ],
+        "endCharacters": [
+          "周福",
+          "属吏"
+        ],
+        "worldState": {
+          "settingId": "drama-01",
+          "characters": [
+            {
+              "name": "周福",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            },
+            {
+              "name": "属吏",
+              "position": {
+                "status": "unknown"
+              },
+              "heldProps": {
+                "status": "unknown"
+              },
+              "pendingAction": {
+                "status": "unknown"
+              }
+            }
+          ]
+        },
+        "continuity": {
+          "mode": "scene_cut",
+          "previousShotId": "",
+          "bridgeType": "opening",
+          "bridgeAnchor": ""
+        },
+        "coveredBeatIds": [
+          "beat-01"
+        ],
+        "visualPrompt": "洛阳尚书台内室，东汉建筑风格，木质案几，墙面素雅。周福坐于案前，方形脸，留有短须，黑色高冠，冠顶有横向装饰，穿深灰色交领长袍，外罩黑色对襟外袍，胸前有灰色云纹刺绣，腰系黑色宽腰带，手持木简，批阅文书，神情专注。案上摆放文书简册。室内光线柔和，从侧窗透入。门口可见，景深足以容纳人物从门外入内。",
+        "camera": "中景，正面偏侧机位，机位位于周福案前斜侧方，视线平视略高，景深包含门口区域，固定机位",
+        "mood": "安静专注的公务氛围",
+        "firstFrameMode": "reference",
+        "lastFramePrompt": "周福坐于案前，手持木简保持批阅姿态，目光已从文书移至前方。属吏站在周福案前，双手持简册，身体微微前倾，面向周福。",
+        "videoPrompt": "0-3秒：周福坐于案前，手持木简，目光专注地批阅文书，批阅文书，手部有翻阅动作，案上摆放多卷简册。3-6.5秒：属吏持简册入内，属吏持简册从门外穿过门廊进入室内，走至周福案前，双手持简册，行进中保持恭敬姿态，属吏入内。6.5-7.5秒：周福察觉属吏入内，微微抬眼，目光从文书移向属吏，手中木简仍保持。属吏站定于案前，身体微微前倾。",
+        "audioType": "环境声",
+        "audioText": "",
+        "historicalBasis": "[史料2]载桓帝为蠡吾侯时受学于甘陵周福,即帝位后擢福为尚书",
+        "adaptationBoundary": "属吏入内动作为合理拟制，用于建立周福尚书身份的工作场景，不改变周福为尚书的史实"
+      }
+    }
+  ]
+}

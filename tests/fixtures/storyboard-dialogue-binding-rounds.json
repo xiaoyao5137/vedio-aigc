@@ -1,0 +1,140 @@
+{
+  "sourceRecord": "record-7dj987",
+  "rounds": [
+    {
+      "round": 1,
+      "modelRecord": "model-run-mtrympwf-kzly668",
+      "originalRawResponseTextSha256": "df210d7316c15f5ea30f9d7619b3c611c425c77494948de270d95f851b20780a",
+      "candidate": {
+        "audioType": "对白",
+        "audioText": "周福门客:当今天子为蠡吾侯时,曾受学于吾师周公。如今即位,擢吾师为尚书,实乃师恩之报。同郡河南尹房伯武,亦有名当朝。",
+        "videoPrompt": "0.0-0.8秒:周福门客站立在宅院门前,身后木质门扇半开,门框清晰可见。门客面容清癯,束发短须,身着青灰色交领深衣外罩长袍,腰系深褐色腰带。门客面向画外,双手自然垂于身侧,神态庄重。0.8-5.3秒:周福门客开口说出:当今天子为蠡吾侯时,曾受学于吾师周公。如今即位,擢吾师为尚书,实乃师恩之报。说话时面向画外微微抬头,神态平静自信,身体保持端正站姿。5.3-7.53秒:周福门客继续说出:同郡河南尹房伯武,亦有名当朝。说话过程中周福门客微微点头,目光平视画外,双手仍自然垂于身侧。7.53-8.0秒:门客保持微微点头的姿态,目光平视画外,身体端正,双手自然垂于身侧,呼吸自然微动。",
+        "pacing": {
+          "version": "dynamic-v1",
+          "actionSeconds": 0,
+          "reactionSeconds": 0,
+          "speechSeconds": 6.73,
+          "activityWindows": [
+            {
+              "kind": "speech",
+              "startSecond": 0.8,
+              "endSecond": 7.53
+            }
+          ]
+        },
+        "duration": 8
+      }
+    },
+    {
+      "round": 2,
+      "modelRecord": "model-run-mtrynk5e-k761xq5",
+      "originalRawResponseTextSha256": "54046a5e14dd5ce8a8d707e031a75f86e242f472e4073a9a85fa067eeae6e4df",
+      "candidate": {
+        "audioType": "对白",
+        "audioText": "周福门客:当今天子为蠡吾侯时,曾受学于吾师周公。如今即位,擢吾师为尚书,实乃师恩之报。同郡河南尹房伯武,亦有名当朝。",
+        "videoPrompt": "0.0-0.5秒:周福门客站立在宅院门前,身后宅院木门与门框清晰可见,木质门扇半开。门客面容清癯,束发短须,身着青灰色交领深衣外罩长袍,腰系深褐色腰带。门客面向画外,双手自然垂于身侧,神态庄重。0.5-6.8秒:周福门客开口说出:当今天子为蠡吾侯时,曾受学于吾师周公。如今即位,擢吾师为尚书,实乃师恩之报。说话时面向画外,神态平静自信,身体保持端正站姿,宅院木门与门框持续清晰可见于背景。6.8-12.07秒:周福门客继续说出:同郡河南尹房伯武,亦有名当朝。说话过程中周福门客微微点头,目光平视画外,双手仍自然垂于身侧,宅院门前场景保持稳定。",
+        "pacing": {
+          "version": "dynamic-v1",
+          "actionSeconds": 0,
+          "reactionSeconds": 0.5,
+          "speechSeconds": 11.57,
+          "activityWindows": [
+            {
+              "kind": "speech",
+              "startSecond": 0.5,
+              "endSecond": 12.07
+            }
+          ]
+        },
+        "duration": 12
+      }
+    },
+    {
+      "round": 3,
+      "modelRecord": "model-run-mtryny1s-vp1q9sd",
+      "originalRawResponseTextSha256": "ca0ada6aa591b5c5ddfe65d273580dd92f92753e1357b0d6947dd205b20ae287",
+      "candidate": {
+        "audioType": "对白",
+        "audioText": "周福门客:当今天子为蠡吾侯时,曾受学于吾师周公。如今即位,擢吾师为尚书,实乃师恩之报。同郡河南尹房伯武,亦有名当朝。",
+        "videoPrompt": "0-0.5秒:周福门客站立在宅院门前,身后宅院木门与门框清晰可见,木质门扇半开。门客面容清癯,束发短须,身着青灰色交领深衣外罩长袍,腰系深褐色腰带。门客面向画外,双手自然垂于身侧,神态庄重。0.5-7.3秒:周福门客开口说出:当今天子为蠡吾侯时,曾受学于吾师周公。如今即位,擢吾师为尚书,实乃师恩之报。说话时面向画外,神态平静自信,身体保持端正站姿,宅院木门与门框持续清晰可见于背景。7.3-11.57秒:周福门客继续说出:同郡河南尹房伯武,亦有名当朝。说话过程中保持面向画外,目光平视。11.57-13秒:周福门客微微点头,目光平视画外,双手仍自然垂于身侧,宅院门前场景保持稳定。",
+        "pacing": {
+          "version": "dynamic-v1",
+          "actionSeconds": 0,
+          "reactionSeconds": 0.5,
+          "speechSeconds": 11.57,
+          "activityWindows": [
+            {
+              "kind": "speech",
+              "startSecond": 0,
+              "endSecond": 11.57
+            },
+            {
+              "kind": "reaction",
+              "startSecond": 11.57,
+              "endSecond": 12.07
+            }
+          ]
+        },
+        "duration": 13
+      }
+    },
+    {
+      "round": 4,
+      "modelRecord": "model-run-mtryocay-5a4o3wz",
+      "originalRawResponseTextSha256": "b8da1d95f949f6ca517b20cf0d362ebb1b04bb8f166fa19b6362ee33fd0160a4",
+      "candidate": {
+        "audioType": "对白",
+        "audioText": "周福门客:当今天子为蠡吾侯时,曾受学于吾师周公。如今即位,擢吾师为尚书,实乃师恩之报。同郡河南尹房伯武,亦有名当朝。",
+        "videoPrompt": "0-0.5秒:周福门客站立在宅院门前,身后宅院木门与门框清晰可见,木质门扇半开。门客面容清癯,束发短须,身着青灰色交领深衣外罩长袍,腰系深褐色腰带。门客面向画外,双手自然垂于身侧,神态庄重。0.5-7.3秒:周福门客开口说出:当今天子为蠡吾侯时,曾受学于吾师周公。如今即位,擢吾师为尚书,实乃师恩之报。说话时面向画外,神态平静自信,身体保持端正站姿,宅院木门与门框持续清晰可见于背景。7.3-11.57秒:周福门客继续说出:同郡河南尹房伯武,亦有名当朝。说话过程中保持面向画外,目光平视。11.57-13秒:周福门客微微点头,目光平视画外,双手仍自然垂于身侧,宅院门前场景保持稳定。",
+        "pacing": {
+          "version": "dynamic-v1",
+          "actionSeconds": 0,
+          "reactionSeconds": 0.5,
+          "speechSeconds": 11.57,
+          "activityWindows": [
+            {
+              "kind": "speech",
+              "startSecond": 0,
+              "endSecond": 11.57
+            },
+            {
+              "kind": "reaction",
+              "startSecond": 11.57,
+              "endSecond": 12.07
+            }
+          ]
+        },
+        "duration": 13
+      }
+    },
+    {
+      "round": 5,
+      "modelRecord": "model-run-mtryopk6-3jy1m3j",
+      "originalRawResponseTextSha256": "55c324ddd91fde73b6bc1b0d508f8739bfb7f0a6f79fc832ab0f2d5ff10c76b4",
+      "candidate": {
+        "audioType": "对白",
+        "audioText": "周福门客:当今天子为蠡吾侯时,曾受学于吾师周公。如今即位,擢吾师为尚书,实乃师恩之报。\n周福门客:同郡河南尹房伯武,亦有名当朝。",
+        "videoPrompt": "0-0.5秒:周福门客站立在宅院门前,身后宅院木门与门框清晰可见,木质门扇半开。门客面容清癯,束发短须,身着青灰色交领深衣外罩长袍,腰系深褐色腰带。门客面向画外,双手自然垂于身侧,神态庄重。0.5-7.3秒:周福门客开口说出:当今天子为蠡吾侯时,曾受学于吾师周公。如今即位,擢吾师为尚书,实乃师恩之报。说话时面向画外,神态平静自信,身体保持端正站姿,宅院木门与门框持续清晰可见于背景。7.3-11.57秒:周福门客继续说出:同郡河南尹房伯武,亦有名当朝。说话过程中保持面向画外,目光平视。11.57-13秒:周福门客微微点头,目光平视画外,双手仍自然垂于身侧,宅院门前场景保持稳定。",
+        "pacing": {
+          "version": "dynamic-v1",
+          "actionSeconds": 0,
+          "reactionSeconds": 0.5,
+          "speechSeconds": 11.57,
+          "activityWindows": [
+            {
+              "kind": "speech",
+              "startSecond": 0,
+              "endSecond": 11.57
+            },
+            {
+              "kind": "reaction",
+              "startSecond": 11.57,
+              "endSecond": 12.07
+            }
+          ]
+        },
+        "duration": 13
+      }
+    }
+  ]
+}

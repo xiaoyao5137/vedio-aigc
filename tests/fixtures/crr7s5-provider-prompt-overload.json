@@ -1,0 +1,451 @@
+{
+  "recordId": "record-ditpm6",
+  "runIndex": 95,
+  "ledgerId": "model-run-muipd05n-b8ouvcm",
+  "requestKey": "record-ditpm6:attempt-1:revision-0:sanguo-video:2:scene-02-seg-2",
+  "prompt": "【本镜影视处理】live_action / story\n【动画叙事类型与美术风格】 / \n【场景与开场画面】冀州某地简陋民居外的空地，正午自然光，中景机位。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手持木碗装符水。一名病患跪于张角前方地面，穿灰褐色粗布衣，面容憔悴。数十名围观百姓呈半圆形站立于空地后方和两侧，穿各色粗布衣。背景可见低矮民居土墙和茅草屋顶，远处是绿色坡地。病患叩首，张角将符水碗递向病患。\n【视觉处理硬约束】live_action 必须生成具有真实空间深度、自然光影和可信时代环境的完整实景；animated 严格执行 animationStyle 与 animationAesthetic，可使用历史人物插画、历史场景、象征物、时间或环境动画，不默认地图。character_illustration 使用系统二维插画编排路线：人物素材内部姿态、表情、嘴部和衣物全程不变，只允许整个人物图层在合适的历史背景上淡入、平移、缩放、淡出；historical_tableau 仅允许整幅定格画面轻微缩放、平移或渐变。二者均不向视频模型请求人物走路、转身、说话等肢体动画，背景由独立画外旁白讲清。其他动画按分镜运动。禁止低幼卡通、Q版、现代动漫符号、游戏CG和玄幻光效。旧 animated_map/historical_montage 分别按 historical_map/historical_tableau 兼容。人物参考附件只用于身份、脸部、体型和服装。\n0-3.8秒：（节拍 beat-03-action-01，0至3.8秒，导演参考）场景：冀州某地简陋民居外的空地；病患从跪姿俯身向前，额头触地，完成三次叩首动作；病患叩首；完成态：病患完成三次叩首，额头离地，保持跪姿。\n3.8-10.215秒：（节拍 beat-03-speech-01，3.8至10.215秒，导演参考）张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律；张角哼唱歌谣，按歌谣节奏吟唱并完整唱出：天地有道，符水能医，饮下此水，病痛自消；完成态：张角念完呪语，声音结束。\n10.215-13.015秒：（节拍 beat-03-action-02，10.215至13.015秒，导演参考）张角双手持符水碗，向前伸出，递向跪在地上的病患；张角将符水碗递向病患；完成态：张角双手将符水碗递到病患面前，病患可以触及。\n13.015-14.215秒：（节拍 beat-03-reaction-01，13.015至14.215秒，导演参考）围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注；围观百姓注视张角递符水；完成态：围观百姓保持注视，无人离开或转身。\n14.215-15秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.2-brisk-narration 和已编译节拍分别完成下列声部：[{\"beatId\":\"beat-03-speech-01\",\"actorIds\":[\"张角\"],\"kind\":\"speech\",\"deliveryStyle\":\"chant\",\"textOrVocalization\":\"天地有道，符水能医，饮下此水，病痛自消\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。\n【本镜结束时的自然动作结果】冀州某地简陋民居外的空地，中景。张角站立于画面中心，身穿深蓝黑色暗纹宽袖长袍，内穿灰橄榄色交领长衣，黑发束髻戴深色小冠横插簪，留短髭及颏须，双手将木碗符水递向前方。病患跪于张角前方地面，穿灰褐色粗布衣，刚完成叩首动作，头部抬起。围观百姓半圆形站立于空地后方和两侧，目光注视张角和病患。\n运镜：中景，摄影机正面平视张角和病患，轴线保持在张角与病患连线的正面方向，稳定机位\n人声类型：对白\n【音轨文本；环境声模式为空且禁止人声】张角：天地有道，符水能医，饮下此水，病痛自消",
+  "params": {
+    "fps": 24,
+    "mode": "std",
+    "sound": "on",
+    "width": 1280,
+    "height": 720,
+    "pacing": {
+      "beats": [
+        {
+          "id": "beat-03-action-01",
+          "kind": "action",
+          "actorIds": [
+            "sick-patient-group"
+          ],
+          "dependsOn": [],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "病患完成三次叩首，额头离地，保持跪姿",
+            "evidenceAnchor": "病患叩首",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-03",
+          "durationEstimate": {
+            "lower": 2.5,
+            "upper": 3.8,
+            "source": "叩首三次的实际身体动作时间",
+            "expected": 3.2,
+            "confidence": "high"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "病患叩首",
+          "performanceInstruction": "病患从跪姿俯身向前，额头触地，完成三次叩首动作"
+        },
+        {
+          "id": "beat-03-speech-01",
+          "kind": "speech",
+          "actorIds": [
+            "张角"
+          ],
+          "dependsOn": [
+            "beat-03-action-01"
+          ],
+          "resources": [
+            "voice"
+          ],
+          "completion": {
+            "modality": "audio-visual",
+            "finalState": "张角念完呪语，声音结束",
+            "evidenceAnchor": "天地有道，符水能医，饮下此水，病痛自消",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-03",
+          "deliveryStyle": "chant",
+          "durationEstimate": {
+            "lower": 4.006,
+            "upper": 6.415,
+            "source": "16字呪语按吟诵速率3.3字/秒加启动余量",
+            "expected": 5.299,
+            "confidence": "high"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "天地有道，符水能医，饮下此水，病痛自消",
+          "performanceInstruction": "张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律"
+        },
+        {
+          "id": "beat-03-action-02",
+          "kind": "action",
+          "actorIds": [
+            "张角"
+          ],
+          "dependsOn": [
+            "beat-03-speech-01"
+          ],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "张角双手将符水碗递到病患面前，病患可以触及",
+            "evidenceAnchor": "张角将符水碗递向病患",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-03",
+          "durationEstimate": {
+            "lower": 1.8,
+            "upper": 2.8,
+            "source": "递出符水碗并让病患接近的动作时间",
+            "expected": 2.3,
+            "confidence": "high"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "张角将符水碗递向病患",
+          "performanceInstruction": "张角双手持符水碗，向前伸出，递向跪在地上的病患"
+        },
+        {
+          "id": "beat-03-reaction-01",
+          "kind": "reaction",
+          "actorIds": [
+            "onlooker-crowd"
+          ],
+          "dependsOn": [
+            "beat-03-action-02"
+          ],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "围观百姓保持注视，无人离开或转身",
+            "evidenceAnchor": "围观百姓注视",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-03",
+          "durationEstimate": {
+            "lower": 0.8,
+            "upper": 1.2,
+            "source": "群体反应的最小可见时间",
+            "expected": 1,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "围观百姓注视张角递符水",
+          "performanceInstruction": "围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注"
+        }
+      ],
+      "version": "duration-v2",
+      "schedule": [
+        {
+          "kind": "action",
+          "beatId": "beat-03-action-01",
+          "actorIds": [
+            "sick-patient-group"
+          ],
+          "endSecond": 3.8,
+          "startSecond": 0,
+          "sourceBeatId": "beat-03",
+          "budgetSeconds": 3.8,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "speech",
+          "beatId": "beat-03-speech-01",
+          "actorIds": [
+            "张角"
+          ],
+          "endSecond": 10.215,
+          "startSecond": 3.8,
+          "sourceBeatId": "beat-03",
+          "budgetSeconds": 6.415,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "action",
+          "beatId": "beat-03-action-02",
+          "actorIds": [
+            "张角"
+          ],
+          "endSecond": 13.015,
+          "startSecond": 10.215,
+          "sourceBeatId": "beat-03",
+          "budgetSeconds": 2.8,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "reaction",
+          "beatId": "beat-03-reaction-01",
+          "actorIds": [
+            "onlooker-crowd"
+          ],
+          "endSecond": 14.215,
+          "startSecond": 13.015,
+          "sourceBeatId": "beat-03",
+          "budgetSeconds": 1.2,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        }
+      ],
+      "actorGroups": [
+        {
+          "id": "sick-patient-group",
+          "label": "病患",
+          "memberDescription": "一名身患疾病的成年男性百姓，穿灰褐色粗布衣，面容憔悴，跪于空地"
+        },
+        {
+          "id": "onlooker-crowd",
+          "label": "围观百姓",
+          "memberDescription": "数十名各年龄段百姓，穿各色粗布衣，半圆形站立于空地后方，面向张角和病患"
+        }
+      ],
+      "sampleTimes": [
+        0,
+        1.9,
+        3.8,
+        7.008,
+        10.215,
+        11.615,
+        13.015,
+        13.615,
+        14.215,
+        14.92
+      ],
+      "scheduleHash": "duration-v2-sha256-7627e59f40ef0cac0ddbb48ca4987ba0460d4a5450b1f22bb7df8a1ec3dfe898",
+      "timingPolicy": {
+        "speech": {
+          "chant": {
+            "maximumRate": 4.5,
+            "referenceRate": 3.3,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 2.8
+          },
+          "singing": {
+            "maximumRate": 3.5,
+            "referenceRate": 2.8,
+            "startupAllowance": 0.35,
+            "minimumNaturalRate": 2
+          },
+          "dialogue": {
+            "maximumRate": 5,
+            "referenceRate": 4.5,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 3.3
+          },
+          "narration": {
+            "maximumRate": 6.5,
+            "referenceRate": 5.8,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 5.5
+          }
+        },
+        "version": "duration-policy-v2.2-brisk-narration",
+        "linePauseSeconds": 0.2,
+        "shortPauseSeconds": 0.15,
+        "minimumActionSeconds": 0.3,
+        "sentencePauseSeconds": 0.25,
+        "minimumReactionSeconds": 0.5,
+        "maximumProviderDuration": 15,
+        "minimumProviderDuration": 3,
+        "endingReadabilityReserve": 0.5,
+        "minimumVocalizationSeconds": 0.8,
+        "maxConservativeExtraSeconds": 1,
+        "measurementToleranceSeconds": 0.25
+      },
+      "sourceBeatIds": [
+        "beat-03"
+      ],
+      "speechWindows": [
+        {
+          "end": 10.215,
+          "text": "天地有道，符水能医，饮下此水，病痛自消",
+          "start": 3.8,
+          "beatId": "beat-03-speech-01",
+          "actorIds": [
+            "张角"
+          ],
+          "sourceBeatId": "beat-03",
+          "deliveryStyle": "chant"
+        }
+      ],
+      "timelineWindows": [
+        {
+          "beatIds": [
+            "beat-03-action-01"
+          ],
+          "endSecond": 3.8,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 beat-03-action-01，0至3.8秒，导演参考）场景：冀州某地简陋民居外的空地；病患从跪姿俯身向前，额头触地，完成三次叩首动作；病患叩首；完成态：病患完成三次叩首，额头离地，保持跪姿。",
+              "beatId": "beat-03-action-01"
+            }
+          ],
+          "startSecond": 0
+        },
+        {
+          "beatIds": [
+            "beat-03-speech-01"
+          ],
+          "endSecond": 10.215,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 beat-03-speech-01，3.8至10.215秒，导演参考）张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律；张角哼唱歌谣，按歌谣节奏吟唱并完整唱出：天地有道，符水能医，饮下此水，病痛自消；完成态：张角念完呪语，声音结束。",
+              "beatId": "beat-03-speech-01"
+            }
+          ],
+          "startSecond": 3.8
+        },
+        {
+          "beatIds": [
+            "beat-03-action-02"
+          ],
+          "endSecond": 13.015,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 beat-03-action-02，10.215至13.015秒，导演参考）张角双手持符水碗，向前伸出，递向跪在地上的病患；张角将符水碗递向病患；完成态：张角双手将符水碗递到病患面前，病患可以触及。",
+              "beatId": "beat-03-action-02"
+            }
+          ],
+          "startSecond": 10.215
+        },
+        {
+          "beatIds": [
+            "beat-03-reaction-01"
+          ],
+          "endSecond": 14.215,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 beat-03-reaction-01，13.015至14.215秒，导演参考）围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注；围观百姓注视张角递符水；完成态：围观百姓保持注视，无人离开或转身。",
+              "beatId": "beat-03-reaction-01"
+            }
+          ],
+          "startSecond": 13.015
+        },
+        {
+          "beatIds": [],
+          "endSecond": 15,
+          "beatQuotes": [],
+          "startSecond": 14.215
+        }
+      ],
+      "compiledVideoPrompt": "0-3.8秒：（节拍 beat-03-action-01，0至3.8秒，导演参考）场景：冀州某地简陋民居外的空地；病患从跪姿俯身向前，额头触地，完成三次叩首动作；病患叩首；完成态：病患完成三次叩首，额头离地，保持跪姿。\n3.8-10.215秒：（节拍 beat-03-speech-01，3.8至10.215秒，导演参考）张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律；张角哼唱歌谣，按歌谣节奏吟唱并完整唱出：天地有道，符水能医，饮下此水，病痛自消；完成态：张角念完呪语，声音结束。\n10.215-13.015秒：（节拍 beat-03-action-02，10.215至13.015秒，导演参考）张角双手持符水碗，向前伸出，递向跪在地上的病患；张角将符水碗递向病患；完成态：张角双手将符水碗递到病患面前，病患可以触及。\n13.015-14.215秒：（节拍 beat-03-reaction-01，13.015至14.215秒，导演参考）围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注；围观百姓注视张角递符水；完成态：围观百姓保持注视，无人离开或转身。\n14.215-15秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+      "sourceBeatRequirements": [
+        {
+          "id": "beat-03",
+          "anchors": [
+            "病患叩首",
+            "张角将符水碗递向病患"
+          ],
+          "setting": "冀州某地简陋民居外的空地"
+        }
+      ]
+    },
+    "duration": 15,
+    "audioText": "张角：天地有道，符水能医，饮下此水，病痛自消",
+    "audioType": "对白",
+    "multiShot": false,
+    "characters": [
+      "张角"
+    ],
+    "resolution": "720p",
+    "worldState": {
+      "settingId": "drama-02",
+      "characters": [
+        {
+          "name": "张角",
+          "position": {
+            "status": "unknown"
+          },
+          "heldProps": {
+            "status": "unknown"
+          },
+          "pendingAction": {
+            "status": "unknown"
+          }
+        }
+      ]
+    },
+    "aspectRatio": "16:9",
+    "qualityMode": "principle-v1",
+    "scheduleHash": "duration-v2-sha256-7627e59f40ef0cac0ddbb48ca4987ba0460d4a5450b1f22bb7df8a1ec3dfe898",
+    "voiceSceneId": "drama-02",
+    "editorialRole": "story",
+    "executionMode": "step",
+    "outputProfile": "debug-720p",
+    "pacingVersion": "duration-v2",
+    "referenceMode": "three-view-all",
+    "videoTimeline": "0-3.8秒：（节拍 beat-03-action-01，0至3.8秒，导演参考）场景：冀州某地简陋民居外的空地；病患从跪姿俯身向前，额头触地，完成三次叩首动作；病患叩首；完成态：病患完成三次叩首，额头离地，保持跪姿。\n3.8-10.215秒：（节拍 beat-03-speech-01，3.8至10.215秒，导演参考）张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律；张角哼唱歌谣，按歌谣节奏吟唱并完整唱出：天地有道，符水能医，饮下此水，病痛自消；完成态：张角念完呪语，声音结束。\n10.215-13.015秒：（节拍 beat-03-action-02，10.215至13.015秒，导演参考）张角双手持符水碗，向前伸出，递向跪在地上的病患；张角将符水碗递向病患；完成态：张角双手将符水碗递到病患面前，病患可以触及。\n13.015-14.215秒：（节拍 beat-03-reaction-01，13.015至14.215秒，导演参考）围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注；围观百姓注视张角递符水；完成态：围观百姓保持注视，无人离开或转身。\n14.215-15秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.2-brisk-narration 和已编译节拍分别完成下列声部：[{\"beatId\":\"beat-03-speech-01\",\"actorIds\":[\"张角\"],\"kind\":\"speech\",\"deliveryStyle\":\"chant\",\"textOrVocalization\":\"天地有道，符水能医，饮下此水，病痛自消\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。",
+    "continuityMode": "tail_continuation",
+    "firstFrameMode": "reuse_previous_tail",
+    "negativePrompt": "画面闪烁、人物变形、身份漂移、服饰突变、未按二维图层编排的人物出现或消失、纯色背景、摄影棚背景、幕布背景、舞台布景、三视图背景复现、人物抠图感、空洞背景、现代物件、字幕、水印、低幼卡通、游戏CG、玄幻光效、AI塑料感",
+    "referenceImage": "https://assets.example.test/actual-tail.jpg",
+    "audioSampleRate": 48000,
+    "characterVoices": [
+      {
+        "characterId": "35080dd4-92b1-4c1c-8dcf-07776f32e0f7",
+        "characterName": "张角",
+        "voiceId": "929620225396846688",
+        "elementId": "321638741351212",
+        "source": "custom",
+        "version": 1,
+        "modelId": "keling3"
+      }
+    ],
+    "promptInputMode": "motion-state",
+    "referenceImages": [
+      "https://assets.example.test/complete-identity-sheet.png"
+    ],
+    "visualTreatment": "live_action",
+    "voiceConsistency": {
+      "reason": "已锁定输入音色；等待成片听审",
+      "status": "uncertain"
+    },
+    "initialCharacters": [
+      "张角"
+    ],
+    "presentCharacters": [
+      "张角"
+    ],
+    "referenceBindings": [
+      {
+        "role": "identity",
+        "characterName": "张角",
+        "continuityKey": "张角-eastern-han-v22"
+      }
+    ],
+    "illustrationLayers": [],
+    "pronunciationHints": [],
+    "qualityDisposition": "manual-review-v1",
+    "retryBudgetProfile": "manual-review-v1",
+    "maxGenerationAttempts": 1,
+    "contentContractVersion": "cinematic-v1",
+    "qualityStrictBudgetSnapshot": "{\"params\":[]}"
+  },
+  "expectedTimeline": "0-3.8秒：（节拍 beat-03-action-01，0至3.8秒，导演参考）场景：冀州某地简陋民居外的空地；病患从跪姿俯身向前，额头触地，完成三次叩首动作；病患叩首；完成态：病患完成三次叩首，额头离地，保持跪姿。\n3.8-10.215秒：（节拍 beat-03-speech-01，3.8至10.215秒，导演参考）张角口中念诵呪语，语调庄重缓慢，带有道家诵念韵律；张角哼唱歌谣，按歌谣节奏吟唱并完整唱出：天地有道，符水能医，饮下此水，病痛自消；完成态：张角念完呪语，声音结束。\n10.215-13.015秒：（节拍 beat-03-action-02，10.215至13.015秒，导演参考）张角双手持符水碗，向前伸出，递向跪在地上的病患；张角将符水碗递向病患；完成态：张角双手将符水碗递到病患面前，病患可以触及。\n13.015-14.215秒：（节拍 beat-03-reaction-01，13.015至14.215秒，导演参考）围观百姓群体保持站立，目光集中在张角和病患的仪式上，面部表情专注；围观百姓注视张角递符水；完成态：围观百姓保持注视，无人离开或转身。\n14.215-15秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+  "model": {
+    "id": "fixture-kling3",
+    "provider": "Kling",
+    "capability": "video",
+    "settings": {
+      "model": "kling-v3",
+      "endpoint": "https://provider.example.test/v1/videos",
+      "apiKey": "public-test"
+    }
+  }
+}

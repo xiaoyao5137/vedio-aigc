@@ -1,5 +1,5 @@
 export type AppPage = 'workflow' | 'characters' | 'models'
-export type WorkflowView = 'list' | 'edit' | 'run'
+export type WorkflowView = 'list' | 'detail' | 'edit' | 'run'
 export type RunnerTab = 'execute' | 'history'
 
 export type AppViewState = {
@@ -7,12 +7,13 @@ export type AppViewState = {
   workflowView: WorkflowView
   activeWorkflowId: string
   runnerTab: RunnerTab
+  executionId?: string
 }
 
 export const APP_VIEW_STATE_STORAGE_KEY = 'vedio-aigc:app-view-state:v1'
 
 const pages = new Set<AppPage>(['workflow', 'characters', 'models'])
-const workflowViews = new Set<WorkflowView>(['list', 'edit', 'run'])
+const workflowViews = new Set<WorkflowView>(['list', 'detail', 'edit', 'run'])
 const runnerTabs = new Set<RunnerTab>(['execute', 'history'])
 
 export function parseAppViewState(value: string | null): Partial<AppViewState> {
@@ -24,6 +25,7 @@ export function parseAppViewState(value: string | null): Partial<AppViewState> {
       ...(workflowViews.has(parsed.workflowView as WorkflowView) ? { workflowView: parsed.workflowView as WorkflowView } : {}),
       ...(typeof parsed.activeWorkflowId === 'string' ? { activeWorkflowId: parsed.activeWorkflowId } : {}),
       ...(runnerTabs.has(parsed.runnerTab as RunnerTab) ? { runnerTab: parsed.runnerTab as RunnerTab } : {}),
+      ...(typeof parsed.executionId === 'string' ? { executionId: parsed.executionId } : {}),
     }
   } catch {
     return {}

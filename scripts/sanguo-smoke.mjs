@@ -108,6 +108,8 @@ if (nativeAudioClips !== videos.length) throw new Error(`expected ${videos.lengt
 
 console.log(JSON.stringify({
   ok: true,
+  scope: 'simulator-wiring-only',
+  productionReady: false,
   citations: sources.count,
   characters: assetNames.size,
   scenes: outline.count,

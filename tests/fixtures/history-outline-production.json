@@ -1,0 +1,290 @@
+{
+  "episodeTitle": "甘陵党议",
+  "scenes": [
+    {
+      "id": "scene-01",
+      "sequence": 1,
+      "title": "恩师擢升",
+      "cast": [
+        "周福",
+        "桓帝"
+      ],
+      "purpose": "桓帝登基后擢升恩师周福为尚书,为后续党议埋下伏笔",
+      "requiredBeats": [
+        {
+          "id": "beat-01",
+          "description": "桓帝在殿内亲手将尚书印绶交给周福",
+          "setting": "宫殿内",
+          "mustShow": [
+            "桓帝",
+            "周福",
+            "印绶"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 桓帝为蠡吾侯时受学于甘陵周福,及即帝位,擢福为尚书",
+      "adaptationBoundary": "交接印绶的具体场面调度及简短对白为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": false
+    },
+    {
+      "id": "scene-02",
+      "sequence": 2,
+      "title": "谣言传播",
+      "cast": [
+        "甲乡人",
+        "乙乡人"
+      ],
+      "purpose": "房植名声显赫,甘陵乡人编造谣言对比周福靠师生关系得官",
+      "requiredBeats": [
+        {
+          "id": "beat-02",
+          "description": "两名乡人在街市低声念诵谣言",
+          "setting": "甘陵街市",
+          "mustShow": [
+            "甲乡人",
+            "乙乡人",
+            "手势"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 时同郡河南尹房植有名当朝,乡人为之谣曰:'天下规矩房伯武,因师获印周仲进'",
+      "adaptationBoundary": "乡人传播谣言的具体对白及神态为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": false
+    },
+    {
+      "id": "scene-03",
+      "sequence": 3,
+      "title": "宾客不忿",
+      "cast": [
+        "周家宾客"
+      ],
+      "purpose": "周福宾客听闻谣言后心生不满",
+      "requiredBeats": [
+        {
+          "id": "beat-03",
+          "description": "周家宾客在周宅内听闻谣言后拍案",
+          "setting": "周宅内",
+          "mustShow": [
+            "周家宾客",
+            "案几",
+            "拳"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 二家宾客,互相譥揣",
+      "adaptationBoundary": "宾客听闻谣言后的具体反应为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": false
+    },
+    {
+      "id": "scene-04",
+      "sequence": 4,
+      "title": "当面讥讽",
+      "cast": [
+        "周家宾客",
+        "房家宾客"
+      ],
+      "purpose": "两家宾客在街市相遇,周家宾客讥讽房家",
+      "requiredBeats": [
+        {
+          "id": "beat-04",
+          "description": "周家宾客在街市拦住房家宾客冷嘲",
+          "setting": "甘陵街市",
+          "mustShow": [
+            "周家宾客",
+            "房家宾客",
+            "手指"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 二家宾客,互相譥揣",
+      "adaptationBoundary": "宾客间具体的讥讽言辞及肢体动作为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": false
+    },
+    {
+      "id": "scene-05",
+      "sequence": 5,
+      "title": "房家反击",
+      "cast": [
+        "房家宾客",
+        "周家宾客"
+      ],
+      "purpose": "房家宾客当即回击,双方争执升级",
+      "requiredBeats": [
+        {
+          "id": "beat-05",
+          "description": "房家宾客在街市反唇相讥并推搡",
+          "setting": "甘陵街市",
+          "mustShow": [
+            "房家宾客",
+            "周家宾客",
+            "袖袍"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 二家宾客,互相譥揣",
+      "adaptationBoundary": "反击的具体言辞及推搡细节为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": true
+    },
+    {
+      "id": "scene-06",
+      "sequence": 6,
+      "title": "周家拉拢",
+      "cast": [
+        "周家宾客",
+        "士人甲"
+      ],
+      "purpose": "周家宾客主动结交其他士人壮大己方",
+      "requiredBeats": [
+        {
+          "id": "beat-06",
+          "description": "周家宾客在酒肆与士人密谈结交",
+          "setting": "酒肆内",
+          "mustShow": [
+            "周家宾客",
+            "士人甲",
+            "酒樽"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 遂各树朋徒",
+      "adaptationBoundary": "拉拢士人的具体说辞及场面为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": false
+    },
+    {
+      "id": "scene-07",
+      "sequence": 7,
+      "title": "房家应对",
+      "cast": [
+        "房家宾客",
+        "士人乙"
+      ],
+      "purpose": "房家宾客同样拉拢士人,双方阵营逐步成型",
+      "requiredBeats": [
+        {
+          "id": "beat-07",
+          "description": "房家宾客在私宅中与士人密议结盟",
+          "setting": "房宅内",
+          "mustShow": [
+            "房家宾客",
+            "士人乙",
+            "书简"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 遂各树朋徒",
+      "adaptationBoundary": "结盟的具体对白及仪式为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": false
+    },
+    {
+      "id": "scene-08",
+      "sequence": 8,
+      "title": "嫌隙渐深",
+      "cast": [
+        "周家宾客",
+        "房家宾客"
+      ],
+      "purpose": "两家宾客在郡府前再次冲突,矛盾无法弥合",
+      "requiredBeats": [
+        {
+          "id": "beat-08",
+          "description": "两派宾客在郡府前当众对骂",
+          "setting": "甘陵郡府前",
+          "mustShow": [
+            "周家宾客",
+            "房家宾客",
+            "手指"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 渐成尤隙",
+      "adaptationBoundary": "冲突的具体言行为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": false
+    },
+    {
+      "id": "scene-09",
+      "sequence": 9,
+      "title": "南北分立",
+      "cast": [
+        "周家宾客"
+      ],
+      "purpose": "周家宾客率朋徒占据郡城南侧,与房家彻底对立",
+      "requiredBeats": [
+        {
+          "id": "beat-09",
+          "description": "周家宾客领众人立于郡城南侧",
+          "setting": "甘陵郡城南侧",
+          "mustShow": [
+            "周家宾客",
+            "朋徒",
+            "城墙"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 由是甘陵有南北部",
+      "adaptationBoundary": "南侧聚集的具体场面为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": false
+    },
+    {
+      "id": "scene-10",
+      "sequence": 10,
+      "title": "北部成型",
+      "cast": [
+        "房家宾客"
+      ],
+      "purpose": "房家宾客率朋徒占据郡城北侧,南北部正式形成",
+      "requiredBeats": [
+        {
+          "id": "beat-10",
+          "description": "房家宾客领众人立于郡城北侧与南侧对望",
+          "setting": "甘陵郡城北侧",
+          "mustShow": [
+            "房家宾客",
+            "朋徒",
+            "城墙"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 由是甘陵有南北部",
+      "adaptationBoundary": "北侧聚集及对望的具体场面为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": false
+    },
+    {
+      "id": "scene-11",
+      "sequence": 11,
+      "title": "党议肇始",
+      "cast": [
+        "游士甲",
+        "游士乙"
+      ],
+      "purpose": "太学游士讨论甘陵南北部之争,党人之议由此开端",
+      "requiredBeats": [
+        {
+          "id": "beat-11",
+          "description": "两名太学游士在讲堂外议论甘陵分裂",
+          "setting": "太学讲堂外",
+          "mustShow": [
+            "游士甲",
+            "游士乙",
+            "竹简"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2] 党人之议,自此始矣;[史料5] 因此流言转入太学",
+      "adaptationBoundary": "游士间讨论党议的具体对白为合理拟制",
+      "targetDuration": 15,
+      "continuityFromPrevious": false
+    }
+  ],
+  "count": 11,
+  "totalDuration": 165
+}

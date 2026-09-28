@@ -1,0 +1,1039 @@
+{
+  "recordId": "record-b1sz1i",
+  "scene": {
+    "id": "scene-01",
+    "sequence": 1,
+    "title": "甘陵乡谣",
+    "dramaticSceneId": "drama-01",
+    "cast": [
+      "乡人张三",
+      "乡人李四"
+    ],
+    "purpose": "建立事件背景:桓帝即位后擢升恩师周福为尚书,河南尹房植有清望,乡人传唱歌谣对比两人,引出后续宾客争论",
+    "requiredBeats": [
+      {
+        "id": "beat-01",
+        "description": "甘陵街市,乡人张三边走边唱:天下规矩房伯武,因师获印周仲进",
+        "function": "建立歌谣内容与传播环境",
+        "stateChange": "从无背景到观众知晓歌谣内容",
+        "observable": {
+          "visual": [
+            "乡人张三边走边唱"
+          ],
+          "audio": [
+            "天下规矩房伯武,因师获印周仲进"
+          ]
+        },
+        "setting": "甘陵街市",
+        "mustShow": [
+          "乡人张三",
+          "边走边唱"
+        ]
+      },
+      {
+        "id": "beat-02",
+        "description": "乡人李四应和:这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书",
+        "function": "解释歌谣的对比性质",
+        "stateChange": "从歌谣文本到观众理解对比含义",
+        "observable": {
+          "visual": [
+            "乡人李四点头应和"
+          ],
+          "audio": [
+            "这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书"
+          ]
+        },
+        "setting": "甘陵街市",
+        "mustShow": [
+          "乡人李四",
+          "点头应和"
+        ]
+      }
+    ],
+    "historicalBasis": "[史料2]记载乡人为之作谣曰天下规矩房伯武因师获印周仲进",
+    "adaptationBoundary": "乡人对歌谣的解释为合理拟制",
+    "targetDuration": 10,
+    "continuityMode": "scene_cut",
+    "completionCriteria": [
+      "歌谣原文已唱出",
+      "歌谣对比性质已解释"
+    ],
+    "contentContractVersion": "cinematic-v1",
+    "dramaticUnitId": "drama-01",
+    "settingId": "drama-01",
+    "closesUnit": true,
+    "continuityFromPrevious": false
+  },
+  "timingPolicy": {
+    "version": "duration-policy-v2.1",
+    "speech": {
+      "dialogue": {
+        "referenceRate": 4.5,
+        "minimumNaturalRate": 3.3,
+        "maximumRate": 5,
+        "startupAllowance": 0.25
+      },
+      "narration": {
+        "referenceRate": 4.5,
+        "minimumNaturalRate": 3.3,
+        "maximumRate": 5,
+        "startupAllowance": 0.25
+      },
+      "chant": {
+        "referenceRate": 3.3,
+        "minimumNaturalRate": 2.8,
+        "maximumRate": 4.5,
+        "startupAllowance": 0.25
+      },
+      "singing": {
+        "referenceRate": 2.8,
+        "minimumNaturalRate": 2,
+        "maximumRate": 3.5,
+        "startupAllowance": 0.35
+      }
+    },
+    "shortPauseSeconds": 0.15,
+    "sentencePauseSeconds": 0.25,
+    "linePauseSeconds": 0.2,
+    "measurementToleranceSeconds": 0.25,
+    "endingReadabilityReserve": 0.5,
+    "maxConservativeExtraSeconds": 1,
+    "minimumProviderDuration": 3,
+    "maximumProviderDuration": 15,
+    "minimumVocalizationSeconds": 0.8,
+    "minimumActionSeconds": 0.3,
+    "minimumReactionSeconds": 0.5
+  },
+  "candidates": [
+    {
+      "modelRunId": "model-run-mtsyc4sp-olk0fvj",
+      "candidate": {
+        "segments": [
+          {
+            "contentContractVersion": "cinematic-v1",
+            "dramaticSceneId": "drama-01",
+            "id": "scene-01-seg01",
+            "title": "甘陵街市乡人传唱歌谣",
+            "duration": 9,
+            "pacing": {
+              "version": "duration-v2",
+              "timingPolicy": {
+                "version": "duration-policy-v2.1",
+                "speech": {
+                  "dialogue": {
+                    "referenceRate": 4.5,
+                    "minimumNaturalRate": 3.3,
+                    "maximumRate": 5,
+                    "startupAllowance": 0.25
+                  },
+                  "narration": {
+                    "referenceRate": 4.5,
+                    "minimumNaturalRate": 3.3,
+                    "maximumRate": 5,
+                    "startupAllowance": 0.25
+                  },
+                  "chant": {
+                    "referenceRate": 3.3,
+                    "minimumNaturalRate": 2.8,
+                    "maximumRate": 4.5,
+                    "startupAllowance": 0.25
+                  },
+                  "singing": {
+                    "referenceRate": 2.8,
+                    "minimumNaturalRate": 2,
+                    "maximumRate": 3.5,
+                    "startupAllowance": 0.35
+                  }
+                },
+                "shortPauseSeconds": 0.15,
+                "sentencePauseSeconds": 0.25,
+                "linePauseSeconds": 0.2,
+                "measurementToleranceSeconds": 0.25,
+                "endingReadabilityReserve": 0.5,
+                "maxConservativeExtraSeconds": 1,
+                "minimumProviderDuration": 3,
+                "maximumProviderDuration": 15,
+                "minimumVocalizationSeconds": 0.8,
+                "minimumActionSeconds": 0.3,
+                "minimumReactionSeconds": 0.5
+              },
+              "actorGroups": [],
+              "beats": [
+                {
+                  "id": "beat-01-walk",
+                  "sourceBeatId": "beat-01",
+                  "actorIds": [
+                    "乡人张三"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "乡人张三边走边唱",
+                  "dependsOn": [],
+                  "overlapAllowedWith": [
+                    "beat-01-chant",
+                    "beat-01-li-enter"
+                  ],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 5.4,
+                    "expected": 5.9,
+                    "upper": 6.4,
+                    "source": "边走边唱覆盖完整吟唱时长",
+                    "confidence": "medium"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "张三完成边走边唱动作",
+                    "modality": "visual",
+                    "evidenceAnchor": "乡人张三边走边唱"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-01-chant",
+                  "sourceBeatId": "beat-01",
+                  "actorIds": [
+                    "乡人张三"
+                  ],
+                  "kind": "speech",
+                  "deliveryStyle": "chant",
+                  "textOrVocalization": "天下规矩房伯武,因师获印周仲进",
+                  "performanceInstruction": "吟唱歌谣",
+                  "dependsOn": [],
+                  "overlapAllowedWith": [
+                    "beat-01-walk",
+                    "beat-01-li-enter"
+                  ],
+                  "resources": [
+                    "voice"
+                  ],
+                  "durationEstimate": {
+                    "lower": 5.4,
+                    "expected": 5.9,
+                    "upper": 6.4,
+                    "source": "18字歌谣按吟唱2.8-4.5字/秒加启动0.25秒和句间停顿0.25秒",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "歌谣完整吟唱完毕",
+                    "modality": "audio",
+                    "evidenceAnchor": "天下规矩房伯武,因师获印周仲进"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-01-li-enter",
+                  "sourceBeatId": "beat-01",
+                  "actorIds": [
+                    "乡人李四"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "乡人李四从街市另一侧走近张三",
+                  "dependsOn": [],
+                  "overlapAllowedWith": [
+                    "beat-01-walk",
+                    "beat-01-chant"
+                  ],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 2,
+                    "expected": 2.5,
+                    "upper": 3,
+                    "source": "从画外走入画内靠近张三",
+                    "confidence": "medium"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "李四进入画面并靠近张三",
+                    "modality": "visual",
+                    "evidenceAnchor": "乡人李四从街市另一侧走近张三"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                }
+              ]
+            },
+            "shotIntent": {
+              "viewpointCharacter": "乡人张三",
+              "purpose": "建立歌谣内容与传播环境",
+              "cameraReason": "中景侧面跟随拍摄街市行人边走边唱,能看清张三吟唱姿态和李四走近过程"
+            },
+            "beatDramaturgy": [
+              {
+                "beatId": "beat-01",
+                "function": "建立歌谣内容与传播环境",
+                "stateChange": "从无背景到观众知晓歌谣内容",
+                "visual": [
+                  "乡人张三边走边唱"
+                ],
+                "audio": [
+                  "天下规矩房伯武,因师获印周仲进"
+                ]
+              }
+            ],
+            "storyProgress": {
+              "unitId": "drama-01",
+              "status": "continuing",
+              "actionResult": "歌谣内容完整吟唱",
+              "response": "观众听到房伯武与周仲进对比的歌谣原文",
+              "pendingActions": [
+                "beat-02的点头应和与对歌谣的解释"
+              ]
+            },
+            "characters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "presentCharacters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "initialCharacters": [
+              "乡人张三"
+            ],
+            "enteringCharacters": [
+              {
+                "name": "乡人李四",
+                "startSecond": 1,
+                "endSecond": 3.5,
+                "path": "从街市另一侧走近张三"
+              }
+            ],
+            "endCharacters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "worldState": {
+              "settingId": "drama-01",
+              "characters": [
+                {
+                  "name": "乡人张三",
+                  "position": {
+                    "status": "unknown"
+                  },
+                  "heldProps": {
+                    "status": "unknown"
+                  },
+                  "pendingAction": {
+                    "status": "unknown"
+                  }
+                },
+                {
+                  "name": "乡人李四",
+                  "position": {
+                    "status": "unknown"
+                  },
+                  "heldProps": {
+                    "status": "unknown"
+                  },
+                  "pendingAction": {
+                    "status": "unknown"
+                  }
+                }
+              ]
+            },
+            "continuity": {
+              "mode": "scene_cut",
+              "previousShotId": "",
+              "bridgeType": "opening",
+              "bridgeAnchor": ""
+            },
+            "coveredBeatIds": [
+              "beat-01"
+            ],
+            "visualPrompt": "东汉甘陵街市日景,土路两侧木构民居店铺,乡人张三身穿灰褐色短襦深衣腰束布带草鞋,三十余岁面容憨朴,独自沿街市土路乡人张三边走边唱,中景侧面跟随,自然光",
+            "camera": "中景,侧面跟随张三行进方向,保持能看清张三正面表情和李四从侧面走近,平视",
+            "mood": "日常街市氛围,乡人自然传唱",
+            "firstFrameMode": "reference",
+            "lastFramePrompt": "东汉甘陵街市日景,乡人张三灰褐短襦和乡人李四青灰麻衣并立街市土路,张三刚唱完歌谣,李四面向张三站定,两人相距一步",
+            "videoPrompt": "0-6.4秒:乡人张三边走边唱沿街市土路缓步前行,吟唱天下规矩房伯武,因师获印周仲进,声调平缓悠扬;1-3.5秒:乡人李四身穿青灰色麻布短衣腰束麻绳,二十余岁面容朴实,从街市另一侧走近张三;6.4-8.5秒:张三唱完停步,李四走到张三身侧站定",
+            "audioType": "对白",
+            "audioText": "乡人张三:天下规矩房伯武,因师获印周仲进",
+            "historicalBasis": "[史料2]记载乡人为之作谣曰天下规矩房伯武因师获印周仲进",
+            "adaptationBoundary": "乡人传唱场景、边走边唱动作为合理拟制,歌谣原文依据史载"
+          },
+          {
+            "contentContractVersion": "cinematic-v1",
+            "dramaticSceneId": "drama-01",
+            "id": "scene-01-seg02",
+            "title": "李四解释歌谣含义",
+            "duration": 9,
+            "pacing": {
+              "version": "duration-v2",
+              "timingPolicy": {
+                "version": "duration-policy-v2.1",
+                "speech": {
+                  "dialogue": {
+                    "referenceRate": 4.5,
+                    "minimumNaturalRate": 3.3,
+                    "maximumRate": 5,
+                    "startupAllowance": 0.25
+                  },
+                  "narration": {
+                    "referenceRate": 4.5,
+                    "minimumNaturalRate": 3.3,
+                    "maximumRate": 5,
+                    "startupAllowance": 0.25
+                  },
+                  "chant": {
+                    "referenceRate": 3.3,
+                    "minimumNaturalRate": 2.8,
+                    "maximumRate": 4.5,
+                    "startupAllowance": 0.25
+                  },
+                  "singing": {
+                    "referenceRate": 2.8,
+                    "minimumNaturalRate": 2,
+                    "maximumRate": 3.5,
+                    "startupAllowance": 0.35
+                  }
+                },
+                "shortPauseSeconds": 0.15,
+                "sentencePauseSeconds": 0.25,
+                "linePauseSeconds": 0.2,
+                "measurementToleranceSeconds": 0.25,
+                "endingReadabilityReserve": 0.5,
+                "maxConservativeExtraSeconds": 1,
+                "minimumProviderDuration": 3,
+                "maximumProviderDuration": 15,
+                "minimumVocalizationSeconds": 0.8,
+                "minimumActionSeconds": 0.3,
+                "minimumReactionSeconds": 0.5
+              },
+              "actorGroups": [],
+              "beats": [
+                {
+                  "id": "beat-02-nod",
+                  "sourceBeatId": "beat-02",
+                  "actorIds": [
+                    "乡人李四"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "乡人李四点头应和",
+                  "dependsOn": [],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 0.5,
+                    "expected": 0.7,
+                    "upper": 1,
+                    "source": "点头应和动作",
+                    "confidence": "medium"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "李四点头动作完成",
+                    "modality": "visual",
+                    "evidenceAnchor": "乡人李四点头应和"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-02-explain",
+                  "sourceBeatId": "beat-02",
+                  "actorIds": [
+                    "乡人李四"
+                  ],
+                  "kind": "speech",
+                  "deliveryStyle": "dialogue",
+                  "textOrVocalization": "这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书",
+                  "dependsOn": [
+                    "beat-02-nod"
+                  ],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "voice"
+                  ],
+                  "durationEstimate": {
+                    "lower": 6.15,
+                    "expected": 6.9,
+                    "upper": 8.6,
+                    "source": "30字对白按3.3-5字/秒加启动0.25秒和句间停顿0.25秒",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "李四解释完成",
+                    "modality": "audio",
+                    "evidenceAnchor": "这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                }
+              ]
+            },
+            "shotIntent": {
+              "viewpointCharacter": "乡人李四",
+              "purpose": "解释歌谣的对比性质",
+              "cameraReason": "中景拍摄李四正面,能看清点头应和动作和说话表情"
+            },
+            "beatDramaturgy": [
+              {
+                "beatId": "beat-02",
+                "function": "解释歌谣的对比性质",
+                "stateChange": "从歌谣文本到观众理解对比含义",
+                "visual": [
+                  "乡人李四点头应和"
+                ],
+                "audio": [
+                  "这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书"
+                ]
+              }
+            ],
+            "storyProgress": {
+              "unitId": "drama-01",
+              "status": "complete",
+              "actionResult": "歌谣对比性质解释清楚",
+              "response": "观众理解房植凭能力任河南尹与周福因师恩获尚书印的对比",
+              "pendingActions": []
+            },
+            "characters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "presentCharacters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "initialCharacters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "enteringCharacters": [],
+            "endCharacters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "worldState": {
+              "settingId": "drama-01",
+              "characters": [
+                {
+                  "name": "乡人张三",
+                  "position": {
+                    "status": "unknown"
+                  },
+                  "heldProps": {
+                    "status": "unknown"
+                  },
+                  "pendingAction": {
+                    "status": "unknown"
+                  }
+                },
+                {
+                  "name": "乡人李四",
+                  "position": {
+                    "status": "unknown"
+                  },
+                  "heldProps": {
+                    "status": "unknown"
+                  },
+                  "pendingAction": {
+                    "status": "unknown"
+                  }
+                }
+              ]
+            },
+            "continuity": {
+              "mode": "coverage_cut",
+              "previousShotId": "scene-01-seg01",
+              "bridgeType": "cut",
+              "bridgeAnchor": "李四站定后反打拍摄李四正面回应张三"
+            },
+            "coveredBeatIds": [
+              "beat-02"
+            ],
+            "visualPrompt": "东汉甘陵街市日景,乡人李四青灰麻衣面向画外张三站立街市土路,乡人张三灰褐短襦位于李四右侧画外,中景正面拍摄李四,自然光",
+            "camera": "中景,正面拍摄李四,视线与上镜保持同侧轴线,张三在李四右侧画外,平视",
+            "mood": "日常街市氛围,乡人解释",
+            "firstFrameMode": "reference",
+            "lastFramePrompt": "东汉甘陵街市日景,乡人李四青灰麻衣面向画外张三站立街市土路,李四说完话保持站姿,乡人张三灰褐短襦位于李四右侧画外",
+            "videoPrompt": "0-1秒:乡人李四乡人李四点头应和面向画外张三;1-8.5秒:李四说这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书,语调直白平实",
+            "audioType": "对白",
+            "audioText": "乡人李四:这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书",
+            "historicalBasis": "[史料2]记载乡人为之作谣曰天下规矩房伯武因师获印周仲进",
+            "adaptationBoundary": "李四对歌谣的解释为合理拟制,房植周福对比事实依据史载"
+          }
+        ]
+      }
+    },
+    {
+      "modelRunId": "model-run-mtsyd4fa-3g341mo",
+      "candidate": {
+        "segments": [
+          {
+            "contentContractVersion": "cinematic-v1",
+            "dramaticSceneId": "drama-01",
+            "id": "scene-01-seg01",
+            "title": "甘陵街市乡人传唱歌谣",
+            "duration": 8,
+            "pacing": {
+              "version": "duration-v2",
+              "timingPolicy": {
+                "version": "duration-policy-v2.1",
+                "speech": {
+                  "dialogue": {
+                    "referenceRate": 4.5,
+                    "minimumNaturalRate": 3.3,
+                    "maximumRate": 5,
+                    "startupAllowance": 0.25
+                  },
+                  "narration": {
+                    "referenceRate": 4.5,
+                    "minimumNaturalRate": 3.3,
+                    "maximumRate": 5,
+                    "startupAllowance": 0.25
+                  },
+                  "chant": {
+                    "referenceRate": 3.3,
+                    "minimumNaturalRate": 2.8,
+                    "maximumRate": 4.5,
+                    "startupAllowance": 0.25
+                  },
+                  "singing": {
+                    "referenceRate": 2.8,
+                    "minimumNaturalRate": 2,
+                    "maximumRate": 3.5,
+                    "startupAllowance": 0.35
+                  }
+                },
+                "shortPauseSeconds": 0.15,
+                "sentencePauseSeconds": 0.25,
+                "linePauseSeconds": 0.2,
+                "measurementToleranceSeconds": 0.25,
+                "endingReadabilityReserve": 0.5,
+                "maxConservativeExtraSeconds": 1,
+                "minimumProviderDuration": 3,
+                "maximumProviderDuration": 15,
+                "minimumVocalizationSeconds": 0.8,
+                "minimumActionSeconds": 0.3,
+                "minimumReactionSeconds": 0.5
+              },
+              "actorGroups": [],
+              "beats": [
+                {
+                  "id": "beat-01-walk",
+                  "sourceBeatId": "beat-01",
+                  "actorIds": [
+                    "乡人张三"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "乡人张三边走边唱",
+                  "dependsOn": [],
+                  "overlapAllowedWith": [
+                    "beat-01-chant",
+                    "beat-01-li-enter"
+                  ],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 4.8,
+                    "expected": 5.3,
+                    "upper": 5.8,
+                    "source": "边走边唱覆盖完整吟唱时长",
+                    "confidence": "medium"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "张三完成边走边唱动作",
+                    "modality": "visual",
+                    "evidenceAnchor": "乡人张三边走边唱"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-01-chant",
+                  "sourceBeatId": "beat-01",
+                  "actorIds": [
+                    "乡人张三"
+                  ],
+                  "kind": "speech",
+                  "deliveryStyle": "chant",
+                  "textOrVocalization": "天下规矩房伯武,因师获印周仲进",
+                  "performanceInstruction": "吟唱歌谣",
+                  "dependsOn": [],
+                  "overlapAllowedWith": [
+                    "beat-01-walk",
+                    "beat-01-li-enter"
+                  ],
+                  "resources": [
+                    "voice"
+                  ],
+                  "durationEstimate": {
+                    "lower": 4.8,
+                    "expected": 5.3,
+                    "upper": 5.8,
+                    "source": "18字歌谣按吟唱2.8-4.5字/秒加启动0.25秒和句间停顿0.25秒",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "歌谣完整吟唱完毕",
+                    "modality": "audio",
+                    "evidenceAnchor": "天下规矩房伯武,因师获印周仲进"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-01-li-enter",
+                  "sourceBeatId": "beat-01",
+                  "actorIds": [
+                    "乡人李四"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "乡人李四从街市另一侧走近张三",
+                  "dependsOn": [],
+                  "overlapAllowedWith": [
+                    "beat-01-walk",
+                    "beat-01-chant"
+                  ],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 1.8,
+                    "expected": 2.3,
+                    "upper": 2.8,
+                    "source": "从画外走入画内靠近张三",
+                    "confidence": "medium"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "李四进入画面并靠近张三",
+                    "modality": "visual",
+                    "evidenceAnchor": "乡人李四从街市另一侧走近张三"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                }
+              ]
+            },
+            "shotIntent": {
+              "viewpointCharacter": "乡人张三",
+              "purpose": "建立歌谣内容与传播环境",
+              "cameraReason": "中景侧面跟随拍摄街市行人边走边唱,能看清张三吟唱姿态和李四走近过程"
+            },
+            "beatDramaturgy": [
+              {
+                "beatId": "beat-01",
+                "function": "建立歌谣内容与传播环境",
+                "stateChange": "从无背景到观众知晓歌谣内容",
+                "visual": [
+                  "乡人张三边走边唱"
+                ],
+                "audio": [
+                  "天下规矩房伯武,因师获印周仲进"
+                ]
+              }
+            ],
+            "storyProgress": {
+              "unitId": "drama-01",
+              "status": "continuing",
+              "actionResult": "歌谣内容完整吟唱",
+              "response": "观众听到房伯武与周仲进对比的歌谣原文",
+              "pendingActions": [
+                "beat-02的点头应和与对歌谣的解释"
+              ]
+            },
+            "characters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "presentCharacters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "initialCharacters": [
+              "乡人张三"
+            ],
+            "enteringCharacters": [
+              {
+                "name": "乡人李四",
+                "startSecond": 1,
+                "endSecond": 3.3,
+                "path": "从街市另一侧走近张三"
+              }
+            ],
+            "endCharacters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "worldState": {
+              "settingId": "drama-01",
+              "characters": [
+                {
+                  "name": "乡人张三",
+                  "position": {
+                    "status": "unknown"
+                  },
+                  "heldProps": {
+                    "status": "unknown"
+                  },
+                  "pendingAction": {
+                    "status": "unknown"
+                  }
+                },
+                {
+                  "name": "乡人李四",
+                  "position": {
+                    "status": "unknown"
+                  },
+                  "heldProps": {
+                    "status": "unknown"
+                  },
+                  "pendingAction": {
+                    "status": "unknown"
+                  }
+                }
+              ]
+            },
+            "continuity": {
+              "mode": "scene_cut",
+              "previousShotId": "",
+              "bridgeType": "opening",
+              "bridgeAnchor": ""
+            },
+            "coveredBeatIds": [
+              "beat-01"
+            ],
+            "visualPrompt": "东汉甘陵街市日景,土路两侧木构民居店铺,乡人张三身穿灰褐色短襦深衣腰束布带草鞋,三十余岁面容憨朴,独自沿街市土路乡人张三边走边唱,中景侧面跟随,自然光",
+            "camera": "中景,侧面跟随张三行进方向,保持能看清张三正面表情和李四从侧面走近,平视",
+            "mood": "日常街市氛围,乡人自然传唱",
+            "firstFrameMode": "reference",
+            "lastFramePrompt": "东汉甘陵街市日景,乡人张三灰褐短襦和乡人李四青灰麻衣并立街市土路,张三刚唱完歌谣,李四面向张三站定,两人相距一步",
+            "videoPrompt": "0-5.8秒:乡人张三边走边唱沿街市土路缓步前行,吟唱天下规矩房伯武,因师获印周仲进,声调平缓悠扬;1-3.3秒:乡人李四身穿青灰色麻布短衣腰束麻绳,二十余岁面容朴实,从街市另一侧走近张三;5.8-7.5秒:张三唱完停步,李四走到张三身侧站定",
+            "audioType": "对白",
+            "audioText": "乡人张三:天下规矩房伯武,因师获印周仲进",
+            "historicalBasis": "[史料2]记载乡人为之作谣曰天下规矩房伯武因师获印周仲进",
+            "adaptationBoundary": "乡人传唱场景、边走边唱动作为合理拟制,歌谣原文依据史载"
+          },
+          {
+            "contentContractVersion": "cinematic-v1",
+            "dramaticSceneId": "drama-01",
+            "id": "scene-01-seg02",
+            "title": "李四解释歌谣含义",
+            "duration": 8,
+            "pacing": {
+              "version": "duration-v2",
+              "timingPolicy": {
+                "version": "duration-policy-v2.1",
+                "speech": {
+                  "dialogue": {
+                    "referenceRate": 4.5,
+                    "minimumNaturalRate": 3.3,
+                    "maximumRate": 5,
+                    "startupAllowance": 0.25
+                  },
+                  "narration": {
+                    "referenceRate": 4.5,
+                    "minimumNaturalRate": 3.3,
+                    "maximumRate": 5,
+                    "startupAllowance": 0.25
+                  },
+                  "chant": {
+                    "referenceRate": 3.3,
+                    "minimumNaturalRate": 2.8,
+                    "maximumRate": 4.5,
+                    "startupAllowance": 0.25
+                  },
+                  "singing": {
+                    "referenceRate": 2.8,
+                    "minimumNaturalRate": 2,
+                    "maximumRate": 3.5,
+                    "startupAllowance": 0.35
+                  }
+                },
+                "shortPauseSeconds": 0.15,
+                "sentencePauseSeconds": 0.25,
+                "linePauseSeconds": 0.2,
+                "measurementToleranceSeconds": 0.25,
+                "endingReadabilityReserve": 0.5,
+                "maxConservativeExtraSeconds": 1,
+                "minimumProviderDuration": 3,
+                "maximumProviderDuration": 15,
+                "minimumVocalizationSeconds": 0.8,
+                "minimumActionSeconds": 0.3,
+                "minimumReactionSeconds": 0.5
+              },
+              "actorGroups": [],
+              "beats": [
+                {
+                  "id": "beat-02-nod",
+                  "sourceBeatId": "beat-02",
+                  "actorIds": [
+                    "乡人李四"
+                  ],
+                  "kind": "action",
+                  "textOrVocalization": "乡人李四点头应和",
+                  "dependsOn": [],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "body"
+                  ],
+                  "durationEstimate": {
+                    "lower": 0.5,
+                    "expected": 0.7,
+                    "upper": 1,
+                    "source": "点头应和动作",
+                    "confidence": "medium"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "李四点头动作完成",
+                    "modality": "visual",
+                    "evidenceAnchor": "乡人李四点头应和"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                },
+                {
+                  "id": "beat-02-explain",
+                  "sourceBeatId": "beat-02",
+                  "actorIds": [
+                    "乡人李四"
+                  ],
+                  "kind": "speech",
+                  "deliveryStyle": "dialogue",
+                  "textOrVocalization": "这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书",
+                  "dependsOn": [
+                    "beat-02-nod"
+                  ],
+                  "overlapAllowedWith": [],
+                  "resources": [
+                    "voice"
+                  ],
+                  "durationEstimate": {
+                    "lower": 5.6,
+                    "expected": 6.2,
+                    "upper": 6.8,
+                    "source": "30字对白按3.3-5字/秒加启动0.25秒和句间停顿0.25秒",
+                    "confidence": "high"
+                  },
+                  "completion": {
+                    "requiredThisClip": true,
+                    "finalState": "李四解释完成",
+                    "modality": "audio",
+                    "evidenceAnchor": "这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书"
+                  },
+                  "timingConstraint": {
+                    "mode": "reference"
+                  }
+                }
+              ]
+            },
+            "shotIntent": {
+              "viewpointCharacter": "乡人李四",
+              "purpose": "解释歌谣的对比性质",
+              "cameraReason": "中景拍摄李四正面,能看清点头应和动作和说话表情"
+            },
+            "beatDramaturgy": [
+              {
+                "beatId": "beat-02",
+                "function": "解释歌谣的对比性质",
+                "stateChange": "从歌谣文本到观众理解对比含义",
+                "visual": [
+                  "乡人李四点头应和"
+                ],
+                "audio": [
+                  "这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书"
+                ]
+              }
+            ],
+            "storyProgress": {
+              "unitId": "drama-01",
+              "status": "complete",
+              "actionResult": "歌谣对比性质解释清楚",
+              "response": "观众理解房植凭能力任河南尹与周福因师恩获尚书印的对比",
+              "pendingActions": []
+            },
+            "characters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "presentCharacters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "initialCharacters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "enteringCharacters": [],
+            "endCharacters": [
+              "乡人张三",
+              "乡人李四"
+            ],
+            "worldState": {
+              "settingId": "drama-01",
+              "characters": [
+                {
+                  "name": "乡人张三",
+                  "position": {
+                    "status": "unknown"
+                  },
+                  "heldProps": {
+                    "status": "unknown"
+                  },
+                  "pendingAction": {
+                    "status": "unknown"
+                  }
+                },
+                {
+                  "name": "乡人李四",
+                  "position": {
+                    "status": "unknown"
+                  },
+                  "heldProps": {
+                    "status": "unknown"
+                  },
+                  "pendingAction": {
+                    "status": "unknown"
+                  }
+                }
+              ]
+            },
+            "continuity": {
+              "mode": "coverage_cut",
+              "previousShotId": "scene-01-seg01",
+              "bridgeType": "cut",
+              "bridgeAnchor": "李四站定后反打拍摄李四正面回应张三"
+            },
+            "coveredBeatIds": [
+              "beat-02"
+            ],
+            "visualPrompt": "东汉甘陵街市日景,乡人李四青灰麻衣面向画外张三站立街市土路,乡人张三灰褐短襦位于李四右侧画外,中景正面拍摄李四,自然光",
+            "camera": "中景,正面拍摄李四,视线与上镜保持同侧轴线,张三在李四右侧画外,平视",
+            "mood": "日常街市氛围,乡人解释",
+            "firstFrameMode": "reference",
+            "lastFramePrompt": "东汉甘陵街市日景,乡人李四青灰麻衣面向画外张三站立街市土路,李四说完话保持站姿,乡人张三灰褐短襦位于李四右侧画外",
+            "videoPrompt": "0-1秒:乡人李四乡人李四点头应和面向画外张三;1-7.5秒:李四说这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书,语调直白平实",
+            "audioType": "对白",
+            "audioText": "乡人李四:这是说房伯武凭本事当河南尹,周仲进是靠教过皇上才做了尚书",
+            "historicalBasis": "[史料2]记载乡人为之作谣曰天下规矩房伯武因师获印周仲进",
+            "adaptationBoundary": "李四对歌谣的解释为合理拟制,房植周福对比事实依据史载"
+          }
+        ]
+      }
+    }
+  ]
+}

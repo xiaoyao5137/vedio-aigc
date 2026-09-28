@@ -1,0 +1,198 @@
+{
+  "recordId": "record-lrjfd9",
+  "step": 108,
+  "error": "分镜修复未通过（2 次，已阻止媒体生成）：[{\"attempt\":1,\"mode\":\"repair\",\"errors\":[\"STORYBOARD_PACING_INVALID: beat-04-01 使用未声明角色或群体，视觉动作必须绑定已声明人物或群体；field=pacing.beats[0].actorIds；unknown=[\\\"病患\\\"]；candidate=[\\\"病患\\\"]；declaredCharacters=[\\\"张角\\\"]；declaredActorGroups=[{\\\"id\\\":\\\"onlookers\\\",\\\"label\\\":\\\"围观百姓\\\"}]；保留原动作和有词/无词声部，给已批准的匿名参与者补齐 actorGroups 的 id/label/memberDescription，并让 actorIds 引用同一 id；不得虚构具名人物、改变原说话人或删除源剧情来消除未知引用\",\"STORYBOARD_NARRATIVE_INCOMPLETE: storyProgress 必须声明实际动作结果、对手回应和未完成动作，与本场是否结束一致\"]},{\"attempt\":2,\"mode\":\"repair\",\"errors\":[\"STORYBOARD_TIMING_OVERFLOW: 完整节拍与可读收尾需要 16 秒，超过 15 秒；沿 sourceBeatId 完整边界拆分，保留全部台词和原动作，禁止钳到 15 秒\"]}]",
+  "node": {
+    "id": "sanguo-shot-script",
+    "kind": "text",
+    "operation": "history.storyboard",
+    "modelId": "claude-opus-4-8",
+    "prompt": "你是写实历史短剧的分镜导演。为《${input.episode_title}》当前拍摄短段写一个可执行的中文分镜。先阅读已批准的整场戏与人物状态，只拍分配给本段的动作、对白和关系变化，不重演前镜已经完成的事。\n\n本集改编边界：${input.adaptation_policy}\n史料层级：${input.source_level}\n本镜创作职责及人物状态：${dramaContext}\n上述人物诉求、策略属于有边界的表演设计，不可升格为史载核心动机。对白要完成试探、争取、婉拒、反制、招揽等具体行动。人物对对方的行动作出应对，镜头突出这次应对改变了什么。必要背景可以用简短旁白，不让人物互讲双方已知的百科信息，不为每段强造争吵、反转或笑点。\n\n只输出完整JSON，使用以下字段，不输出分析过程：\n{\n \"contentContractVersion\":\"cinematic-v1\",\"dramaticSceneId\":\"scene.dramaticSceneId\",\"id\":\"当前scene.id\",\"title\":\"镜头标题\",\"editorialRole\":\"原样继承scene.editorialRole\",\"visualTreatment\":\"原样继承scene.visualTreatment\",\"animationStyle\":\"animated时原样继承scene.animationStyle\",\"animationAesthetic\":\"animated时原样继承scene.animationAesthetic\",\"duration\":8,\n \"pacing\":{\"version\":\"duration-v2\",\"timingPolicy\":\"使用params.timingPolicy完整对象\",\"actorGroups\":[],\"beats\":[]},\n \"shotIntent\":{\"viewpointCharacter\":\"本镜关注人物\",\"purpose\":\"承接哪项具体行动或信息变化\",\"cameraReason\":\"为什么此时采用这一景别和机位\"},\n \"beatDramaturgy\":[{\"beatId\":\"本段节拍id\",\"function\":\"原节拍function\",\"stateChange\":\"原节拍stateChange\",\"visual\":[\"实际画面动作短语\"],\"audio\":[\"实际对白内容或为空数组\"]}],\n \"storyProgress\":{\"unitId\":\"scene.dramaticUnitId\",\"status\":\"complete或continuing\",\"actionResult\":\"本镜动作结果\",\"response\":\"本镜实际回应或信息呈现\",\"pendingActions\":[]},\n \"characters\":[\"本段可见或行动人物全名\"],\"presentCharacters\":[\"本场仍在场人物，包含画外人物\"],\n \"initialCharacters\":[\"首帧可见人物\"],\"enteringCharacters\":[],\"endCharacters\":[\"尾帧可见人物\"],\n \"illustrationLayers\":[{\"characterName\":\"仅character_illustration填写且必须对应人物资产\",\"x\":0.7,\"y\":0.52,\"scale\":0.24,\"enterStart\":0.2,\"enterDuration\":0.6,\"enterFromX\":0.76,\"enterFromY\":0.54,\"exitStart\":7.3,\"exitDuration\":0.5}],\n \"worldState\":{\"settingId\":\"scene.settingId\",\"characters\":[{\"name\":\"每个在场人物\",\"position\":{\"status\":\"unknown\"},\"heldProps\":{\"status\":\"unknown\"},\"pendingAction\":{\"status\":\"unknown\"}}]},\n \"continuity\":{\"mode\":\"scene_cut\",\"previousShotId\":\"第一镜为空，否则上镜id\",\"bridgeType\":\"opening\",\"bridgeAnchor\":\"\"},\n \"coveredBeatIds\":[\"本段全部requiredBeats.id\"],\n \"visualPrompt\":\"开场静态实景、可见人物汉字全名、稳定外观、构图和持物\",\"camera\":\"机位、景别、视线轴线与运镜\",\"mood\":\"克制的具体情绪\",\n \"firstFrameMode\":\"reference\",\"lastFramePrompt\":\"单一时间点的末帧实际预期：可见人物全名、最终站位持物\",\n \"videoPrompt\":\"3–6个从0连续覆盖到duration的时间区间：主动作、完整台词、必要回应和有意义的变化，最多650字符\",\n \"audioType\":\"对白\",\"audioText\":\"角色全名：完整台词\",\n \"historicalBasis\":\"沿用[史料N]事实依据\",\"adaptationBoundary\":\"本镜对白动作的拟制范围，不改变主体因果\"\n}\n\n剧情与覆盖：\n- coveredBeatIds完整有序覆盖scene.requiredBeats；beatDramaturgy逐项继承function与stateChange。大纲每个 observable.visual/audio 锚点和每个 mustShow 短锚点都必须原样承接，不得用同义或更具体的词替换锚点里的字（只可在锚点前后补充细节）：beatDramaturgy.visual/audio 逐项保留对应 observable 锚点的连续完整原文，audio每条完整原义务至少有一项完整声明，不因台词拆行而拆散原锚点声明。visual 与 mustShow 锚点还须作为连续子串原样写进 visualPrompt/videoPrompt 的对应时间段。audioText中同一角色的原台词可在自然停顿处分行；除各行说话人标签与换行外，正文按序连接必须完整保留原台词，不改字序或说话归属，每行在videoPrompt独立时间段逐字绑定。让角色在画面内真正做出原动作、说出完整台词；不能把义务只写在说明、引用、镜头标题或末帧中，也不能只在 beatDramaturgy 声明却不实拍。不够15秒要连续拆段，不能删剧情或用提及人物代替出场。\n- editorialRole、visualTreatment 以及 animated 模式的 animationStyle/animationAesthetic 必须逐字继承当前scene。动画镜头可用于片头、片中、人物剧情、payoff及任意场间衔接，但必须完成本段声画义务，不得只是装饰。character_illustration 可用人物插画承载表演、对白或历史旁白，人物数组和身份参考不得丢失；其他无人物动画可使用空人物数组，shotIntent.viewpointCharacter固定为“观众”。地名年代必须由旁白清楚说出，不依赖生成画面中的可读文字。\nanimationStyle 只描述动画承担的叙事方法，枚举如下：\n- historical_map：疆域、路线、势力或空间关系变化；不把地图当作默认转场。\n- character_illustration：历史人物卡通/绘画插画表演，可承载人物行动、对白、旁白与剧情推进，必须保留角色身份参考和时代服饰。\n- historical_tableau：把史实事件组织为有前后因果的历史场景定格或绘卷式运动。\n- symbolic_transition：用印玺、竹简、火焰、雨水、兵器等同一视觉母题做动作或形状匹配转场。\n- time_montage：用连续意象表现时间流逝、局势累积或因果推进。\n- environment_transition：用昼夜、季节、天气、城市/营寨环境变化完成时空衔接。\nanimationAesthetic 只描述统一美术语言，枚举为 cinematic_gongbi（电影工笔）、ink_wash（水墨写意）、woodblock_print（木刻版画）、shadow_puppet（皮影剪影）、painterly_2d（二维厚涂插画）。同一镜只选一个 animationStyle 和一个 animationAesthetic。人物插画不是低幼卡通，不使用现代动漫符号、游戏CG、Q版比例或玄幻光效。\n- editorialRole、visualTreatment 以及 animated 模式的 animationStyle/animationAesthetic 必须逐字继承当前scene。动画镜头可用于片头、片中、payoff及任意场间衔接，但必须完成本段声画义务，不得只是装饰。character_illustration 和 historical_tableau 只能做静态插画口播：audioType=旁白，画中人物姿态、表情、嘴部、衣物和物件从头到尾完全锁定，不承载人物动作、对白或口型表演；背景事实由画外旁白讲清。其他无人物动画可使用空人物数组，shotIntent.viewpointCharacter固定为“观众”。地名年代必须由旁白清楚说出，不依赖生成画面中的可读文字。\nanimationStyle 只描述动画承担的叙事方法，枚举如下：\n- historical_map：疆域、路线、势力或空间关系变化；不把地图当作默认转场。\n- character_illustration：静态历史人物插画，只用画外旁白介绍人物或背景；人物姿态、表情和嘴部全程锁定，不承载人物动作、对白或口型表演，必须保留角色身份参考和时代服饰。\n- historical_tableau：静态历史场景插画，只选一个代表性定格画面，由画外旁白讲清史实背景；画中人物和物件全程不动，不做绘卷式人物运动。\n- symbolic_transition：用印玺、竹简、火焰、雨水、兵器等同一视觉母题做动作或形状匹配转场。\n- time_montage：用连续意象表现时间流逝、局势累积或因果推进。\n- environment_transition：用昼夜、季节、天气、城市/营寨环境变化完成时空衔接。\nanimationAesthetic 只描述统一美术语言，枚举为 cinematic_gongbi（电影工笔）、ink_wash（水墨写意）、woodblock_print（木刻版画）、shadow_puppet（皮影剪影）、painterly_2d（二维厚涂插画）。同一镜只选一个 animationStyle 和一个 animationAesthetic。人物插画不是低幼卡通，不使用现代动漫符号、游戏CG、Q版比例或玄幻光效。静态插画的“视频”由系统锁帧编码并叠加旁白，不交给视频模型生成运动。\n- editorialRole、visualTreatment 以及 animated 模式的 animationStyle/animationAesthetic 必须逐字继承当前scene。动画镜头可用于片头、片中、payoff及任意场间衔接，但必须完成本段声画义务，不得只是装饰。character_illustration 和 historical_tableau 使用二维插画口播：audioType=旁白，人物插画内部的姿态、表情、嘴部和衣物从头到尾不变，不承载人物动作、对白或口型表演；允许整个人物插画图层淡入、平移、缩放、淡出并放在合适的历史背景上，historical_tableau 允许整幅定格画面轻微二维移动或渐变；背景事实由画外旁白讲清。character_illustration 必须为每个 characters 人物输出唯一 illustrationLayers 项，x/y/enterFromX/enterFromY 是0–1画幅归一化中心坐标，scale是人物层占画幅宽度比例0.1–0.46，所有进退场时间必须落在本镜duration内；位置、大小和时序按叙事关系设计，不按人数机械排队。其他动画的 illustrationLayers=[]。其他无人物动画可使用空人物数组，shotIntent.viewpointCharacter固定为“观众”。地名年代必须由旁白清楚说出，不依赖生成画面中的可读文字。\nanimationStyle 只描述动画承担的叙事方法，枚举如下：\n- historical_map：疆域、路线、势力或空间关系变化；不把地图当作默认转场。\n- character_illustration：静态历史人物素材的二维编排，只用画外旁白介绍人物或背景；人物素材内部姿态、表情和嘴部全程锁定，但整个人物图层可淡入、平移、缩放、淡出，并按叙事关系放在合适的历史背景上。\n- historical_tableau：定格历史场景插画，由画外旁白讲清史实背景；画中人物和物件不自行活动，允许整幅画轻微缩放、平移或渐变转场。\n- symbolic_transition：用印玺、竹简、火焰、雨水、兵器等同一视觉母题做动作或形状匹配转场。\n- time_montage：用连续意象表现时间流逝、局势累积或因果推进。\n- environment_transition：用昼夜、季节、天气、城市/营寨环境变化完成时空衔接。\nanimationAesthetic 只描述统一美术语言，枚举为 cinematic_gongbi（电影工笔）、ink_wash（水墨写意）、woodblock_print（木刻版画）、shadow_puppet（皮影剪影）、painterly_2d（二维厚涂插画）。同一镜只选一个 animationStyle 和一个 animationAesthetic。人物插画不是低幼卡通，不使用现代动漫符号、游戏CG、Q版比例或玄幻光效。人物插画视频由系统把不变形的人物素材做二维图层编排并叠加旁白，不交给视频模型生成人物肢体运动。\n- 本镜属于完整戏scene.dramaticUnitId。closesUnit=false时continuing，列明后段待完成事项；true时complete且pendingActions为空。每段完成自己的completionCriteria；不要求本段提前演完分配给后段的反制。普通礼貌点头不能替代核心答复。介绍段以具体信息呈现和处境变化完成，不强造对手。\n- 人物仅使用已批准身份和表演设计；未知人物核心动机仍未知。史料未写普通对白不等于禁止拟制，拟制也不能替换史载行动主体、因果、年代或结局。引用保持来源编号，不把歌谣的转述者写成作者。\n\n机位与连续：\n- continuity.mode三种：tail_continuation为同画面续拍，firstFrameMode=reuse_previous_tail、bridgeType=same_frame；coverage_cut为同场反打/反应镜，firstFrameMode=reference、bridgeType=cut；scene_cut为真换时空，firstFrameMode=reference、bridgeType=cut，第一镜bridgeType=opening。\n- 根据scene.continuityMode及已批准机位意图选择；同一戏可coverage_cut，不可假装已闭合来换镜头。tail_continuation时visualPrompt原样复制上一镜lastFramePrompt静态正文，initialCharacters等于上一镜endCharacters。coverage_cut需保持同一unit/setting/现场人物和实际世界状态，camera说明视线和轴线，不能重演已完成动作。正常场景切换必须有剧情联系；视线匹配、动作匹配或声音桥要写出两镜都有的锚点。\n- worldState只记开场已经有证据的世界状态。优先使用上一镜已验收video_shot.worldState；observed字段必须有实际证据，未知填unknown，不把预期末帧当已观察。画面左/右可以用于构图，但不是人物在场景中的世界位置。普通反打导致屏幕左右改变不等于人物换位。\n- characters列本段真正可见/行动者；presentCharacters还包含仍在现场但本镜画外的角色。endCharacters仅列末帧可见者，不能为保持全员同框而把反应特写改成双人站桩；画外角色不自动离场，未知持物不能凭空补造。每段最多2个需要新完整身份参考的人物。\n- live_action 中 initialCharacters 与 enteringCharacters.name 合计恰好为 characters，无重复。character_illustration 中由 illustrationLayers 的 characterName 与未使用图层入场的 initialCharacters 共同覆盖 characters，不要再把图层淡入重复写成真人 enteringCharacters 走入路径。真正真人入画者才使用{name,startSecond,endSecond,path}并在对应区间写全名从path连续走入，进入完成后才说话；已经同场但先前位于画外的人因反打显现，不是假定走入场地。\n- 对本段原已要求的状态变化，沿用已批准机位意图和视线轴线，选择能看清相关身体部位、持物归属与变化方向的景别、角度，避免衣物或遮挡使动作过程无法辨认。不为质检新增微动作或夸大原动作幅度，不把计划中的可观察性写成实际已观察证据。\n\n时间与声音（duration-v2）：\n本轮共享策略完整对象：${params.timingPolicy}\n- pacing.version 必须为 duration-v2。不要输出 dynamic-v1 actionSeconds/reactionSeconds/activityWindows/performanceBeats。用 pacing.beats 逐项描述真正要执行的声音和动作；程序根据依赖、主体资源、保守预算编译时间轴，禁止把多个动作压成统一0.7秒反应。\n- pacing.timingPolicy 使用本轮 params.timingPolicy 的完整值，不改阈值。对白/旁白/吟诵/歌唱分别用 deliveryStyle=dialogue/narration/chant/singing，歌谣不可套4.5字/秒快读。每个 speech 必须绑定 audioText 中同说话人的完整一行；长台词只按自然停顿拆行，原正文和说话归属不变。\n- beats 格式：{id,sourceBeatId,actorIds,kind:\"action|reaction|speech|vocalization\",deliveryStyle:\"dialogue|narration|chant|singing\",textOrVocalization,performanceInstruction,dependsOn:[],overlapAllowedWith:[],resources:[\"body\"],durationEstimate:{lower,expected,upper,source,confidence:\"low|medium|high\"},completion:{requiredThisClip:true,finalState,modality:\"visual|audio|audio-visual\",evidenceAnchor},timingConstraint:{mode:\"reference\"}}。仅 speech 需要 deliveryStyle 和可选 performanceInstruction；action/reaction 的真实动作正文必须写非空 textOrVocalization，不能只放在 performanceInstruction。resources 可省略让程序按类型分配，主动声明时必须为非空有效资源数组，speech 通常使用 voice；每个字段是实际契约而非写解释。sourceBeatId 属于本段 requiredBeats；speech.textOrVocalization 仅写实际发声原文，speech.performanceInstruction 保存“哼唱歌谣”等原表演动作；所有原声画锚点必须在对应节拍的 textOrVocalization/performanceInstruction/evidenceAnchor 中原样出现，不能删动作或只声明完成态。\n- durationEstimate 的上下界是秒，0<lower<=expected<=upper；source 写估计依据，不能声称不存在的实测/P90。身体进入位置、发声启动、尾音、拿起/递出/接住/收手、群体回应按实际动作分开，完成后再留 timingPolicy 的可读余量。duration 初选为完整内容上界加余量向上取整，程序允许有依据的一个整数秒保守余量；不固定9或15秒、不填站桩。\n- dependsOn 写必须先完成的 beat.id；“说完后/接住后/转身后”必须依赖，不可假装并行。同一人可边走边说时，双方 overlapAllowedWith 都列对方id，动作 resources=[\"body\"]，发声 resources=[\"voice\"]；资源冲突不可并行，未声明并行按顺序执行。不同人同时说不同台词禁止重叠，合唱同一句可用同一 speech 的多人 actorIds。\n- actorIds 通常用 characters/presentCharacters 全名。无人编辑镜头（scene.cast为空且允许空人物的 episode_opening/context_bridge/payoff）中，地图高亮、空景运镜、光影或环境变化等无人物 action/reaction 必须写 actorIds=[]，不得为满足字段凭空添加群众或角色。有人物的实拍场景中，仅逐字复用当前 requiredBeat.setting、且正文只表达全景/空镜/环境建立的独立 action 可写 actorIds=[]；人物、群众、持物、回应或原声画锚点动作仍须绑定已批准人物或 actorGroup，不能借环境镜头豁免。画外旁白仍单列 speech、deliveryStyle=narration、actorIds=[\"旁白\"]。原场已有无名群众用 pacing.actorGroups:[{id,label,memberDescription}] 声明群体，actorIds 引用 group.id；群体不是新具名历史人物，不要求给每人生成三视图。visualPrompt 明确群众原本所在位置，避免凭空出现。需要回应的群众不能同时被写为禁止发声。\n- 无词哼唱必须单列 kind=vocalization、非空 textOrVocalization 和非零预算，同时填 vocalization:{vocalizationType,actorGroup,expectedAudibility,melodyRelation,completionCue}；这类声音不塞进汉字对白清单，不以空text逃避声音验收。若要完整复唱，必须用 speech 和完整台词预算；短促无词同曲调回应才可用短声部。不要添加原剧情没有的群众语言。\n- timingConstraint.mode=reference 表示导演建议时间；用户明确要求的精确时刻才设 hard，并填 notBeforeSecond/deadlineSecond。前置动作和本镜截止始终是硬条件，不能为过关降级。视频实际延迟执行时通过实际证据定位，不把计划当成已发生。\n- 保持 videoPrompt 为简明导演草稿，完整保留原声画义务；最终时间窗口由程序从 beats 编译，不自行附加和结构化排程相矛盾的“仅主角发声/立即结束/固定静止尾部”。无词群众和主唱使用各自声明窗口。\n- 超过供应商15秒上限，使用既有 {segments:[...]} 按完整节拍拆段、原音画锚点保持有序覆盖，后段正确承接已完成动作；不得钳到15秒、加速、删词或让末动作凭空完成。\n\n画面：全部${input.aspect_ratio}。visualTreatment=live_action 时使用真人实景、自然光、东汉服化道；visualTreatment=animated 时严格执行 animationStyle 与 animationAesthetic，允许考据准确的人物插画但禁止低幼卡通、Q版、现代动漫符号和游戏CG。旧 animated_map/historical_montage 继续按历史地图/历史场景定格兼容。所有模式均无现代物件、水印或依赖可读文字才能理解的关键信息，人物资产只锁定脸部/体型/服饰，不继承三视图纯色背景。首尾帧各为单一时刻的全画幅，不得拼贴、分栏或重复人物。\n\n上一镜承接信息（第一镜为空）：\n上一镜id：${loop.previous.shot_script.id}\n上一镜尾帧人物：${loop.previous.shot_script.endCharacters}\n上一镜静态尾帧：${loop.previous.shot_script.lastFramePrompt}\n上一镜动作声音：${loop.previous.shot_script.videoPrompt}\n上一镜实际尾帧可用：${loop.previous.last_frame.available}\n上一镜已采证世界状态：${loop.previous.video_shot.worldState}\n\n当前场景：${scene}\n\n史料原文：\n${historical_sources.text}\n【真实离场与画外】presentCharacters列本镜过程中实际在场参与者；characters只列本镜可见或行动者。反打裁切造成画外不能声明离场。真正离开同场空间时，可在continuity.exitingCharacters增加[{\"name\":\"本镜人物\",\"startSecond\":起秒,\"endSecond\":止秒,\"path\":\"离开实际场所的路径\",\"evidenceAnchor\":\"时间轴中原样出现的走出院门等真实离场动作\"}]，endSecond不得超过duration-pacing.timingPolicy.endingReadabilityReserve，退出者不能列入endCharacters。末尾场内名单由presentCharacters减明确退出者形成；下一镜仅在实际成片证明离场过程后才能删名。新入场沿用enteringCharacters及完整动作时间。单纯走出画框或切为他人特写不构成离场。\n\n【实际时长重排反馈】${durationRepair}\n若有已确认缺口，保留原剧情和台词，修改失败依赖或声部排程后重新编译。证据未知不得据此加长或重拍。\n【说话人与声画一致性】\n每行audioText的说话人必须与对应speech.actorIds为同一人或同一已声明群体。画内人物实际开口讲述、宣示或应答时保持对白与可见同期表演，completion.modality=audio-visual；不能为规避匿名人物的音色或素材绑定困难，仅添加“画外”标签再删除同期声。只有本句声源确在画外且原义务不要求看见本人说话时，才可明确标注画外并使用audio完成；听众反应单列视觉节拍，不混写为说话者对口型。\n匿名有词角色可在actorGroups对应项提供voiceProfile:{description,age,pitch,resonance,texture,delivery,genderPresentation,language}，只填角色资料或已确定选角支持的声线属性；设定必须与出镜角色一致，不根据泛称、衣服或默认TTS音色猜性别。允许明确的中性声线；无法确定时保留缺项，不能冒充已确定音色。已有角色音色保持同一版本，不用新描述覆盖历史声音。\n不同人物接力说相同台词也分别保留完整声部。本人说完后结束语言口型；其他人应答时本人倾听或做原动作。环境声动作与收尾不附加讲述、默念或无声语言口型，保留自然呼吸与非语言表情。\n环境声与动作节拍须一致：交谈、讲述、问答、呼唤等发声义务不能藏在action或reaction里。若原义务需要可辨语言，明确说话人、原词及speech；确实只需无词呼声则声明对应actor的vocalization。若原义务只需示意或行礼，可以无声手势完成，但不得为了过检删去已要求的讲话或回应。\n【说话人与声画一致性结束】\n【语境读音契约】可选pronunciationHints字段是数组；仅为本镜实际台词中的生僻词、多音词或古代名词提供发音指导，每项{term:\"台词中的原字词\",pinyin:[\"每个汉字对应一个小写拼音加1–5声调数字\"],meaning:\"本句义项\",source:\"可核查字典词条或读音资料出处\"}。没有可靠依据时不猜读音，保留为空数组，不凭空补齐。禁止用同音字或拼音替换audioText，禁止把相/向等不同字音视为已验证一致。指导字段不是实测声音证据，不能据此声明声调、音素或吐字已经通过。历史组织、官名、人名按本句语境选读，不套日常词的轻声。最多12项，只包含本镜出现的词。【语境读音契约结束】",
+    "mapInput": null
+  },
+  "run": {
+    "id": "sanguo-shot-script-sanguo-scene-loop-1790443823570-split-3-0",
+    "attempt": 1,
+    "revision": 1,
+    "loopGroupId": "sanguo-scene-loop-1790443823570",
+    "loopIndex": 3
+  },
+  "inputs": {
+    "pacingVersion": "duration-v2",
+    "timingPolicy": {
+      "version": "duration-policy-v2.2-brisk-narration",
+      "speech": {
+        "dialogue": {
+          "referenceRate": 4.5,
+          "minimumNaturalRate": 3.3,
+          "maximumRate": 5,
+          "startupAllowance": 0.25
+        },
+        "narration": {
+          "referenceRate": 5.8,
+          "minimumNaturalRate": 5.5,
+          "maximumRate": 6.5,
+          "startupAllowance": 0.25
+        },
+        "chant": {
+          "referenceRate": 3.3,
+          "minimumNaturalRate": 2.8,
+          "maximumRate": 4.5,
+          "startupAllowance": 0.25
+        },
+        "singing": {
+          "referenceRate": 2.8,
+          "minimumNaturalRate": 2,
+          "maximumRate": 3.5,
+          "startupAllowance": 0.35
+        }
+      },
+      "shortPauseSeconds": 0.15,
+      "sentencePauseSeconds": 0.25,
+      "linePauseSeconds": 0.2,
+      "measurementToleranceSeconds": 0.25,
+      "endingReadabilityReserve": 0.5,
+      "maxConservativeExtraSeconds": 1,
+      "minimumProviderDuration": 3,
+      "maximumProviderDuration": 15,
+      "minimumVocalizationSeconds": 0.8,
+      "minimumActionSeconds": 0.3,
+      "minimumReactionSeconds": 0.5
+    },
+    "primaryTransportAttempts": 1,
+    "transportFallbackModelId": "codex-local-vision",
+    "transportFallbackTimeoutMs": 240000,
+    "transportFallbackReasoningEffort": "medium",
+    "primaryTransportAttemptTimeoutMs": 240000,
+    "qualityDisposition": "manual-review-v1",
+    "retryBudgetProfile": "manual-review-v1",
+    "qualityStrictBudgetSnapshot": "{\"params\":[{\"key\":\"primaryTransportAttempts\",\"value\":\"5\"},{\"key\":\"maxGenerationAttempts\",\"value\":\"5\"}]}",
+    "qualityMode": "principle-v1",
+    "maxGenerationAttempts": 2
+  },
+  "modelParams": {
+    "qualityMode": "principle-v1",
+    "reviewImages": [
+      "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-7.jpg"
+    ],
+    "timingPolicy": {
+      "speech": {
+        "chant": {
+          "maximumRate": 4.5,
+          "referenceRate": 3.3,
+          "startupAllowance": 0.25,
+          "minimumNaturalRate": 2.8
+        },
+        "singing": {
+          "maximumRate": 3.5,
+          "referenceRate": 2.8,
+          "startupAllowance": 0.35,
+          "minimumNaturalRate": 2
+        },
+        "dialogue": {
+          "maximumRate": 5,
+          "referenceRate": 4.5,
+          "startupAllowance": 0.25,
+          "minimumNaturalRate": 3.3
+        },
+        "narration": {
+          "maximumRate": 6.5,
+          "referenceRate": 5.8,
+          "startupAllowance": 0.25,
+          "minimumNaturalRate": 5.5
+        }
+      },
+      "version": "duration-policy-v2.2-brisk-narration",
+      "linePauseSeconds": 0.2,
+      "shortPauseSeconds": 0.15,
+      "minimumActionSeconds": 0.3,
+      "sentencePauseSeconds": 0.25,
+      "minimumReactionSeconds": 0.5,
+      "maximumProviderDuration": 15,
+      "minimumProviderDuration": 3,
+      "endingReadabilityReserve": 0.5,
+      "minimumVocalizationSeconds": 0.8,
+      "maxConservativeExtraSeconds": 1,
+      "measurementToleranceSeconds": 0.25
+    },
+    "pacingVersion": "duration-v2",
+    "qualityDisposition": "manual-review-v1",
+    "retryBudgetProfile": "manual-review-v1",
+    "maxGenerationAttempts": 2,
+    "primaryTransportAttempts": 1,
+    "transportFallbackModelId": "codex-local-vision",
+    "transportFallbackTimeoutMs": 240000,
+    "qualityStrictBudgetSnapshot": "{\"params\":[{\"key\":\"primaryTransportAttempts\",\"value\":\"5\"},{\"key\":\"maxGenerationAttempts\",\"value\":\"5\"}]}",
+    "primaryTransportAttemptTimeoutMs": 240000,
+    "transportFallbackReasoningEffort": "medium"
+  },
+  "ledgerId": "model-run-muiq3wvq-4i3dwka",
+  "httpStatus": 200,
+  "previousVideo": {
+    "duration": 15.04,
+    "width": 1280,
+    "height": 720,
+    "hasAudio": true,
+    "url": "/generated/verified-211d67983d81c49516ae.mp4",
+    "originalUrl": "https://media.example.invalid/fixtures/previous-shot.mp4",
+    "lastFrameUrl": "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-7.jpg",
+    "frames": [
+      "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-0.jpg",
+      "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-1.jpg",
+      "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-2.jpg",
+      "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-3.jpg",
+      "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-4.jpg",
+      "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-5.jpg",
+      "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-6.jpg",
+      "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-7.jpg"
+    ],
+    "evidenceUrl": "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-evidence.json",
+    "decoded": true,
+    "passed": true,
+    "qualityPolicy": "principle-v1",
+    "qualityDisposition": "manual-review-v1",
+    "qualityReview": {
+      "canProceed": true,
+      "principleIssues": [],
+      "status": "needs_attention"
+    },
+    "audioEmbedded": true,
+    "technicalValidation": {
+      "passed": true,
+      "issues": [],
+      "speechVerified": true,
+      "dialogueCompletenessVerified": true,
+      "speakerIdentityVerified": false,
+      "lipSyncVerified": false,
+      "speechVerificationScope": "asr-text-content-and-word-boundaries",
+      "toneVerified": false,
+      "phonemeVerified": false,
+      "scope": "decoded-media-principle-policy",
+      "visualContinuityVerified": false
+    },
+    "raw": {
+      "url": "https://media.example.invalid/fixtures/previous-shot.mp4",
+      "params": {
+        "scheduleHash": "duration-v2-sha256-7627e59f40ef0cac0ddbb48ca4987ba0460d4a5450b1f22bb7df8a1ec3dfe898"
+      }
+    },
+    "visualReview": {
+      "endingState": "末帧7（14.96秒）：张角站在画面左侧，朝向右侧跪坐的病患，持木碗向病患伸出，碗仍在张角手中。病患头部抬起、视线下垂，双手放在腿部附近；围观百姓在后方站立观看。",
+      "endingStateEvidence": {
+        "method": "actual-tail-image",
+        "frame": "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-7.jpg"
+      },
+      "worldState": null,
+      "endCharacters": [
+        "张角"
+      ]
+    }
+  },
+  "previousTail": {
+    "url": "/generated/verified-211d67983d81c49516ae-sampling-01e11fe111c6ad60-frame-7.jpg",
+    "available": true,
+    "source": "extracted-from-video",
+    "warning": "",
+    "executionLogs": []
+  }
+}

@@ -36,6 +36,8 @@ test('storyboard emits the strict cast and frame-continuity contract', () => {
   const shot = runLocalModel({ capability: 'text', operation: 'history.storyboard', prompt: '', params: { episodeTitle: '符水与饥民', scene: { id: 's1', sequence: 1, title: '入局', purpose: '张角为病者施治', targetDuration: 8, continuityFromPrevious: false, historicalBasis: '[史料1] 张角传道', adaptationBoundary: '对白拟制' } } }) as Record<string, unknown>
   assert.equal(shot.id, 's1')
   assert.deepEqual(shot.characters, ['张角'])
+  assert.deepEqual(shot.initialCharacters, ['张角'])
+  assert.deepEqual(shot.enteringCharacters, [])
   assert.equal(shot.duration, 15)
   assert.equal(shot.firstFrameMode, 'reference')
   assert.match(String(shot.lastFramePrompt), /代价|反应|威胁|悬念/)

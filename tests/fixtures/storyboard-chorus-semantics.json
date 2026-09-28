@@ -1,0 +1,1210 @@
+{
+  "expected": {
+    "pacingVersion": "duration-v2",
+    "timingPolicy": {
+      "version": "duration-policy-v2.2-brisk-narration",
+      "speech": {
+        "dialogue": {
+          "referenceRate": 4.5,
+          "minimumNaturalRate": 3.3,
+          "maximumRate": 5,
+          "startupAllowance": 0.25
+        },
+        "narration": {
+          "referenceRate": 5.8,
+          "minimumNaturalRate": 5.5,
+          "maximumRate": 6.5,
+          "startupAllowance": 0.25
+        },
+        "chant": {
+          "referenceRate": 3.3,
+          "minimumNaturalRate": 2.8,
+          "maximumRate": 4.5,
+          "startupAllowance": 0.25
+        },
+        "singing": {
+          "referenceRate": 2.8,
+          "minimumNaturalRate": 2,
+          "maximumRate": 3.5,
+          "startupAllowance": 0.35
+        }
+      },
+      "shortPauseSeconds": 0.15,
+      "sentencePauseSeconds": 0.25,
+      "linePauseSeconds": 0.2,
+      "measurementToleranceSeconds": 0.25,
+      "endingReadabilityReserve": 0.5,
+      "maxConservativeExtraSeconds": 1,
+      "minimumProviderDuration": 3,
+      "maximumProviderDuration": 15,
+      "minimumVocalizationSeconds": 0.8,
+      "minimumActionSeconds": 0.3,
+      "minimumReactionSeconds": 0.5
+    },
+    "primaryTransportAttempts": 5,
+    "transportFallbackModelId": "codex-local-vision",
+    "transportFallbackTimeoutMs": 240000,
+    "transportFallbackReasoningEffort": "medium",
+    "primaryTransportAttemptTimeoutMs": 240000,
+    "qualityMode": "principle-v1",
+    "maxGenerationAttempts": 5,
+    "scene": {
+      "id": "scene-15",
+      "sequence": 15,
+      "title": "众人齐声应和",
+      "dramaticSceneId": "drama-08",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "cast": [
+        "张角"
+      ],
+      "purpose": "承接上段,张角宣示黄老之道,众人齐声应和,场面震撼",
+      "requiredBeats": [
+        {
+          "id": "beat-15",
+          "description": "张角在高台上宣示;下方万人齐声应和;声浪震撼",
+          "function": "呈现追随者对张角的拥护",
+          "stateChange": "从静默跪拜到齐声应和,张角领袖地位得到确认",
+          "observable": {
+            "visual": [
+              "张角在高台宣示",
+              "万人齐声应和"
+            ],
+            "audio": []
+          },
+          "setting": "某地聚会广场",
+          "mustShow": [
+            "张角宣示",
+            "万人齐声应和"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]张角自称大贤良师,奉事黄老道;百姓信向之",
+      "adaptationBoundary": "拟制张角宣示、众人应和的场面调度,张角自称大贤良师、奉事黄老道、百姓信向史实不变",
+      "targetDuration": 5,
+      "continuityMode": "tail_continuation",
+      "completionCriteria": [
+        "张角宣示已呈现",
+        "众人齐声应和已呈现",
+        "领袖地位确立已建立"
+      ],
+      "contentContractVersion": "cinematic-v1",
+      "dramaticUnitId": "drama-08",
+      "settingId": "drama-08",
+      "closesUnit": true,
+      "continuityFromPrevious": true
+    },
+    "previousShot": {
+      "id": "scene-14",
+      "characters": [
+        "张角"
+      ],
+      "initialCharacters": [
+        "张角"
+      ],
+      "enteringCharacters": [],
+      "presentCharacters": [
+        "张角"
+      ],
+      "endCharacters": [
+        "张角"
+      ],
+      "worldState": {
+        "settingId": "drama-08",
+        "characters": [
+          {
+            "name": "张角",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "worldStateEvidence": {
+        "method": "actual-tail-image",
+        "frame": "/generated/verified-81647a9c61c00826ccad-sampling-43612ddad2985666-frame-7.jpg",
+        "qualityPolicy": "principle-v1"
+      },
+      "continuity": {
+        "mode": "scene_cut",
+        "previousShotId": "scene-13",
+        "bridgeType": "cut",
+        "bridgeAnchor": "从历史地图沙盘呈现八州郡国密集连结、十余年聚众数十万的宏观规模,切换至东汉末年某地广场的万人聚会现场,张角立于高台,万余追随者跪拜"
+      },
+      "storyProgress": {
+        "unitId": "drama-08",
+        "status": "continuing",
+        "actionResult": "张角立于高台已呈现,万人跪拜场面已呈现,张角环视众人完成",
+        "response": "呈现张角在万人规模聚会中的领袖地位构图",
+        "pendingActions": [
+          "张角宣示黄老之道",
+          "众人齐声应和",
+          "张角的领袖地位得到确认"
+        ]
+      },
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-08",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "visualPrompt": "东汉末年某地开阔广场,远景仰角构图,张角立于高台,成年至中年男性,体型中等,黑发束髻,戴深色小冠并横插簪,留短髭及颏须,身穿灰橄榄色交领长衣,外罩深蓝黑色暗纹宽袖长袍,领缘为棕褐色花纹,下露深色衣摆与深色浅底鞋,双手自然下垂站立于高台中央;高台下方,下方万余人跪拜,密密麻麻,万余名各地来的百姓跪拜在广场上,男女老少皆有,衣着破旧,面露虔诚,双手伏地或合十,头部低垂,人群向四周延伸至视野边缘;自然光线,天色微阴,气氛庄严肃穆",
+      "lastFramePrompt": "以上一镜实际尾帧图片为开场依据；未得到可靠文字观察的人物位置、持物与动作状态保持未知，不按计划尾帧补写。",
+      "videoPrompt": "上一镜批准的台词：。以实际尾帧图片续接；尾帧报告原文（未确认部分保持未知）：以上一镜实际尾帧图片为开场依据；未得到可靠文字观察的人物位置、持物与动作状态保持未知，不按计划尾帧补写。。原则通行不代表每项动作或人声已实测通过。",
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-14",
+          "function": "呈现张角在万人规模聚会中的领袖地位",
+          "stateChange": "从弟子在各地传道到张角在万人聚会中确立领袖地位",
+          "visual": [
+            "张角立于高台",
+            "下方万余人跪拜,密密麻麻",
+            "张角环视众人"
+          ],
+          "audio": []
+        }
+      ]
+    },
+    "requireContinuityContract": true,
+    "requireDynamicPacing": true,
+    "requireNarrativeClosure": true,
+    "requireDramaContract": true,
+    "aspectRatio": "16:9"
+  },
+  "candidates": [
+    {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-08",
+      "id": "scene-15",
+      "title": "众人齐声应和",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "animationStyle": "",
+      "animationAesthetic": "",
+      "duration": 8,
+      "pacing": {
+        "version": "duration-v2",
+        "timingPolicy": {
+          "version": "duration-policy-v2.2-brisk-narration",
+          "speech": {
+            "dialogue": {
+              "referenceRate": 4.5,
+              "minimumNaturalRate": 3.3,
+              "maximumRate": 5,
+              "startupAllowance": 0.25
+            },
+            "narration": {
+              "referenceRate": 5.8,
+              "minimumNaturalRate": 5.5,
+              "maximumRate": 6.5,
+              "startupAllowance": 0.25
+            },
+            "chant": {
+              "referenceRate": 3.3,
+              "minimumNaturalRate": 2.8,
+              "maximumRate": 4.5,
+              "startupAllowance": 0.25
+            },
+            "singing": {
+              "referenceRate": 2.8,
+              "minimumNaturalRate": 2,
+              "maximumRate": 3.5,
+              "startupAllowance": 0.35
+            }
+          },
+          "shortPauseSeconds": 0.15,
+          "sentencePauseSeconds": 0.25,
+          "linePauseSeconds": 0.2,
+          "measurementToleranceSeconds": 0.25,
+          "endingReadabilityReserve": 0.5,
+          "maxConservativeExtraSeconds": 1,
+          "minimumProviderDuration": 3,
+          "maximumProviderDuration": 15,
+          "minimumVocalizationSeconds": 0.8,
+          "minimumActionSeconds": 0.3,
+          "minimumReactionSeconds": 0.5
+        },
+        "actorGroups": [
+          {
+            "id": "crowd-believers",
+            "label": "万余跪拜信众",
+            "memberDescription": "身着东汉平民服装的男女老幼，密密麻麻跪伏于高台下方广场"
+          }
+        ],
+        "beats": [
+          {
+            "id": "beat-15-speech",
+            "sourceBeatId": "beat-15",
+            "actorIds": [
+              "张角"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "dialogue",
+            "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "performanceInstruction": "张角在高台上环视众人后高声宣示",
+            "dependsOn": [],
+            "overlapAllowedWith": [],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 3.5,
+              "expected": 4.2,
+              "upper": 4.8,
+              "source": "20字台词，deliveryStyle=dialogue，referenceRate=4.5字/秒，加startupAllowance=0.25秒及sentencePauseSeconds=0.25秒",
+              "confidence": "high"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "张角完整宣示",
+              "modality": "audio-visual",
+              "evidenceAnchor": "张角在高台宣示"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "id": "beat-15-crowd-response",
+            "sourceBeatId": "beat-15",
+            "actorIds": [
+              "crowd-believers"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "dialogue",
+            "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "performanceInstruction": "下方万人齐声应和，声浪震撼",
+            "dependsOn": [
+              "beat-15-speech"
+            ],
+            "overlapAllowedWith": [],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 2.8,
+              "expected": 3.3,
+              "upper": 3.8,
+              "source": "20字群众齐声应和，deliveryStyle=dialogue，referenceRate=4.5字/秒，群体发声加startupAllowance=0.25秒",
+              "confidence": "high"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "万人齐声应和完成",
+              "modality": "audio-visual",
+              "evidenceAnchor": "万人齐声应和"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ]
+      },
+      "shotIntent": {
+        "viewpointCharacter": "张角",
+        "purpose": "张角在高台宣示黄老之道，万人齐声应和，确立领袖地位",
+        "cameraReason": "从张角身后偏侧方机位拍摄，能同时呈现张角宣示姿态与下方万余跪拜信众齐声回应的震撼场面"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-15",
+          "function": "呈现追随者对张角的拥护",
+          "stateChange": "从静默跪拜到齐声应和,张角领袖地位得到确认",
+          "visual": [
+            "张角在高台宣示",
+            "万人齐声应和"
+          ],
+          "audio": [
+            "张角：苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "万余信众：苍天已死，黄天当立！岁在甲子，天下大吉！"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-08",
+        "status": "complete",
+        "actionResult": "张角在万人聚会中宣示黄老之道，众人齐声应和，领袖地位确立",
+        "response": "万余信众以齐声应和表达对张角的信从与拥护",
+        "pendingActions": []
+      },
+      "characters": [
+        "张角"
+      ],
+      "presentCharacters": [
+        "张角"
+      ],
+      "initialCharacters": [
+        "张角"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "张角"
+      ],
+      "illustrationLayers": [],
+      "worldState": {
+        "settingId": "drama-08",
+        "characters": [
+          {
+            "name": "张角",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "tail_continuation",
+        "previousShotId": "scene-14",
+        "bridgeType": "same_frame",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-15"
+      ],
+      "visualPrompt": "张角立于高台前沿，身着灰橄榄色交领长衣、深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须，从身后偏侧方拍摄，可见其侧脸轮廓与举起的右臂；下方密密麻麻跪伏着万余身着东汉平民服装的男女老幼信众，一直延伸至远方地平线；广场空旷，天空灰蓝有云，自然光照明，16:9实景构图",
+      "camera": "从张角身后偏右侧方固定机位拍摄，中近景偏广角，能同时呈现张角侧身宣示姿态与下方万余跪拜信众全景；视线轴线沿张角面向方向延伸至远方人群；摄影机保持稳定",
+      "mood": "庄严震撼，万众归心",
+      "firstFrameMode": "reuse_previous_tail",
+      "lastFramePrompt": "张角仍立于高台前沿，保持宣示姿态，身着灰橄榄色交领长衣、深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须；下方万余信众仍保持跪拜姿态，密密麻麻延伸至远方；广场、天空与光照保持一致",
+      "videoPrompt": "0-1秒：张角立于高台前沿，保持前镜姿态，从身后偏侧方拍摄可见其侧脸轮廓，下方万余跪拜信众密密麻麻延伸至远方。1-5秒：张角环视下方人群后高声宣示「苍天已死，黄天当立！岁在甲子，天下大吉！」，声音洪亮清晰，可见其嘴部动作与右臂向前伸展的姿态；下方信众保持跪拜静默。5-8秒：张角宣示完毕后身体微微前倾，下方万余信众齐刷刷抬起头来，所有人同时高声应和「苍天已死，黄天当立！岁在甲子，天下大吉！」，声浪震撼，万人之声汇成洪流；张角保持宣示姿态聆听众人应和。",
+      "audioType": "对白",
+      "audioText": "张角：苍天已死，黄天当立！岁在甲子，天下大吉！\n万余信众：苍天已死，黄天当立！岁在甲子，天下大吉！",
+      "historicalBasis": "[史料2]张角自称大贤良师,奉事黄老道;百姓信向之",
+      "adaptationBoundary": "拟制张角宣示「苍天已死，黄天当立」具体台词与众人齐声应和的场面调度，张角自称大贤良师、奉事黄老道、百姓信向史实不变"
+    },
+    {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-08",
+      "id": "scene-15",
+      "title": "众人齐声应和",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "animationStyle": "",
+      "animationAesthetic": "",
+      "duration": 8,
+      "pacing": {
+        "version": "duration-v2",
+        "timingPolicy": {
+          "version": "duration-policy-v2.2-brisk-narration",
+          "speech": {
+            "dialogue": {
+              "referenceRate": 4.5,
+              "minimumNaturalRate": 3.3,
+              "maximumRate": 5,
+              "startupAllowance": 0.25
+            },
+            "narration": {
+              "referenceRate": 5.8,
+              "minimumNaturalRate": 5.5,
+              "maximumRate": 6.5,
+              "startupAllowance": 0.25
+            },
+            "chant": {
+              "referenceRate": 3.3,
+              "minimumNaturalRate": 2.8,
+              "maximumRate": 4.5,
+              "startupAllowance": 0.25
+            },
+            "singing": {
+              "referenceRate": 2.8,
+              "minimumNaturalRate": 2,
+              "maximumRate": 3.5,
+              "startupAllowance": 0.35
+            }
+          },
+          "shortPauseSeconds": 0.15,
+          "sentencePauseSeconds": 0.25,
+          "linePauseSeconds": 0.2,
+          "measurementToleranceSeconds": 0.25,
+          "endingReadabilityReserve": 0.5,
+          "maxConservativeExtraSeconds": 1,
+          "minimumProviderDuration": 3,
+          "maximumProviderDuration": 15,
+          "minimumVocalizationSeconds": 0.8,
+          "minimumActionSeconds": 0.3,
+          "minimumReactionSeconds": 0.5
+        },
+        "actorGroups": [
+          {
+            "id": "crowd-believers",
+            "label": "万余信众",
+            "memberDescription": "身着东汉平民服装的男女老幼，密密麻麻跪伏于高台下方广场"
+          }
+        ],
+        "beats": [
+          {
+            "id": "beat-15-speech",
+            "sourceBeatId": "beat-15",
+            "actorIds": [
+              "张角"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "dialogue",
+            "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "performanceInstruction": "张角在高台上环视众人后高声宣示",
+            "dependsOn": [],
+            "overlapAllowedWith": [],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 4,
+              "expected": 4.356,
+              "upper": 5.899,
+              "source": "20字台词，deliveryStyle=dialogue，referenceRate=4.5字/秒，加startupAllowance=0.25秒及sentencePauseSeconds=0.25秒",
+              "confidence": "high"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "张角完整宣示",
+              "modality": "audio-visual",
+              "evidenceAnchor": "张角在高台宣示"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "id": "beat-15-crowd-response",
+            "sourceBeatId": "beat-15",
+            "actorIds": [
+              "crowd-believers"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "dialogue",
+            "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "performanceInstruction": "下方万余信众齐声应和，声浪震撼",
+            "dependsOn": [
+              "beat-15-speech"
+            ],
+            "overlapAllowedWith": [],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 4,
+              "expected": 4.356,
+              "upper": 5.899,
+              "source": "20字群众齐声应和，deliveryStyle=dialogue，referenceRate=4.5字/秒，群体发声加startupAllowance=0.25秒",
+              "confidence": "high"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "万人齐声应和完成",
+              "modality": "audio-visual",
+              "evidenceAnchor": "万人齐声应和"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ]
+      },
+      "shotIntent": {
+        "viewpointCharacter": "张角",
+        "purpose": "张角在高台宣示黄老之道，万人齐声应和，确立领袖地位",
+        "cameraReason": "从张角身后偏侧方机位拍摄，能同时呈现张角宣示姿态与下方万余跪拜信众齐声回应的震撼场面"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-15",
+          "function": "呈现追随者对张角的拥护",
+          "stateChange": "从静默跪拜到齐声应和,张角领袖地位得到确认",
+          "visual": [
+            "张角在高台宣示",
+            "万人齐声应和"
+          ],
+          "audio": [
+            "张角：苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "万余信众：苍天已死，黄天当立！岁在甲子，天下大吉！"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-08",
+        "status": "complete",
+        "actionResult": "张角在万人聚会中宣示黄老之道，众人齐声应和，领袖地位确立",
+        "response": "万余信众以齐声应和表达对张角的信从与拥护",
+        "pendingActions": []
+      },
+      "characters": [
+        "张角"
+      ],
+      "presentCharacters": [
+        "张角"
+      ],
+      "initialCharacters": [
+        "张角"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "张角"
+      ],
+      "illustrationLayers": [],
+      "worldState": {
+        "settingId": "drama-08",
+        "characters": [
+          {
+            "name": "张角",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "tail_continuation",
+        "previousShotId": "scene-14",
+        "bridgeType": "same_frame",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-15"
+      ],
+      "visualPrompt": "张角立于高台前沿，身着灰橄榄色交领长衣、深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须，从身后偏侧方拍摄，可见其侧脸轮廓；下方密密麻麻跪伏着万余身着东汉平民服装的男女老幼信众，一直延伸至远方地平线；广场空旷，天空灰蓝有云，自然光照明，16:9实景构图",
+      "camera": "从张角身后偏右侧方固定机位拍摄，中近景偏广角，能同时呈现张角侧身宣示姿态与下方万余跪拜信众全景；视线轴线沿张角面向方向延伸至远方人群；摄影机保持稳定",
+      "mood": "庄严震撼，万众归心",
+      "firstFrameMode": "reuse_previous_tail",
+      "lastFramePrompt": "张角仍立于高台前沿，保持宣示姿态，身着灰橄榄色交领长衣、深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须；下方万余信众仍保持跪拜姿态，密密麻麻延伸至远方；广场、天空与光照保持一致",
+      "videoPrompt": "0-1秒：张角立于高台前沿，保持前镜姿态，从身后偏侧方拍摄可见其侧脸轮廓，下方万余跪拜信众密密麻麻延伸至远方。1-5秒：张角环视下方人群后高声宣示「苍天已死，黄天当立！岁在甲子，天下大吉！」，声音洪亮清晰，可见其嘴部动作与身体微微前倾的姿态；下方信众保持跪拜静默。5-8秒：张角宣示完毕后身体略微后仰，下方万人齐声应和「苍天已死，黄天当立！岁在甲子，天下大吉！」，所有人抬起头来齐声高呼，声浪震撼汇成洪流；张角保持宣示姿态聆听众人应和。",
+      "audioType": "对白",
+      "audioText": "张角：苍天已死，黄天当立！岁在甲子，天下大吉！\n万余信众：苍天已死，黄天当立！岁在甲子，天下大吉！",
+      "historicalBasis": "[史料2]张角自称大贤良师,奉事黄老道;百姓信向之",
+      "adaptationBoundary": "拟制张角宣示「苍天已死，黄天当立」具体台词与众人齐声应和的场面调度，张角自称大贤良师、奉事黄老道、百姓信向史实不变"
+    },
+    {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-08",
+      "id": "scene-15",
+      "title": "众人齐声应和",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "animationStyle": "",
+      "animationAesthetic": "",
+      "duration": 8,
+      "pacing": {
+        "version": "duration-v2",
+        "timingPolicy": {
+          "version": "duration-policy-v2.2-brisk-narration",
+          "speech": {
+            "dialogue": {
+              "referenceRate": 4.5,
+              "minimumNaturalRate": 3.3,
+              "maximumRate": 5,
+              "startupAllowance": 0.25
+            },
+            "narration": {
+              "referenceRate": 5.8,
+              "minimumNaturalRate": 5.5,
+              "maximumRate": 6.5,
+              "startupAllowance": 0.25
+            },
+            "chant": {
+              "referenceRate": 3.3,
+              "minimumNaturalRate": 2.8,
+              "maximumRate": 4.5,
+              "startupAllowance": 0.25
+            },
+            "singing": {
+              "referenceRate": 2.8,
+              "minimumNaturalRate": 2,
+              "maximumRate": 3.5,
+              "startupAllowance": 0.35
+            }
+          },
+          "shortPauseSeconds": 0.15,
+          "sentencePauseSeconds": 0.25,
+          "linePauseSeconds": 0.2,
+          "measurementToleranceSeconds": 0.25,
+          "endingReadabilityReserve": 0.5,
+          "maxConservativeExtraSeconds": 1,
+          "minimumProviderDuration": 3,
+          "maximumProviderDuration": 15,
+          "minimumVocalizationSeconds": 0.8,
+          "minimumActionSeconds": 0.3,
+          "minimumReactionSeconds": 0.5
+        },
+        "actorGroups": [
+          {
+            "id": "crowd-believers",
+            "label": "万余信众",
+            "memberDescription": "身着东汉平民服装的男女老幼，密密麻麻跪伏于高台下方广场"
+          }
+        ],
+        "beats": [
+          {
+            "id": "beat-15-speech",
+            "sourceBeatId": "beat-15",
+            "actorIds": [
+              "张角"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "dialogue",
+            "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "performanceInstruction": "张角在高台上环视众人后高声宣示",
+            "dependsOn": [],
+            "overlapAllowedWith": [],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 4,
+              "expected": 4.356,
+              "upper": 5.899,
+              "source": "20字台词，deliveryStyle=dialogue，referenceRate=4.5字/秒，加startupAllowance=0.25秒及sentencePauseSeconds=0.25秒",
+              "confidence": "high"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "张角在高台宣示完成",
+              "modality": "audio-visual",
+              "evidenceAnchor": "张角在高台宣示"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "id": "beat-15-crowd-response",
+            "sourceBeatId": "beat-15",
+            "actorIds": [
+              "crowd-believers"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "dialogue",
+            "textOrVocalization": "万人齐声应和：苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "performanceInstruction": "下方万余信众齐声应和，声浪震撼",
+            "dependsOn": [
+              "beat-15-speech"
+            ],
+            "overlapAllowedWith": [],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 1.8,
+              "expected": 2,
+              "upper": 2.5,
+              "source": "群众齐声应和，声音震撼但无需完整吐字时间，群体发声加minimumReactionSeconds=0.5秒",
+              "confidence": "medium"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "万人齐声应和完成",
+              "modality": "audio-visual",
+              "evidenceAnchor": "万人齐声应和"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ]
+      },
+      "shotIntent": {
+        "viewpointCharacter": "张角",
+        "purpose": "张角在高台宣示黄老之道，万人齐声应和，确立领袖地位",
+        "cameraReason": "从张角身后偏侧方机位拍摄，能同时呈现张角宣示姿态与下方万余跪拜信众齐声回应的震撼场面"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-15",
+          "function": "呈现追随者对张角的拥护",
+          "stateChange": "从静默跪拜到齐声应和,张角领袖地位得到确认",
+          "visual": [
+            "张角在高台宣示",
+            "万人齐声应和"
+          ],
+          "audio": [
+            "张角：苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "万余信众齐声应和：苍天已死，黄天当立！岁在甲子，天下大吉！"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-08",
+        "status": "complete",
+        "actionResult": "张角在万人聚会中宣示黄老之道，众人齐声应和，领袖地位确立",
+        "response": "万余信众以齐声应和表达对张角的信从与拥护",
+        "pendingActions": []
+      },
+      "characters": [
+        "张角"
+      ],
+      "presentCharacters": [
+        "张角"
+      ],
+      "initialCharacters": [
+        "张角"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "张角"
+      ],
+      "illustrationLayers": [],
+      "worldState": {
+        "settingId": "drama-08",
+        "characters": [
+          {
+            "name": "张角",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "tail_continuation",
+        "previousShotId": "scene-14",
+        "bridgeType": "same_frame",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-15"
+      ],
+      "visualPrompt": "张角立于高台前沿，身着灰橄榄色交领长衣、深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须，从身后偏右侧方拍摄，可见其右侧脸轮廓；下方密密麻麻跪伏着万余身着东汉平民服装的男女老幼信众，一直延伸至远方地平线；广场空旷，天空灰蓝有云，自然光照明，16:9实景构图",
+      "camera": "从张角身后偏右侧方固定机位拍摄，中近景偏广角，能同时呈现张角侧身宣示姿态与下方万余跪拜信众全景；视线轴线沿张角面向方向延伸至远方人群；摄影机保持稳定",
+      "mood": "庄严震撼，万众归心",
+      "firstFrameMode": "reuse_previous_tail",
+      "lastFramePrompt": "张角仍立于高台前沿，保持宣示姿态，身着灰橄榄色交领长衣、深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须；下方万余信众仍保持跪拜姿态，密密麻麻延伸至远方；广场、天空与光照保持一致",
+      "videoPrompt": "0-1秒：张角立于高台前沿，保持前镜姿态，从身后偏右侧方拍摄可见其右侧脸轮廓，下方万余跪拜信众密密麻麻延伸至远方。1-5秒：张角环视下方人群后高声宣示「苍天已死，黄天当立！岁在甲子，天下大吉！」，声音洪亮清晰，可见其嘴部动作与身体微微前倾的姿态；下方信众保持跪拜静默。5-8秒：张角宣示完毕后身体略微后仰，万人齐声应和「苍天已死，黄天当立！岁在甲子，天下大吉！」，所有人抬起头来齐声高呼，声浪震撼汇成洪流；张角保持宣示姿态聆听众人应和。",
+      "audioType": "对白",
+      "audioText": "张角：苍天已死，黄天当立！岁在甲子，天下大吉！\n万余信众：苍天已死，黄天当立！岁在甲子，天下大吉！",
+      "historicalBasis": "[史料2]张角自称大贤良师,奉事黄老道;百姓信向之",
+      "adaptationBoundary": "拟制张角宣示「苍天已死，黄天当立」具体台词与众人齐声应和的场面调度，张角自称大贤良师、奉事黄老道、百姓信向史实不变"
+    },
+    {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-08",
+      "id": "scene-15",
+      "title": "众人齐声应和",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "animationStyle": "",
+      "animationAesthetic": "",
+      "duration": 8,
+      "pacing": {
+        "version": "duration-v2",
+        "timingPolicy": {
+          "version": "duration-policy-v2.2-brisk-narration",
+          "speech": {
+            "dialogue": {
+              "referenceRate": 4.5,
+              "minimumNaturalRate": 3.3,
+              "maximumRate": 5,
+              "startupAllowance": 0.25
+            },
+            "narration": {
+              "referenceRate": 5.8,
+              "minimumNaturalRate": 5.5,
+              "maximumRate": 6.5,
+              "startupAllowance": 0.25
+            },
+            "chant": {
+              "referenceRate": 3.3,
+              "minimumNaturalRate": 2.8,
+              "maximumRate": 4.5,
+              "startupAllowance": 0.25
+            },
+            "singing": {
+              "referenceRate": 2.8,
+              "minimumNaturalRate": 2,
+              "maximumRate": 3.5,
+              "startupAllowance": 0.35
+            }
+          },
+          "shortPauseSeconds": 0.15,
+          "sentencePauseSeconds": 0.25,
+          "linePauseSeconds": 0.2,
+          "measurementToleranceSeconds": 0.25,
+          "endingReadabilityReserve": 0.5,
+          "maxConservativeExtraSeconds": 1,
+          "minimumProviderDuration": 3,
+          "maximumProviderDuration": 15,
+          "minimumVocalizationSeconds": 0.8,
+          "minimumActionSeconds": 0.3,
+          "minimumReactionSeconds": 0.5
+        },
+        "actorGroups": [
+          {
+            "id": "crowd-believers",
+            "label": "万余信众",
+            "memberDescription": "身着东汉平民服装的男女老幼，密密麻麻跪伏于高台下方广场"
+          }
+        ],
+        "beats": [
+          {
+            "id": "beat-15-speech",
+            "sourceBeatId": "beat-15",
+            "actorIds": [
+              "张角"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "dialogue",
+            "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "performanceInstruction": "张角在高台上环视众人后高声宣示",
+            "dependsOn": [],
+            "overlapAllowedWith": [],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 4,
+              "expected": 4.36,
+              "upper": 5.9,
+              "source": "20字台词，deliveryStyle=dialogue，minimumNaturalRate=3.3字/秒加startupAllowance=0.25秒及sentencePauseSeconds=0.25秒",
+              "confidence": "high"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "张角宣示完成",
+              "modality": "audio-visual",
+              "evidenceAnchor": "张角在高台宣示"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "id": "beat-15-crowd-response",
+            "sourceBeatId": "beat-15",
+            "actorIds": [
+              "crowd-believers"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "dialogue",
+            "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "performanceInstruction": "下方万余信众齐声应和，声浪震撼",
+            "dependsOn": [
+              "beat-15-speech"
+            ],
+            "overlapAllowedWith": [],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 5.35,
+              "expected": 5.84,
+              "upper": 7.87,
+              "source": "20字台词群体齐声应和，minimumNaturalRate=3.3字/秒加startupAllowance=0.25秒及群体发声minimumReactionSeconds=0.5秒",
+              "confidence": "medium"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "万人齐声应和完成",
+              "modality": "audio-visual",
+              "evidenceAnchor": "万人齐声应和"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ]
+      },
+      "shotIntent": {
+        "viewpointCharacter": "张角",
+        "purpose": "张角在高台宣示黄老之道，万人齐声应和，确立领袖地位",
+        "cameraReason": "从张角身后偏侧方机位拍摄，能同时呈现张角宣示姿态与下方万余跪拜信众齐声回应的震撼场面"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-15",
+          "function": "呈现追随者对张角的拥护",
+          "stateChange": "从静默跪拜到齐声应和,张角领袖地位得到确认",
+          "visual": [
+            "张角在高台宣示",
+            "万人齐声应和"
+          ],
+          "audio": [
+            "张角：苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "万余信众齐声应和：苍天已死，黄天当立！岁在甲子，天下大吉！"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-08",
+        "status": "complete",
+        "actionResult": "张角在万人聚会中宣示黄老之道，众人齐声应和，领袖地位确立",
+        "response": "万余信众以齐声应和表达对张角的信从与拥护",
+        "pendingActions": []
+      },
+      "characters": [
+        "张角"
+      ],
+      "presentCharacters": [
+        "张角"
+      ],
+      "initialCharacters": [
+        "张角"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "张角"
+      ],
+      "illustrationLayers": [],
+      "worldState": {
+        "settingId": "drama-08",
+        "characters": [
+          {
+            "name": "张角",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "tail_continuation",
+        "previousShotId": "scene-14",
+        "bridgeType": "same_frame",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-15"
+      ],
+      "visualPrompt": "张角立于高台前沿，身着灰橄榄色交领长衣、深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须，从身后偏右侧方拍摄，可见其右侧脸轮廓；下方密密麻麻跪伏着万余身着东汉平民服装的男女老幼信众，一直延伸至远方地平线；广场空旷，天空灰蓝有云，自然光照明，16:9实景构图",
+      "camera": "从张角身后偏右侧方固定机位拍摄，中近景偏广角，能同时呈现张角侧身宣示姿态与下方万余跪拜信众全景；视线轴线沿张角面向方向延伸至远方人群；摄影机保持稳定",
+      "mood": "庄严震撼，万众归心",
+      "firstFrameMode": "reuse_previous_tail",
+      "lastFramePrompt": "张角仍立于高台前沿，保持宣示姿态，身着灰橄榄色交领长衣、深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须；下方万余信众仍保持跪拜姿态，密密麻麻延伸至远方；广场、天空与光照保持一致",
+      "videoPrompt": "0-1秒：张角立于高台前沿，保持前镜姿态，从身后偏右侧方拍摄可见其右侧脸轮廓，下方万余跪拜信众密密麻麻延伸至远方。1-5秒：张角环视下方人群后高声宣示「苍天已死，黄天当立！岁在甲子，天下大吉！」，声音洪亮清晰，可见其嘴部动作与身体微微前倾的姿态；下方信众保持跪拜静默。5-8秒：张角宣示完毕后身体略微后仰，下方万人齐声应和「苍天已死，黄天当立！岁在甲子，天下大吉！」，所有人抬起头来齐声高呼，声浪震撼汇成洪流；张角保持宣示姿态聆听众人应和。",
+      "audioType": "对白",
+      "audioText": "张角：苍天已死，黄天当立！岁在甲子，天下大吉！\n万余信众：苍天已死，黄天当立！岁在甲子，天下大吉！",
+      "historicalBasis": "[史料2]张角自称大贤良师,奉事黄老道;百姓信向之",
+      "adaptationBoundary": "拟制张角宣示「苍天已死，黄天当立」具体台词与众人齐声应和的场面调度，张角自称大贤良师、奉事黄老道、百姓信向史实不变"
+    },
+    {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-08",
+      "id": "scene-15",
+      "title": "众人齐声应和",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "animationStyle": "",
+      "animationAesthetic": "",
+      "duration": 8,
+      "pacing": {
+        "version": "duration-v2",
+        "timingPolicy": {
+          "version": "duration-policy-v2.2-brisk-narration",
+          "speech": {
+            "dialogue": {
+              "referenceRate": 4.5,
+              "minimumNaturalRate": 3.3,
+              "maximumRate": 5,
+              "startupAllowance": 0.25
+            },
+            "narration": {
+              "referenceRate": 5.8,
+              "minimumNaturalRate": 5.5,
+              "maximumRate": 6.5,
+              "startupAllowance": 0.25
+            },
+            "chant": {
+              "referenceRate": 3.3,
+              "minimumNaturalRate": 2.8,
+              "maximumRate": 4.5,
+              "startupAllowance": 0.25
+            },
+            "singing": {
+              "referenceRate": 2.8,
+              "minimumNaturalRate": 2,
+              "maximumRate": 3.5,
+              "startupAllowance": 0.35
+            }
+          },
+          "shortPauseSeconds": 0.15,
+          "sentencePauseSeconds": 0.25,
+          "linePauseSeconds": 0.2,
+          "measurementToleranceSeconds": 0.25,
+          "endingReadabilityReserve": 0.5,
+          "maxConservativeExtraSeconds": 1,
+          "minimumProviderDuration": 3,
+          "maximumProviderDuration": 15,
+          "minimumVocalizationSeconds": 0.8,
+          "minimumActionSeconds": 0.3,
+          "minimumReactionSeconds": 0.5
+        },
+        "actorGroups": [
+          {
+            "id": "crowd-believers",
+            "label": "万余信众",
+            "memberDescription": "身着东汉平民服装的男女老幼，密密麻麻跪伏于高台下方广场"
+          }
+        ],
+        "beats": [
+          {
+            "id": "beat-15-speech",
+            "sourceBeatId": "beat-15",
+            "actorIds": [
+              "张角"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "dialogue",
+            "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "performanceInstruction": "张角在高台上环视众人后高声宣示",
+            "dependsOn": [],
+            "overlapAllowedWith": [],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 4,
+              "expected": 4.36,
+              "upper": 5.9,
+              "source": "20字台词，deliveryStyle=dialogue，minimumNaturalRate=3.3字/秒加startupAllowance=0.25秒及sentencePauseSeconds=0.25秒",
+              "confidence": "high"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "张角宣示完成",
+              "modality": "audio-visual",
+              "evidenceAnchor": "张角在高台宣示"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          },
+          {
+            "id": "beat-15-crowd-response",
+            "sourceBeatId": "beat-15",
+            "actorIds": [
+              "crowd-believers"
+            ],
+            "kind": "speech",
+            "deliveryStyle": "dialogue",
+            "textOrVocalization": "苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "performanceInstruction": "万人齐声应和，下方万余信众齐声高呼，声浪震撼",
+            "dependsOn": [
+              "beat-15-speech"
+            ],
+            "overlapAllowedWith": [],
+            "resources": [
+              "voice"
+            ],
+            "durationEstimate": {
+              "lower": 5.35,
+              "expected": 5.84,
+              "upper": 7.87,
+              "source": "20字台词群体齐声应和，minimumNaturalRate=3.3字/秒加startupAllowance=0.25秒及群体发声minimumReactionSeconds=0.5秒",
+              "confidence": "medium"
+            },
+            "completion": {
+              "requiredThisClip": true,
+              "finalState": "万人齐声应和完成",
+              "modality": "audio-visual",
+              "evidenceAnchor": "万人齐声应和"
+            },
+            "timingConstraint": {
+              "mode": "reference"
+            }
+          }
+        ]
+      },
+      "shotIntent": {
+        "viewpointCharacter": "张角",
+        "purpose": "张角在高台宣示黄老之道，万人齐声应和，确立领袖地位",
+        "cameraReason": "从张角身后偏侧方机位拍摄，能同时呈现张角宣示姿态与下方万余跪拜信众齐声回应的震撼场面"
+      },
+      "beatDramaturgy": [
+        {
+          "beatId": "beat-15",
+          "function": "呈现追随者对张角的拥护",
+          "stateChange": "从静默跪拜到齐声应和,张角领袖地位得到确认",
+          "visual": [
+            "张角在高台宣示",
+            "万人齐声应和"
+          ],
+          "audio": [
+            "张角：苍天已死，黄天当立！岁在甲子，天下大吉！",
+            "万余信众齐声应和：苍天已死，黄天当立！岁在甲子，天下大吉！"
+          ]
+        }
+      ],
+      "storyProgress": {
+        "unitId": "drama-08",
+        "status": "complete",
+        "actionResult": "张角在万人聚会中宣示黄老之道，众人齐声应和，领袖地位确立",
+        "response": "万余信众以齐声应和表达对张角的信从与拥护",
+        "pendingActions": []
+      },
+      "characters": [
+        "张角"
+      ],
+      "presentCharacters": [
+        "张角"
+      ],
+      "initialCharacters": [
+        "张角"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "张角"
+      ],
+      "illustrationLayers": [],
+      "worldState": {
+        "settingId": "drama-08",
+        "characters": [
+          {
+            "name": "张角",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "tail_continuation",
+        "previousShotId": "scene-14",
+        "bridgeType": "same_frame",
+        "bridgeAnchor": ""
+      },
+      "coveredBeatIds": [
+        "beat-15"
+      ],
+      "visualPrompt": "张角立于高台前沿，身着灰橄榄色交领长衣、深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须，从身后偏右侧方拍摄，可见其右侧脸轮廓；下方密密麻麻跪伏着万余身着东汉平民服装的男女老幼信众，一直延伸至远方地平线；广场空旷，天空灰蓝有云，自然光照明，16:9实景构图",
+      "camera": "从张角身后偏右侧方固定机位拍摄，中近景偏广角，能同时呈现张角侧身宣示姿态与下方万余跪拜信众全景；视线轴线沿张角面向方向延伸至远方人群；摄影机保持稳定",
+      "mood": "庄严震撼，万众归心",
+      "firstFrameMode": "reuse_previous_tail",
+      "lastFramePrompt": "张角仍立于高台前沿，保持宣示姿态，身着灰橄榄色交领长衣、深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须；下方万余信众仍保持跪拜姿态，密密麻麻延伸至远方；广场、天空与光照保持一致",
+      "videoPrompt": "0-1秒：张角立于高台前沿，保持前镜姿态，从身后偏右侧方拍摄可见其右侧脸轮廓，下方万余跪拜信众密密麻麻延伸至远方。1-5秒：张角环视下方人群后高声宣示「苍天已死，黄天当立！岁在甲子，天下大吉！」，声音洪亮清晰，可见其嘴部动作与身体微微前倾的姿态；下方信众保持跪拜静默。5-8秒：张角宣示完毕后身体略微后仰，万人齐声应和「苍天已死，黄天当立！岁在甲子，天下大吉！」，所有人抬起头来齐声高呼，声浪震撼汇成洪流；张角保持宣示姿态聆听众人应和。",
+      "audioType": "对白",
+      "audioText": "张角：苍天已死，黄天当立！岁在甲子，天下大吉！\n万余信众：苍天已死，黄天当立！岁在甲子，天下大吉！",
+      "historicalBasis": "[史料2]张角自称大贤良师,奉事黄老道;百姓信向之",
+      "adaptationBoundary": "拟制张角宣示「苍天已死，黄天当立」具体台词与众人齐声应和的场面调度，张角自称大贤良师、奉事黄老道、百姓信向史实不变"
+    }
+  ]
+}

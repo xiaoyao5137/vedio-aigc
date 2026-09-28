@@ -1,0 +1,586 @@
+{
+  "expected": {
+    "pacingVersion": "duration-v2",
+    "timingPolicy": {
+      "version": "duration-policy-v2.2-brisk-narration",
+      "speech": {
+        "dialogue": {
+          "referenceRate": 4.5,
+          "minimumNaturalRate": 3.3,
+          "maximumRate": 5,
+          "startupAllowance": 0.25
+        },
+        "narration": {
+          "referenceRate": 5.8,
+          "minimumNaturalRate": 5.5,
+          "maximumRate": 6.5,
+          "startupAllowance": 0.25
+        },
+        "chant": {
+          "referenceRate": 3.3,
+          "minimumNaturalRate": 2.8,
+          "maximumRate": 4.5,
+          "startupAllowance": 0.25
+        },
+        "singing": {
+          "referenceRate": 2.8,
+          "minimumNaturalRate": 2,
+          "maximumRate": 3.5,
+          "startupAllowance": 0.35
+        }
+      },
+      "shortPauseSeconds": 0.15,
+      "sentencePauseSeconds": 0.25,
+      "linePauseSeconds": 0.2,
+      "measurementToleranceSeconds": 0.25,
+      "endingReadabilityReserve": 0.5,
+      "maxConservativeExtraSeconds": 1,
+      "minimumProviderDuration": 3,
+      "maximumProviderDuration": 15,
+      "minimumVocalizationSeconds": 0.8,
+      "minimumActionSeconds": 0.3,
+      "minimumReactionSeconds": 0.5
+    },
+    "primaryTransportAttempts": 1,
+    "transportFallbackModelId": "codex-local-vision",
+    "transportFallbackTimeoutMs": 240000,
+    "transportFallbackReasoningEffort": "medium",
+    "primaryTransportAttemptTimeoutMs": 240000,
+    "qualityDisposition": "manual-review-v1",
+    "retryBudgetProfile": "manual-review-v1",
+    "qualityStrictBudgetSnapshot": "{\"params\":[{\"key\":\"primaryTransportAttempts\",\"value\":\"5\"},{\"key\":\"maxGenerationAttempts\",\"value\":\"5\"}]}",
+    "qualityMode": "principle-v1",
+    "maxGenerationAttempts": 2,
+    "scene": {
+      "id": "scene-17",
+      "sequence": 17,
+      "title": "百姓夜晚私下传唱讹言",
+      "dramaticSceneId": "drama-10",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "cast": [],
+      "purpose": "承接前面场景,百姓在村庄夜晚空地围坐,低声传唱'苍天已死黄天当立'讹言",
+      "requiredBeats": [
+        {
+          "id": "beat-17",
+          "description": "村庄夜晚空地,数十百姓围坐,低声传唱;有人四下张望确认无人窥探;众人继续传唱",
+          "function": "呈现讹言在追随者中流传",
+          "stateChange": "从公开聚会跪拜到私下传唱讹言,追随者群体内部开始流传政治讹言",
+          "observable": {
+            "visual": [
+              "百姓围坐",
+              "低声传唱",
+              "四下张望"
+            ],
+            "audio": [
+              "苍天已死,黄天当立,岁在甲子,天下大吉"
+            ]
+          },
+          "setting": "村庄夜晚空地",
+          "mustShow": [
+            "百姓围坐",
+            "低声传唱"
+          ]
+        }
+      ],
+      "historicalBasis": "[史料2]讹言'苍天已死黄天当立岁在甲子天下大吉'",
+      "adaptationBoundary": "拟制百姓围坐低声传唱、张望确认的场面调度,讹言内容与流传史实不变",
+      "targetDuration": 8,
+      "continuityMode": "scene_cut",
+      "completionCriteria": [
+        "百姓围坐传唱已呈现",
+        "讹言内容已通过传唱呈现",
+        "私下流传氛围已建立"
+      ],
+      "contentContractVersion": "cinematic-v1",
+      "dramaticUnitId": "drama-10",
+      "settingId": "drama-10",
+      "closesUnit": true,
+      "continuityFromPrevious": false
+    },
+    "previousShot": {
+      "contentContractVersion": "cinematic-v1",
+      "dramaticSceneId": "drama-09",
+      "id": "scene-16",
+      "title": "张角组织大方小方各立渠帅",
+      "editorialRole": "story",
+      "visualTreatment": "live_action",
+      "duration": 10,
+      "shotIntent": {
+        "purpose": "呈现张角建立大方小方组织架构的关键时刻",
+        "cameraReason": "使用全景景别展现张角与数十渠帅的空间关系，清晰呈现指定渠帅与行礼的组织建立过程",
+        "viewpointCharacter": "张角"
+      },
+      "beatDramaturgy": [
+        {
+          "audio": [],
+          "beatId": "beat-16",
+          "visual": [
+            "张角立于前方高台上，身体挺直面向下方",
+            "数十渠帅分列张角两侧，面向张角站立",
+            "张角依次指向各渠帅",
+            "各渠帅向张角行礼"
+          ],
+          "function": "呈现张角建立组织架构",
+          "stateChange": "从无组织的群众聚会到建立大方小方、各立渠帅的组织体系"
+        }
+      ],
+      "storyProgress": {
+        "status": "complete",
+        "unitId": "drama-09",
+        "response": "数十万追随者形成有组织的层级体系",
+        "actionResult": "张角成功建立大方小方组织架构，各立渠帅",
+        "pendingActions": []
+      },
+      "characters": [
+        "张角"
+      ],
+      "presentCharacters": [
+        "张角"
+      ],
+      "initialCharacters": [
+        "张角"
+      ],
+      "enteringCharacters": [],
+      "endCharacters": [
+        "张角"
+      ],
+      "worldState": {
+        "settingId": "drama-09",
+        "characters": [
+          {
+            "name": "张角",
+            "position": {
+              "status": "unknown"
+            },
+            "heldProps": {
+              "status": "unknown"
+            },
+            "pendingAction": {
+              "status": "unknown"
+            }
+          }
+        ]
+      },
+      "continuity": {
+        "mode": "scene_cut",
+        "bridgeType": "cut",
+        "bridgeAnchor": "从上一镜张角在广场高台向万人宣示黄天当立，切换至张角在大方聚集地组织渠帅建立层级架构",
+        "previousShotId": "scene-15"
+      },
+      "lastFramePrompt": "张角仍立于前方高台上，右臂自然放下，身体保持挺直姿态，目光平视前方。数十渠帅分列两侧，保持行礼后的微躬身姿态，面向张角。\n【静态尾帧】只呈现动作完成后的单一时间点与最终状态；单幅全画幅画面，禁止分镜、拼贴、分栏、上下三段、连环画、重复人物；画面内禁止字幕、水印、标题、标签及任何可读文字，榜文、竹简、牌匾等文字载体只能虚焦、背向镜头或呈现不可辨纹理。",
+      "visualPrompt": "某地大方聚集地，白日自然光。张角立于前方一处土台之上，身穿灰橄榄色交领长衣，外罩深蓝黑色暗纹宽袖长袍，黑发束髻戴深色小冠横插簪，留短髭及颏须，身体挺直面向下方。数十渠帅分列张角两侧，身着灰褐色或深色交领长衣，头扎黄巾或戴布冠，整齐站立面向张角。背景为开阔的聚集地，远处可见简陋的木栅与帐篷。",
+      "audioType": "环境声",
+      "audioText": "",
+      "firstFrameMode": "reference"
+    },
+    "requireContinuityContract": true,
+    "requireDynamicPacing": true,
+    "requireNarrativeClosure": true,
+    "requireDramaContract": true,
+    "productionSpeechRate": 4.5,
+    "aspectRatio": "16:9"
+  },
+  "candidate": {
+    "segments": [
+      {
+        "contentContractVersion": "cinematic-v1",
+        "dramaticSceneId": "drama-10",
+        "id": "scene-17-seg1",
+        "title": "百姓夜晚围坐低声传唱讹言（第一段）",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "duration": 9,
+        "pacing": {
+          "version": "duration-v2",
+          "timingPolicy": {
+            "version": "duration-policy-v2.2-brisk-narration",
+            "speech": {
+              "dialogue": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "narration": {
+                "referenceRate": 5.8,
+                "minimumNaturalRate": 5.5,
+                "maximumRate": 6.5,
+                "startupAllowance": 0.25
+              },
+              "chant": {
+                "referenceRate": 3.3,
+                "minimumNaturalRate": 2.8,
+                "maximumRate": 4.5,
+                "startupAllowance": 0.25
+              },
+              "singing": {
+                "referenceRate": 2.8,
+                "minimumNaturalRate": 2,
+                "maximumRate": 3.5,
+                "startupAllowance": 0.35
+              }
+            },
+            "shortPauseSeconds": 0.15,
+            "sentencePauseSeconds": 0.25,
+            "linePauseSeconds": 0.2,
+            "measurementToleranceSeconds": 0.25,
+            "endingReadabilityReserve": 0.5,
+            "maxConservativeExtraSeconds": 1,
+            "minimumProviderDuration": 3,
+            "maximumProviderDuration": 15,
+            "minimumVocalizationSeconds": 0.8,
+            "minimumActionSeconds": 0.3,
+            "minimumReactionSeconds": 0.5
+          },
+          "actorGroups": [
+            {
+              "id": "villagers-chanting",
+              "label": "数十百姓",
+              "memberDescription": "村庄中追随太平道的男女百姓",
+              "voiceProfile": {
+                "description": "普通村民，低沉压抑",
+                "age": "青年至中年",
+                "pitch": "中低",
+                "resonance": "胸腔共鸣",
+                "texture": "粗粝",
+                "delivery": "低声压抑",
+                "genderPresentation": "混合",
+                "language": "汉语"
+              }
+            }
+          ],
+          "beats": [
+            {
+              "id": "beat-17-a",
+              "sourceBeatId": "beat-17",
+              "actorIds": [
+                "villagers-chanting"
+              ],
+              "kind": "action",
+              "textOrVocalization": "数十百姓围坐于村庄夜晚空地",
+              "dependsOn": [],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 0.8,
+                "expected": 1.2,
+                "upper": 1.5,
+                "source": "群体到位并形成围坐姿态",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "数十百姓围坐完成",
+                "modality": "visual",
+                "evidenceAnchor": "百姓围坐"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-17-b",
+              "sourceBeatId": "beat-17",
+              "actorIds": [
+                "villagers-chanting"
+              ],
+              "kind": "speech",
+              "deliveryStyle": "chant",
+              "textOrVocalization": "苍天已死,黄天当立,岁在甲子,天下大吉",
+              "performanceInstruction": "低声传唱",
+              "dependsOn": [
+                "beat-17-a"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "voice"
+              ],
+              "durationEstimate": {
+                "lower": 4.2,
+                "expected": 5.3,
+                "upper": 6.4,
+                "source": "16字吟诵按2.8字/秒最低自然速率计算下界，3.3字/秒参考速率计算期望值",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "讹言传唱完成",
+                "modality": "audio-visual",
+                "evidenceAnchor": "低声传唱,苍天已死,黄天当立,岁在甲子,天下大吉"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            },
+            {
+              "id": "beat-17-c",
+              "sourceBeatId": "beat-17",
+              "actorIds": [
+                "villagers-chanting"
+              ],
+              "kind": "action",
+              "textOrVocalization": "有人四下张望确认无人窥探",
+              "dependsOn": [
+                "beat-17-b"
+              ],
+              "overlapAllowedWith": [],
+              "resources": [
+                "body"
+              ],
+              "durationEstimate": {
+                "lower": 1,
+                "expected": 1.5,
+                "upper": 2,
+                "source": "转头扫视周围环境",
+                "confidence": "medium"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "张望确认完成",
+                "modality": "visual",
+                "evidenceAnchor": "四下张望"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            }
+          ]
+        },
+        "shotIntent": {
+          "viewpointCharacter": "观众",
+          "purpose": "呈现讹言在追随者中私下流传的敏感氛围前半段",
+          "cameraReason": "使用全景俯视能同时呈现百姓围坐、低声传唱、警惕张望的群体状态"
+        },
+        "beatDramaturgy": [
+          {
+            "beatId": "beat-17",
+            "function": "呈现讹言在追随者中流传",
+            "stateChange": "从公开聚会跪拜到私下传唱讹言,追随者群体内部开始流传政治讹言",
+            "visual": [
+              "百姓围坐",
+              "低声传唱",
+              "四下张望"
+            ],
+            "audio": [
+              "苍天已死,黄天当立,岁在甲子,天下大吉"
+            ]
+          }
+        ],
+        "storyProgress": {
+          "unitId": "drama-10",
+          "status": "continuing",
+          "actionResult": "百姓在村庄夜晚空地围坐低声传唱讹言一遍，有人警惕张望确认安全",
+          "response": "讹言内容已通过传唱呈现一次，私下流传的紧张氛围开始建立",
+          "pendingActions": [
+            "百姓继续传唱讹言第二遍"
+          ]
+        },
+        "characters": [],
+        "presentCharacters": [],
+        "initialCharacters": [],
+        "enteringCharacters": [],
+        "endCharacters": [],
+        "illustrationLayers": [],
+        "worldState": {
+          "settingId": "drama-10",
+          "characters": []
+        },
+        "continuity": {
+          "mode": "scene_cut",
+          "previousShotId": "scene-16",
+          "bridgeType": "cut",
+          "bridgeAnchor": "从张角派遣渠帅传道的大方聚集地，转到追随者已遍布各地后，村庄百姓私下传唱讹言的场景"
+        },
+        "coveredBeatIds": [
+          "beat-17"
+        ],
+        "beatCoverage": [
+          {
+            "beatId": "beat-17",
+            "anchors": [
+              "百姓围坐",
+              "低声传唱",
+              "四下张望"
+            ]
+          }
+        ],
+        "visualPrompt": "村庄夜晚空地,月光微弱,数十百姓身着东汉平民粗布衣,围坐成圈,低头俯身,面容紧张",
+        "camera": "俯视全景,固定机位,视线从上方俯瞰整个围坐圈",
+        "mood": "压抑紧张,暗流涌动",
+        "firstFrameMode": "reference",
+        "lastFramePrompt": "数十百姓仍围坐于夜晚空地,有人抬头张望四周后放下,低头俯身,面容警惕",
+        "videoPrompt": "0-1.5秒:村庄夜晚空地,月光微弱,数十百姓身着东汉平民粗布衣,从画面各处聚拢,围坐成圈形成,低头俯身,面容紧张。1.5-6.9秒:百姓围坐,低头俯身,口中开始轻声吟诵,低声传唱:苍天已死,黄天当立,岁在甲子,天下大吉,声音压抑低沉,相互不敢直视。6.9-8.5秒:有人停止吟诵,转头四下张望,目光扫过周围黑暗,其他人也警惕地观察四周,确认无人窥探。",
+        "audioType": "对白",
+        "audioText": "数十百姓:苍天已死,黄天当立,岁在甲子,天下大吉",
+        "historicalBasis": "[史料2]讹言'苍天已死黄天当立岁在甲子天下大吉'",
+        "adaptationBoundary": "拟制百姓围坐低声传唱、张望确认的场面调度,讹言内容与流传史实不变",
+        "pronunciationHints": []
+      },
+      {
+        "contentContractVersion": "cinematic-v1",
+        "dramaticSceneId": "drama-10",
+        "id": "scene-17-seg2",
+        "title": "百姓夜晚继续传唱讹言（第二段）",
+        "editorialRole": "story",
+        "visualTreatment": "live_action",
+        "duration": 8,
+        "pacing": {
+          "version": "duration-v2",
+          "timingPolicy": {
+            "version": "duration-policy-v2.2-brisk-narration",
+            "speech": {
+              "dialogue": {
+                "referenceRate": 4.5,
+                "minimumNaturalRate": 3.3,
+                "maximumRate": 5,
+                "startupAllowance": 0.25
+              },
+              "narration": {
+                "referenceRate": 5.8,
+                "minimumNaturalRate": 5.5,
+                "maximumRate": 6.5,
+                "startupAllowance": 0.25
+              },
+              "chant": {
+                "referenceRate": 3.3,
+                "minimumNaturalRate": 2.8,
+                "maximumRate": 4.5,
+                "startupAllowance": 0.25
+              },
+              "singing": {
+                "referenceRate": 2.8,
+                "minimumNaturalRate": 2,
+                "maximumRate": 3.5,
+                "startupAllowance": 0.35
+              }
+            },
+            "shortPauseSeconds": 0.15,
+            "sentencePauseSeconds": 0.25,
+            "linePauseSeconds": 0.2,
+            "measurementToleranceSeconds": 0.25,
+            "endingReadabilityReserve": 0.5,
+            "maxConservativeExtraSeconds": 1,
+            "minimumProviderDuration": 3,
+            "maximumProviderDuration": 15,
+            "minimumVocalizationSeconds": 0.8,
+            "minimumActionSeconds": 0.3,
+            "minimumReactionSeconds": 0.5
+          },
+          "actorGroups": [
+            {
+              "id": "villagers-chanting",
+              "label": "数十百姓",
+              "memberDescription": "村庄中追随太平道的男女百姓",
+              "voiceProfile": {
+                "description": "普通村民，低沉压抑",
+                "age": "青年至中年",
+                "pitch": "中低",
+                "resonance": "胸腔共鸣",
+                "texture": "粗粝",
+                "delivery": "低声压抑",
+                "genderPresentation": "混合",
+                "language": "汉语"
+              }
+            }
+          ],
+          "beats": [
+            {
+              "id": "beat-17-d",
+              "sourceBeatId": "beat-17",
+              "actorIds": [
+                "villagers-chanting"
+              ],
+              "kind": "speech",
+              "deliveryStyle": "chant",
+              "textOrVocalization": "苍天已死,黄天当立,岁在甲子,天下大吉",
+              "performanceInstruction": "继续低声传唱",
+              "dependsOn": [],
+              "overlapAllowedWith": [],
+              "resources": [
+                "voice"
+              ],
+              "durationEstimate": {
+                "lower": 4.2,
+                "expected": 5.3,
+                "upper": 6.4,
+                "source": "16字吟诵按2.8字/秒最低自然速率计算下界，3.3字/秒参考速率计算期望值",
+                "confidence": "high"
+              },
+              "completion": {
+                "requiredThisClip": true,
+                "finalState": "众人继续传唱完成",
+                "modality": "audio-visual",
+                "evidenceAnchor": "继续传唱,苍天已死,黄天当立,岁在甲子,天下大吉"
+              },
+              "timingConstraint": {
+                "mode": "reference"
+              }
+            }
+          ]
+        },
+        "shotIntent": {
+          "viewpointCharacter": "观众",
+          "purpose": "完成讹言传唱的第二遍，巩固私下流传氛围",
+          "cameraReason": "延续全景俯视呈现百姓继续传唱讹言的群体状态"
+        },
+        "beatDramaturgy": [
+          {
+            "beatId": "beat-17",
+            "function": "呈现讹言在追随者中流传",
+            "stateChange": "从公开聚会跪拜到私下传唱讹言,追随者群体内部开始流传政治讹言",
+            "visual": [],
+            "audio": [
+              "苍天已死,黄天当立,岁在甲子,天下大吉"
+            ]
+          }
+        ],
+        "storyProgress": {
+          "unitId": "drama-10",
+          "status": "complete",
+          "actionResult": "百姓在村庄夜晚空地围坐低声传唱讹言，经过张望确认后继续传唱",
+          "response": "讹言内容已通过传唱完整呈现，私下流传的紧张氛围已建立",
+          "pendingActions": []
+        },
+        "characters": [],
+        "presentCharacters": [],
+        "initialCharacters": [],
+        "enteringCharacters": [],
+        "endCharacters": [],
+        "illustrationLayers": [],
+        "worldState": {
+          "settingId": "drama-10",
+          "characters": []
+        },
+        "continuity": {
+          "mode": "tail_continuation",
+          "previousShotId": "scene-17-seg1",
+          "bridgeType": "same_frame",
+          "bridgeAnchor": ""
+        },
+        "coveredBeatIds": [
+          "beat-17"
+        ],
+        "beatCoverage": [
+          {
+            "beatId": "beat-17",
+            "anchors": []
+          }
+        ],
+        "visualPrompt": "数十百姓仍围坐于夜晚空地,有人抬头张望四周后放下,低头俯身,面容警惕",
+        "camera": "俯视全景,固定机位,视线从上方俯瞰整个围坐圈",
+        "mood": "压抑紧张,暗流涌动",
+        "firstFrameMode": "reuse_previous_tail",
+        "lastFramePrompt": "数十百姓仍围坐于夜晚空地,低头俯身,口中仍在轻声吟诵,面容紧张警惕",
+        "videoPrompt": "0-6.4秒:确认安全后,众人再次低头俯身,口中继续低声传唱:苍天已死,黄天当立,岁在甲子,天下大吉,声音依然压抑低沉。6.4-7.5秒:百姓继续围坐,保持低头吟诵姿态,声音渐弱。",
+        "audioType": "对白",
+        "audioText": "数十百姓:苍天已死,黄天当立,岁在甲子,天下大吉",
+        "historicalBasis": "[史料2]讹言'苍天已死黄天当立岁在甲子天下大吉'",
+        "adaptationBoundary": "拟制百姓围坐低声传唱、张望确认的场面调度,讹言内容与流传史实不变",
+        "pronunciationHints": []
+      }
+    ]
+  }
+}
