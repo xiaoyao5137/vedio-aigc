@@ -43,8 +43,8 @@ const candidate = () => synchronizedVisualVariant(fixture.rounds[19].candidate)
 function playableVariant() {
   // Explicit test repair of unrelated metadata, never a production body rewrite.
   const raw = candidate()
-  raw.enteringCharacters[0].path = '从街市东端沿青石板路走来'
-  raw.initialCharacters = ['房氏宾客']
+  raw.initialCharacters = ['房氏宾客', '周氏门生']
+  raw.enteringCharacters = []
   return raw
 }
 
@@ -149,10 +149,10 @@ test('full frontend and provider use the same source proof without rewriting aut
   assert.doesNotThrow(() => verifyDurationSchedule(approved))
   assert.doesNotThrow(() => verifyDurationSchedule(approved, { scene }))
   const request = { model: { capability: 'video' }, executionContext: { workflowId: 'wf-sanguo-history-drama', nodeId: 'sanguo-video' },
-    prompt: '【场景与开场实景】甘陵街市房氏宾客站立。\n【场景真实性硬约束】真实街市。\n' + approved.pacing.compiledVideoPrompt,
+    prompt: '【场景与开场实景】甘陵街市房氏宾客站立，周氏门生在街市东端可见。\n【场景真实性硬约束】真实街市。\n' + approved.pacing.compiledVideoPrompt,
     params: { ...approved, pacingVersion: 'duration-v2', sound: 'on', continuityMode: 'scene_cut', videoTimeline: approved.pacing.compiledVideoPrompt,
       referenceImages: ['/fixtures/disciple.png', '/fixtures/guest.png'], referenceBindings: [
-        { characterName: '房氏宾客', role: 'identity' }, { characterName: '周氏门生', role: 'entering', entrance: approved.enteringCharacters[0] }] } }
+        { characterName: '房氏宾客', role: 'identity' }, { characterName: '周氏门生', role: 'identity' }] } }
   assert.doesNotThrow(() => validateWorkflowMediaContract(request))
   assert.equal(prepareWorkflowMediaRequest(request), request)
   for (const transform of [
