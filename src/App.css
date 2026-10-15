@@ -1264,6 +1264,27 @@ textarea:focus {
   min-width: 0;
 }
 
+.runner-control-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.runner-sound-toggle {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  color: var(--studio-muted);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.runner-sound-toggle input { width: auto; margin: 0; padding: 0; accent-color: var(--studio-accent); }
+.runner-control-heading .runner-sound-toggle span { display: inline; margin: 0; }
+
 .runner-control-bar > .run-mode-switch { grid-area: mode; }
 .runner-control-bar > .params-toggle { grid-area: params; }
 
@@ -1583,6 +1604,12 @@ textarea:focus {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--studio-danger) 18%, transparent), 0 10px 24px rgb(0 0 0 / 28%);
 }
 
+.runner-dag-node.review-hold {
+  border-color: var(--studio-warning);
+  background: var(--studio-warning-soft);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--studio-warning) 18%, transparent), 0 10px 24px rgb(0 0 0 / 28%);
+}
+
 .runner-dag-node.step-completed {
   border: 2px solid var(--studio-success);
   background: var(--studio-success-soft);
@@ -1727,6 +1754,11 @@ textarea:focus {
 .runner-dag-node.failed .run-status-badge {
   background: var(--studio-danger-soft);
   color: var(--studio-danger);
+}
+
+.runner-dag-node.review-hold .run-status-badge {
+  background: var(--studio-warning-soft);
+  color: var(--studio-warning);
 }
 
 .runner-dag-node.step-current .run-status-badge {
@@ -2518,11 +2550,17 @@ textarea:focus {
   flex-wrap: wrap;
 }
 
-.step-navigation-actions,
-.breakpoint-actions {
+.step-navigation-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+.breakpoint-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .rollback-action-pair {
@@ -2532,8 +2570,6 @@ textarea:focus {
 }
 
 .rollback-action-pair > button { flex: 1 1 0; min-width: 0; }
-.breakpoint-actions > .continue-btn,
-.breakpoint-actions > .rollback-action-pair { grid-column: 1 / -1; }
 
 .debug-actions > div { flex-shrink: 0; }
 
@@ -2544,8 +2580,7 @@ textarea:focus {
   margin-left: auto;
 }
 
-.step-navigation-actions > button,
-.breakpoint-actions > button { width: 100%; }
+.step-navigation-actions > button { width: 100%; }
 
 .debug-actions .continue-btn {
   border-color: color-mix(in srgb, var(--studio-danger) 38%, var(--studio-line));
@@ -4327,7 +4362,13 @@ textarea:focus {
   }
 
   .step-navigation-actions { grid-column: 1; grid-row: 1; min-width: 0; }
-  .breakpoint-actions { grid-column: 1 / -1; min-width: 0; }
+  .breakpoint-actions {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+  }
+  .breakpoint-actions > .continue-btn { width: 100%; }
   .debug-secondary-actions { grid-column: 2; grid-row: 1; margin-left: 0; }
   .debug-secondary-actions.has-pause { grid-column: 1 / -1; grid-row: auto; }
 

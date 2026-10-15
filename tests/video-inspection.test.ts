@@ -6,7 +6,7 @@ import path from 'node:path'
 import { createRequire } from 'node:module'
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { collectOptionalSpeechEvidence, collectVideoEvidence, inspectGeneratedVideo, parseFfmpegMetadata, resolveVideoSamplingPlan, samplingEvidenceKey, validateVideoMetadata } from '../server/video-inspection.ts'
+import { collectOptionalSpeechEvidence, collectVideoEvidence, inspectGeneratedVideo, NARRATION_TRANSFER_EVIDENCE_REVISION, parseFfmpegMetadata, resolveVideoSamplingPlan, samplingEvidenceKey, validateVideoMetadata } from '../server/video-inspection.ts'
 import { parseNativeFrameMetadata, resolveNativeSequenceConfig, selectNativeReviewFrames, type NativeFrameArchive } from '../server/native-video-sequence.ts'
 const require = createRequire(import.meta.url)
 
@@ -115,6 +115,25 @@ test('real decoder extracts a tail from an MP4 and rejects silent bytes', async 
   } finally { await rm(root, { recursive: true, force: true }) }
 })
 
+test('technical loudness inspection measures the first audio stream even with a louder second stream', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'video-audio-stream-qa-'))
+  try {
+    const dir = path.join(root, 'public/generated'), ffmpeg = require('ffmpeg-static') as string
+    await mkdir(dir, { recursive: true })
+    const first = '0.006*sin(2*PI*440*t)*between(t\\,0.5\\,1.7)'
+      + '+0.025*sin(2*PI*1000*t)*between(t\\,1.0\\,1.008)'
+    execFileSync(ffmpeg, ['-v', 'error', '-f', 'lavfi', '-i', 'color=c=red:s=160x90:d=3:r=12',
+      '-f', 'lavfi', '-i', `aevalsrc=${first}:s=44100:d=3`,
+      '-f', 'lavfi', '-i', 'sine=frequency=660:sample_rate=44100:duration=3',
+      '-map', '0:v:0', '-map', '1:a:0', '-map', '2:a:0',
+      '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-c:a', 'aac', path.join(dir, 'two-audio-tracks.mp4')])
+    const url = '/generated/two-audio-tracks.mp4'
+    const evidence = await collectVideoEvidence({ url }, root)
+    assert.ok(evidence.meanVolumeDb !== null && evidence.meanVolumeDb < -50)
+    await assert.rejects(inspectGeneratedVideo({ url, duration: 3, aspectRatio: '16:9' }, root), /实际音轨接近静音/)
+  } finally { await rm(root, { recursive: true, force: true }) }
+})
+
 test('explicit sample times preserve bounded window evidence and always end on the actual decodable tail', () => {
   const plan = resolveVideoSamplingPlan({ sampleTimes: [14, 5.4, 1, 5.4, 13.1, 0, 3.2] }, 14.04)
   assert.equal(plan.mode, 'sample-times')
@@ -160,8 +179,8 @@ test('real re-sampling isolates frame/report/rejection paths and preserves defau
     const defaultReport = await collectVideoEvidence({ url }, root)
     assert.equal(defaultReport.frameTimeSemantics, 'requested-seek')
     assert.equal(defaultReport.url, `/generated/verified-${key}.mp4`)
-    assert.match(defaultReport.evidenceUrl, new RegExp(`^/generated/verified-${key}-review-v2-[a-f0-9]{16}-evidence\\.json$`))
-    assert.match(defaultReport.frames[0], new RegExp(`^/generated/verified-${key}-review-v2-[a-f0-9]{16}-frame-0\\.jpg$`))
+    assert.match(defaultReport.evidenceUrl, new RegExp(`^/generated/verified-${key}-review-v3-[a-f0-9]{16}-evidence\\.json$`))
+    assert.match(defaultReport.frames[0], new RegExp(`^/generated/verified-${key}-review-v3-[a-f0-9]{16}-frame-0\\.jpg$`))
     assert.equal(await readFile(legacyReceipt, 'utf8'), 'saved legacy report must survive the v2 namespace')
     const originalFiles = await Promise.all([...defaultReport.frames, defaultReport.evidenceUrl].map(async file => ({ file, bytes: await readFile(path.join(root, 'public', file)) })))
     const cachedVideo = await stat(path.join(root, 'public', defaultReport.url))
@@ -171,7 +190,7 @@ test('real re-sampling isolates frame/report/rejection paths and preserves defau
     assert.equal(first.url, defaultReport.url)
     assert.deepEqual(first.frameTimes, [0, .4, .6, 1.3, 1.92])
     assert.equal(first.lastFrameUrl, first.frames.at(-1))
-    assert.match(first.evidenceUrl, /-sampling-[a-f0-9]+-review-v2-[a-f0-9]+-evidence\.json$/)
+    assert.match(first.evidenceUrl, /-sampling-[a-f0-9]+-review-v3-[a-f0-9]+-evidence\.json$/)
     assert.ok(first.frames.every(file => !defaultReport.frames.includes(file)))
     assert.equal(first.samplingPlan.mode, 'sample-times')
     for (const frame of first.frames) execFileSync(ffmpeg, ['-v', 'error', '-i', path.join(root, 'public', frame), '-f', 'null', '-'])
@@ -211,7 +230,17 @@ test('non-native evidence keys isolate every speech and opening comparison input
     { speechWindows: [{ start: .3, end: .8, text: '何故不降' }] }, { latestSpeechEnd: .7 },
     { previousTail: '/generated/other.jpg' }, { qualityMode: 'strict' },
   ]) assert.notEqual(samplingEvidenceKey('source', plan, { ...base, ...changed }), first)
-  assert.match(samplingEvidenceKey('source', { mode: 'default', requested: [.0, .2, .45, .7, .9, 1] }), /^source-review-v2-[a-f0-9]{16}$/)
+  const liveCut = { ...base, continuityMode: 'scene_cut', visualTreatment: 'live_action' }
+  const strictKey = samplingEvidenceKey('source', plan, liveCut)
+  const priorContract = { audioText: liveCut.audioText, audioType: liveCut.audioType,
+    speechWindows: liveCut.speechWindows, latestSpeechEnd: liveCut.latestSpeechEnd,
+    previousTail: liveCut.previousTail, qualityMode: liveCut.qualityMode,
+    sceneCutFrameGate: undefined, sceneCutReferenceImage: undefined,
+    continuityMode: liveCut.continuityMode, visualTreatment: liveCut.visualTreatment }
+  const priorKey = `source-sampling-${createHash('sha256').update(JSON.stringify({ version: 1, ...plan })).digest('hex').slice(0, 16)}-review-v3-${createHash('sha256').update(JSON.stringify({ version: 3,
+    narrationTransferEvidenceRevision: NARRATION_TRANSFER_EVIDENCE_REVISION, contract: priorContract })).digest('hex').slice(0, 16)}`
+  assert.notEqual(strictKey, priorKey, 'strict scene-cut dialogue cannot reuse an older permissive report')
+  assert.match(samplingEvidenceKey('source', { mode: 'default', requested: [.0, .2, .45, .7, .9, 1] }), /^source-review-v3-[a-f0-9]{16}$/)
 })
 
 test('same video and sample times retain separate immutable reports for revised speech windows', async () => {

@@ -6,11 +6,13 @@ import { DURATION_PACING_VERSION, resolveDurationPolicy } from './duration-polic
 import { collectDurationCoverageDiagnostics, collectDurationSpeechBudgetDiagnostics, collectDurationVoiceLayoutDiagnostics, compileDurationSchedule } from './duration-schedule.ts'
 import { inheritShotCharacterVisuals } from './character-visual-workflow.ts'
 import type { DurationBeat } from './duration-schedule.ts'
-import { matchingEntranceActions, normalizeStoryboardAnonymousEntranceIdentities, projectStoryboardEntrances } from './storyboard-entrance.ts'
+import { matchingEntranceActions, normalizeStoryboardAnonymousEntranceIdentities, openingTravelVisibilityIssue, projectStoryboardEntrances } from './storyboard-entrance.ts'
 import { outlineKnowledgeRepairInstruction } from './outline-repair-diagnostics.ts'
 import { isStaticIllustrationStyle } from './animation-shot.ts'
 import { normalizePronunciationHints } from './pronunciation-hints.ts'
 import { normalizeSandTableAesthetic } from './sand-table-contract.ts'
+import { preservesA8B6FreshManagedNode } from './scene-cut-a8b6-fresh-frame-workflow.ts'
+import { preservesA8B6LocalManagedReviewNode } from './scene-cut-a8b6-local-frame-workflow.ts'
 import { validateEpisodeNarrativeBoundary } from './episode-boundary.ts'
 
 export type GraphNode = {
@@ -74,6 +76,7 @@ function executionNodeContract(node: { id: string } & Record<string, unknown>) {
     operation: node.operation,
     resultVar: node.resultVar,
     prompt: node.prompt,
+    uploads: node.uploads,
     code: node.code,
     params: node.params,
     parentId: node.parentId,
@@ -113,6 +116,10 @@ export function hasExecutionPlanMismatch<Node extends GraphNode>(workflow: Graph
     return !current || JSON.stringify(executionNodeContract(current as Node & Record<string, unknown>))
       !== JSON.stringify(executionNodeContract(run.node as Node & Record<string, unknown>))
       && !preservedPaidMapGate(run, current)
+      && !preservesA8B6FreshManagedNode(run as typeof run & { sourceBoundNodeOverride?: unknown },
+        current)
+      && !preservesA8B6LocalManagedReviewNode(run as typeof run & { sourceBoundNodeOverride?: unknown },
+        current)
   })
 }
 
@@ -141,6 +148,10 @@ export function refreshPendingExecutionNodes<Node extends GraphNode, Run extends
   const updated = runs.map(run => {
     const node = current.get(run.node.id)!
     if (!['idle', 'failed'].includes(run.status) || JSON.stringify(executionNodeContract(node as Node & Record<string, unknown>)) === JSON.stringify(executionNodeContract(run.node as Node & Record<string, unknown>))) return run
+    if (preservesA8B6FreshManagedNode(run as Run & { sourceBoundNodeOverride?: unknown },
+      node)) return run
+    if (preservesA8B6LocalManagedReviewNode(run as Run & { sourceBoundNodeOverride?: unknown },
+      node)) return run
     changed = true
     return { ...run, node }
   })
@@ -262,6 +273,13 @@ export function shouldRunNode(condition: NodeRunCondition | undefined, context: 
 
 export function canAdvanceStep(status: StepRunStatus | undefined, stepIndex: number, stepCount: number) {
   return (status === 'success' || status === 'skipped') && stepIndex >= 0 && stepIndex < stepCount - 1
+}
+
+/** The continue control has work only while this execution has a runnable suffix. */
+export function canContinueToNextBreakpoint(runs: Array<{ status?: StepRunStatus }>, stepIndex: number) {
+  return stepIndex >= 0 && stepIndex < runs.length
+    && !runs.some(run => run.status === 'failed' || run.status === 'running')
+    && runs.some(run => run.status === 'idle')
 }
 
 /** Finds the next concrete run whose workflow node has a breakpoint. */
@@ -1459,6 +1477,8 @@ export function buildStoryboardRepairSuffix(
     // v2 has one compiled clock. The old generic pacing recipe requested
     // actionSeconds/reactionSeconds, fields this same validator forbids.
     const instructions = ['按当前 duration-v2 契约逐项修复点名字段，保留已经合规的台词、动作、主体、史实与连续性；窗口和哈希由程序编译。']
+    if (/STORYBOARD_VOICE_OBLIGATION_MISSING:/.test(validationMessage)) instructions.push('动作正文中的“问答”、喊话等实际发声必须由同一 actorIds 的 speech 或 vocalization 在该动作时间窗覆盖；若原剧情没有这句发声，删掉候选自行添加的交谈措辞，保留原动作与全部已批准台词。不能只在完成声明写“已问答”。')
+    if (/包含未声明字段：/.test(validationMessage)) instructions.push('仅删除诊断列出的未声明 JSON 字段，其他已合规字段保持原值；mapAnnotations 仅属于 historical_map，不得附加到 live_action 分镜。')
     if (Array.isArray(candidateRecord.segments)) instructions.push('分段 JSON 顶层仅保留 segments 数组，不放总 duration、id 或内容契约字段；每个 segments 元素都是完整独立分镜，使用 id 而非 segmentId，逐段包含 contentContractVersion、dramaticSceneId 及原模板全部字段，不使用 segmentIndex 或省略继承字段。')
     if (/STORYBOARD_COVERAGE_INCOMPLETE:|遗漏 (?:visual|audio) 声画义务/.test(validationMessage)) instructions.push('这是源剧情覆盖缺失。以当前 scene.requiredBeats 为权威范围，在 pacing.beats 中真正编排每个缺失 sourceBeatId 的全部原动作和台词，并同步 coveredBeatIds、beatDramaturgy 与 audioText；不能只补 ID、写完成态或放入 pendingActions。若全部内容不能在15秒内完成，本次返回完整 {"segments":[...]}，各段只声明自己的节拍，全部分段合起来按原顺序覆盖当前场景所有节拍；同一复杂节拍跨段时用 beatCoverage 与 beatDramaturgy 明确分配其原声画义务，不能只返回第一段。')
     if (/可执行正文缺少原锚点/.test(validationMessage)) instructions.push('按诊断核对对应 sourceBeatId 下实际 pacing.beats 的 kind、actorIds 与动作正文；声明层保留已批准原锚点和本段声画义务，执行层把真实动作写入 textOrVocalization 或适用的 performanceInstruction。简单入场沿用同主体入场规则；共享校验器已识别的明确双主体互动只有在批准场景恰有两名角色、同一 kind=action 的 actorIds 恰为这两名角色时，才允许原代称或两人全名联合主语，以及批准场地或同节拍来源原文已有的地点/持物修饰；保留动作谓词原字、主体身份与对象，不换动作同义词。mustShow 与 observable.visual 对同一动作的简述和细述可由这一实际动作共同满足，无需再演一次或堆砌短句。未被上述有限规则识别的复合锚点仍须连续原文；否定、计划、回忆、旁观、命令和完成声明都不能代替当场动作。仅放在 completion.evidenceAnchor/finalState、标题、visualPrompt 或手写 videoPrompt 不会进入程序编译的动作正文。原环境锚点可随已有动作呈现在正文，无需新增剧情动作。保留台词原文，不把画面说明写入 speech.textOrVocalization。')
@@ -2080,6 +2100,8 @@ export function validateHistoricalStructuredOutput(operation: string | undefined
   }
   record.initialCharacters = initialNames
   record.enteringCharacters = enteringCharacters
+  const hiddenTravelActor = openingTravelVisibilityIssue(record as Parameters<typeof openingTravelVisibilityIssue>[0])
+  if (hiddenTravelActor) throw new Error(`STORYBOARD_OPENING_ACTOR_HIDDEN: ${hiddenTravelActor} 的位移动作从零秒开始，须在首帧可见其未起步的批准起点；将人物列入 initialCharacters，在门外可见位置起步并保留跨门动作，不得将执行者放在画外`)
   contentCheck(() => validateNoUnallocatedSplitActions(record, scene))
   contentCheck(() => validateNoCompletedActionReplay(record, scene, expected.previousShot as Record<string, unknown> | undefined))
   // These facts are consumed by frame/voice routing, independently of whether
@@ -2466,8 +2488,29 @@ export function mergeContextPatch(current: Record<string, unknown>, patch: Recor
   return merged
 }
 
-export function applyNodeOutputToContext(context: Record<string, unknown>, resultVar: string, output: unknown) {
+export function validationResultVariables(nodes: Array<{ kind: string; resultVar?: string }>): ReadonlySet<string> {
+  return new Set(nodes.filter(node => node.kind === 'validation' && node.resultVar?.trim()).map(node => node.resultVar!))
+}
+
+/** A contextPatch may update ordinary workflow state, but it cannot replace
+ * another validation node's evidence before a downstream step reads it. */
+export function assertValidationResultPatch(
+  resultVar: string, output: unknown,
+  protection: { validationResultVars: ReadonlySet<string>; sourceKind: string },
+) {
   const patch = isPlainRecord(output) && isPlainRecord(output.contextPatch) ? output.contextPatch : undefined
+  if (!patch) return
+  const conflict = Object.keys(patch).find(key => protection.validationResultVars.has(key)
+    && !(protection.sourceKind === 'validation' && key === resultVar))
+  if (conflict) throw new Error(`VALIDATION_RESULT_CONTEXT_PATCH_CONFLICT: contextPatch 不能覆盖其他质检节点的结果变量 ${conflict}`)
+}
+
+export function applyNodeOutputToContext(
+  context: Record<string, unknown>, resultVar: string, output: unknown,
+  protection?: { validationResultVars: ReadonlySet<string>; sourceKind: string },
+) {
+  const patch = isPlainRecord(output) && isPlainRecord(output.contextPatch) ? output.contextPatch : undefined
+  if (patch && protection) assertValidationResultPatch(resultVar, output, protection)
   const patchedContext = patch ? mergeContextPatch(context, patch) : context
   return { ...patchedContext, [resultVar]: output }
 }

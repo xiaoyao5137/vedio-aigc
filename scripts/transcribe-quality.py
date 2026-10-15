@@ -10,10 +10,14 @@ from speech_pronunciation import assess_pronunciation_text
 parser = argparse.ArgumentParser()
 parser.add_argument('video')
 parser.add_argument('--model', default='small')
+parser.add_argument('--model-label', default='')
 parser.add_argument('--expected', default='')
 parser.add_argument('--windows', default='[]')
 parser.add_argument('--latest-speech-end', type=float, default=13.5)
 args = parser.parse_args()
+model_label = args.model_label or (args.model if re.fullmatch(r'[a-z][a-z0-9-]{0,31}', args.model) else 'local')
+if not re.fullmatch(r'[a-z][a-z0-9-]{0,31}', model_label):
+    parser.error('invalid model label')
 model = WhisperModel(args.model, device='cpu', compute_type='int8')
 segments, info = model.transcribe(args.video, language='zh', beam_size=5, word_timestamps=True, vad_filter=True)
 rows = [{'start': s.start, 'end': s.end, 'text': s.text,
@@ -41,5 +45,5 @@ if args.expected:
         'phoneticErrorRateMeaning': 'toneless-asr-text-syllable-edit-distance', 'pronunciationAssessment': pronunciation,
         'lastSpeechEnd': last_word_end, 'lipSyncVerified': False, 'alignmentVersion': 2,
         'dialogueCompletenessVerified': bool(alignment) and all(row['boundaryStatus'] == 'reliable' for row in alignment) and error_rate <= .2,
-        'method': 'local-whisper-small-phonetic-alignment'}
+        'method': f'local-whisper-{model_label}-phonetic-alignment'}
 print(json.dumps(result, ensure_ascii=False))

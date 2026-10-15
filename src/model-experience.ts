@@ -239,6 +239,14 @@ export function modelExperienceFields(model: ExperienceModel): ExperienceField[]
     ])
   }
 
+  if (model.provider === 'Codex' && model.capability === 'image') {
+    return optionalFields([
+      { key: 'reasoningEffort', label: '主代理推理强度', apiName: 'reasoningEffort', group: 'generation', control: 'select', defaultValue: settings.reasoningEffort || '',
+        options: [option('', '沿用模型配置'), ...['low', 'medium', 'high', 'xhigh', 'max', 'ultra'].map((effort) => option(effort))] },
+      { key: 'timeoutMs', label: '调用超时（ms）', apiName: 'timeoutMs', group: 'advanced', control: 'number', defaultValue: settings.timeoutMs || '600000', min: 1, max: 3600000, step: 1 },
+    ])
+  }
+
   if (model.provider === 'Local' && model.capability === 'video') {
     return optionalFields([
       { key: 'referenceImage', label: '首帧参考图', apiName: 'image', group: 'input', control: 'textarea', defaultValue: '' },

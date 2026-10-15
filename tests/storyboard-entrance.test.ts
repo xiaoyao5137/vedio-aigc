@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import { validateHistoricalStructuredOutput, collectHistoricalStoryboardDiagnostics, missingIndependentOpeningIdentities } from '../src/workflow-core.ts'
 import { normalizeRawStoryboardDurationCandidate } from '../src/storyboard-duration-normalization.ts'
 import { compileDurationSchedule, verifyDurationSchedule } from '../src/duration-schedule.ts'
-import { executableEntranceAnchor, matchingEntranceActions, normalizeStoryboardAnonymousEntranceIdentities, projectStoryboardEntrances } from '../src/storyboard-entrance.ts'
+import { executableEntranceAnchor, matchingEntranceActions, normalizeStoryboardAnonymousEntranceIdentities, openingTravelVisibilityIssue, projectStoryboardEntrances } from '../src/storyboard-entrance.ts'
 import { generateHistoricalStoryboard } from '../src/storyboard-runtime.ts'
 import { prepareWorkflowMediaRequest, validateWorkflowMediaContract } from '../server/workflow-contracts.ts'
 import { DEFAULT_DURATION_POLICY } from '../src/duration-policy.ts'
@@ -41,6 +41,18 @@ test('source-grounded anonymous entrance metadata is audited without changing it
   assert.deepEqual(raw, before)
   assert.equal(normalizeStoryboardAnonymousEntranceIdentities(repaired.candidate, expected), undefined)
   assert.equal(matchingEntranceActions(raw.enteringCharacters[0], raw.pacing.beats).length, 0, 'group IDs do not become named identity aliases')
+})
+
+test('a zero-second scene-cut travel actor must be visible at the approved first-frame origin', () => {
+  const shot = { continuity: { mode: 'scene_cut' }, firstFrameMode: 'reference',
+    enteringCharacters: [{ name: '严颜', startSecond: 0, endSecond: 2, path: '门外经门槛进入院内' }],
+    pacing: { beats: [{ id: 'enter', kind: 'action', actorIds: ['严颜'],
+      textOrVocalization: '严颜沿门外通路跨门进入院内' }],
+    schedule: [{ beatId: 'enter', startSecond: 0 }] } }
+  assert.equal(openingTravelVisibilityIssue(shot), '严颜')
+  assert.equal(openingTravelVisibilityIssue({ ...shot, enteringCharacters: [] }), undefined)
+  assert.equal(openingTravelVisibilityIssue({ ...shot, enteringCharacters: [{
+    ...shot.enteringCharacters[0], startSecond: 3 }] }), undefined)
 })
 
 test('anonymous identity projection refuses missing, wrong, negated or ambiguous executable paths', () => {
@@ -214,6 +226,15 @@ test('a performed entrance tolerates later speech and anti-teleport restrictions
     '信使未从门外进入室内，转身进入屋内']) {
     assert.equal(matchingEntranceActions(entry, [{ ...action, textOrVocalization: text }]).length, 0, text)
   }
+})
+
+test('crossing a courtyard gate into its interior is a performed entrance', () => {
+  const path = '由院门外通路跨过院门门槛进入院内通道'
+  const entry = { name: '严颜', path, startSecond: 0, endSecond: 2 }
+  const action = { kind: 'action' as const, actorIds: ['严颜', 'escort_soldiers'],
+    textOrVocalization: `严颜${path}，两名军士随行入画` }
+  assert.equal(matchingEntranceActions(entry, [action]).length, 1)
+  assert.equal(matchingEntranceActions(entry, [{ ...action, textOrVocalization: `严颜准备${path}` }]).length, 0)
 })
 
 test('real external approach wording stays a performed actor-bound entrance', () => {

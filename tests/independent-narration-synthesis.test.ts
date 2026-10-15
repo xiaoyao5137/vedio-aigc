@@ -9,7 +9,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { buildBailianTtsParameters, pcmToWav } from '../server/bailian-tts.ts'
 import { originalVoiceScope } from '../server/bailian-voice-design.ts'
-import { composeNarration, NARRATION_SYNTHESIS_RECEIPT_DIRECTORY, narrationSynthesisReceiptIdentity, rawReceiptKey, synthesizeNarrationTrack } from '../server/independent-narration.ts'
+import { composeNarration, NARRATION_SYNTHESIS_RECEIPT_DIRECTORY, narrationSynthesisReceiptIdentity, NarrationDurationConflictError, rawReceiptKey, synthesizeNarrationTrack, synthesizeNarrationTracks } from '../server/independent-narration.ts'
 import type { callBailianTts } from '../server/bailian-tts.ts'
 import type { ExternalModelConfig } from '../server/model-adapters.ts'
 
@@ -27,16 +27,19 @@ function wave(seconds: number, head = 0, tail = 0, internalPause = false) {
   return pcmToWav(pcm, 24000)
 }
 
-async function fixture(bytes: Buffer) {
+async function fixture(bytes: Buffer | Record<string, Buffer>) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'narration-synthesis-'))
   await mkdir(path.join(root, 'public/generated'), { recursive: true })
   let calls = 0
   const synthesize: typeof callBailianTts = async (configured, text, params = {}) => {
     calls++
-    const settings = buildBailianTtsParameters(configured.settings, params), url = '/generated/tts-aaaaaaaa.wav'
-    await writeFile(path.join(root, 'public', url), bytes)
-    return { status: 200, body: { status: 'succeeded', taskId: 'aaaaaaaa', url, duration: (bytes.length - 44) / 48000,
-      durationSource: 'pcm-samples', sampleRate: 24000, channels: 1, format: 'wav', bytes: bytes.length, sha256: sha(bytes),
+    const settings = buildBailianTtsParameters(configured.settings, params)
+    const url = typeof bytes === 'object' && !Buffer.isBuffer(bytes) ? `/generated/tts-${sha(Buffer.from(text)).slice(0, 32)}.wav` : '/generated/tts-aaaaaaaa.wav'
+    const utterance = Buffer.isBuffer(bytes) ? bytes : bytes[text]
+    if (!utterance) throw Error('Missing fixture utterance')
+    await writeFile(path.join(root, 'public', url), utterance)
+    return { status: 200, body: { status: 'succeeded', taskId: 'aaaaaaaa', url, duration: (utterance.length - 44) / 48000,
+      durationSource: 'pcm-samples', sampleRate: 24000, channels: 1, format: 'wav', bytes: utterance.length, sha256: sha(utterance),
       model: configured.settings.model, voice: settings.voice, rate: settings.rate, seed: settings.seed, instruction: settings.instruction ?? '',
       transcript: text, transcriptSource: 'input-text', characterName: String(params.characterName ?? ''), synthesisMs: 0, providerEvents: [] } }
   }
@@ -106,6 +109,82 @@ test('edge trimming remains bounded and a still-overlong track fails without rep
     const derived = await readFile(path.join(f.root, 'public/generated', derivedName))
     assert.equal((original.length - derived.length) / 48000, .2, 'each edge removes at most 100ms, never the larger pauses')
     assert.deepEqual(derived.subarray(44), original.subarray(44 + 4800, original.length - 4800))
+  } finally { await f.cleanup() }
+})
+
+test('energy and VAD agree on a long leading pause: remove only quiet PCM and fit the approved short window', async () => {
+  const original = wave(2.96725, 1.7825, .13725, true), f = await fixture(original)
+  const short = { ...segment, beatId: 'speech-context', text: '刘备攻打刘璋时，', start: 0, end: 1.9 }
+  try {
+    const track = await synthesizeNarrationTrack(model, voice, short, f.root, { synthesize: f.synthesize,
+      detectSpeechWindows: async () => [{ start: 1.792, end: 2.83 }] })
+    const evidence = track.normalization!
+    assert.equal(evidence.version, 'narration-edge-silence-v2')
+    assert.equal(evidence.leadingSpeechVad?.firstSpeechStart, 1.792)
+    assert.ok(evidence.trimStartSamples > 1.7 * 24000)
+    assert.ok(evidence.trimStartSamples / 24000 < 1.75, 'keep at least 50ms before detected energy onset')
+    assert.ok(track.tempo <= 1.25)
+    assert.ok(track.start + track.duration <= short.end)
+    const derived = await readFile(path.join(f.root, 'public', track.url))
+    assert.deepEqual(derived.subarray(44), original.subarray(44 + evidence.trimStartSamples * 2, original.length - evidence.trimEndSamples * 2))
+    assert.deepEqual(await readFile(path.join(f.root, 'public', evidence.sourceUrl)), original)
+    assert.equal(f.calls(), 1)
+  } finally { await f.cleanup() }
+})
+
+test('unavailable or conflicting VAD keeps the bounded trim and reports a measured replan need', async () => {
+  const original = wave(2.96725, 1.7825, .13725), f = await fixture(original)
+  const short = { ...segment, beatId: 'speech-context', text: '刘备攻打刘璋时，', start: 0, end: 1.9 }
+  try {
+    for (const detectSpeechWindows of [async () => { throw Error('VAD missing') }, async () => [{ start: 1.4, end: 2.8 }]]) {
+      await assert.rejects(synthesizeNarrationTrack(model, voice, short, f.root, { synthesize: f.synthesize, detectSpeechWindows }), error => {
+        assert.ok(error instanceof NarrationDurationConflictError)
+        assert.equal(error.conflicts[0].beatId, 'speech-context')
+        assert.equal(error.conflicts[0].availableSeconds, 1.9)
+        assert.ok(error.conflicts[0].minimumWindowSeconds! >= 2.224 && error.conflicts[0].minimumWindowSeconds! <= 2.225)
+        assert.equal(error.conflicts[0].rawSha256, sha(original))
+        return true
+      })
+    }
+    assert.equal(f.calls(), 1)
+  } finally { await f.cleanup() }
+})
+
+test('all paid utterances are saved before window fit and a retry reuses every raw receipt', async () => {
+  const lines = [
+    { ...segment, beatId: 'one', text: '第一句旁白。', start: 0, end: 1.2 },
+    { ...segment, beatId: 'two', text: '第二句旁白。', start: 1.2, end: 3.2 },
+    { ...segment, beatId: 'three', text: '第三句旁白。', start: 3.2, end: 4.4 },
+  ]
+  const utterances = Object.fromEntries(lines.map((line, i) => [line.text, wave([2.4, 1.7, 2.6][i])]))
+  const f = await fixture(utterances)
+  try {
+    await assert.rejects(synthesizeNarrationTracks(model, voice, lines, f.root, { synthesize: f.synthesize, detectSpeechWindows: async () => [] }), error => {
+      assert.ok(error instanceof NarrationDurationConflictError)
+      assert.deepEqual(error.conflicts.map(conflict => conflict.beatId), ['one', 'three'])
+      assert.ok(error.conflicts.every(conflict => conflict.canReplan && conflict.minimumWindowSeconds! > conflict.availableSeconds))
+      return true
+    })
+    assert.equal(f.calls(), 3)
+    for (const line of lines) {
+      const saved = JSON.parse(await readFile(path.join(f.root, NARRATION_SYNTHESIS_RECEIPT_DIRECTORY, rawReceiptKey(model, voice, line) + '.json'), 'utf8'))
+      assert.equal(saved.result.sha256, sha(utterances[line.text]))
+    }
+    const replanned = lines.map((line, i) => ({ ...line, start: i * 3, end: (i + 1) * 3 }))
+    const tracks = await synthesizeNarrationTracks(model, voice, replanned, f.root, { synthesize: f.synthesize })
+    assert.equal(tracks.length, 3)
+    assert.equal(f.calls(), 3)
+  } finally { await f.cleanup() }
+})
+
+test('batch preparation reuses a completed legacy track even when its raw synthesis receipt is absent', async () => {
+  const f = await fixture(wave(3))
+  try {
+    const first = await synthesizeNarrationTrack(model, voice, segment, f.root, { synthesize: f.synthesize })
+    await rm(path.join(f.root, NARRATION_SYNTHESIS_RECEIPT_DIRECTORY, rawReceiptKey(model, voice, segment) + '.json'))
+    const recalled = await synthesizeNarrationTracks(model, voice, [segment], f.root, { synthesize: async () => { throw Error('paid TTS must not be called') } })
+    assert.equal(recalled[0].sha256, first.sha256)
+    assert.equal(f.calls(), 1)
   } finally { await f.cleanup() }
 })
 

@@ -18,6 +18,7 @@ test('native authoritative view keeps all frames while the draft observer retain
     const evidence = native(), before = structuredClone(evidence), view = derive(evidence)
     assert.deepEqual(view.observerFrames.map(frame => frame.index), [0, 12, 24, 48, 79])
     assert.equal(view.reviewImageDetail.frameMetadata?.length, 80)
+    assert.equal(view.reviewImageDetail.transport.quality, 90)
     assert.equal(view.reviewImageDetail.frameMetadata?.at(-1)?.nativeFrameIndex, 79)
     assert.deepEqual(evidence, before)
     const broken = native();broken.nativeSequence.preservedSamples[0].nativeFrameIndex = 5
@@ -33,6 +34,7 @@ test('independent native pages use local evidence indices and keep native time p
     assert.equal(metadata[0].time, 1);assert.equal(metadata[0].pts, 12288)
     assert.equal(metadata.at(-1)?.evidenceIndex, 24);assert.equal(metadata.at(-1)?.nativeFrameIndex, 48)
     assert.equal(input.reviewImages.length, 25)
+    assert.equal(input.reviewImageDetail!.transport.quality, 90)
     const broken = native();broken.frameReferences[24].second = 99
     assert.throws(() => derive(shot, broken), /MEDIA_REQUIREMENT_REVIEW_INPUT_INVALID/)
   }

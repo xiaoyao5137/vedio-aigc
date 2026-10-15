@@ -87,6 +87,50 @@ export function principleMediaEvidenceIssue(video: RecordValue | undefined, shot
   if (pacing.version === 'duration-v2' && (!text(pacing.scheduleHash) || record(take.params).scheduleHash !== pacing.scheduleHash)) return '实际视频未绑定当前已批准的 duration-v2 排程'
 }
 
+/** A new dramatic unit may start only after the preceding duration-v2 take has
+ * proved every mandatory performance on that same take. A planned final frame,
+ * storyProgress label or permissive quality routing is not completion evidence.
+ * Legal scene cuts can use a fresh reference image after this gate passes. */
+export function principleDurationTransitionIssue(shot: RecordValue, video: RecordValue): string | undefined {
+  const pacing = record(shot.pacing)
+  if (pacing.version !== 'duration-v2') return undefined
+  const completion = record(video.durationCompletion)
+  if (!text(pacing.scheduleHash) || completion.scheduleHash !== pacing.scheduleHash
+    || !text(video.evidenceUrl) || completion.evidenceRef !== video.evidenceUrl) {
+    return '前镜逐节拍完成验收缺失，或未绑定当前已批准排程与实际成片证据'
+  }
+  if (completion.applicable !== true || completion.assessment !== 'complete' || completion.passed !== true
+    || completion.route !== 'accept' || !Array.isArray(completion.reasons) || completion.reasons.length
+    || !Array.isArray(completion.remainingMandatoryBeats)
+    || completion.remainingMandatoryBeats.length) return '前镜实际声画节拍尚未证明全部完成'
+  const beats = Array.isArray(pacing.beats) ? pacing.beats.map(record) : []
+  if (!beats.length || beats.some(beat => typeof record(beat.completion).requiredThisClip !== 'boolean')) {
+    return '前镜已批准排程缺少明确的本镜完成义务'
+  }
+  const required = beats.filter(beat => record(beat.completion).requiredThisClip === true)
+  if (!required.length || required.some(beat => !text(beat.id) || !text(beat.sourceBeatId))
+    || new Set(required.map(beat => beat.id)).size !== required.length
+    || !Array.isArray(completion.checks) || completion.checks.length !== required.length) {
+    return '前镜必需节拍与逐项完成证据不对应'
+  }
+  const checks = completion.checks.map(record)
+  if (new Set(checks.map(check => check.beatId)).size !== checks.length
+    || checks.some(check => !required.some(beat => beat.id === check.beatId && beat.sourceBeatId === check.sourceBeatId)
+    || check.status !== 'complete' || !Array.isArray(check.reasons) || check.reasons.length
+    || !Number.isFinite(record(check.observedStart).lower) || !Number.isFinite(record(check.observedStart).upper)
+    || !Number.isFinite(record(check.observedEnd).lower) || !Number.isFinite(record(check.observedEnd).upper)
+    || Number(record(check.observedEnd).upper) < Number(record(check.observedStart).lower))) {
+    return '前镜存在未完成、未确认或无实际起止证据的必需节拍'
+  }
+  const interval = record(completion.actualCompletionInterval)
+  if (!Number.isFinite(interval.lower) || !Number.isFinite(interval.upper)
+    || Number(interval.upper) < Number(interval.lower) || !Number.isFinite(completion.requiredEndSecond)
+    || Number(completion.requiredEndSecond) < Number(interval.upper)
+    || Number(completion.requiredEndSecond) > Number(video.duration) + 1e-9) {
+    return '前镜必需动作或收尾可读余量尚未在实际片长内完成'
+  }
+}
+
 /** Use only frame-bound valid observations. Missing details stay unknown;
  * approved cast and setting are continuity metadata, not observed facts. */
 export function principleTailWorldState(shot: RecordValue, video: RecordValue) {

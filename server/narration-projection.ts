@@ -1,5 +1,7 @@
 import { anonymousVoiceRoles, explicitlyOffscreenSpeaker, voiceSpeakers } from '../src/character-voice.ts'
 import { normalizePronunciationHints } from '../src/pronunciation-hints.ts'
+import { verifyDurationSchedule } from '../src/duration-schedule.ts'
+import { durationCausalVideoGuard } from '../src/duration-causal-prompt.ts'
 
 type Row = Record<string, unknown>
 const row = (value: unknown): Row => value && typeof value === 'object' && !Array.isArray(value) ? value as Row : {}
@@ -26,6 +28,18 @@ function projectIndependentSpeech(prompt: string, params: Row, audioRole: 'narra
   const pronunciationHints = normalizePronunciationHints(params.pronunciationHints, params.audioText)
   const roleDescription = dialogue ? `画外角色${speakerName}的对白` : '旁白'
   const pacing = row(params.pacing)
+  // The source is still the complete approved shot here. Recompute its hash
+  // before removing speech for the picture supplier; the projected params no
+  // longer contain the original audio text needed for that verification.
+  const signedDuration = params.pacingVersion === 'duration-v2' && params.scheduleHash !== undefined
+  if (signedDuration) verifyDurationSchedule({ pacing: params.pacing, duration: params.duration,
+    scheduleHash: params.scheduleHash, characters: params.characters, presentCharacters: params.presentCharacters,
+    audioType: params.audioType, audioText: params.audioText, videoPrompt: params.videoTimeline },
+    { qualityDisposition: params.qualityDisposition })
+  const pictureCausalGuard = signedDuration ? durationCausalVideoGuard(params, { pictureOnly: true }) : ''
+  if (pictureCausalGuard && (typeof params.videoTimeline !== 'string' || !prompt.includes(params.videoTimeline))) {
+    throw Error('DURATION_CAUSAL_PROMPT_INVALID: 独立画面请求缺少已验证的完整时间轴')
+  }
   const beats = Array.isArray(pacing.beats) ? pacing.beats.map(row) : []
   const narration = beats.filter(beat => beat.kind === 'speech')
   if (!narration.length || narration.some(beat => dialogue ? beat.deliveryStyle !== 'dialogue' : beat.deliveryStyle !== 'narration')) throw Error('NARRATION_SCHEDULE_INVALID: 缺少保持原声部类型的完整画外节拍')
@@ -86,6 +100,7 @@ function projectIndependentSpeech(prompt: string, params: Row, audioRole: 'narra
   for (const text of [String(params.audioText ?? ''), ...segments.map(segment => segment.text)].filter(Boolean)) projected = projected.replaceAll(text, '')
   projected = projected.replace(/^【声部与收束】.*$/gm, '').replace(/^人声类型：.*$/gm, '声音：仅场景环境音，无人声、对白或歌唱。')
   projected += `\n【独立画外配音】本次仅生成画面和与场景相符的自然环境音。${roleDescription}将在后期添加，本次不得生成任何可辨词语或配音；画内人物不朗读、不作说话口型，保留已批准的动作、视线、呼吸和微动。`
+  if (pictureCausalGuard) projected += `\n${pictureCausalGuard}`
   const pictureParams = { ...params }
   delete pictureParams.pronunciationHints
   return { segments, duration, audioRole, speakerName, prompt: projected, params: { ...pictureParams, characterVoices: [], audioText: '', audioType: '环境声', sound: 'on', pacingVersion: 'independent-narration-v1' } }

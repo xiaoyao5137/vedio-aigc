@@ -18,7 +18,7 @@ export function deriveMediaEvidenceViews(evidence: Record<string, unknown>) {
   const observerIndices = [...new Set([0, ...samples.map(sample => Number(sample.evidenceIndex)), all.length - 1])].sort((a, b) => a - b)
   if (observerIndices.length > 24) invalid('草稿观察覆盖点超出独立24项预算；完整审核帧未被截断')
   return { observerFrames: observerIndices.map(index => all[index]),
-    reviewImageDetail: { transport: { mode: 'sequence-grid', columns: 2, rows: 2, format: 'jpeg', quality: 95, chromaSubsampling: '4:4:4' },
+    reviewImageDetail: { transport: { mode: 'sequence-grid', columns: 2, rows: 2, format: 'jpeg', quality: 90, chromaSubsampling: '4:4:4' },
       frameMetadata: refs.map((frame, evidenceIndex) => ({ evidenceIndex, nativeFrameIndex: frame.nativeFrameIndex,
         url: frame.url, time: frame.second, pts: frame.pts, timeBase: frame.timeBase })) } }
 }

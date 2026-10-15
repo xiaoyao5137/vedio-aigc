@@ -1,10 +1,10 @@
-import { spawn, type ChildProcessWithoutNullStreams, type SpawnOptionsWithoutStdio } from 'node:child_process'
+import { execFileSync, spawn, type ChildProcessWithoutNullStreams, type SpawnOptionsWithoutStdio } from 'node:child_process'
 import { accessSync, constants, realpathSync, statSync } from 'node:fs'
 import { mkdtemp, open, rm, writeFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { REVIEW_IMAGE_LIMITS, type LoadedReviewImage } from './review-images.ts'
+import { REVIEW_IMAGE_LIMITS, REVIEW_SEQUENCE_LIMITS, type LoadedReviewImage } from './review-images.ts'
 
 type Value = Record<string, unknown>
 export type CodexTextConfig = {
@@ -34,10 +34,12 @@ export type CodexTextDependencies = {
   env?: NodeJS.ProcessEnv
   kill?: (child: ChildProcessWithoutNullStreams, signal: NodeJS.Signals) => void
   killGraceMs?: number
+  /** Test seam for the OS proxy setting. Never forwards a parent proxy URL. */
+  systemProxyOutput?: string
 }
 export const CODEX_TEXT_LIMITS = {
   stdoutBytes: 8 * 1024 * 1024, stderrBytes: 512 * 1024, finalBytes: 4 * 1024 * 1024,
-  promptBytes: 2 * 1024 * 1024, schemaBytes: 256 * 1024, timeoutMs: 3_600_000,
+  promptBytes: 2 * 1024 * 1024, promptChars: 1_000_000, schemaBytes: 256 * 1024, timeoutMs: 3_600_000,
 } as const
 
 // These are invocation overrides, not changes to the user's configuration.
@@ -129,9 +131,10 @@ export class CodexTextError extends Error {
  * treating a newly introduced tool capability as a text-only response. */
 function knownDiagnostic(value: Value): boolean {
   // CLI recovery progress is not a failed turn. Keep this allowlist narrow:
-  // the observed socket-reset diagnostic may recover via another connection
-  // or HTTPS, but authentication, exhausted retries and terminal errors cannot.
+  // observed transport and workspace-routing timeouts may recover via the
+  // CLI's own reconnect, but authentication and terminal errors cannot.
   const recoverableTransport = (message: string) => message === 'request timed out'
+    || message === 'workspace routing discovery timed out'
     || message === 'stream disconnected before completion: Connection reset by peer (os error 54)'
   if (value.type === 'error') {
     const reconnect = typeof value.message === 'string' ? /^Reconnecting\.\.\. [1-5]\/5 \((.*)\)$/.exec(value.message) : null
@@ -157,11 +160,24 @@ function checkEvent(value: unknown): asserts value is Value {
   if (!['agent_message', 'reasoning'].includes(value.item.type)) throw Error('CODEX_TOOL_EVENT')
 }
 
-function childEnvironment(source: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+function loopbackSystemHttpsProxy(output: string): string | undefined {
+  if (!/^\s*HTTPSEnable\s*:\s*1\s*$/m.test(output)) return undefined
+  const host = output.match(/^\s*HTTPSProxy\s*:\s*(\S+)\s*$/m)?.[1]
+  const port = Number(output.match(/^\s*HTTPSPort\s*:\s*(\d+)\s*$/m)?.[1])
+  if (!['127.0.0.1', 'localhost', '::1'].includes(host ?? '') || !Number.isSafeInteger(port)
+    || port < 1 || port > 65535) return undefined
+  return `http://${host === '::1' ? '[::1]' : host}:${port}`
+}
+
+function childEnvironment(source: NodeJS.ProcessEnv, systemProxyOutput?: string): NodeJS.ProcessEnv {
   // Keep OS/auth discovery, not API keys, alternate provider URLs, proxies or
   // parent-agent session identifiers. Authentication remains owned by Codex.
   const env: NodeJS.ProcessEnv = {}
   for (const key of ['HOME', 'USER', 'LOGNAME', 'PATH', 'TMPDIR', 'TEMP', 'TMP', 'SystemRoot', 'WINDIR', 'CODEX_HOME']) if (source[key] !== undefined) env[key] = source[key]
+  // Codex CLI needs the same local network route as other model adapters on
+  // macOS. Forward only a loopback OS proxy, never parent-provided proxy URLs.
+  const proxy = systemProxyOutput === undefined ? undefined : loopbackSystemHttpsProxy(systemProxyOutput)
+  if (proxy) env.HTTPS_PROXY = proxy
   return env
 }
 
@@ -184,14 +200,19 @@ async function boundedFinalMessage(filename: string): Promise<string> {
  * tool_choice=none: disabled features plus observed JSONL are separate evidence. */
 export async function callCodexText(config: CodexTextConfig, prompt: string, frames: readonly LoadedReviewImage[] = [], dependencies: CodexTextDependencies = {}) {
   const effective = resolveCodexTextConfig({ capability: 'text', settings: {} }, config)
-  if (typeof prompt !== 'string' || !prompt.trim() || Buffer.byteLength(prompt) > CODEX_TEXT_LIMITS.promptBytes) invalid('prompt须为非空且不超过2MiB的文本')
+  if (typeof prompt !== 'string' || !prompt.trim() || Buffer.byteLength(prompt) > CODEX_TEXT_LIMITS.promptBytes
+    || prompt.length > CODEX_TEXT_LIMITS.promptChars) invalid('prompt须为非空且不超过2MiB、100万字符的文本')
   if (!Array.isArray(frames) || frames.length > REVIEW_IMAGE_LIMITS.count) invalid('frames超出已加载图片数量上限')
+  const nativeSequencePages = frames.length > 0 && frames.every(frame => frame.kind === 'sequence-grid'
+    && frame.detailConfig && 'transport' in frame.detailConfig && frame.detailConfig.transport.mode === 'sequence-grid'
+    && Array.isArray(frame.cells) && frame.cells.length > 0 && frame.cells.length <= 4)
+  const frameByteLimit = nativeSequencePages ? REVIEW_SEQUENCE_LIMITS.transportBytes : REVIEW_IMAGE_LIMITS.totalBytes
   let totalBytes = 0
   // Capture all buffers and provenance synchronously, before the first await.
   const snapshots = frames.map((frame, index) => {
     if (!Buffer.isBuffer(frame.bytes) || !frame.bytes.length || frame.bytes.length > REVIEW_IMAGE_LIMITS.fileBytes) invalid('frames[' + index + ']缺少有效已加载bytes')
     totalBytes += frame.bytes.length
-    if (totalBytes > REVIEW_IMAGE_LIMITS.totalBytes) invalid('frames超出已加载图片总字节上限')
+    if (totalBytes > frameByteLimit) invalid('frames超出已加载图片总字节上限')
     const bytes = Buffer.from(frame.bytes)
     return { bytes, catalog: { attachmentIndex: index, fileName: 'image-' + index + (frame.mimeType === 'image/png' ? '.png' : '.jpg'), url: frame.url,
       kind: frame.kind ?? 'original', ...(frame.kind === 'sequence-grid' ? { cells: structuredClone(frame.cells) } : { frameIndex: frame.frameIndex ?? index }),
@@ -205,7 +226,10 @@ export async function callCodexText(config: CodexTextConfig, prompt: string, fra
   const submittedPrompt = '仅根据本次文本及附件作答，不调用工具、读取其他文件或访问外部信息。\n\n' + prompt
     + (catalog.length ? '\n\n【按实际传入顺序排列的图片附件，编号从0开始】\n' + JSON.stringify(catalog)
       + '\n原像素局部图仅为对应frameIndex的裁剪，不能替代原始全图或充当新的时间点；结合原图判断空间归属。sequence-grid是顺序原帧的无缩放拼图：逐格查看，报告引用cells.evidenceIndex，时刻取cells.time；attachmentIndex是传输附件号，不能当作帧号。nativeFrameIndex追溯视频解码序列，拼图本身不是新时间点。' : '')
-  if (Buffer.byteLength(submittedPrompt) > CODEX_TEXT_LIMITS.promptBytes) invalid('包含附件目录的prompt超过2MiB上限')
+  // The CLI rejects inputs above 1,048,576 characters; count UTF-16 units
+  // conservatively and leave room for its own request framing.
+  if (Buffer.byteLength(submittedPrompt) > CODEX_TEXT_LIMITS.promptBytes
+    || submittedPrompt.length > CODEX_TEXT_LIMITS.promptChars) invalid('包含附件目录的prompt超过2MiB或100万字符上限')
   const started = Date.now(), events: Value[] = []
   const configuredExecutablePath = config.configuredExecutablePath ?? config.executablePath
   const raw: Value = { provider: 'Codex', appliedConfig: { executablePath: effective.executablePath,
@@ -233,7 +257,10 @@ export async function callCodexText(config: CodexTextConfig, prompt: string, fra
     args.push(...catalog.flatMap(item => ['-i', path.join(directory!, item.fileName)]), '--', '-')
     let child: ChildProcessWithoutNullStreams
     try { child = (dependencies.spawn ?? spawn)(effective.executablePath, args, { cwd: directory, shell: false, detached: process.platform !== 'win32',
-      env: childEnvironment(dependencies.env ?? process.env), stdio: ['pipe', 'pipe', 'pipe'] }) as ChildProcessWithoutNullStreams }
+      env: childEnvironment(dependencies.env ?? process.env, dependencies.systemProxyOutput
+        ?? (dependencies.env === undefined && process.platform === 'darwin'
+          ? (() => { try { return execFileSync('/usr/sbin/scutil', ['--proxy'], { encoding: 'utf8', timeout: 2_000 }) }
+            catch { return '' } })() : '')), stdio: ['pipe', 'pipe', 'pipe'] }) as ChildProcessWithoutNullStreams }
     catch { throw new CodexTextError('CODEX_SPAWN_FAILED', 'CLI未能启动', raw) }
     await new Promise<void>((resolve, reject) => {
       let failure: string | undefined, settled = false, pending = '', stderr = '', stdoutBytes = 0, stderrBytes = 0

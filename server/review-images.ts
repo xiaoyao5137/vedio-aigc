@@ -6,7 +6,8 @@ import sharp from 'sharp'
 /** Local request protections, not a statement of any model provider's limits. */
 export const REVIEW_IMAGE_LIMITS = { count: 64, fileBytes: 5 * 1024 * 1024, totalBytes: 24 * 1024 * 1024 } as const
 
-export const REVIEW_SEQUENCE_LIMITS = { sourceCount: 256, sourcePixels: 16 * 1024 * 1024, pagePixels: 32 * 1024 * 1024, totalPixels: 256 * 1024 * 1024 } as const
+export const REVIEW_SEQUENCE_LIMITS = { sourceCount: 256, sourceBytes: 48 * 1024 * 1024, transportBytes: 48 * 1024 * 1024,
+  sourcePixels: 16 * 1024 * 1024, pagePixels: 32 * 1024 * 1024, totalPixels: 256 * 1024 * 1024 } as const
 type CropDetail = { indices: number[]; columns: number; rows: number; overlap: number }
 export type ReviewFrameMetadata = { evidenceIndex?: number; nativeFrameIndex?: number; url?: string; time?: number; pts?: number; timeBase?: string }
 export type SequenceGridTransport = { mode: 'sequence-grid'; columns: 2; rows: 2; format?: 'png' | 'jpeg'; quality?: number; chromaSubsampling?: '4:4:4' }
@@ -19,7 +20,19 @@ export type LoadedReviewImage = {
   label?: string; frameIndex?: number; sourceRect?: ReviewImageRect
   detailConfig?: ReviewImageDetail; kind?: 'original' | 'detail' | 'sequence-grid'
   mimeType?: 'image/jpeg' | 'image/png'; attachmentIndex?: number; cells?: ReviewSequenceCell[]
-  encoding?: { format: 'png' | 'jpeg'; lossless: boolean; reencoded: true; noResize: true; quality?: number; chromaSubsampling?: '4:4:4' }
+  encoding?: { format: 'png' | 'jpeg'; lossless: boolean; reencoded: true; noResize: true; quality?: number; requestedQuality?: number; chromaSubsampling?: '4:4:4' }
+}
+
+/** A sequence JPEG may be re-encoded at a lower, disclosed quality to fit the
+ * local attachment budget. Never change the source archive, pixels, frame
+ * selection or time mapping. The floor makes an unreviewable sequence fail. */
+const SEQUENCE_JPEG_QUALITY_FLOOR = 80
+function sequenceJpegQualities(requested: number): number[] {
+  if (requested < SEQUENCE_JPEG_QUALITY_FLOOR) return [requested]
+  const qualities = [requested]
+  for (let quality = requested - 5; quality > SEQUENCE_JPEG_QUALITY_FLOOR; quality -= 5) qualities.push(quality)
+  if (requested > SEQUENCE_JPEG_QUALITY_FLOOR) qualities.push(SEQUENCE_JPEG_QUALITY_FLOOR)
+  return qualities
 }
 
 function invalid(message: string): never {
@@ -105,6 +118,9 @@ export async function loadReviewImages(value: unknown, root = process.cwd(), det
   }
   const urls = [...value] as string[]
   if (sequence?.frameMetadata?.some((metadata, index) => metadata.url !== undefined && metadata.url !== urls[index])) invalid('reviewImageDetail.frameMetadata.url 与对应原帧URL不一致')
+  // Native JPEGs are local inputs to the 2x2 transport. Keep their read bound
+  // separate from the smaller cap on bytes actually sent to the model.
+  const sourceBudget = sequence ? REVIEW_SEQUENCE_LIMITS.sourceBytes : REVIEW_IMAGE_LIMITS.totalBytes
   const generatedRoot = await realpath(path.join(root, 'public', 'generated'))
   const sources: Array<{ url: string; filename: string }> = []
   let declaredTotal = 0
@@ -115,7 +131,9 @@ export async function loadReviewImages(value: unknown, root = process.cwd(), det
     if (!info.isFile()) invalid(`审查帧 ${url} 不是文件`)
     if (info.size > REVIEW_IMAGE_LIMITS.fileBytes) invalid(`审查帧 ${url} 超过本地单帧上限 5MiB`)
     declaredTotal += info.size
-    if (declaredTotal > REVIEW_IMAGE_LIMITS.totalBytes) invalid('审查帧合计超过本地请求上限 24MiB；未提交任何截断审查')
+    if (declaredTotal > sourceBudget) invalid(sequence
+      ? 'sequence-grid 原帧合计超过本地读取上限48MiB；未提交任何截断审查'
+      : '审查帧合计超过本地请求上限 24MiB；未提交任何截断审查')
     sources.push({ url, filename })
   }
 
@@ -134,7 +152,9 @@ export async function loadReviewImages(value: unknown, root = process.cwd(), det
         length += bytes.length
         actualTotal += bytes.length
         if (length > REVIEW_IMAGE_LIMITS.fileBytes) invalid(`审查帧 ${url} 超过本地单帧上限 5MiB`)
-        if (actualTotal > REVIEW_IMAGE_LIMITS.totalBytes) invalid('审查帧合计超过本地请求上限 24MiB；未提交任何截断审查')
+        if (actualTotal > sourceBudget) invalid(sequence
+          ? 'sequence-grid 原帧合计超过本地读取上限48MiB；未提交任何截断审查'
+          : '审查帧合计超过本地请求上限 24MiB；未提交任何截断审查')
         chunks.push(bytes)
       }
     } finally {
@@ -162,8 +182,7 @@ export async function loadReviewImages(value: unknown, root = process.cwd(), det
     frames.push({ url, bytes })
   }
   if (sequence) {
-    const result: LoadedReviewImage[] = []
-    let transmittedBytes = 0
+    const groups = []
     for (let start = 0; start < frames.length; start += 4) {
       const group = frames.slice(start, start + 4), sizes = dimensions.slice(start, start + 4)
       const tileWidth = Math.max(...sizes.map(size => size.width)), tileHeight = Math.max(...sizes.map(size => size.height))
@@ -175,22 +194,38 @@ export async function loadReviewImages(value: unknown, root = process.cwd(), det
         sourceRect: { left: 0, top: 0, ...sizes[index] },
         targetRect: { left: index % 2 * tileWidth, top: Math.floor(index / 2) * tileHeight, ...sizes[index] },
       }))
-      // Each page is constructed from immutable JPEG snapshots at native size.
-      // Explicit JPEG transport re-encodes; it must never be called lossless.
-      const pipeline = sharp({ create: { width, height, channels: 3, background: '#000000' } }).composite(group.map((frame, index) => ({ input: frame.bytes, left: cells[index].targetRect.left, top: cells[index].targetRect.top })))
-      const jpeg = sequence.transport.format === 'jpeg'
-      const bytes = await (jpeg ? pipeline.jpeg({ quality: sequence.transport.quality!, chromaSubsampling: '4:4:4' }) : pipeline.png({ compressionLevel: 9, palette: false })).toBuffer()
-      if (bytes.length > REVIEW_IMAGE_LIMITS.fileBytes) invalid('sequence-grid 实际附件超过本地单图上限 5MiB；不会自动降低质量或缩放')
-      transmittedBytes += bytes.length
-      if (transmittedBytes > REVIEW_IMAGE_LIMITS.totalBytes) invalid('sequence-grid 实际附件合计超过本地请求上限 24MiB；不会自动降低质量、缩放或截断')
-      const attachmentIndex = result.length
-      const encoding: NonNullable<LoadedReviewImage['encoding']> = { format: jpeg ? 'jpeg' : 'png', lossless: !jpeg, reencoded: true, noResize: true,
-        ...(jpeg ? { quality: sequence.transport.quality, chromaSubsampling: '4:4:4' as const } : {}) }
-      result.push({ url: 'sequence-grid:attachment-' + attachmentIndex, bytes, mimeType: jpeg ? 'image/jpeg' : 'image/png', kind: 'sequence-grid', attachmentIndex,
-        cells, encoding, detailConfig: sequence,
-        label: `时序拼图 attachmentIndex=${attachmentIndex}；2×2按从左至右、从上至下排列原帧，未缩放。${jpeg ? `显式JPEG质量${encoding.quality}、4:4:4再次编码，有损传输。` : 'PNG无损保留JPEG解码后的像素。'}每格只对应cells中的原帧；空白余区不是证据帧；拼图整体不对应单个frameIndex。cells=${JSON.stringify(cells)}` })
+      groups.push({ group, width, height, cells })
     }
-    return result
+    const jpeg = sequence.transport.format === 'jpeg'
+    const requestedQuality = sequence.transport.quality!
+    const qualities = jpeg ? sequenceJpegQualities(requestedQuality) : [undefined]
+    let exceeded: 'single' | 'total' = 'total'
+    for (const quality of qualities) {
+      const result: LoadedReviewImage[] = []
+      let transmittedBytes = 0
+      let overflow = false
+      for (const { group, width, height, cells } of groups) {
+        // Every attempted page is made from the same immutable native JPEGs.
+        // One complete quality level is selected for the whole sequence.
+        const pipeline = sharp({ create: { width, height, channels: 3, background: '#000000' } })
+          .composite(group.map((frame, index) => ({ input: frame.bytes, left: cells[index].targetRect.left, top: cells[index].targetRect.top })))
+        const bytes = await (jpeg ? pipeline.jpeg({ quality: quality!, chromaSubsampling: '4:4:4' }) : pipeline.png({ compressionLevel: 9, palette: false })).toBuffer()
+        if (bytes.length > REVIEW_IMAGE_LIMITS.fileBytes) { exceeded = 'single'; overflow = true; break }
+        transmittedBytes += bytes.length
+        if (transmittedBytes > REVIEW_SEQUENCE_LIMITS.transportBytes) { exceeded = 'total'; overflow = true; break }
+        const attachmentIndex = result.length
+        const encoding: NonNullable<LoadedReviewImage['encoding']> = { format: jpeg ? 'jpeg' : 'png', lossless: !jpeg, reencoded: true, noResize: true,
+          ...(jpeg ? { quality, ...(quality !== requestedQuality ? { requestedQuality } : {}), chromaSubsampling: '4:4:4' as const } : {}) }
+        const qualityLabel = quality === requestedQuality ? `显式JPEG质量${quality}` : `请求JPEG质量${requestedQuality}，为满足本地附件上限统一使用实际质量${quality}`
+        result.push({ url: 'sequence-grid:attachment-' + attachmentIndex, bytes, mimeType: jpeg ? 'image/jpeg' : 'image/png', kind: 'sequence-grid', attachmentIndex,
+          cells, encoding, detailConfig: sequence,
+          label: `时序拼图 attachmentIndex=${attachmentIndex}；2×2按从左至右、从上至下排列原帧，未缩放。${jpeg ? `${qualityLabel}、4:4:4再次编码，有损传输。` : 'PNG无损保留JPEG解码后的像素。'}每格只对应cells中的原帧；空白余区不是证据帧；拼图整体不对应单个frameIndex。cells=${JSON.stringify(cells)}` })
+      }
+      if (!overflow) return result
+    }
+    const overLimit = exceeded === 'single' ? '实际附件超过本地单图上限 5MiB' : '实际附件合计超过本地请求上限 48MiB'
+    if (!jpeg) invalid(`sequence-grid ${overLimit}；不会自动降低质量、缩放或截断`)
+    invalid(`sequence-grid ${overLimit}；已尝试完整序列的有界JPEG重编码至质量${qualities.at(-1)}，未缩放或截断；未提交审查`)
   }
   if (config && !('transport' in config)) {
     // Retain all original bytes first. Detail attachments never replace or

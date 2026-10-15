@@ -38,6 +38,135 @@ export function isSandTableBackground(scene: Value) {
   return isHistoricalSandTable(scene)
 }
 
+/** A separately closed dramatic unit may use an explicitly approved hard-cut
+ * ellipsis. The actual prior completion and cross-frame state are checked at
+ * the media boundary; this only recognizes the outline's editorial consent. */
+function approvedEllipsisText(previous: Value, current: Value) {
+  const previousUnit = String(previous.dramaticUnitId ?? previous.dramaticSceneId ?? '')
+  const currentUnit = String(current.dramaticUnitId ?? current.dramaticSceneId ?? '')
+  const note = String(current.adaptationBoundary ?? '')
+  const first = Array.isArray(current.requiredBeats) ? current.requiredBeats[0] as Value | undefined : undefined
+  const firstVisual = first?.observable && typeof first.observable === 'object'
+    && !Array.isArray(first.observable) && Array.isArray((first.observable as Value).visual)
+    ? ((first.observable as Value).visual as unknown[]).filter(item => typeof item === 'string').join('；') : ''
+  const currentCast = Array.isArray(current.cast) ? current.cast : []
+  const sharedCast = Array.isArray(previous.cast)
+    ? previous.cast.filter(name => typeof name === 'string' && currentCast.includes(name)) as string[] : []
+  return previous.closesUnit === true && current.continuityMode === 'scene_cut'
+    && current.continuityFromPrevious === false
+    && !!previousUnit && !!currentUnit && previousUnit !== currentUnit
+    && /(?:由|从)[^。；]{1,40}(?:直接切至|直接切入|硬切至|硬切入)/u.test(note)
+    && /(?:不增拍|不另拍|省略|略去)[^。；]{0,30}(?:押送|路程|迁移|转场)/u.test(note)
+    && /(?:束缚|被缚|缚腕|绳索|持物|携物|跪姿|姿态|身体状态)[^。；]{0,24}(?:连续|延续|保持)/u.test(note)
+    && /(?:衣甲|服装|装束|服饰)[^。；]{0,24}(?:连续|延续|保持)/u.test(note)
+    && sharedCast.length > 0 && sharedCast.some(name => firstVisual.includes(name))
+}
+
+/** Returns a conditional ellipsis obligation, never a claim that the media is
+ * complete. The server binds these two approved scene objects to SHA-256. */
+export function approvedSceneCutEllipsis(previous: Value, current: Value) {
+  if (!approvedEllipsisText(previous, current)
+    || adjacentSceneCutBridgeIssue(previous, current, { allowApprovedEllipsis: false }) === undefined)
+    return undefined
+  return { version: 'scene-cut-approved-ellipsis-v1', previousSceneId: String(previous.id),
+    currentSceneId: String(current.id), previousUnitId: String(previous.dramaticUnitId ?? previous.dramaticSceneId),
+    currentUnitId: String(current.dramaticUnitId ?? current.dramaticSceneId),
+    sharedCast: (previous.cast as string[]).filter(name => (current.cast as string[]).includes(name)) }
+}
+
+/** A cut may elide travel after an explicitly closed unit. Otherwise a
+ * retained physical state moving between settings needs an approved visible
+ * or audible bridge; a later bridgeAnchor cannot add a missing outline beat. */
+export function adjacentSceneCutBridgeIssue(previous: Value, current: Value,
+  options: { allowApprovedEllipsis?: boolean } = {}): string | undefined {
+  if (current.continuityMode !== 'scene_cut' || previous.visualTreatment !== 'live_action'
+    || current.visualTreatment !== 'live_action') return undefined
+  const previousCast = Array.isArray(previous.cast) ? previous.cast.filter((name): name is string => typeof name === 'string') : []
+  const currentCast = Array.isArray(current.cast) ? current.cast.filter((name): name is string => typeof name === 'string') : []
+  const sharedCast = previousCast.filter(name => currentCast.includes(name))
+  if (!sharedCast.length) return undefined
+  const beats = (scene: Value) => Array.isArray(scene.requiredBeats)
+    ? scene.requiredBeats.filter((beat): beat is Value => !!beat && typeof beat === 'object' && !Array.isArray(beat)) : []
+  const setting = (scene: Value) => String(beats(scene).find(beat => typeof beat.setting === 'string')?.setting ?? '').trim()
+  const before = setting(previous), after = setting(current)
+  if (!before || !after || before === after) return undefined
+  if ((before.includes(after) || after.includes(before))
+    && !/(?:另(?:一|处|个)|别处|新(?:的|一处)|转至|转入)/.test(`${before}；${after}`)) return undefined
+  const beatText = (scene: Value) => beats(scene).flatMap(beat => {
+    const observable = beat.observable && typeof beat.observable === 'object' && !Array.isArray(beat.observable)
+      ? beat.observable as Value : {}
+    return [beat.description, ...(Array.isArray(beat.mustShow) ? beat.mustShow : []),
+      ...(Array.isArray(observable.visual) ? observable.visual : []),
+      ...(Array.isArray(observable.audio) ? observable.audio : [])]
+  }).filter((part): part is string => typeof part === 'string').join('；')
+  const beforeText = beatText(previous)
+  const currentText = [current.purpose, beatText(current)].filter((part): part is string => typeof part === 'string')
+    .join('；').split(/[，。；,;]/).filter(part => !/(?:省略|略去|跳过|不(?:再|另)?拍|无需拍|不呈现|不展示)/.test(part)).join('；')
+  const named = (name: string) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const restrainedPerson = (source: string, name: string) => new RegExp(
+    `${named(name)}[^，。；,;]{0,14}(?:缚|绑|捆|铐|枷|绳结|绳索|被[^，。；,;]{0,8}押|押送|反剪双手)`
+    + `|(?:缚|绑|捆|铐|押送|押着|押住|押在)[^，。；,;]{0,8}${named(name)}`,
+  ).test(source)
+  const restrained = sharedCast.some(name => restrainedPerson(beforeText, name) && restrainedPerson(currentText, name))
+    && !/(?:解缚|松绑|解开.{0,8}(?:绳|枷|镣)|挣脱|放开被押者)/.test(beforeText)
+  const kneelingPerson = (source: string, name: string) => new RegExp(
+    `${named(name)}(?:仍|依旧|继续|再次|缓缓|突然|随即|正|已|双膝|当即|立刻)?跪`,
+  ).test(source)
+  const kneeling = sharedCast.some(name => kneelingPerson(beforeText, name) && kneelingPerson(currentText, name))
+    && !/(?:起身|站起|站直)/.test(beforeText)
+  const carriedProps = ['令牌', '书卷', '竹简', '文书', '书信', '包袱', '火把', '灯笼', '长矛', '佩剑',
+    '兵器', '武器', '卷轴', '印信', '玉玺', '缰绳', '刀', '剑', '枪', '矛', '戟', '弓', '盾', '旗', '印', '灯']
+  const holding = /(?:手持|持|握|攥|拿|携|提|抱|扛|背|执|佩)/
+  const holdingPerson = (source: string, name: string, prop: string) => new RegExp(
+    `${named(name)}[^，。；,;]{0,10}${holding.source}[^，。；,;]{0,8}${prop}`,
+  ).test(source)
+  const carried = sharedCast.some(name => carriedProps.some(prop =>
+    holdingPerson(beforeText, name, prop) && holdingPerson(currentText, name, prop)))
+    && !/(?:放下|交出|递出|丢下|弃置)/.test(beforeText)
+  const retained = restrained || kneeling || carried
+  if (!retained) return undefined
+  // A substantial, observable time jump is an independent scene transition;
+  // "片刻后" and an editorial purpose alone do not excuse a continuous move.
+  const firstCurrent = beats(current)[0]
+  const observable = (beat: Value | undefined) => {
+    if (!beat) return { visual: [] as string[], audio: [] as string[] }
+    const observable = beat.observable && typeof beat.observable === 'object' && !Array.isArray(beat.observable)
+      ? beat.observable as Value : {}
+    return {
+      visual: Array.isArray(observable.visual) ? observable.visual.filter((part): part is string => typeof part === 'string') : [],
+      audio: Array.isArray(observable.audio) ? observable.audio.filter((part): part is string => typeof part === 'string') : [],
+    }
+  }
+  const currentFirstObservable = observable(firstCurrent)
+  const timeJump = [...currentFirstObservable.visual, ...currentFirstObservable.audio].some(part =>
+    /(?:次日|翌日|隔日|翌晨|次晨|第二天|数日后|几日后|多年后|数月后|一夜之后|[一二三四五六七八九十百两\d]+(?:时辰|小时|日|天|月|年)后)/.test(part))
+  if (timeJump && !/(?:随即|紧接|接着|刚被|刚刚|正被.{0,8}(?:押|带))/.test(currentText)) return undefined
+  const previousTail = observable(beats(previous).at(-1))
+  const placeNames = (setting: string) => [...new Set([setting,
+    setting.replace(/(?:内侧|外侧|附近|旁边|门前|门后|入口|出口|深处|一带)$/, ''),
+    ...['城门', '街口', '院落', '庭院', '院门', '府门', '营门', '营帐', '军营', '厅堂', '大堂', '书房', '城楼']
+      .filter(place => setting.includes(place)),
+    ...(setting.includes('院') ? ['院'] : []),
+  ].filter(place => place.length >= 2 || place === '院'))]
+  const mentionsBefore = (clause: string) => placeNames(before).some(place => clause.includes(place))
+  const mentionsAfter = (clause: string) => placeNames(after).some(place => clause.includes(place))
+  const observableMove = (part: string, channel: 'visual' | 'audio') => part.split(/[，。；,;]/)
+    .filter(clause => !/(?:省略|略去|跳过|不(?:再|另)?拍|无需拍|不呈现|不展示|已经|早已|现已)/.test(clause))
+    .some(clause => channel === 'visual'
+      ? ((mentionsBefore(clause) && /(?:离开|走出|跨出|押出|带出|牵出|抬出)/.test(clause))
+        || (mentionsAfter(clause) && /(?:走入|进入|跨入|押入|押进|带入|牵入|抬入|走进|抵达|到达|走到|押到|带到)/.test(clause))
+        || (mentionsBefore(clause) && mentionsAfter(clause)
+          && /(?:押送|押|带|扶|牵|抬|携|走|行|步|穿|跨)/.test(clause)
+          && /(?:从|由).{1,24}(?:到|至|往|入|进)/.test(clause)))
+      : /(?:脚步|马蹄|车轮|铁链|绳索|押送队伍)/.test(clause)
+        && /(?:渐远|渐近|由外向内|穿过|走入|进入|离开|移向|从.{1,12}(?:到|至|入))/.test(clause)
+        && (mentionsBefore(clause) || mentionsAfter(clause)))
+  if ([...previousTail.visual, ...currentFirstObservable.visual].some(part => observableMove(part, 'visual'))
+    || [...previousTail.audio, ...currentFirstObservable.audio].some(part => observableMove(part, 'audio'))) return undefined
+  if (options.allowApprovedEllipsis !== false && approvedEllipsisText(previous, current)) return undefined
+  return `相邻真人场景由“${before}”切到“${after}”，同一人物的关键身体或持物状态仍在延续，但已批准 requiredBeats.observable 没有可见/可听的迁移承接；请在大纲分配真实转换节拍，或将同一行动链规划为连续镜头，不能仅凭后写 bridgeAnchor 省略过程`
+}
+
 /** Annotations are a plan for local cartographic layers, never a request to
  * draw route arrows or labels in the generated map plate. Older saved shots
  * may omit this field; the new paid-video gate requires an approved plan. */
@@ -565,6 +694,10 @@ export function validateDramaOutline(output: unknown, expected: Value = {}): Val
   const firstAppearances: string[] = []
   scenes.forEach((scene, index) => {
     const path = `scenes[${index}]`
+    if (index > 0) {
+      const bridgeIssue = adjacentSceneCutBridgeIssue(scenes[index - 1], scene)
+      if (bridgeIssue) issues.push(`${path} ${bridgeIssue}`)
+    }
     if (expected.requireCharacterVisuals === true && scene.characterVisuals === undefined) issues.push(`${path}.characterVisuals 缺少本段人物年龄与场景造型设计；无人镜头填写[]，未知年龄如实标unknown`)
     if (expected.requireCharacterEquipment === true && scene.characterEquipment === undefined) issues.push(`${path}.characterEquipment 必须显式写[]或本段剧情明确要求的装备；缺失不能视为空需求`)
     if (scene.characterVisuals !== undefined) {

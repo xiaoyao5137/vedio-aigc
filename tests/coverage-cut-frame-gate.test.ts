@@ -9,8 +9,11 @@ import { executeCodeNode } from '../server/code-node.ts'
 import { collectImageEvidence } from '../server/image-evidence.ts'
 import { archiveCoverageCutSources, persistCoverageCutFirstFrameResponse } from '../server/coverage-cut-frame-storage.ts'
 import { assertCoverageCutReviewLedgerRecord } from '../server/coverage-cut-review-ledger.ts'
+import { coverageCutImageShot, coverageCutOpeningStatePrompt } from '../src/coverage-cut-frame-gate.ts'
+import { upgradeCoverageCutIdentityWorkflow, upgradeCoverageCutSpatialWorkflow } from '../src/coverage-cut-identity-workflow.ts'
+import { acceptanceTransition } from '../src/node-retry.ts'
 import { issueCoverageCutFrameApproval, validateCoverageCutVideoPayment, verifyCoverageCutFrameApproval } from '../server/coverage-cut-frame-approval.ts'
-import { validateCoverageCutPaidImageRequest, validateCoverageCutPaidVideoRequest } from '../server/coverage-cut-runtime.ts'
+import { validateCoverageCutPaidImageRequest, validateCoverageCutPaidVideoRequest, verifiedCoverageAdvisoryRetryCount } from '../server/coverage-cut-runtime.ts'
 import { buildKlingImageRequest, buildKlingVideoRequest, callKlingImage } from '../server/model-adapters.ts'
 import { modelRequestFingerprint } from '../server/model-request-key.ts'
 import { SANGUO_FIRST_FRAME_BRANCH_CODE } from '../src/code-node-presets.ts'
@@ -22,6 +25,71 @@ const shot = { id: 'scene-03', continuity: { mode: 'coverage_cut' }, firstFrameM
   visualPrompt: '张飞问严颜，严颜双腕仍缚。', camera: '同侧中近景',
   characters: ['张飞', '严颜'], worldState: { boundWrists: ['严颜'] } }
 const hash = (bytes: Buffer | string) => createHash('sha256').update(bytes).digest('hex')
+
+test('coverage first frame keeps a later clenched-hand reaction out of zero-second pixels', () => {
+  const prompt = coverageCutOpeningStatePrompt({ pacing: { beats: [
+    { textOrVocalization: '严颜说完后，张飞原本张开的手掌攥紧。' },
+  ] } })
+  assert.match(prompt, /张飞的上臂和前臂自然垂在身体旁/)
+  assert.match(prompt, /张开的手掌低垂于腰髋旁/)
+  assert.match(prompt, /不得握拳/)
+  assert.match(prompt, /明显移到已批准的新机位/)
+  assert.match(prompt, /横移机位约一至两米/)
+  assert.match(prompt, /四分之三面部/)
+  assert.match(coverageCutOpeningStatePrompt({ visualPrompt: '两名军士已分别扣住严颜两侧上臂。' }), /四人全部完整入画/)
+})
+
+test('still-image prompt excludes later storyboard actions without changing the approved shot', () => {
+  const original = { visualPrompt: '张飞手臂垂下，严颜双腕受缚。本镜实际动作依次为：张飞抬手指向院门；军士转身押解。',
+    camera: '同轴线中景，双腕可见。命令后摇摄跟随军士。', characters: ['张飞', '严颜'] }
+  const projected = coverageCutImageShot(original)
+  assert.match(projected.visualPrompt as string, /双腕受缚/)
+  assert.doesNotMatch(projected.visualPrompt as string, /张飞抬手/)
+  assert.doesNotMatch(projected.camera as string, /摇摄/)
+  assert.match(original.visualPrompt, /张飞抬手/)
+})
+
+test('timed scene 5 opening keeps the escort position without projecting later walking or dialogue', () => {
+  const original = { visualPrompt: '首帧：严颜在两名军士之间，双腕背缚；张飞留在原处，与队伍保持距离。0—1.2秒，严颜被牵着向前走，回头看张飞。1.2—5秒，严颜反问。',
+    camera: '从严颜侧前方取景，院门仍在行进方向。对白结束后轻移焦点至张飞。',
+    videoPrompt: '严颜继续向院门行走并完成反问。' }
+  const projected = coverageCutImageShot(original)
+  assert.match(projected.visualPrompt as string, /张飞留在原处/)
+  assert.doesNotMatch(projected.visualPrompt as string, /0—1.2秒|反问/)
+  assert.doesNotMatch(projected.camera as string, /轻移焦点/)
+  assert.equal(projected.videoPrompt, original.videoPrompt)
+  assert.match(original.visualPrompt, /1.2—5秒/)
+  assert.match(COVERAGE_CUT_FRAME_REVIEW_PROMPT, /被押行者不能回到出发位置/)
+})
+
+test('saved managed coverage nodes receive spatial prompts without changing custom nodes', () => {
+  const workflow = { id: 'wf-sanguo-history-drama', schemaVersion: 193, nodes: [
+    { id: 'sanguo-coverage-first-frame', prompt: '【真人同场切镜的新机位首帧】旧指令' },
+    { id: 'sanguo-coverage-review', prompt: '【同场切镜新机位首帧独立实图审核】旧指令' },
+    { id: 'custom-image', prompt: '用户指令' },
+  ] }
+  const upgraded = upgradeCoverageCutSpatialWorkflow(workflow)
+  assert.equal(upgraded.schemaVersion, 194)
+  assert.match(upgraded.nodes[0].prompt, /被押行者不得返回出发点/)
+  assert.match(upgraded.nodes[1].prompt, /世界空间位置、朝向、运动阶段/)
+  assert.equal(upgraded.nodes[2].prompt, '用户指令')
+  assert.equal(upgradeCoverageCutSpatialWorkflow(upgraded), upgraded)
+})
+
+test('advisory risk route is bound to the current saved review, image and retry count', () => {
+  const report = { passed: false, issues: ['角色外观有风险'] }
+  const route = { value: true, advisory: true, reviewPassed: false, qualityRisks: report.issues, retryCount: 7 }
+  const run = (id: string, status: string, output?: unknown) => ({ node: { id }, status, output,
+    loopGroupId: 'scene-loop', loopIndex: 3 })
+  const state = { workflowId: 'wf-sanguo-history-drama', runtimeInputs: { input: { qualityDisposition: 'manual-review-v1' } },
+    nodeRuns: [run('sanguo-coverage-first-frame', 'success'), run('sanguo-coverage-review', 'success', report),
+      { ...run('sanguo-coverage-review-route', 'success', route), branchState: { counts: { false: 6, true: 1 } } },
+      run('sanguo-coverage-approval', 'running')] }
+  assert.equal(verifiedCoverageAdvisoryRetryCount(state, report, route), 7)
+  assert.throws(() => verifiedCoverageAdvisoryRetryCount(state, report, { ...route, retryCount: 6 }), /COVERAGE_PAYMENT_BLOCKED/)
+  assert.throws(() => verifiedCoverageAdvisoryRetryCount(state, { ...report, issues: ['换成另一张图'] }, route), /COVERAGE_PAYMENT_BLOCKED/)
+  assert.throws(() => verifiedCoverageAdvisoryRetryCount({ ...state, runtimeInputs: { input: {} } }, report, route), /COVERAGE_PAYMENT_BLOCKED/)
+})
 
 test('schema 154 or 155 graph upgrades to current schema without mutating paid history', () => {
   const common = { prompt: 'kept', params: [], uploads: [], loop: {}, position: { x: 0, y: 0 }, title: 'kept' }
@@ -53,6 +121,8 @@ test('schema 154 or 155 graph upgrades to current schema without mutating paid h
     { path: 'first_frame_branch.shouldGenerateCoverageFrame', equals: true })
   assert.equal(upgraded.nodes.find(item => item.id === 'sanguo-coverage-first-frame')?.params?.find(item => item.englishName === 'referenceImage')?.value,
     '${coverage_sources.previousTail.url}')
+  assert.equal(upgraded.nodes.find(item => item.id === 'sanguo-coverage-first-frame')?.params?.find(item => item.englishName === 'referenceImages')?.value,
+    '${coverage_sources.referenceImages}')
   assert.equal(upgraded.nodes.find(item => item.id === 'sanguo-video')?.params?.find(item => item.englishName === 'referenceImages')?.value,
     '${coverage_video_references.referenceImages}')
   assert.equal(upgraded.edges.some(edge => edge.from === branch.id && edge.to === video.id), false)
@@ -62,6 +132,45 @@ test('schema 154 or 155 graph upgrades to current schema without mutating paid h
   assert.equal(upgradeCoverageCutFrameWorkflow({ ...workflow, schemaVersion: 155 }).schemaVersion, 157)
   const unsupported = { ...workflow, schemaVersion: 153 }
   assert.equal(upgradeCoverageCutFrameWorkflow(unsupported), unsupported)
+})
+
+test('schemas 188 and 189 add named identity inputs to the pending image node without changing old snapshots', () => {
+  const original = { id: 'wf-sanguo-history-drama', schemaVersion: 188, nodes: [{
+    id: 'sanguo-coverage-first-frame', prompt: 'previous', params: [
+      { id: 'tail', name: 'referenceImage', englishName: 'referenceImage', type: 'image', required: false, value: '${coverage_sources.previousTail.url}' },
+    ],
+  }, { id: 'sanguo-coverage-review' }] }
+  const next = upgradeCoverageCutIdentityWorkflow(original)
+  assert.equal(next.schemaVersion, 190)
+  assert.equal(original.nodes[0].params.length, 1)
+  assert.equal(next.nodes[0].params.find(item => item.englishName === 'referenceBindings')?.value,
+    '${coverage_sources.referenceBindings}')
+  assert.equal(next.nodes[0].params.find(item => item.englishName === 'singleFrame')?.value, 'true')
+  assert.deepEqual(next.nodes[1].acceptance, { passedPath: 'passed', retryFrom: 'sanguo-coverage-first-frame',
+    maxAttempts: 3, feedbackPath: 'issues' })
+  assert.equal(upgradeCoverageCutIdentityWorkflow(next), next)
+  assert.equal(upgradeCoverageCutIdentityWorkflow({ ...original, schemaVersion: 189 }).schemaVersion, 190)
+})
+
+test('failed identity review retries the same image and never reaches video', () => {
+  const context = { shot_script: shot }
+  const runs = [
+    { node: { id: 'sanguo-coverage-first-frame', resultVar: 'first_frame', kind: 'image' },
+      status: 'success', context, inputContext: context, durationMs: 1, loopGroupId: 'scenes', loopIndex: 3 },
+    { node: { id: 'sanguo-coverage-evidence', resultVar: 'coverage_evidence', kind: 'http' },
+      status: 'success', context, inputContext: context, durationMs: 1, loopGroupId: 'scenes', loopIndex: 3 },
+    { node: { id: 'sanguo-coverage-review', resultVar: 'coverage_review', kind: 'text',
+      acceptance: { passedPath: 'passed', retryFrom: 'sanguo-coverage-first-frame', maxAttempts: 3, feedbackPath: 'issues' } },
+      status: 'success', context, inputContext: context, durationMs: 1, loopGroupId: 'scenes', loopIndex: 3 },
+  ]
+  const first = acceptanceTransition(runs, 2, { passed: false, issues: ['张飞被士兵顶替'] })!
+  assert.equal(first.index, 0)
+  assert.equal(first.exhausted, false)
+  assert.equal(first.runs[0].status, 'idle')
+  const exhausted = acceptanceTransition(runs.map(run => ({ ...run, attempt: 3 })), 2,
+    { passed: false, issues: ['仍无法核实张飞身份'] })!
+  assert.equal(exhausted.exhausted, true)
+  assert.equal(exhausted.runs[2].status, 'failed')
 })
 
 test('precheck rejects a planned/stale tail before an image purchase', async () => {
@@ -86,7 +195,7 @@ test('archived originals, signed visual evidence and paid gate bind exact bytes 
   const root = await mkdtemp(path.join(tmpdir(), 'coverage-frame-'))
   try {
     const dir = path.join(root, 'public/generated'); await mkdir(dir, { recursive: true })
-    const pixels = async (r: number, g: number, b: number) => sharp({ create: { width: 160, height: 90,
+    const pixels = async (r: number, g: number, b: number) => sharp({ create: { width: 320, height: 180,
       channels: 3, background: { r, g, b } } }).png().toBuffer()
     await writeFile(path.join(dir, 'previous.png'), await pixels(60, 50, 40))
     await writeFile(path.join(dir, 'zhang.png'), await pixels(20, 30, 40))
@@ -108,12 +217,20 @@ test('archived originals, signed visual evidence and paid gate bind exact bytes 
     const imageResponse = await callKlingImage({ id: 'kling-image-3', name: 'Kling Image 3', provider: 'Kling',
       capability: 'image', settings: { model: 'kling-v3', apiKey: 'fixture-key',
         endpoint: 'https://api.example.test/v1/images/generations', pollIntervalMs: '100' } },
-    '同侧新机位', { referenceImage: sources.previousTail.url, imageEdit: true, aspectRatio: '16:9' }, {
+    '同侧新机位', { referenceImage: sources.previousTail.url, referenceImages: sources.referenceImages,
+      referenceBindings: sources.referenceBindings, coverageSources: sources, imageEdit: true, aspectRatio: '16:9' }, {
       generatedAssetsDirectory: dir,
       fetch: async (url, init) => {
         if (init?.method === 'POST') {
           assert.match(String(url), /\/omni-image$/)
-          assert.equal((JSON.parse(String(init.body)) as { image_list: unknown[] }).image_list.length, 1)
+          const request = JSON.parse(String(init.body)) as { image_list: Array<{ image: string }>; prompt: string }
+          assert.equal(request.image_list.length, 3)
+          for (const [index, url] of [sources.previousTail.url, ...sources.referenceImages].entries()) {
+            assert.equal(request.image_list[index].image,
+              (await readFile(path.join(root, 'public', url))).toString('base64'))
+          }
+          assert.match(request.prompt, /<<<image_2>>> 是张飞已选定的人物三视图/)
+          assert.match(request.prompt, /<<<image_3>>> 是严颜已选定的人物三视图/)
           return new Response(JSON.stringify({ code: 0, data: { task_id: 'paid-image-fixture', task_status: 'submitted' } }),
             { status: 200, headers: { 'Content-Type': 'application/json' } })
         }
@@ -151,10 +268,31 @@ test('archived originals, signed visual evidence and paid gate bind exact bytes 
     const accepted = validateCoverageCutFrameReview(report, evidence, shot, sources.previousTail, sources.referenceBindings)
     assert.equal(accepted.frames[1].sourceUrl, frameUrl)
     assert.deepEqual(accepted.offscreenNotes, report.offscreenNotes)
+    const advisory = validateCoverageCutFrameReview({ ...report, passed: false,
+      hardChecks: { ...report.hardChecks, newCameraPosition: false },
+      issues: ['新机位变化不够明显'] }, evidence, shot, sources.previousTail, sources.referenceBindings)
+    assert.equal(advisory.passed, false)
+    assert.equal(advisory.reviewPassed, false)
+    assert.equal(advisory.qualityReview.status, 'needs_attention')
+    assert.equal(advisory.qualityRisks.length, 2)
+    await assert.rejects(issueCoverageCutFrameApproval({ review: { ...report, passed: false,
+      hardChecks: { ...report.hardChecks, identityConsistent: false }, issues: ['张飞被士兵顶替'] },
+      evidence, shot, previousTail: sources.previousTail, referenceBindings: sources.referenceBindings,
+      reviewExecutionId: 'model-run-rejected-fixture' }, root), /COVERAGE_FRAME_APPROVAL_INVALID/)
+    const risky = await issueCoverageCutFrameApproval({ review: { ...report, passed: false,
+      hardChecks: { ...report.hardChecks, identityConsistent: false }, issues: ['张飞被士兵顶替'] },
+      evidence, shot, previousTail: sources.previousTail, referenceBindings: sources.referenceBindings,
+      reviewExecutionId: 'model-run-rejected-fixture', advisoryRetryCount: 7 }, root)
+    assert.equal(risky.passed, true)
+    assert.equal(risky.reviewPassed, false)
+    assert.equal(risky.qualityReview.canProceed, true)
+    assert.ok(risky.qualityRisks.some(item => item.code === 'coverage_cut_review_issue'))
+    assert.equal(verifyCoverageCutFrameApproval(risky, root).signature, risky.signature)
     assert.throws(() => validateCoverageCutFrameReview({ ...report, offscreenNotes: undefined },
       evidence, shot, sources.previousTail, sources.referenceBindings), /COVERAGE_CUT_FRAME_REJECTED/)
+    const wrappedReport = { ...report, raw: { providerResponse: 'original' }, model: 'codex-local-vision' }
     const record = { id: 'model-run-offline-fixture', channel: 'workflow', workflow_id: 'wf-sanguo-history-drama',
-      node_id: 'sanguo-coverage-review', capability: 'text', provider: 'Codex', status: 'succeeded',
+      node_id: 'sanguo-coverage-review', model_id: 'codex-local-vision', capability: 'text', provider: 'Codex', status: 'succeeded',
       request_data: { fingerprint: 'a'.repeat(64),
         prompt: renderWorkflowTemplate(COVERAGE_CUT_FRAME_REVIEW_PROMPT, { coverage_evidence: evidence, shot_script: shot }),
         params: { evidence, shot, previousTail: sources.previousTail, referenceBindings: sources.referenceBindings,
@@ -162,10 +300,37 @@ test('archived originals, signed visual evidence and paid gate bind exact bytes 
         reviewImageHashes: await Promise.all(evidence.reviewImages.map(async url => ({ url,
           sha256: hash(await readFile(path.join(root, 'public', url))) }))) },
       response_data: { text: JSON.stringify(report) } }
-    const reviewExecutionId = assertCoverageCutReviewLedgerRecord(record, report, { evidence, shot,
+    const reviewExecutionId = assertCoverageCutReviewLedgerRecord(record, wrappedReport, { evidence, shot,
       previousTail: sources.previousTail, referenceBindings: sources.referenceBindings,
       reviewImages: evidence.reviewImages }, root)
-    const certificate = await issueCoverageCutFrameApproval({ review: report, evidence, shot,
+    const reorder = (value: unknown): unknown => Array.isArray(value) ? value.map(reorder)
+      : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).reverse()
+        .map(([key, item]) => [key, reorder(item)])) : value
+    assert.equal(assertCoverageCutReviewLedgerRecord(record, wrappedReport,
+      { evidence: reorder(evidence), shot: reorder(shot), previousTail: sources.previousTail,
+        referenceBindings: sources.referenceBindings, reviewImages: evidence.reviewImages }, root), reviewExecutionId)
+    const longShot = { ...shot, videoPrompt: '原镜头动作。'.repeat(19000) }
+    const longPrompt = renderWorkflowTemplate(COVERAGE_CUT_FRAME_REVIEW_PROMPT,
+      { coverage_evidence: evidence, shot_script: longShot })
+    assert.ok(longPrompt.length > 100000)
+    const longRecord = { ...record, request_data: { ...record.request_data,
+      prompt: `${longPrompt.slice(0, 100000)}[日志截断，共${longPrompt.length}字符]`,
+      params: { ...record.request_data.params, shot: longShot } },
+    response_data: { ...record.response_data, raw: { promptSha256: hash(Buffer.from(longPrompt)) } } }
+    assert.equal(assertCoverageCutReviewLedgerRecord(longRecord, wrappedReport,
+      { evidence, shot: longShot, previousTail: sources.previousTail,
+        referenceBindings: sources.referenceBindings, reviewImages: evidence.reviewImages }, root), reviewExecutionId)
+    assert.throws(() => assertCoverageCutReviewLedgerRecord({ ...longRecord,
+      response_data: { ...longRecord.response_data, raw: { promptSha256: '0'.repeat(64) } } },
+    wrappedReport, { evidence, shot: longShot, previousTail: sources.previousTail,
+      referenceBindings: sources.referenceBindings, reviewImages: evidence.reviewImages }, root), /COVERAGE_REVIEW_PROMPT_MISMATCH/)
+    assert.throws(() => assertCoverageCutReviewLedgerRecord(record, { ...wrappedReport, model: 'other' }, { evidence, shot,
+      previousTail: sources.previousTail, referenceBindings: sources.referenceBindings,
+      reviewImages: evidence.reviewImages }, root), /COVERAGE_REVIEW_MISMATCH/)
+    assert.throws(() => assertCoverageCutReviewLedgerRecord(record, { ...wrappedReport, unknown: true }, { evidence, shot,
+      previousTail: sources.previousTail, referenceBindings: sources.referenceBindings,
+      reviewImages: evidence.reviewImages }, root), /COVERAGE_REVIEW_MISMATCH/)
+    const certificate = await issueCoverageCutFrameApproval({ review: wrappedReport, evidence, shot,
       previousTail: sources.previousTail, referenceBindings: sources.referenceBindings,
       reviewExecutionId }, root)
     assert.equal(verifyCoverageCutFrameApproval(certificate, root).signature, certificate.signature)
@@ -186,12 +351,16 @@ test('archived originals, signed visual evidence and paid gate bind exact bytes 
     assert.throws(() => validateCoverageCutPaidVideoRequest({ ...paidRequest,
       params: { ...paidRequest.params, coverageCutFrameGate: undefined } }, undefined, root), /COVERAGE_FRAME_APPROVAL_INVALID/)
     const imageNodeRequest = { model: { id: 'i', provider: 'Kling', capability: 'image', settings: { model: 'kling-v3' } },
-      prompt: '同轴新机位', params: { coverageSources: sources, referenceImage: sources.previousTail.url, imageEdit: true },
+      prompt: '同轴新机位', params: { coverageSources: sources, referenceImage: sources.previousTail.url,
+      referenceImages: sources.referenceImages, referenceBindings: sources.referenceBindings,
+      imageEdit: true, singleFrame: true },
       executionContext: { workflowId: 'wf-sanguo-history-drama', nodeId: 'sanguo-coverage-first-frame' } }
     assert.doesNotThrow(() => validateCoverageCutPaidImageRequest({ ...imageNodeRequest, executionContext: undefined }, root))
     assert.doesNotThrow(() => validateCoverageCutPaidImageRequest(imageNodeRequest, root))
     assert.throws(() => validateCoverageCutPaidImageRequest({ ...imageNodeRequest,
       params: { ...imageNodeRequest.params, referenceImage: '/generated/another.png' } }, root), /COVERAGE_PAYMENT_BLOCKED/)
+    assert.throws(() => validateCoverageCutPaidImageRequest({ ...imageNodeRequest,
+      params: { ...imageNodeRequest.params, referenceImages: [...sources.referenceImages].reverse() } }, root), /COVERAGE_PAYMENT_BLOCKED/)
     const resumeRequest = { ...paidRequest, params: { continuityMode: 'coverage_cut', visualTreatment: 'live_action',
       resumeTaskId: 'task-already-bought' } }
     assert.throws(() => validateCoverageCutPaidVideoRequest(resumeRequest, undefined, root), /COVERAGE_PAYMENT_BLOCKED/,
@@ -221,8 +390,10 @@ test('archived originals, signed visual evidence and paid gate bind exact bytes 
     await writeFile(path.join(root, 'public', frameUrl), await pixels(0, 0, 0))
     assert.throws(() => validateCoverageCutVideoPayment(videoParams, root), /COVERAGE_FRAME_APPROVAL_INVALID/)
     const imageRequest = buildKlingImageRequest({ id: 'i', name: 'Kling image', provider: 'Kling', capability: 'image',
-      settings: { model: 'kling-v3' } }, '同轴新机位', { referenceImage: sources.previousTail.url, imageEdit: true, aspectRatio: '16:9' })
+      settings: { model: 'kling-v3' } }, '同轴新机位', { referenceImage: sources.previousTail.url,
+      referenceImages: sources.referenceImages, referenceBindings: sources.referenceBindings,
+      coverageSources: sources, imageEdit: true, aspectRatio: '16:9' })
     assert.equal(imageRequest.model_name, 'kling-v3-omni')
-    assert.equal((imageRequest.image_list as unknown[]).length, 1, 'image edit uses one real tail; sheets are independently reviewed')
+    assert.equal((imageRequest.image_list as unknown[]).length, 3)
   } finally { await rm(root, { recursive: true, force: true }) }
 })

@@ -18,6 +18,57 @@ const report = { version: 'principle-review-v1', decision: 'pass', issues: [] as
 const context = () => ({ shot_script: structuredClone(shot), video_take: structuredClone(take), video_evidence: structuredClone(media), media_review: structuredClone(report) })
 const eraFixture = () => JSON.parse(readFileSync(new URL('./fixtures/principle-media-fuik-era.json', import.meta.url), 'utf8'))
 
+test('tail continuation requires a bound paid reference and measured first-frame match', async () => {
+  const previousTail = '/generated/previous-actual-tail.jpg'
+  const continued = { ...context(), first_frame: { url: previousTail },
+    shot_script: { ...structuredClone(shot), continuity: { mode: 'tail_continuation' } },
+    video_take: { ...structuredClone(take), params: { ...take.params, referenceImage: previousTail } },
+    video_evidence: { ...structuredClone(media), evidenceRequest: { previousTail }, firstFrameDifference: .04 } }
+  assert.equal(acceptPrincipleMedia(continued, { maxFirstFrameDifference: .1 }).passed, true)
+  assert.equal(acceptPrincipleMedia({ ...continued, video_evidence: { ...continued.video_evidence, firstFrameDifference: 0 } },
+    { maxFirstFrameDifference: .1 }).passed, true)
+  const code = PRINCIPLE_MEDIA_RUNTIME_CODE + '\nreturn principleMediaQuality.acceptMedia(context,params);'
+  const sandbox = await executeCodeNode({ code, context: continued, params: { maxFirstFrameDifference: .1 } })
+  assert.equal(sandbox.passed, true)
+  for (const changed of [
+    { ...continued, video_evidence: { ...continued.video_evidence, firstFrameDifference: undefined } },
+    { ...continued, video_evidence: { ...continued.video_evidence, evidenceRequest: { previousTail: '/generated/stale.jpg' } } },
+    { ...continued, video_take: { ...continued.video_take, params: { ...continued.video_take.params, referenceImage: '/generated/stale.jpg' } } },
+    { ...continued, first_frame: { url: '/generated/stale.jpg' } },
+  ]) {
+    assert.throws(() => acceptPrincipleMedia(changed), /MEDIA_EVIDENCE_MISSING: 连续镜头/)
+    await assert.rejects(executeCodeNode({ code, context: changed }), /MEDIA_EVIDENCE_MISSING: 连续镜头/)
+  }
+  const mismatched = { ...continued, video_evidence: { ...continued.video_evidence, firstFrameDifference: .25 } }
+  assert.throws(() => acceptPrincipleMedia(mismatched, { qualityDisposition: 'manual-review-v1' }), /VIDEO_QUALITY_REJECTED: 连续镜头实际首帧偏离/)
+  await assert.rejects(executeCodeNode({ code, context: mismatched, params: { qualityDisposition: 'manual-review-v1' } }),
+    /VIDEO_QUALITY_REJECTED: 连续镜头实际首帧偏离/)
+})
+
+test('independent narration rejects preserved audio with two empty speech detectors even in manual review', async () => {
+  const narrated = '/generated/narrated-' + 'a'.repeat(64) + '.mp4'
+  const input = { ...context(), shot_script: { ...structuredClone(shot), audioType: '旁白', audioText: '旁白：今日告辞。' },
+    video_take: { ...structuredClone(take), url: narrated },
+    video_evidence: { ...structuredClone(media), originalUrl: narrated, sha256: 'b'.repeat(64),
+      independentNarrationTransfer: { evidenceRef: media.evidenceUrl, originalUrl: narrated, audioRole: 'narration',
+        outputVideoSha256: 'b'.repeat(64), pictureSha256: 'c'.repeat(64), mixerVersion: 5,
+        sourceSpeechIsolation: { version: 'source-speech-isolation-v1', status: 'unverified',
+          pictureSha256: 'c'.repeat(64), mixerVersion: 5 } } } }
+  const code = PRINCIPLE_MEDIA_RUNTIME_CODE + '\nreturn principleMediaQuality.acceptMedia(context,params);'
+  assert.throws(() => acceptPrincipleMedia(input, { qualityDisposition: 'manual-review-v1' }), /NARRATION_SOURCE_ISOLATION_UNVERIFIED/)
+  await assert.rejects(executeCodeNode({ code, context: input, params: { qualityDisposition: 'manual-review-v1' } }),
+    /NARRATION_SOURCE_ISOLATION_UNVERIFIED/)
+  input.video_evidence.independentNarrationTransfer.mixerVersion = 6
+  input.video_evidence.independentNarrationTransfer.sourceSpeechIsolation = { version: 'source-speech-isolation-v1',
+    status: 'confirmed', mode: 'full-source-mute', pictureSha256: 'c'.repeat(64), mixerVersion: 6 }
+  assert.equal(acceptPrincipleMedia(input, { qualityDisposition: 'manual-review-v1' }).passed, true)
+  input.shot_script.audioType = '对白'
+  input.video_evidence.independentNarrationTransfer.audioRole = 'offscreen-dialogue'
+  assert.equal(acceptPrincipleMedia(input, { qualityDisposition: 'manual-review-v1' }).passed, true)
+  input.video_evidence.independentNarrationTransfer.sourceSpeechIsolation.status = 'unverified'
+  assert.throws(() => acceptPrincipleMedia(input, { qualityDisposition: 'manual-review-v1' }), /NARRATION_SOURCE_ISOLATION_UNVERIFIED/)
+})
+
 test('dramatic media advice uses actual evidence and leaves the current take available', () => {
   const input = context()
   const warning = { code: 'dramatic_expression', problem: '现有抽帧不足以确认告辞时的温情回应',
@@ -182,6 +233,17 @@ test('principle policy permits suggestions/unknown without claiming detailed vis
   assert.equal(result.qualityReview.rawReport.decision, 'uncertain'); assert.equal(input.media_review.decision, 'uncertain')
   const unavailable = acceptPrincipleMedia({ ...input, media_review: { reviewUnavailable: true } })
   assert.equal(unavailable.passed, true); assert.equal(unavailable.qualityReview.status, 'unavailable'); assert.equal(unavailable.visualReview.passed, false)
+})
+test('accepted media retains the signed coverage cut warning on its own clip', () => {
+  const input = context()
+  const risk = { code: 'coverage_cut_check_failed', check: 'identityConsistent' }
+  const accepted = acceptPrincipleMedia({ ...input, video_take: {
+    ...input.video_take, params: { ...input.video_take.params,
+      coverageCutFrameGate: { reviewPassed: false, qualityRisks: [risk] } },
+  } }, { qualityDisposition: 'manual-review-v1' })
+  assert.equal(accepted.passed, true)
+  assert.deepEqual(accepted.qualityRisks, [risk])
+  assert.equal(accepted.qualityReview.status, 'needs_attention')
 })
 test('confirmed principle defects and unusable technical media remain blocked', () => {
   const input = context(); input.media_review.decision = 'revise'; input.media_review.issues = [{ code: 'wrong_character', problem: '主演变为儿童', repair: '恢复成年主演', evidence: { source: 'frame', frameIndices: [0], finding: '首帧明确为儿童' } }]

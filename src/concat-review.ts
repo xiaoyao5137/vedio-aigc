@@ -117,9 +117,25 @@ export function aggregateConcatReviews(params: Value, outputClips: unknown[]) {
     // target remains unresolved until the replacement has its own evidence.
     const source = changedBytes ? { targetedRepairAssessment: candidate.targetedRepairAssessment } : candidate
     const metadata: Value = {}
-    for (const key of ['generationScopeId', 'requestScopeId', 'voiceExecutionId', 'requestKey', 'qualityDisposition', 'subtitlePolicy', 'subtitleAssessment', 'speechEvidencePolicy', 'blockingSpeechIssues', 'characterVoices', 'nativeGroupVoices', 'voiceManifest', 'audioEvidenceAssessment', 'audioVisualEventReviews', 'audioVisualEvidenceAssessment', 'targetedRepairAssessment', 'pronunciationAssessment', 'technicalValidation', 'duration', 'shotId', 'hasAudio', 'meanVolumeDb']) {
+    for (const key of ['generationScopeId', 'requestScopeId', 'voiceExecutionId', 'requestKey', 'qualityDisposition', 'qualityRisks', 'riskReminder', 'subtitlePolicy', 'subtitleAssessment', 'speechEvidencePolicy', 'blockingSpeechIssues', 'characterVoices', 'nativeGroupVoices', 'voiceManifest', 'audioEvidenceAssessment', 'audioVisualEventReviews', 'audioVisualEvidenceAssessment', 'targetedRepairAssessment', 'pronunciationAssessment', 'technicalValidation', 'duration', 'shotId', 'hasAudio', 'meanVolumeDb']) {
       if (source[key] !== undefined) metadata[key] = source[key]
     }
+    const storyReview = object(source.storyMediaReview)
+    const storyEvidence = object(storyReview.videoEvidence)
+    if (storyReview.version === 'story-shot-media-review-v1') metadata.storyMediaReview = {
+      version: storyReview.version, passed: storyReview.passed, reviewStatus: storyReview.reviewStatus,
+      issues: array(storyReview.issues),
+      videoEvidence: { url: storyEvidence.url, sha256: storyEvidence.sha256, evidenceUrl: storyEvidence.evidenceUrl },
+    }
+    const sourceWarnings = array(source.qualityWarnings)
+    const advisoryWarnings: Value[] = storyReview.reviewStatus === 'uncertain'
+      ? array(storyReview.issues).filter(issue => !sourceWarnings.some(warning =>
+        object(warning).code === 'story_media_review_uncertain' && object(warning).problem === String(issue)))
+        .map(issue => ({ code: 'story_media_review_uncertain', problem: String(issue) })) : []
+    if (Object.keys(object(source.riskReminder)).length) advisoryWarnings.push({
+      code: 'story_media_review_risk', problem: String(object(source.riskReminder).message ?? ''),
+      sourceSha256: object(source.riskReminder).sourceVideoSha256,
+    } as Value)
     // Keep compact speech findings with their actual source clip. ASR success
     // says nothing about voice identity, and a later clip cannot repair a
     // previous line's missing or uncertain evidence.
@@ -136,7 +152,7 @@ export function aggregateConcatReviews(params: Value, outputClips: unknown[]) {
       audioSource: deriveAudioSourceProvenance(source),
       voiceConsistency: Object.keys(object(source.voiceConsistency)).length ? object(source.voiceConsistency) : unknownVoice(),
       qualityReview: Object.keys(object(source.qualityReview)).length ? object(source.qualityReview) : unknownQuality(),
-      qualityWarnings: changedBytes ? [{ code: 'source_bytes_changed', problem: '同一地址的视频字节已变化，旧声音及质量审查不能证明当前素材。', previousSha256: expectedHash, sourceSha256: object(clip).sha256 }] : array(source.qualityWarnings),
+      qualityWarnings: changedBytes ? [{ code: 'source_bytes_changed', problem: '同一地址的视频字节已变化，旧声音及质量审查不能证明当前素材。', previousSha256: expectedHash, sourceSha256: object(clip).sha256 }] : [...sourceWarnings, ...advisoryWarnings],
     }
   })
   const qualityWarnings = [...unscopedWarnings, ...clipReviews.flatMap(clip => [

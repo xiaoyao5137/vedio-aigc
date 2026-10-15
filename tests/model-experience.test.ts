@@ -198,7 +198,20 @@ test('Codex text experience exposes local review JSON and per-call controls with
   assert.ok(fields.every(field => !['image', 'images'].includes(field.control)), '本地原帧不走七张 dataURL 上传器')
   assert.deepEqual(fields.find(field => field.key === 'reasoningEffort')?.options?.map(item => item.value), ['', 'low', 'medium', 'high', 'xhigh', 'max', 'ultra'])
   assert.deepEqual(parseModelExperienceParams(model), { reviewImages: [], timeoutMs: 180000 })
-  for (const capability of ['image', 'video', 'audio']) assert.deepEqual(modelExperienceFields({ ...model, capability }), [])
+  for (const capability of ['video', 'audio']) assert.deepEqual(modelExperienceFields({ ...model, capability }), [])
+})
+
+test('Codex image experience exposes only supported agent controls', () => {
+  const model = { provider: 'Codex', capability: 'image', settings: { model: '', reasoningEffort: 'low', timeoutMs: '600000', executablePath: '/local/bin/codex' } }
+  const fields = modelExperienceFields(model)
+  assert.deepEqual(fields.map(field => field.key), ['reasoningEffort', 'timeoutMs'])
+  assert.equal(fields[1]?.defaultValue, '600000')
+  assert.deepEqual(parseModelExperienceParams(model), { reasoningEffort: 'low', timeoutMs: 600000 })
+  const restored = restoreModelExperienceRequest(model, { prompt: '生成茶杯照片', params: { timeoutMs: 900000, size: '1024x1024' } })
+  assert.deepEqual(restored.values, { timeoutMs: '900000' })
+  assert.deepEqual(restored.omittedFields, [])
+  assert.deepEqual(parseModelExperienceParams(model, restored.values), { reasoningEffort: 'low', timeoutMs: 900000 })
+  assert.throws(() => parseModelExperienceParams(model, { timeoutMs: '3600001' }), /调用超时（ms）不能大于 3600000/)
 })
 
 test('Codex review requests preserve complete local-frame arrays and detail configuration across replay', () => {

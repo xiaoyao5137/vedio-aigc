@@ -37,12 +37,21 @@ export const coverageCutShotSha256 = (shot: unknown) => sha256(canonical(shot))
 
 type Approval = ReturnType<typeof validateCoverageCutFrameReview> & { reviewExecutionId: string;
   reviewSha256: string; evidenceSha256: string; shotSha256: string; sourceSha256s: string[];
-  referenceSha256s: string[]; previousTailSourceUrl: string; signature: string }
+  referenceSha256s: string[]; previousTailSourceUrl: string; signature: string;
+  advisoryRetryCount?: number }
 
 /** Re-read all original images and model-viewed JPEGs, not only their URLs. */
 export function verifyCoverageCutFrameApproval(certificate: unknown, root = process.cwd()): Approval {
   const value = object(certificate)
+  const review = object(value.qualityReview)
+  const clean = value.reviewPassed === true && Array.isArray(value.qualityRisks)
+    && value.qualityRisks.length === 0
+  const advisory = value.reviewPassed === false && Array.isArray(value.qualityRisks)
+    && value.qualityRisks.length > 0 && review.status === 'needs_attention'
+    && review.canProceed === true && review.manualDecisionRequired === false
+    && Number.isSafeInteger(value.advisoryRetryCount) && Number(value.advisoryRetryCount) >= 7
   if (value.version !== 'coverage-cut-frame-gate-v1' || value.passed !== true
+    || !(clean || advisory)
     || !Array.isArray(value.frames) || value.frames.length !== 2
     || !Array.isArray(value.assets) || value.assets.length < 1 || value.assets.length > 2
     || !Array.isArray(value.sourceSha256s) || value.sourceSha256s.length !== 2 + value.assets.length
@@ -76,7 +85,8 @@ export function verifyCoverageCutFrameApproval(certificate: unknown, root = proc
 /** Only the HTTP endpoint may call this after matching the successful visual
  * model ledger row against the managed prompt and the exact reviewed bytes. */
 export async function issueCoverageCutFrameApproval(input: { review: unknown; evidence: unknown;
-  shot: unknown; previousTail: unknown; referenceBindings: unknown; reviewExecutionId: string },
+  shot: unknown; previousTail: unknown; referenceBindings: unknown; reviewExecutionId: string;
+  advisoryRetryCount?: number },
 root = process.cwd()): Promise<Approval> {
   if (!/^model-run-[\w-]+$/.test(input.reviewExecutionId)) invalid('缺少独立视觉审核执行 ID')
   const evidence = object(input.evidence), reportUrl = evidence.evidenceUrl
@@ -88,8 +98,14 @@ root = process.cwd()): Promise<Approval> {
     || sha256(JSON.stringify(saved.items)).slice(0, 24) !== (reportUrl as string).match(/([a-f0-9]{24})\.json$/)?.[1]) {
     invalid('提交的采证与本机固定报告不一致')
   }
-  const base = validateCoverageCutFrameReview(input.review, saved, input.shot,
+  const reviewed = validateCoverageCutFrameReview(input.review, saved, input.shot,
     input.previousTail, input.referenceBindings)
+  const advisory = !reviewed.passed && Number.isSafeInteger(input.advisoryRetryCount)
+    && Number(input.advisoryRetryCount) >= 7
+  if (!reviewed.passed && !advisory) invalid('首帧身份或连续性实图审核未通过；请重画首帧再验收')
+  const base = advisory ? { ...reviewed, passed: true,
+    qualityReview: { status: 'needs_attention', canProceed: true, manualDecisionRequired: false },
+    advisoryRetryCount: input.advisoryRetryCount } : reviewed
   const sourceSha256s: string[] = [], referenceSha256s: string[] = []
   for (const [index, raw] of (saved.items as unknown[]).entries()) {
     const item = object(raw), frame = [...base.frames, ...base.assets][index]

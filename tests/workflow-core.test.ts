@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { aggregateLoopOutputs, applyNodeOutputToContext, availableLoopIterations, buildSceneOutlineRepairSuffix, buildStoryboardRepairSuffix, buildVariableMetadata, canAdvanceStep, containsUnicodeReplacementCharacter, deriveSceneContinuity, deriveSceneOutlineMetrics, estimateStoryboardTiming, extractTextResponse, findInspectableNodeRunIndex, findLoopSnapshotRunIndex, findNextBreakpointIndex, firstBlockingRunIndex, hasExecutionPlanMismatch, isDisplayedRunCompletedBeforeStep, refreshPendingExecutionNodes, storyboardDialogueScheduleHint, hasRemovedExecutionNodes, missingRequiredParamNames, normalizeStaticIllustrationCamera, normalizeStructuredTextOutput, parseStructuredJson, recoverInterruptedNodeRuns, repairStoryboardDialogueBindings, repairStoryboardNarrationEntrances, resolveVariableMetadata, scopedLoopNodes, serializedValuesDiffer, shouldRunNode, shouldSkipStep, validateHistoricalStoryboardSegments, validateHistoricalStructuredOutput } from '../src/workflow-core.ts'
+import { aggregateLoopOutputs, applyNodeOutputToContext, availableLoopIterations, buildSceneOutlineRepairSuffix, buildStoryboardRepairSuffix, buildVariableMetadata, canAdvanceStep, canContinueToNextBreakpoint, containsUnicodeReplacementCharacter, deriveSceneContinuity, deriveSceneOutlineMetrics, estimateStoryboardTiming, extractTextResponse, findInspectableNodeRunIndex, findLoopSnapshotRunIndex, findNextBreakpointIndex, firstBlockingRunIndex, hasExecutionPlanMismatch, isDisplayedRunCompletedBeforeStep, refreshPendingExecutionNodes, storyboardDialogueScheduleHint, hasRemovedExecutionNodes, missingRequiredParamNames, normalizeStaticIllustrationCamera, normalizeStructuredTextOutput, parseStructuredJson, recoverInterruptedNodeRuns, repairStoryboardDialogueBindings, repairStoryboardNarrationEntrances, resolveVariableMetadata, scopedLoopNodes, serializedValuesDiffer, shouldRunNode, shouldSkipStep, validateHistoricalStoryboardSegments, validateHistoricalStructuredOutput, validationResultVariables } from '../src/workflow-core.ts'
 
 test('actual parenthetical role labels bind to dialogue without endless false repairs', () => {
   const candidate = JSON.parse(readFileSync(new URL('./fixtures/storyboard-parenthetical-speaker.json', import.meta.url), 'utf8'))
@@ -92,6 +92,12 @@ test('live execution snapshots are invalidated when a required media input is ad
   assert.equal(hasExecutionPlanMismatch(current, matching), false)
 })
 
+test('a changed uploaded reference invalidates a source-bound media execution', () => {
+  const oldNode = { id: 'video', kind: 'video', params: [], uploads: [{ id: 'reference', url: '/generated/old.png' }] }
+  const current = { nodes: [{ ...oldNode, uploads: [{ id: 'reference', url: '/generated/new.png' }] }], edges: [] }
+  assert.equal(hasExecutionPlanMismatch(current, [{ node: oldNode }]), true)
+})
+
 test('direct retries restart at the earliest unfinished prerequisite', () => {
   const runs = [
     { status: 'success' as const },
@@ -151,6 +157,13 @@ test('single-step debug only advances after the current step succeeds', () => {
   assert.equal(canAdvanceStep('success', 2, 3), false)
   assert.equal(canAdvanceStep('skipped', 0, 3), true)
   assert.equal(canAdvanceStep('success', -1, 3), false)
+})
+
+test('continue to breakpoint stops offering an action once a completed record has no pending runs', () => {
+  const completed = Array.from({ length: 16 }, () => ({ status: 'success' as const }))
+  assert.equal(canContinueToNextBreakpoint(completed, 15), false)
+  assert.equal(canContinueToNextBreakpoint([...completed.slice(0, 12), { status: 'idle' }, ...completed.slice(13)], 11), true)
+  assert.equal(canContinueToNextBreakpoint([{ status: 'success' }, { status: 'failed' }, { status: 'idle' }], 1), false)
 })
 
 test('single-step debug finds the next node breakpoint, including repeated loop runs', () => {
@@ -978,6 +991,31 @@ test('code node context patches merge nested input values and retain the node ou
   assert.deepEqual(context.input, { episode_number: 41, episode_title: '符水与饥民' })
   assert.equal(context.prior, true)
   assert.equal(context.episode_context, output)
+})
+
+test('context patches cannot replace another validation result while ordinary and own outputs still work', () => {
+  const validationResultVars = validationResultVariables([
+    { kind: 'validation', resultVar: 'quality_report' },
+    { kind: 'validation', resultVar: 'media_report' },
+    { kind: 'code', resultVar: 'ordinary' },
+  ])
+  const original = { quality_report: { passed: true }, media_report: { passed: true }, input: { topic: 'kept' } }
+  const forged = { contextPatch: { quality_report: { passed: false }, input: { topic: 'changed' } } }
+  assert.throws(() => applyNodeOutputToContext(original, 'ordinary', forged,
+    { validationResultVars, sourceKind: 'code' }), /VALIDATION_RESULT_CONTEXT_PATCH_CONFLICT/)
+  assert.deepEqual(original, { quality_report: { passed: true }, media_report: { passed: true }, input: { topic: 'kept' } })
+  assert.throws(() => applyNodeOutputToContext(original, 'media_report',
+    { passed: true, contextPatch: { quality_report: { passed: false } } },
+    { validationResultVars, sourceKind: 'validation' }), /VALIDATION_RESULT_CONTEXT_PATCH_CONFLICT/)
+  const own = { passed: true, contextPatch: { quality_report: { passed: false }, input: { topic: 'changed' } } }
+  const accepted = applyNodeOutputToContext(original, 'quality_report', own,
+    { validationResultVars, sourceKind: 'validation' })
+  assert.equal(accepted.quality_report, own, 'the validation node owns its direct result even when it patches its own name')
+  assert.deepEqual(accepted.input, { topic: 'changed' })
+  const ordinary = applyNodeOutputToContext(original, 'ordinary', { contextPatch: { input: { count: 1 } } },
+    { validationResultVars, sourceKind: 'code' })
+  assert.deepEqual(ordinary.input, { topic: 'kept', count: 1 })
+  assert.deepEqual(ordinary.quality_report, { passed: true })
 })
 
 

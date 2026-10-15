@@ -33,7 +33,7 @@ test('cold-start resource carries the reviewed schema 158 media graph', async ()
   assert.deepEqual(loaded, graph)
 })
 
-test('cold-start merge uses schema 158, while a saved Sanguo graph is never fetched or replaced', async () => {
+test('cold-start merge keeps the schema 158 resource and normalization applies targeted 159–161 policies', async () => {
   const graph = JSON.parse(await readFile(snapshotPath, 'utf8'))
   const server = await createServer({ server: { middlewareMode: true, hmr: false }, appType: 'custom' })
   try {
@@ -47,8 +47,14 @@ test('cold-start merge uses schema 158, while a saved Sanguo graph is never fetc
     const cold = await mergeDefaultWorkflows([], fetcher)
     const sanguo = cold.find((workflow: { id: string }) => workflow.id === graph.id)
     assert.equal(fetches, 1)
-    assert.deepEqual(JSON.parse(JSON.stringify(sanguo)), graph)
-    assert.deepEqual(JSON.parse(JSON.stringify(normalizeWorkflow(graph))), graph)
+    const executable = normalizeWorkflow(graph)
+    assert.equal(executable.schemaVersion, 161)
+    assert.deepEqual(JSON.parse(JSON.stringify(sanguo)), JSON.parse(JSON.stringify(executable)))
+    assert.deepEqual(JSON.parse(JSON.stringify(normalizeWorkflow(executable))), JSON.parse(JSON.stringify(executable)))
+    assert.match(executable.nodes.find((node: { id: string }) => node.id === 'sanguo-media-accept')?.code ?? '',
+      /PRINCIPLE_DURATION_V2_GATE_SCHEMA159/)
+    assert.match(executable.nodes.find((node: { id: string }) => node.id === 'sanguo-scene-outline')?.prompt ?? '',
+      /相邻真人短段若换到另一物理地点/)
     assert.equal(cold.length, 3)
 
     const saved = { ...graph, name: '用户保留的三国工作流名称' }

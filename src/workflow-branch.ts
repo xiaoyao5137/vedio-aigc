@@ -1,4 +1,4 @@
-import { applyNodeOutputToContext, scopedLoopNodes, type GraphNode } from './workflow-core.ts'
+import { applyNodeOutputToContext, scopedLoopNodes, validationResultVariables, type GraphNode } from './workflow-core.ts'
 import { reportFormatRetryError, reportFormatRetryFeedback, reviewRetryDiagnostics } from './review-retry.ts'
 import { invalidateRunExecution } from './run-invalidation.ts'
 import { collectTargetedRepairRetry, withTargetedRepairRetry } from './targeted-repair-retry.ts'
@@ -63,6 +63,21 @@ export function branchConfigurationErrors(workflow: RouteWorkflow): string[] {
   }
   if (orderRouteNodes(workflow).hasCycle) errors.push('普通依赖线存在循环；回路必须从分支 true / false 出口连接')
   return errors
+}
+
+/** A validation result may be handed to an explicit decision branch only when
+ * that branch is its sole successor and both outcomes have real routes. Other
+ * validation nodes keep their fail-closed behavior. */
+export function validationResultBranch(workflow: RouteWorkflow, nodeId: string): boolean {
+  const source = workflow.nodes.find(node => node.id === nodeId)
+  if (source?.kind !== 'validation') return false
+  const outgoing = workflow.edges.filter(edge => edge.from === nodeId)
+  if (outgoing.length !== 1 || outgoing[0].branch !== undefined) return false
+  const decision = workflow.nodes.find(node => node.id === outgoing[0].to)
+  if (decision?.kind !== 'branch') return false
+  return (['true', 'false'] as const).every(port =>
+    workflow.edges.filter(edge => edge.from === decision.id && edge.branch === port
+      && workflow.nodes.some(node => node.id === edge.to)).length === 1)
 }
 
 export function setBranchEdge<E extends RouteEdge>(edges: E[], from: string, port: BranchPort, to: string, id: string): E[] {
@@ -175,7 +190,9 @@ export function routeBranch<R extends BranchRun>(workflow: RouteWorkflow, runs: 
   const targetRunId = runs[targetIndex].id
   const oldState = source.branchState ?? emptyBranchState()
   const branchState = { visits: oldState.visits + 1, counts: { ...oldState.counts, [port]: oldState.counts[port] + 1 } }
-  const nextContext = applyNodeOutputToContext(inputContext, source.node.resultVar, output)
+  const protection = { validationResultVars: validationResultVariables(workflow.nodes),
+    sourceKind: source.node.kind }
+  const nextContext = applyNodeOutputToContext(inputContext, source.node.resultVar, output, protection)
   const success = { ...source, status: 'success', output, context: nextContext, branchState } as R
   const backwards = targetIndex <= index
   const rawFeedback = output && typeof output === 'object' ? (output as { feedback?: unknown }).feedback : undefined
@@ -187,7 +204,7 @@ export function routeBranch<R extends BranchRun>(workflow: RouteWorkflow, runs: 
     const repairCarry = collectTargetedRepairRetry(runs, targetIndex, index)
     const restored = { ...(runs[targetIndex].inputContext ?? {}) }
     // Explicit contextPatch is carried across a rewind; stale outputs are not.
-    const routedContext = applyNodeOutputToContext(restored, source.node.resultVar, output)
+    const routedContext = applyNodeOutputToContext(restored, source.node.resultVar, output, protection)
     history.runs = updated.slice(targetIndex).filter(r => r.status !== 'idle').map(snapshot)
     updated = updated.map((r, i) => i < targetIndex! ? r : ({
       ...invalidateRunExecution(r), attempts: r.status === 'idle' ? r.attempts : [...(r.attempts ?? []), snapshot(r)],

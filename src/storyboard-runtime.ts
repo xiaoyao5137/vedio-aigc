@@ -14,8 +14,9 @@ import {
   storyboardStatePrompt,
 } from './workflow-core.ts'
 import { historyTailSeconds, narrativeTransitionIssue } from './history-pacing.ts'
-import { cinematicContinuityIssue, cinematicShotAllowsEmptyCast, expectedEndPresentCharacters, isActorlessTableauRepresentationCut, isCinematicShot, principleMediaEvidenceIssue, principleTailWorldState, validateCinematicPresenceReview, validateCinematicWorldState } from './history-cinema.ts'
-import { boundaryText, enactedVisualTextCovers, partitionDramaBeat, projectedDramaBeatDescription } from './history-drama.ts'
+import { cinematicContinuityIssue, cinematicShotAllowsEmptyCast, expectedEndPresentCharacters, isActorlessTableauRepresentationCut, isCinematicShot, principleDurationTransitionIssue, principleMediaEvidenceIssue, principleTailWorldState, validateCinematicPresenceReview, validateCinematicWorldState } from './history-cinema.ts'
+import { adjacentSceneCutBridgeIssue, approvedSceneCutEllipsis, boundaryText,
+  canonicalJson, enactedVisualTextCovers, partitionDramaBeat, projectedDramaBeatDescription } from './history-drama.ts'
 import { storyboardAdvisories } from './storyboard-advisories.ts'
 import { repairStoryboardPacingMetadata } from './storyboard-pacing-repair.ts'
 import { normalizeRawStoryboardDurationCandidate, type StoryboardDurationNormalizationChange } from './storyboard-duration-normalization.ts'
@@ -182,14 +183,110 @@ export function storyboardContinuityContext(context: RecordValue): RecordValue {
   }
   const prior = (projectedContext.loop as RecordValue)?.previous as RecordValue | undefined
   const priorVideo = prior?.video_shot as RecordValue | undefined
+  const priorCompletion = priorVideo?.durationCompletion as RecordValue | undefined
+  const advisoryDuration = manual && priorVideo?.passed === true
+    && priorVideo.qualityDisposition === 'manual-review-v1'
+    && priorCompletion?.assessment === 'uncertain'
+    && priorCompletion.evidenceRef === priorVideo.evidenceUrl
+    && Array.isArray(priorVideo.qualityRisks)
+    && priorVideo.qualityRisks.some(value => (value as RecordValue)?.code === 'duration_evidence_limit')
+  // The approved outline owns transitions between source scenes. A storyboard
+  // bridgeAnchor cannot silently add a missing move while preserving the same
+  // restrained, carried or otherwise active physical state in a new location.
+  const approvedOutline = projectedContext.approved_scene_outline as RecordValue | undefined
+  const outlineScenes = Array.isArray(approvedOutline?.scenes) ? approvedOutline.scenes as RecordValue[] : []
+  const sourceSceneId = scene?.sourceSceneId ?? scene?.id
+  const sourceIndex = outlineScenes.findIndex(item => item?.id === sourceSceneId)
+  const authoredScene = (value: RecordValue) => {
+    const { sourceSceneId: _projection, ...authored } = value
+    void _projection
+    return authored
+  }
+  let approvedEllipsis: ReturnType<typeof approvedSceneCutEllipsis> | undefined
+  if (scene?.continuityMode === 'scene_cut') {
+    if (sourceIndex < 0 || !approvedOutline || !scene
+      || canonicalJson(authoredScene(scene)) !== canonicalJson(outlineScenes[sourceIndex]))
+      throw new Error('STORYBOARD_SCENE_BRIDGE_UNVERIFIED: 换场场景不在已批准大纲中，或场景内容被改写')
+    const projectedOutline = projectedContext.scene_outline as RecordValue | undefined
+    if (projectedOutline) {
+      const projectedScenes = Array.isArray(projectedOutline.scenes)
+        ? projectedOutline.scenes as RecordValue[] : []
+      const currentProjection = projectedScenes[sourceIndex] ?? {}
+      if (!Array.isArray(projectedOutline.scenes)
+        || currentProjection.sourceSceneId !== undefined
+          && currentProjection.sourceSceneId !== outlineScenes[sourceIndex].id
+        || canonicalJson(authoredScene(currentProjection))
+          !== canonicalJson(outlineScenes[sourceIndex]))
+        throw new Error('STORYBOARD_SCENE_BRIDGE_UNVERIFIED: 当前场景与已批准大纲不一致')
+      if (sourceIndex > 0) {
+        const priorProjection = projectedScenes[sourceIndex - 1] ?? {}
+        const priorApproved = outlineScenes[sourceIndex - 1]
+        const priorShot = prior?.shot_script as RecordValue | undefined
+        const expectedPriorProjection = priorShot
+          ? sceneFromStoryboardSegment(priorApproved, priorShot, 0, 1) : priorApproved
+        if (priorProjection.sourceSceneId !== undefined
+          && priorProjection.sourceSceneId !== priorApproved.id
+          || canonicalJson(priorProjection) !== canonicalJson(priorApproved)
+            && canonicalJson(priorProjection) !== canonicalJson(expectedPriorProjection))
+          throw new Error('STORYBOARD_SCENE_BRIDGE_UNVERIFIED: 前场投影超出受管分镜字段')
+      }
+    }
+    if (sourceIndex > 0) {
+      const previousScene = outlineScenes[sourceIndex - 1]
+      if (prior?.shot_script && (prior.shot_script as RecordValue).id !== previousScene.id)
+        throw new Error('STORYBOARD_SCENE_BRIDGE_UNVERIFIED: 上一已验收分镜与批准大纲前场不一致')
+      const issue = adjacentSceneCutBridgeIssue(previousScene, outlineScenes[sourceIndex])
+      if (issue) throw new Error(`STORYBOARD_SCENE_BRIDGE_UNVERIFIED: ${issue}`)
+      approvedEllipsis = approvedSceneCutEllipsis(previousScene, outlineScenes[sourceIndex])
+    }
+  }
+  if (approvedEllipsis && priorVideo?.qualityPolicy !== 'principle-v1')
+    throw new Error('STORYBOARD_NARRATIVE_INCOMPLETE: 批准省略切场缺少前镜原则审查和实测完成证据')
   if (priorVideo?.qualityPolicy === 'principle-v1') {
     const shot = prior?.shot_script as RecordValue | undefined
     const issue = principleMediaEvidenceIssue(priorVideo, shot)
     if (issue || !shot?.id) throw new Error(`STORYBOARD_CONTINUITY_EVIDENCE_MISSING: ${issue ?? '缺少前镜分镜来源'}`)
     const progress = shot.storyProgress as RecordValue | undefined
-    if (scene?.dramaticUnitId && (!progress || (progress.status === 'continuing'
-      && (scene.dramaticUnitId !== progress.unitId || scene.continuityFromPrevious !== true)))) {
-      noteContentIssue('STORYBOARD_NARRATIVE_INCOMPLETE: 前镜剧情尚未结束，必须先续完原单元，禁止换场')
+    if ((shot.pacing as RecordValue | undefined)?.version === 'duration-v2'
+      && (scene?.continuityMode === 'scene_cut' || scene?.continuityFromPrevious === false)
+      && !scene?.dramaticUnitId) {
+      throw new Error('STORYBOARD_NARRATIVE_INCOMPLETE: 换场缺少已批准 dramaticUnitId，不能绕过前镜实测完成门禁')
+    }
+    if (scene?.dramaticUnitId) {
+      if (!progress || !['continuing', 'complete'].includes(String(progress.status))) {
+        throw new Error('STORYBOARD_NARRATIVE_INCOMPLETE: 前镜缺少可靠剧情状态，禁止开始下一镜')
+      }
+      if (progress.status === 'continuing' && (scene.dramaticUnitId !== progress.unitId
+        || scene.continuityFromPrevious !== true)) {
+        throw new Error('STORYBOARD_NARRATIVE_INCOMPLETE: 前镜剧情尚未结束，必须先续完原单元，禁止换场')
+      }
+      if (progress.status === 'complete') {
+        if (scene.dramaticUnitId === progress.unitId || !Array.isArray(progress.pendingActions) || progress.pendingActions.length) {
+          throw new Error('STORYBOARD_NARRATIVE_INCOMPLETE: 前镜剧情完成声明与下一单元或待办动作相矛盾')
+        }
+        const completionIssue = principleDurationTransitionIssue(shot, priorVideo)
+        if (completionIssue) {
+          if (!advisoryDuration) throw new Error(`STORYBOARD_NARRATIVE_INCOMPLETE: ${completionIssue}；禁止凭计划结束态或尾帧静图换场`)
+          noteContentIssue(`前镜逐节拍完成状态未证实：${completionIssue}；本镜不得把未证实的束缚、行走或对白当成已观察事实，应按批准场景重新建立连续关系`)
+        }
+        if (approvedEllipsis) {
+          const tailUrl = priorVideo.lastFrameUrl
+          const frames = Array.isArray(priorVideo.frames) ? priorVideo.frames : []
+          const tail = prior?.last_frame as RecordValue | undefined
+          const review = priorVideo.visualReview as RecordValue | undefined
+          const tailEvidence = review?.endingStateEvidence as RecordValue | undefined
+          const endingState = typeof review?.endingState === 'string' ? review.endingState : ''
+          if (priorVideo.decoded !== true || typeof tailUrl !== 'string' || !tailUrl
+            || frames.at(-1) !== tailUrl || tail?.available !== true || tail.url !== tailUrl
+            || tail.source !== 'extracted-from-video' || review?.passed !== true
+            || tailEvidence?.method !== 'actual-tail-image' || tailEvidence.frame !== tailUrl
+            || !endingState || approvedEllipsis.sharedCast.some(name => !endingState.includes(name))) {
+            if (!advisoryDuration || priorVideo.decoded !== true || tail?.url !== tailUrl || frames.at(-1) !== tailUrl)
+              throw new Error('STORYBOARD_NARRATIVE_INCOMPLETE: 批准硬切需要前镜真实成片末帧和具名人物状态证据')
+            noteContentIssue('前镜实际尾帧已绑定，但人物与动作状态尚未完整证实；本镜开场须独立呈现批准的空间、人物和动作关系')
+          }
+        }
+      }
     }
     if (scene?.continuityFromPrevious !== true) return projectedContext
     const tail = prior?.last_frame as RecordValue | undefined
@@ -811,8 +908,9 @@ export async function generateHistoricalStoryboard(options: {
   // Parent allocation and child repairs share the caller's writer budget. Repeated diagnostics
   // change the repair instructions but must not silently reduce the configured attempt limit.
   const maxAttempts = resolveDramaGenerationLimit(options.expected.maxGenerationAttempts, 2, options.expected.qualityDisposition)
-  const writerPrompt = options.prompt.includes('cinematic-v1') || options.expected.requireDramaContract === true
+  const baseWriterPrompt = options.prompt.includes('cinematic-v1') || options.expected.requireDramaContract === true
     ? refreshDramaticExpressionPrompt(options.prompt, 'storyboard') : options.prompt
+  const writerPrompt = durationV2 ? `${baseWriterPrompt}\n【结构与声部校验】mapAnnotations 只属于 historical_map 路线；live_action 分镜不得输出该字段。动作正文若写“问答”、喊话或其他实际发声，必须在同一演员的 speech/vocalization 声部及可执行时间窗中落实；若批准剧情只要求动作，不要添加未经批准的交谈。` : baseWriterPrompt
   // A recovered draft receives the complete current normalizer and validator
   // before a writer request. Its preflight spends no part of the new budget.
   const hasRecoveredCandidate = candidate !== undefined
@@ -823,6 +921,7 @@ export async function generateHistoricalStoryboard(options: {
         + (durationV2 ? '\n【duration-v2 分镜执行规则】逐原sourceBeatId保留完整台词、可观察动作与主体，使用timingPolicy、deliveryStyle、beats的保守上界、dependsOn、双方overlapAllowedWith及完成证据通道。程序统一生成videoPrompt窗口、speechWindows、sampleTimes和scheduleHash，不另输出activityWindows/actionSeconds/reactionSeconds，不套用旧唯一最短时长公式。已声明无词哼唱也必须有正数预算与实际可听的完成条件；动作依赖和主体资源不得为缩短时长而删改。选择安全预算以上的允许整数时长，超15秒保留全部原义务拆段；没有实际成片时不得写observed。'
           : '\n【分镜执行规则】时间轴可用“0秒-4秒：”或“0-4秒：”。3–6段和650字符是建议，不因段数、描述长或姿态保持而重写。必须从0连续覆盖duration，保留完整台词及原动作；预算错误只修算术与边界，不把旁白时间当成无声空等。action/reaction预算及overlapWith可由已有合法窗口计算，程序会修正这些冗余字段；不能缺失必要活动或伪造实测状态。')
         + (durationV2 ? '\n【入场与正式排程】enteringCharacters 的 startSecond/endSecond 是估计值，程序按同一人物唯一的实际入场 action 编译窗口投影。完整 path 必须写入该 action 的 textOrVocalization 或 performanceInstruction；只写入手工 videoPrompt 不会进入实际发送正文。简单“人名+入内/入画”锚点允许在同人物的实际入场动作中加入持物细节，但不能删除入场、写成入场计划或旁观，也不能安排人物在入场前说话。' : '')
+        + '\n【换场首帧可核验起点】scene_cut 使用 reference 首帧时，从零秒开始押送、跨门或走近的具名执行者必须在首帧可见，列入 initialCharacters，在批准起点静止站立且留出后续路线；即使站在门外，只要已入画就不是 enteringCharacters。保留原入院/走近动作及全部束缚、押解状态，不要让执行者零秒在画外、审核时无法核对起点。'
         + (mode === 'split' ? splitInstruction : '') + suffix
         + storyboardSourceScopeInstruction(options.expected.scene as RecordValue ?? {}, Boolean(durationV2), options.expected.previousShot as RecordValue | undefined)
         + storyboardOpeningStateInstruction(options.expected) + continuityInstruction), undefined, options.canGenerate).catch(error => {
@@ -1069,11 +1168,13 @@ export function cleanStoryboardForValidation(output: RecordValue) {
 }
 
 /** Reset branch outputs per iteration in both full runs and step/resume runs. */
-export function loopIterationContext(base: RecordValue, resultVars: string[], itemVar: string, item: unknown, index: number, previous: unknown, completed: Array<{ resultVar: string; output: unknown }> = []) {
+export function loopIterationContext(base: RecordValue, resultVars: string[], itemVar: string, item: unknown, index: number, previous: unknown,
+  completed: Array<{ resultVar: string; output: unknown; kind?: string }> = [], validationResultVars?: ReadonlySet<string>) {
   const context = { ...base }
   resultVars.forEach((key) => { delete context[key] })
   let next: RecordValue = { ...context, [itemVar]: item, loop: { index: index + 1, zeroIndex: index, previous } }
-  for (const run of completed) next = applyNodeOutputToContext(next, run.resultVar, run.output)
+  for (const run of completed) next = applyNodeOutputToContext(next, run.resultVar, run.output,
+    validationResultVars ? { validationResultVars, sourceKind: run.kind ?? '' } : undefined)
   return next
 }
 

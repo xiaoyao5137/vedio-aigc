@@ -12,6 +12,20 @@ test('historical image requests reject Ofox before submission but allow text rev
   assert.doesNotThrow(() => assertHistoricalImageProvider({ executionContext, model: { provider: 'Anthropic', capability: 'text' } }))
 })
 
+test('only the signed scene-cut opening node may use Codex image generation', () => {
+  const executionContext = { workflowId: 'wf-sanguo-history-drama', nodeId: 'sanguo-scene-cut-first-frame' }
+  assert.doesNotThrow(() => assertHistoricalImageProvider({ executionContext,
+    model: { provider: 'Codex', capability: 'image' } }))
+  assert.throws(() => assertHistoricalImageProvider({ executionContext,
+    model: { provider: 'OpenAI', capability: 'image' } }), /HISTORY_IMAGE_PROVIDER_REQUIRED/)
+  assert.throws(() => assertHistoricalImageProvider({ executionContext: { ...executionContext,
+    nodeId: 'sanguo-coverage-first-frame' }, model: { provider: 'Codex', capability: 'image' } }),
+  /HISTORY_IMAGE_PROVIDER_REQUIRED/)
+  assert.throws(() => assertHistoricalImageProvider({ executionContext: { ...executionContext,
+    nodeId: 'sanguo-end-frame' }, model: { provider: 'Codex', capability: 'image' } }),
+  /HISTORY_IMAGE_PROVIDER_REQUIRED/)
+})
+
 test('historical checkpoint with exhausted Kling budget never invokes its old Ofox fallback', async () => {
   const primary = { id: 'kling-image-3', provider: 'Kling', capability: 'image', settings: {} }
   const pool = { async query(sql: string) {

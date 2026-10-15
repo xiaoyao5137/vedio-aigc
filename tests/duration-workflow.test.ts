@@ -4,6 +4,9 @@ import { upgradeDurationQuality, upgradeQualityWorkflow } from '../src/quality-n
 import { migrateBranchWorkflow, migrateBranchRuns } from '../src/branch-migration.ts'
 import { compileDurationSchedule } from '../src/duration-schedule.ts'
 import { durationCompletionRecovery } from '../src/duration-workflow.ts'
+import { durationMediaAcceptCode, refreshPendingDurationMediaAcceptRuns } from '../src/principle-workflow.ts'
+import { upgradeDurationAdvisoryWorkflow } from '../src/duration-advisory-workflow.ts'
+import { PRINCIPLE_MEDIA_RUNTIME_CODE } from '../src/principle-media-quality.ts'
 import { executeCodeNode } from '../server/code-node.ts'
 import { speechMetrics } from '../server/speech-metrics.ts'
 import { chantScene, chantShot } from './fixtures/duration-v2-chant.ts'
@@ -35,6 +38,20 @@ const paramsFor = (id: string, workflow = migrated) => Object.fromEntries(getNod
 const execute = (id: string, context: Value, params: Value = {}, workflow = migrated) => executeCodeNode({
   code: getNode(id, workflow).code!, context, params: { ...paramsFor(id, workflow), ...params } }) as Promise<Value>
 const point = (second: number) => ({ lower: second, upper: second })
+
+test('same-video native sampling excludes audio-only uncertainty windows', () => {
+  const context: Value = { shot_script: {}, video_take: { url: '/generated/take.mp4' },
+    video_evidence: { url: '/generated/take.mp4', evidenceUrl: '/generated/evidence.json', duration: 13,
+      frameTimes: [0, 2, 6, 12.9] } }
+  const completion: Value = { route: 'same-media-evidence', reasons: ['需检查绑腕过程和旁白句尾'], remainingMandatoryBeats: ['bind', 'speech'],
+    evidenceRequests: [
+      { beatId: 'speech', kind: 'audio-review', modality: 'audio', startSecond: 0, endSecond: 3 },
+      { beatId: 'bind', kind: 'native-sequence', modality: 'visual', startSecond: 2, endSecond: 8 },
+    ] }
+  const result = durationCompletionRecovery(context, completion, {})
+  assert.deepEqual(result.samplingRetryPlan.nativeSequence.windows, [{ start: 2, end: 8 }])
+  assert.equal(result.samplingRetryPlan.nativeSequence.reviewMaxFrames, 256)
+})
 
 test('duration migration recognizes the frozen pre-tail-state writer without overwriting custom or ambiguous text', () => {
   const source = structuredClone(previous), writer = source.nodes.find(node => node.id === 'sanguo-shot-script')!
@@ -220,6 +237,64 @@ test('serialized gate refuses a mismatched generation hash or another material b
   }
 })
 
+test('a frame-bound core event contradiction takes precedence over uncertain duration evidence', async () => {
+  const context = contextFixture(), quote = '军士先完成绑缚，随后张飞上前'
+  context.shot_script.videoPrompt = quote + '；保持原有三句旁白。'
+  context.media_review = { ...context.media_review, version: 'principle-review-v1', decision: 'revise', issues: [{
+    code: 'core_event_contradiction', problem: '依赖动作被提前执行', repair: '修正动作先后顺序',
+    evidence: { source: 'frame', path: 'videoPrompt', quote, frameIndices: [60, 70, 80],
+      finding: '第60帧人物已上前，第80帧绑缚才完成。' },
+  }] }
+  context.media_review.durationCompletion.checks[0].status = 'uncertain'
+  context.media_review.durationCompletion.checks[0].reason = '无法确认本节拍完成时刻。'
+  const before = structuredClone(context)
+  const accept = (input: Value) => executeCodeNode({ code: PRINCIPLE_MEDIA_RUNTIME_CODE + '\n' + durationMediaAcceptCode,
+    context: input, params: { qualityDisposition: 'manual-review-v1' } }) as Promise<Value>
+  const result = await accept(context)
+  assert.equal(result.durationCompletion.assessment, 'incomplete')
+  assert.equal(result.passed, false, 'confirmed conflict routes to a bounded repair')
+  assert.equal(result.manualDecisionRequired, false)
+  assert.equal(result.qualityReview.manualDecisionRequired, true)
+  assert.equal(result.qualityReview.principleIssues[0].code, 'core_event_contradiction')
+  assert.equal(result.qualityReview.principleIssues[0].evidence.quote, quote)
+  assert.match(result.routeError, /DURATION_REPLAN_REQUIRED/)
+  assert.equal(result.samplingRetryPlan, undefined)
+  assert.deepEqual(context, before, 'the paid take and signed review are preserved')
+  const afterRetake = structuredClone(context)
+  afterRetake.durationRepair = { previousCandidate: { id: afterRetake.shot_script.id },
+    sourceVideo: 'https://media.example.test/prior-take.mp4', issues: [{ code: 'core_event_contradiction' }] }
+  const advisory = await accept(afterRetake)
+  assert.equal(advisory.passed, true, 'a second contradictory take remains available for human review')
+  assert.equal(advisory.qualityReview.status, 'needs_attention')
+  assert.equal(advisory.durationCompletion.assessment, 'incomplete')
+  assert.equal(advisory.durationCompletion.route, 'manual-review')
+  assert.equal(advisory.qualityRisks.at(-1).code, 'core_event_contradiction')
+  assert.equal(advisory.qualityRisks.at(-1).disposition, 'human_review_after_retake')
+  assert.equal(advisory.routeError, undefined)
+  for (const mutate of [
+    (input: Value) => { input.media_review.issues[0].evidence.quote = '未批准的动作顺序' },
+    (input: Value) => { input.media_review.issues[0].evidence.frameIndices = [999] },
+    (input: Value) => { input.media_review.decision = 'uncertain' },
+  ]) {
+    const weak = structuredClone(context); mutate(weak)
+    const uncertain = await accept(weak)
+    assert.equal(uncertain.manualDecisionRequired, false)
+    assert.equal(uncertain.durationCompletion.assessment, 'uncertain')
+    assert.equal(uncertain.passed, true)
+    assert.ok(uncertain.qualityRisks.some((risk: Value) => risk.code === 'duration_completion_unverified'))
+  }
+})
+
+test('resumed video acceptance refreshes only a pending managed gate', () => {
+  const current = { id: 'sanguo-media-accept', kind: 'code', prompt: '', params: [],
+    code: 'core_event_contradiction_after_retake' }
+  const old = { ...current, code: 'old acceptance code' }
+  const runs = [{ node: old, status: 'idle' }, { node: old, status: 'success' }]
+  const refreshed = refreshPendingDurationMediaAcceptRuns({ nodes: [current] }, runs)
+  assert.equal(refreshed[0].node.code, current.code)
+  assert.equal(refreshed[1].node.code, old.code)
+})
+
 test('unknown group audio stops for same-media listening and never enters automatic paid regeneration', async () => {
   const context = contextFixture(); context.video_evidence.audioObservations = []
   const result = await execute('sanguo-media-accept', context)
@@ -232,6 +307,41 @@ test('unknown group audio stops for same-media listening and never enters automa
   await assert.rejects(() => execute('sanguo-media-accept-error-branch', { ...context, video_shot: result, branch: { counts: { false: 0 } } }), /DURATION_AUDIO_REVIEW_REQUIRED/)
 })
 
+test('manual review carries exhausted uncertain duration as explicit risk after keeping the paid video', async () => {
+  const context = contextFixture()
+  context.video_evidence.nativeSequence = {}
+  context.media_review.durationCompletion.checks[0].status = 'uncertain'
+  const before = structuredClone(context)
+  const result = await executeCodeNode({ code: PRINCIPLE_MEDIA_RUNTIME_CODE + '\n' + durationMediaAcceptCode,
+    context, params: { qualityDisposition: 'manual-review-v1' } }) as Value
+  assert.equal(result.passed, true)
+  assert.equal(result.routeError, undefined)
+  assert.equal(result.manualDecisionRequired, false)
+  assert.equal(result.qualityReview.canProceed, true)
+  assert.equal(result.durationCompletion.assessment, 'uncertain')
+  assert.ok(result.qualityRisks.some((risk: Value) => risk.code === 'duration_completion_unverified'))
+  assert.equal(result.url, context.video_evidence.url)
+  assert.deepEqual(context, before)
+})
+
+test('schema 187 refresh changes only the pending duration recovery block', () => {
+  const start = durationMediaAcceptCode.indexOf('const recovery=(function durationCompletionRecovery(')
+  const end = durationMediaAcceptCode.indexOf('return recovery;', start) + 'return recovery;'.length
+  const old = durationMediaAcceptCode.slice(0, start)
+    + `return (${durationCompletionRecovery.toString()})(context,completion,params);`
+    + durationMediaAcceptCode.slice(end)
+  const source = { id: 'wf-sanguo-history-drama', schemaVersion: 187,
+    nodes: [{ id: 'sanguo-media-accept', code: `// PRINCIPLE_POLICY_START\n${old}\n// PRINCIPLE_POLICY_END\nreturn {legacy:true};` },
+      { id: 'other', code: 'return 1;' }] }
+  const before = structuredClone(source), result = upgradeDurationAdvisoryWorkflow(source)
+  assert.equal(result.schemaVersion, 188)
+  assert.match(result.nodes[0].code, /qualityRisks/)
+  assert.ok(result.nodes[0].code.endsWith('return {legacy:true};'))
+  assert.strictEqual(result.nodes[1], source.nodes[1])
+  assert.deepEqual(source, before)
+  assert.strictEqual(upgradeDurationAdvisoryWorkflow(result), result)
+})
+
 test('uncertain visual completion preserves existing samples and the same source URL for one native review', async () => {
   const context = contextFixture(), evidence = context.video_evidence
   delete evidence.nativeSequence; delete evidence.frameReferences
@@ -242,6 +352,7 @@ test('uncertain visual completion preserves existing samples and the same source
   assert.equal(result.samplingRetryPlan.sourceUrl, context.video_take.url)
   assert.deepEqual(result.samplingRetryPlan.sampleTimes, evidence.frameTimes)
   assert.equal(result.samplingRetryPlan.nativeSequence.enabled, true)
+  assert.equal(result.samplingRetryPlan.nativeSequence.reviewMaxFrames, 256)
   assert.ok(result.samplingRetryPlan.nativeSequence.windows.every((window: Value) => window.start >= 0 && window.end <= evidence.duration))
   const exhausted = await executeCodeNode({ code: `return (${durationCompletionRecovery.toString()})(context,context.completion,params);`,
     context: { ...context, completion: result.durationCompletion, mediaSamplingRetry: { sourceUrl: context.video_take.url, round: 2 } }, params: { maxAdaptiveSamplingRounds: 2 } }) as Value

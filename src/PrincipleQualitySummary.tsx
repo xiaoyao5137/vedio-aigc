@@ -30,6 +30,10 @@ export function PrincipleQualitySummary({ output }: { output: unknown }) {
   const warnings = [...new Set([
     ...(Array.isArray(review.warnings) ? review.warnings : []),
     ...(Array.isArray(value.qualityWarnings) ? value.qualityWarnings : []),
+    ...(Array.isArray(value.qualityRisks) ? value.qualityRisks.map(risk => {
+      const item = record(risk)
+      return { problem: `${item.beatId ?? '当前视频'}：${Array.isArray(item.reasons) ? item.reasons.join('；') : item.reason ?? '质量证据待人工核实'}` }
+    }) : []),
     ...(manual && Array.isArray(review.principleIssues) ? review.principleIssues : []),
   ].map(item => warningText(item)).filter(Boolean))]
   const editorialFeedback = collectPrincipleEditorialFeedback(output)

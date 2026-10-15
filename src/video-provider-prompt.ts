@@ -81,12 +81,14 @@ const compiledVoiceSuffix = (reserve: number) => `。对白按角色绑定嘴唇
  * beats and policy first; unknown or authored blocks are never rewritten.
  * Opening, timeline, camera, ending, audioText and voice/element bindings stay
  * byte-for-byte intact. The caller still rejects a remaining overflow. */
-export function compactManagedVideoProviderPrompt(prompt: string, params: Value): string {
-  if (params.pacingVersion !== 'duration-v2' || params.visualTreatment !== 'live_action') return prompt
+export function compactManagedVideoProviderPrompt(prompt: string, params: Value, options: { preserveCausalRoom?: boolean } = {}): string {
+  const pictureOnly = independentPictureProjection(prompt, params)
+  if (params.pacingVersion !== 'duration-v2' && !pictureOnly || params.visualTreatment !== 'live_action') return prompt
   const visualRules = prompt.split(/\r?\n/).filter(line => line.startsWith('【视觉处理硬约束】'))
   if (visualRules.length !== 1 || visualRules[0] !== applicableVisualRules) return prompt
   const pacing = object(params.pacing)
   if (pacing.version !== 'duration-v2' || !Array.isArray(pacing.beats)) return prompt
+  if (pictureOnly && (typeof params.scheduleHash !== 'string' || params.scheduleHash !== pacing.scheduleHash)) return prompt
   let policy: ReturnType<typeof resolveDurationPolicy>
   try { policy = resolveDurationPolicy(pacing.timingPolicy) } catch { return prompt }
   const styles: Record<string, string> = { dialogue: '对白', narration: '旁白', chant: '吟诵', singing: '歌唱' }
@@ -99,7 +101,7 @@ export function compactManagedVideoProviderPrompt(prompt: string, params: Value)
     || voice.kind === 'speech' && !styles[String(voice.deliveryStyle)])) return prompt
   const compiled = `【声部与收束】按共享策略 ${policy.version} 和已编译节拍分别完成下列声部：${JSON.stringify(voices)}${compiledVoiceSuffix(policy.endingReadabilityReserve)}`
   const compilerLines = prompt.split(/\r?\n/).filter(line => line.startsWith('【声部与收束】'))
-  if (compilerLines.length !== 1 || compilerLines[0] !== compiled) return prompt
+  if (pictureOnly ? compilerLines.length !== 0 : compilerLines.length !== 1 || compilerLines[0] !== compiled) return prompt
   const replacements = new Map<string, string>()
   const performance = speechPerformanceContract(params)
   const performanceSuffix = '。各声部保持独立，即使原词相同也不得用一次发声替代两次或互相代说。说完即结束语言口型；他人回应时，未被安排发声的人只倾听或执行原动作。无声动作、反应及收尾不追加讲话或无声口型，允许自然呼吸、表情和微动；不改变原台词及动作顺序。'
@@ -115,10 +117,40 @@ export function compactManagedVideoProviderPrompt(prompt: string, params: Value)
   const mergeNativePerformance = voices.length > 0 && completeWindows
     && voices.every(voice => voice.kind === 'speech' && voice.deliveryStyle !== 'narration') && performance === nativePerformance
   const summary = voices.map((voice, index) => `${voice.beatId} ${JSON.stringify(voice.actorIds)}${voice.kind === 'speech' ? styles[String(voice.deliveryStyle)] : '无词声'}${mergeNativePerformance ? `（${windows[index][0].startSecond}至${windows[index][0].endSecond}秒参考）` : ''}：${JSON.stringify(voice.textOrVocalization)}${voice.vocalization ? `（${JSON.stringify(voice.vocalization)}）` : ''}`).join('；')
-  replacements.set(compiled, `【声部与收束】${policy.version}；${summary}。仅声明声部发声；画内完整词与本人口型同步始终，旁白无画内口型。吟诵歌唱依各自节奏，无词声部可听；声部独立，不代说合并。句末停语言口型，他人发声仅倾听或原动作；无声段禁语言口型，呼吸表情微动保留。完整词、动作顺序、硬边界与前置依赖不变；动作回应完成后留${policy.endingReadabilityReserve}秒可读收尾，禁新剧情、禁静帧补动作。`)
+  // When a signed causal guard must fit, narration-only metadata can refer to
+  // the unchanged full timeline and audio track instead of repeating every
+  // word a third time. Keep the normal rendering for all other requests.
+  const narrationOnly = voices.length > 0 && voices.every(voice => voice.kind === 'speech' && voice.deliveryStyle === 'narration')
+  const timeline = typeof params.videoTimeline === 'string' ? params.videoTimeline : ''
+  const audioText = typeof params.audioText === 'string' ? params.audioText : ''
+  const narrationInFullTracks = !pictureOnly && options.preserveCausalRoom && narrationOnly
+    && voices.every(voice => timeline.includes(`节拍 ${voice.beatId}`)
+      && timeline.includes(String(voice.textOrVocalization)) && audioText.includes(String(voice.textOrVocalization)))
+  const approvedOpening = object(params.sceneCutFrameGate)
+  const approvedFrame = object(approvedOpening.frame)
+  const compactIdentity = pictureOnly || narrationInFullTracks
+    || approvedOpening.passed === true && params.firstFrameMode === 'reference'
+      && typeof params.referenceImage === 'string'
+      && (params.referenceImage === approvedFrame.sourceUrl
+        || /^data:image\/(?:png|jpeg|webp);base64,/.test(params.referenceImage))
+  replacements.set(compiled, narrationInFullTracks
+    ? `【声部与收束】${policy.version}；旁白依时间轴和音轨画外独立完整发声，不合并；画内无相应口型或额外语言。动作先后、前置依赖及硬边界遵守，参考窗仅定位；动作回应后留${policy.endingReadabilityReserve}秒可读收尾，允许呼吸微动，禁新剧情或静帧补动作。`
+    : `【声部与收束】${policy.version}；${summary}。仅声明声部发声；画内完整词与本人口型同步始终，旁白无画内口型。吟诵歌唱依各自节奏，无词声部可听；声部独立，不代说合并。句末停语言口型，他人发声仅倾听或原动作；无声段禁语言口型，呼吸表情微动保留。完整词、动作顺序、硬边界与前置依赖不变；动作回应完成后留${policy.endingReadabilityReserve}秒可读收尾，禁新剧情、禁静帧补动作。`)
+  if (pictureOnly) {
+    replacements.set('【动画叙事类型与美术风格】 / ', '')
+    replacements.set(applicableVisualRules,
+      '【视觉处理硬约束】live_action 真人实景，真实空间、自然光和可信时代环境；禁低幼卡通、Q版、现代动漫、游戏CG及玄幻光效；附件仅供身份。')
+    replacements.set(performance, '【逐声部声画绑定】仅生成画面和自然环境音；画外配音由后期添加；画内无人声、默念或语言口型，保留原动作。')
+  }
   if (performance.endsWith(performanceSuffix)) replacements.set(performance,
     mergeNativePerformance ? '' : performance.slice(0, -performanceSuffix.length)
       .replaceAll('本人同期发声，嘴部表演与本人完整原词同时开始、同时结束', '本人同期声、口型与完整原词同步始终') + '。')
+  if (narrationInFullTracks && completeWindows && performance.startsWith('【逐声部声画绑定】')) {
+    replacements.set(performance, '【逐声部声画绑定】旁白各节拍依时间轴画外独立完整发声，画内不作对应语言口型。')
+    replacements.set('【动画叙事类型与美术风格】 / ', '')
+    replacements.set(applicableVisualRules,
+      '【视觉处理硬约束】live_action 真人实景，真实空间、自然光和可信时代环境；禁低幼卡通、Q版、现代动漫、游戏CG及玄幻光效；附件仅供身份。')
+  }
   replacements.set('【同期声音与可见口型】画内声部匹配自然口型，旁白不绑定画内口型；无词声部须可听。完整执行原节拍与收尾余量。', '')
 
   // These lines are exclusively produced by the identity-reference adapter.
@@ -137,14 +169,67 @@ export function compactManagedVideoProviderPrompt(prompt: string, params: Value)
     const castGroups = new Map<string, string[]>()
     for (const { label, json } of castRows) castGroups.set(json, [...(castGroups.get(json) ?? []), label])
     const compactCast = [...castGroups].map(([json, labels]) => `${labels.join('、')}：${json}`).join('；')
-    replacements.set(fullIdentity, `人物身份参考：${references.replaceAll('（完整原参考图）', '')}。每张为同一人物多角度，仅继承脸、体型、服装；同角色只一人，禁复制视图或排版。角度以图为准，不预设顺序。${compactCast ? `${compactCast}；严格遵守人数、开场、入场和画外关系。` : ''}`)
+    const shortCast = [...castGroups].map(([json, labels]) => `${labels.map(label => ({
+      '本镜可见或行动人物': '可见', '开场人物': '开场', '场内人物（可在画外）': '场内',
+    })[label] ?? label).join('/')}=${json}`).join('；')
+    replacements.set(fullIdentity, compactIdentity
+      ? `人物：${names.map((name, index) => `${name}<<<image_${index + 1}>>>`).join('、')}；各附件为同一人多角度，只取脸/体型/服装；每角仅一人，禁复制视图或排版。${shortCast ? `${shortCast}；人数、入场及画外依名单。` : ''}`
+      : `人物身份参考：${references.replaceAll('（完整原参考图）', '')}。每张为同一人物多角度，仅继承脸、体型、服装；同角色只一人，禁复制视图或排版。角度以图为准，不预设顺序。${compactCast ? `${compactCast}；严格遵守人数、开场、入场和画外关系。` : ''}`)
   }
   replacements.set('【参考图背景隔离】人物附件中的纯色底、摄影棚底、画布边界和三视图排版都是资产制作痕迹，不是故事场景；必须完全忽略并以文字中的“场景与开场实景”重建完整环境，不得生成幕布、棚拍、舞台布景、纯色背景或人物抠图感。',
     '【参考图背景隔离】忽略附件的纯色底、摄影棚底、画布边界、三视图排版；按文字重建完整实景，禁幕布、棚拍、舞台、纯色背景或抠图感。')
   replacements.set('【身份参考与动作分离】附件中性站姿、手臂姿势和朝向不是动作要求。按原节拍执行，持续动作保持至该段结束并完成结尾；禁止说话时回到附件站姿。若有实际首帧，开场以其为准，再连续执行后续动作。',
-    '【身份参考与动作分离】附件站姿、手臂和朝向不作动作要求；持续执行原节拍至结束及结尾，禁说话时回站姿；实际首帧优先并连续后续动作。')
+    compactIdentity
+      ? '【身份参考与动作分离】附件姿态不作动作；按首帧连续执行各节拍至结尾，禁复位。'
+      : '【身份参考与动作分离】附件站姿、手臂和朝向不作动作要求；持续执行原节拍至结束及结尾，禁说话时回站姿；实际首帧优先并连续后续动作。')
   replacements.set('【实际首帧优先】全画幅首帧锁定实际环境、机位、人物位置与开场姿态；多角度人物附件仅补充身份与服装细节，不重排人物、不改变首帧环境、不增加已在首帧中的人物副本。',
-    '【实际首帧优先】锁定全画幅首帧环境、机位、人物位置与姿态；附件只补身份服装，禁重排、改环境或复制人物。')
+    compactIdentity
+      ? '【实际首帧优先】锁定环境、机位、人物位置和姿态；附件只补身份，禁重排、改景或复制。'
+      : '【实际首帧优先】锁定全画幅首帧环境、机位、人物位置与姿态；附件只补身份服装，禁重排、改环境或复制人物。')
+  // A signed scene-cut still already fixes the opening pixels. Its full prose
+  // and the static end-frame prose duplicate the retained action timeline.
+  // Compact only exact managed lines after confirming the last mandatory
+  // visual state is present verbatim in that timeline.
+  const shot = object(params.sceneCutShot), gate = approvedOpening
+  const coverageShot = object(params.coverageShot)
+  const coverageGate = object(params.coverageCutFrameGate)
+  const coverageFrames = Array.isArray(coverageGate.frames) ? coverageGate.frames.map(object) : []
+  const approvedCoverageFirst = coverageFrames.find(frame => frame.role === 'candidate_first')
+  // The signed coverage frame already contains the full opening composition.
+  // Repeating the long still-image brief in the video request can push the
+  // complete action and causal contract past the provider's hard limit.
+  if (coverageGate.passed === true && approvedCoverageFirst
+    && params.firstFrameMode === 'reference'
+    && (params.referenceImage === approvedCoverageFirst.sourceUrl
+      || typeof params.referenceImage === 'string' && /^data:image\/(?:png|jpeg|webp);base64,/.test(params.referenceImage))
+    && typeof coverageShot.visualPrompt === 'string'
+    && coverageShot.visualPrompt.length > 0
+    && prompt.includes(`【场景与开场画面】${coverageShot.visualPrompt}`)) {
+    replacements.set(`【场景与开场画面】${coverageShot.visualPrompt}`,
+      '【场景与开场画面】以已签发的实际首帧锁定场景、机位、人物身份与零秒姿态；按下方完整时间轴连续表演，不重排开场。')
+  }
+  const lastFrame = typeof shot.lastFramePrompt === 'string' ? shot.lastFramePrompt.split(/\r?\n/) : []
+  const visualBeats = Array.isArray(pacing.beats) ? pacing.beats.map(object)
+    .filter(beat => ['visual', 'audio-visual'].includes(String(object(beat.completion).modality))
+      && object(beat.completion).requiredThisClip === true) : []
+  const finalState = object(visualBeats.at(-1)?.completion).finalState
+  if (gate.passed === true
+    && typeof gate.frame === 'object' && typeof object(gate.frame).sourceUrl === 'string'
+    && params.firstFrameMode === 'reference'
+    && typeof params.referenceImage === 'string'
+    && (params.referenceImage === object(gate.frame).sourceUrl
+      || /^data:image\/(?:png|jpeg|webp);base64,/.test(params.referenceImage))
+    && typeof shot.visualPrompt === 'string' && typeof shot.lastFramePrompt === 'string'
+    && typeof params.videoTimeline === 'string' && typeof finalState === 'string'
+    && finalState.length > 10 && params.videoTimeline.includes(finalState)
+    && prompt.includes(`【场景与开场画面】${shot.visualPrompt}`)
+    && lastFrame.length === 2 && lastFrame[1].startsWith('【静态尾帧】')) {
+    replacements.set(`【场景与开场画面】${shot.visualPrompt}`,
+      '【场景与开场画面】以已批准实际首帧锁定场景、机位、人物身份与零秒姿态；仅按下方时间轴连续表演。')
+    replacements.set(`【本镜结束时的自然动作结果】${lastFrame[0]}`,
+      `【本镜结束时的自然动作结果】完整达到时间轴的最终视觉完成态：${finalState} 保持可读收尾。`)
+    replacements.set(lastFrame[1], '【静态尾帧】完成后单幅全景；禁拼贴、重复人物及可辨文字。')
+  }
   // Whole-line replacements preserve CRLF and do not rewrite quoted text,
   // authored additions, entrances, dialogue, group counts or dependencies.
   return prompt.split(/(\r?\n)/).map(part => replacements.get(part) ?? part).join('')

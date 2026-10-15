@@ -65,7 +65,10 @@ export function durationCompletionRecovery(context: Value, completion: Value, pa
   const duration = Number(evidence.duration)
   const times = evidence.frameTimes as number[]
   if (!Array.isArray(times) || times.length > 24 || !Number.isFinite(duration)) return { ...base, routeError: 'DURATION_EVIDENCE_INVALID: 缺少同素材有效时间范围' }
-  const windows = requests.map(request => {
+  // Audio-only uncertainty needs listening, not hundreds of unrelated visual
+  // frames. Keep native review scoped to beats whose visual modality is missing.
+  const windows = requests.filter(request => request.kind === 'native-sequence'
+    || request.kind === 'audio-review' && request.modality === 'audio-visual').map(request => {
     const start = Number(request.startSecond ?? request.start ?? 0)
     const end = Number(request.endSecond ?? request.end ?? duration)
     return { start: Math.max(0, Math.min(start, duration)), end: Math.max(0, Math.min(end, duration)) }
@@ -73,7 +76,7 @@ export function durationCompletionRecovery(context: Value, completion: Value, pa
   if (!windows.length) windows.push({ start: Math.max(0, duration - 3), end: duration })
   return { ...base, routeError: 'REVIEW_RESULT_INVALID: duration-v2 必需动作缺少实际完成证据，按samplingRetryPlan复核同一素材',
     samplingRetryPlan: { sourceUrl: video.url, round, sampleTimes: [...times], requirementIds: completion.remainingMandatoryBeats,
-      nativeSequence: { enabled: true, windows, reviewMaxFrames: Math.max(256, Number(params.maxNativeReviewFrames ?? 256)) } } }
+      nativeSequence: { enabled: true, windows, reviewMaxFrames: 256 } } }
 }
 
 const param = (name: string, value: string, type = 'json', required = true): Param => ({ id: 'duration-v2-' + name, name, englishName: name, type, value, required })

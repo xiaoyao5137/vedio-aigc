@@ -20,14 +20,42 @@ import { BranchNodeShape } from './BranchNodeShape'
 import { branchOutputOffset } from './branch-node-geometry'
 import { BranchConnections } from './BranchConnections'
 import { migrateBranchWorkflow, migrateBranchRuns } from './branch-migration'
-import { DEFAULT_BRANCH_CODE, branchConfigurationErrors, executionRouteEdges, orderRouteNodes, retryBranchRun, routeBranch, setBranchEdge, setBranchLoop, type BranchState, type BranchPort, type RouteEdge } from './workflow-branch'
+import { DEFAULT_BRANCH_CODE, branchConfigurationErrors, branchDecision, executionRouteEdges, orderRouteNodes, retryBranchRun, routeBranch, setBranchEdge, setBranchLoop, validationResultBranch, type BranchState, type BranchPort, type RouteEdge } from './workflow-branch'
 import { fitDagZoom, wheelDagZoom, zoomDagAt } from './dag-zoom'
 import { expandSelection, moveSelection, nodesInSelection, selectionRect, type NodeBounds, type Point } from './canvas-selection'
 import { historicalInspectorRunIndex, nextInspectorRunIndex } from './debug-inspector-selection'
 import { mapNodeInputs, type MapInput } from './node-map'
 import { type ErrorRetryPolicy, type AcceptancePolicy } from './node-retry'
 import { EDITORIAL_VIDEO_PROMPT, upgradeActorlessSettingEstablishment, upgradeLiveActionExceptSandTable, upgradeQualityWorkflow } from './quality-node-presets'
-import { upgradePrincipleQuality } from './principle-workflow'
+import { upgradeStoryVideoConcat } from './story-video-concat-workflow'
+import { upgradeWorkplaceShotSubtitles } from './story-subtitle-workflow'
+import { STORY_VIDEO_REVIEW_RESULT_BRANCH_NODE_ID, storyQualityBranchCodeContext, upgradeStoryQualityWorkflow } from './story-quality-workflow'
+import { failedStoryMediaReviewIndexForVideo, planStoryMediaBranchRetake, planStoryMediaRetake } from './story-media-retake'
+import { checkedStoryMediaRetakeWorkflow } from './story-media-retake-workflow'
+import { matchesStoryVideoModelContract, storyVideoModelContract, type StoryVideoModelContract } from './story-media-retake-model'
+import { STORY_SCRIPT_PROMPT } from './story-script-prompt'
+import { normalizeStoryTopics, validateStoryTopicInput } from './story-topic-input'
+import { refreshPendingDurationMediaAcceptRuns, upgradeDurationRetakeAdvisoryWorkflow, upgradePrincipleQuality } from './principle-workflow'
+import { upgradePrincipleDurationWorkflow } from './principle-duration-migration'
+import { upgradeNativeSequenceQualityWorkflow } from './native-sequence-quality-migration'
+import { upgradeSceneCutBridgeWorkflow } from './scene-cut-bridge-migration'
+import { upgradeNarrationTransferWorkflow } from './narration-transfer-migration'
+import { upgradeNativePrincipleReviewWorkflow } from './native-principle-review-migration'
+import { upgradeNarrationAsrFallbackWorkflow } from './narration-asr-fallback-migration'
+import { upgradeSceneCutFirstFrameWorkflow, upgradeSceneCutOpeningStateWorkflow } from './scene-cut-first-frame-gate'
+import { upgradeSceneCutT0ImageContractWorkflow } from './scene-cut-t0-image-contract'
+import { upgradeSceneCutOpeningPlanWorkflow } from './scene-cut-opening-plan-workflow'
+import { upgradeSceneCutTravelStartWorkflow } from './scene-cut-travel-start-workflow'
+import { upgradeSceneCutOpeningProjectionWorkflow } from './scene-cut-opening-projection-workflow'
+import { sceneCutEvidencePlanCodeInput, upgradeSceneCutEllipsisWorkflow } from './scene-cut-ellipsis-workflow'
+import { upgradeSceneCutActionVisibilityWorkflow } from './scene-cut-action-visibility-workflow'
+import { upgradeSceneCutStagingWorkflow } from './scene-cut-staging-workflow'
+import { upgradeSceneCutActionStartWorkflow } from './scene-cut-action-start-workflow'
+import { upgradeSceneCutClosureLayoutWorkflow } from './scene-cut-closure-layout-workflow'
+import { upgradeSceneCutClosureStartLayoutWorkflow } from './scene-cut-closure-start-layout-workflow'
+import { upgradeSceneCutControlledEditWorkflow } from './scene-cut-controlled-edit-prompt'
+import { upgradeSceneCutGeometryGuideWorkflow } from './scene-cut-geometry-guide-workflow'
+import { upgradeDurationAdvisoryWorkflow } from './duration-advisory-workflow'
 import { upgradeLeanPrincipleQuality, upgradeManualReviewQuality, setQualityDisposition } from './principle-quality-budget'
 import { runPrincipleReview } from './principle-review-runtime'
 import { PrincipleQualitySummary } from './PrincipleQualitySummary'
@@ -48,13 +76,17 @@ import { parseEpisodeBoundary, refreshEpisodeBoundaryPrompt, upgradeEpisodeBound
 import { upgradeSandTableWorkflow } from './sand-table-workflow'
 import { CHARACTER_VISUAL_CONTEXT_RUNTIME_VERSION, assertSelectedCharacterVisuals, characterArtisticIdentityCatalog, characterEquipmentCatalog, characterEquipmentPrompt, characterInputsForShot, characterSelectionsForEpisode, characterVisualCatalog, resolveCharacterVisualSelections, upgradeCharacterVisualWorkflow, upgradePersistedSanguoCharacterWorkflow } from './character-visual-workflow'
 import { CHARACTER_BIOGRAPHY_SOURCE_PARAM, upgradeCharacterBiographyWorkflow } from './character-biography-workflow'
-import { upgradeCoverageCutFrameWorkflow } from './coverage-cut-frame-gate'
+import { coverageCutImageShot, coverageCutOpeningStatePrompt, upgradeCoverageCutFrameWorkflow } from './coverage-cut-frame-gate'
+import { upgradeCoverageCutIdentityWorkflow, upgradeCoverageCutSpatialWorkflow } from './coverage-cut-identity-workflow'
+import { refreshPendingImageReviewRouteRuns, upgradeImageReviewRouteWorkflow } from './image-review-route-workflow'
 import { loadSanguoDefaultWorkflow } from './sanguo-default-workflow'
 import { isManualReview } from './quality-disposition'
 import { validateHistoricalProductionPlan, validateHistoricalAgency } from './history-content-guards'
 import { orderLoopPlaceholders, runWorkflowToCompletion, historicalVideoRetryIndexes, requiresManualMediaDecision, newlyRequiredManualMediaDecision } from './workflow-runner'
 import { prepareWorkflowRunContext } from './workflow-run-context'
 import { manualRetryRuns } from './run-invalidation'
+import { planSceneCutAutoRetry } from './scene-cut-auto-retry'
+import { planCoverageCutAutoRetry } from './coverage-cut-auto-retry'
 import { createFailedTextCandidateBinding, failedTextCandidateFromLedger, failedTextCandidatePrefixHashAlgorithm, failedTextCandidateRequestPrefix, failedTextCandidateWriterInputs, FailedTextCandidateError, isFailedTextCandidateValidationMessage, isRecoverableFailedTextNode, readFailedTextCandidate, withFailedTextCandidate, withoutFailedTextCandidate, type FailedTextCandidateBinding } from './failed-text-candidate'
 import { executeFailedTextCandidate, executeRecoveredHistoricalStoryboard } from './failed-text-execution'
 import type { LoopRerunMetadata } from './loop-rerun'
@@ -117,19 +149,36 @@ import CharacterLibrary from './CharacterLibrary'
 import { isSharedCredentialKey, sharedCredentialModelIds, syncSharedModelCredentials } from './model-config'
 import { inspectExperienceResponse, modelExperienceFields, parseModelExperienceParams, restoreModelExperienceRequest } from './model-experience'
 import type { ExperienceField, ExperienceMedia, ExperienceResponseInspection, ExperienceValue } from './model-experience'
-import { aggregateLoopOutputs, applyNodeOutputToContext, availableLoopIterations, buildSceneOutlineRepairSuffix, buildVariableMetadata, canAdvanceStep, containsUnicodeReplacementCharacter, extractTextResponse, findInspectableNodeRunIndex, findLoopSnapshotRunIndex, firstBlockingRunIndex, hasExecutionPlanMismatch, isDisplayedRunCompletedBeforeStep, isDurationPolicyTransition, refreshPendingExecutionNodes, missingRequiredParamNames, normalizeStructuredTextOutput, recoverInterruptedNodeRuns, resolveVariableMetadata, scopedLoopNodes, serializedValuesDiffer, shouldSkipStep, validateHistoricalStructuredOutput } from './workflow-core'
+import { aggregateLoopOutputs, applyNodeOutputToContext, availableLoopIterations, buildSceneOutlineRepairSuffix, buildVariableMetadata, canAdvanceStep, canContinueToNextBreakpoint, containsUnicodeReplacementCharacter, extractTextResponse, findInspectableNodeRunIndex, findLoopSnapshotRunIndex, firstBlockingRunIndex, hasExecutionPlanMismatch, isDisplayedRunCompletedBeforeStep, isDurationPolicyTransition, refreshPendingExecutionNodes, missingRequiredParamNames, normalizeStructuredTextOutput, recoverInterruptedNodeRuns, resolveVariableMetadata, scopedLoopNodes, serializedValuesDiffer, shouldSkipStep, validateHistoricalStructuredOutput, validationResultVariables } from './workflow-core'
 import { loadAppViewState, saveAppViewState } from './app-view-state'
 import { createWorkflowBreakpointResolver, formatBreakpointValue, loadWorkflowBreakpoints, parseBreakpointValue, removeWorkflowBreakpoint, saveWorkflowBreakpoints, setWorkflowBreakpoint, shouldPauseBeforeRun, toggleWorkflowBreakpoint, type BreakpointOperator, type WorkflowBreakpoint } from './workflow-breakpoints'
+import { WORKFLOW_CUES_STORAGE_KEY, loadWorkflowCuesEnabled, playWorkflowCue, unlockWorkflowCueAudio, workflowTerminalCue } from './workflow-cues'
 import type { AppPage, RunnerTab, WorkflowView } from './app-view-state'
 import { assetDownloadUrl } from './asset-download'
 import { repairSanguoVideoMediaRoute, upgradeSanguoVideoConcat } from './video-concat-workflow'
 import { applyVideoOutputProfile, VIDEO_OUTPUT_PROFILE_VERSION, type VideoExecutionMode } from './video-output-profile'
+import { STORY_SHOT_IMAGE_PROMPT, STORY_SHOT_VIDEO_PROMPT, upgradeStoryShotVideoPrompt } from './story-video-prompt'
 
 type NodeKind = 'input' | 'image' | 'video' | 'videoConcat' | 'text' | 'code' | 'loop' | 'internet' | 'validation' | 'knowledge' | 'asset' | 'audio' | 'compose' | 'http' | 'branch'
 type ParamType = 'text' | 'number' | 'boolean' | 'image' | 'images' | 'json'
 type ModelCapability = 'text' | 'image' | 'video' | 'audio'
 type ModelProvider = 'Bailian' | 'Anthropic' | 'OpenAI' | 'Codex' | 'Ofox' | 'Kling' | 'Local' | 'Custom'
 type TextOutputMode = 'legacy-shots' | 'array' | 'json' | 'text'
+
+class ValidationNodeFailure extends Error {
+  readonly output: Record<string, unknown>
+  constructor(response: unknown) {
+    const output = response && typeof response === 'object' && !Array.isArray(response)
+      ? response as Record<string, unknown> : { value: response }
+    const issues = Array.isArray(output.issues) ? output.issues.filter(item => typeof item === 'string').slice(0, 3) : []
+    const reason = issues.length ? issues.join('；').slice(0, 600)
+      : typeof output.error === 'string' ? output.error.slice(0, 600) : ''
+    const code = typeof output.code === 'string' ? `${output.code}：` : ''
+    super(`质量校验未通过：${code}${reason || '请查看该节点输出中的完整质检报告'}`)
+    this.name = 'ValidationNodeFailure'
+    this.output = output
+  }
+}
 
 type WorkflowParam = { id: string; name: string; englishName?: string; type: ParamType; required: boolean; value: string }
 type UploadedAsset = { id: string; name: string; dataUrl: string; mimeType?: string; size?: number }
@@ -233,7 +282,7 @@ type RunnerInspectorTab = 'config' | 'input' | 'output'
 type WorkflowDebugState = { stepIndex: number }
 type BreakpointEditorState = { workflowId: string; nodeId: string; conditional: boolean; path: string; operator: BreakpointOperator; value: string }
 const breakpointOperatorLabels: Record<BreakpointOperator, string> = { eq: '=', ne: '≠', gt: '>', gte: '≥', lt: '<', lte: '≤' }
-type StepTask = { failedCandidateBinding?: FailedTextCandidateBinding; storyboardSplitCandidate?: ReturnType<typeof readStoryboardSplitCandidate>; knownVoiceInputs?: unknown[]; voiceExecutionId?: string; voicePolicy?: string; executionId?: string; executionMode?: VideoExecutionMode; node: WorkflowNode; policyNodes?: WorkflowNode[]; loopNode?: WorkflowNode; loopItem?: unknown; loopIndex?: number; loopPrevious?: Record<string, unknown>; label?: string }
+type StepTask = { failedCandidateBinding?: FailedTextCandidateBinding; storyboardSplitCandidate?: ReturnType<typeof readStoryboardSplitCandidate>; knownVoiceInputs?: unknown[]; voiceExecutionId?: string; voicePolicy?: string; executionId?: string; executionRecordId?: string; executionMode?: VideoExecutionMode; executionWorkflow?: Workflow; node: WorkflowNode; policyNodes?: WorkflowNode[]; loopNode?: WorkflowNode; loopItem?: unknown; loopIndex?: number; loopPrevious?: Record<string, unknown>; label?: string }
 const STORYBOARD_SPLIT_SOURCE_KEY = '__storyboardSplitSource'
 type StoryboardSplitSourceEnvelope = {
   source: NonNullable<Awaited<ReturnType<typeof executeRecoveredHistoricalStoryboard>>['source']>
@@ -276,12 +325,20 @@ type NodeRunState = NodeRunResult & {
 }
 type ExecutionState = {
   generationScopeId?: string
+  sceneCutImageCountRecovery?: { version: string; sourceExecutionId: string; sourceResultMd5: string;
+    failedModelExecutionId: string; failedThreadId: string; firstPendingIndex: number;
+    firstPendingNodeId: string }
+  sceneCutAutoRetry?: { sourceExecutionId: string; count: number; sourceReviewRunId: string;
+    loopGroupId?: string; loopIndex?: number }
+  storyMediaRetake?: { version: string; sourceExecutionId: string; sourceReviewRunId: string; sourceVideoSha256: string; targetVideoRunId: string; sourceWorkflow?: Workflow; targetVideoModel?: StoryVideoModelContract }
+  executionWorkflowSnapshot?: Workflow
   loopRerun?: LoopRerunMetadata
   breakpointRollback?: BreakpointRollbackMetadata
   breakpointRollbackHistory?: BreakpointRollbackMetadata[]
   voiceUpgrade?: { sourceExecutionId: string; characterVersions: Array<{ characterId: string; from: number; to: number }>; invalidatedRunIds: string[] }
   voicePolicy?: 'strict' | 'preview'
   id: string
+  parentExecutionId?: string
   requestScopeId?: string
   mode: RunMode
   workflowId: string
@@ -361,6 +418,12 @@ const runStatusLabels: Record<NodeRunStatus, string> = {
   failed: '执行失败',
   skipped: '分支跳过',
 }
+
+const isStoryMediaReviewHold = (run: NodeRunState | undefined) => run?.status === 'failed'
+  && run.node.id === STORY_VIDEO_REVIEW_RESULT_BRANCH_NODE_ID
+  && /^STORY_MEDIA_REVIEW_REQUIRED:/.test(String(run.error ?? '').replace(/^代码执行失败：Error: /, ''))
+
+const runStatusLabel = (run: NodeRunState) => isStoryMediaReviewHold(run) ? '待复核原片' : runStatusLabels[run.status]
 
 const createId = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 8)}`
 const defaultLoop = (): LoopConfig => ({ enabled: false, sourcePath: 'script_fragments.items', fallbackCount: 8, itemVar: 'item' })
@@ -515,8 +578,10 @@ const storyNodes: WorkflowNode[] = [
     kind: 'text',
     modelId: 'claude-opus-4-8',
     resultVar: 'script_generation',
-    prompt: '按顺序基于主题数组"${input.topic}"，为平台"${input.platform}"生成${input.vedio_count}个短视频分镜剧本。\n模特参考图数组：${model_images.items}\n只返回 JSON 数组，不要 Markdown，每个数组对象必须包含：title、content、duration、camera、mood、firstFramePrompt。每个视频只使用主题数组中对应序号的一个主题，并保持模特参考图中的角色特征一致。',
-    params: [],
+    prompt: STORY_SCRIPT_PROMPT,
+    params: [
+      { id: 'story-script-reference-images', name: '模特参考图', englishName: 'referenceImages', type: 'images', required: false, value: '${model_images.items}' },
+    ],
     uploads: [],
     loop: defaultLoop(),
     position: { x: 620, y: 100 },
@@ -538,10 +603,11 @@ const storyNodes: WorkflowNode[] = [
     kind: 'image',
     modelId: 'gpt-image-2',
     resultVar: 'first_frame',
-    prompt: '你是千万粉丝级"真实动物拟人化"短视频金牌UI设计师，请设计以下短视频剧情的4:3比例的首帧图，用于贴给可灵生成短视频。\n剧情如下：\n${shot.content}',
+    prompt: STORY_SHOT_IMAGE_PROMPT,
     params: [
       { id: 'referenceImages', name: '参考图（可上传或引用变量）', englishName: 'referenceImages', type: 'images', required: false, value: '${model_images.items}' },
       { id: 'size', name: '尺寸', englishName: 'size', type: 'text', required: true, value: '1024x1024' },
+      { id: 'singleFrame', name: '仅接受单幅完整画面', englishName: 'singleFrame', type: 'boolean', required: false, value: 'true' },
     ],
     uploads: [],
     loop: defaultLoop(),
@@ -553,10 +619,12 @@ const storyNodes: WorkflowNode[] = [
     kind: 'video',
     modelId: 'keling3',
     resultVar: 'video_shot',
-    prompt: '根据剧本生成视频：${shot.content}',
+    prompt: STORY_SHOT_VIDEO_PROMPT,
     params: [
       { id: 'referenceImage', name: '首帧参考图', englishName: 'referenceImage', type: 'image', required: false, value: '${first_frame}' },
-      { id: 'duration', name: '时长（秒）', englishName: 'duration', type: 'number', required: true, value: '3' },
+      { id: 'story-optional-end-image', name: '目标尾帧（可选）', englishName: 'endImage', type: 'image', required: false, value: '' },
+      { id: 'duration', name: '时长（秒）', englishName: 'duration', type: 'number', required: true, value: '${shot.duration}' },
+      { id: 'sound', name: '原生音频', englishName: 'sound', type: 'text', required: true, value: 'on' },
       { id: 'camera', name: '镜头运动', englishName: 'camera', type: 'text', required: false, value: '${shot.camera}' },
       { id: 'mood', name: '氛围', englishName: 'mood', type: 'text', required: false, value: '${shot.mood}' },
     ],
@@ -886,7 +954,7 @@ const initialWorkflows: Workflow[] = [
   {
     id: 'wf-story',
     name: '打工猫短视频分镜生成',
-    description: '脚本生成后由代码节点拆取 JSON 数组，循环节点按数组长度逐段生成首帧和视频分镜。',
+    description: '剧本生成后先做可见的分镜剧本质检，通过后逐镜生成首帧与视频；每镜成片质检通过后再拼接阶段预览。',
     nodes: storyNodes,
     edges: [
       { id: 'edge-input-model-images', from: 'node-input', to: 'node-model-images' },
@@ -1032,7 +1100,11 @@ function paramKey(param: WorkflowParam) {
 }
 
 function nodeParamValues(node: WorkflowNode, context?: Record<string, unknown>) {
-  return Object.fromEntries(node.params.map((param) => [paramKey(param), context ? resolveParamValue(param, context) : paramValue(param)]))
+  return Object.fromEntries(node.params.map((param) => {
+    const value = node.kind === 'input' && paramKey(param) === 'topic' && !param.value.trim() ? []
+      : context ? resolveParamValue(param, context) : paramValue(param)
+    return [paramKey(param), node.kind === 'input' && paramKey(param) === 'topic' ? normalizeStoryTopics(value) : value]
+  }))
 }
 
 function nodeParamAliases(node: WorkflowNode, values: Record<string, unknown>) {
@@ -1285,7 +1357,7 @@ function createWorkflowDebugSnapshot(workflow: Workflow, state: WorkflowDebugSta
 function collectRuntimeInputs(workflow: Workflow) {
   const inputs: Record<string, unknown> = {}
   workflow.nodes.filter((node) => node.kind === 'input').forEach((node) => {
-    inputs[node.resultVar] = Object.fromEntries(node.params.map((param) => [param.englishName || param.name, paramValue(param)]))
+    inputs[node.resultVar] = nodeParamValues(node)
   })
   return inputs
 }
@@ -1350,14 +1422,18 @@ function validateRuntimeInputs(workflow: Workflow) {
     const topicParam = node.params.find((param) => param.englishName === 'topic' || param.name === '主题')
     const countParam = node.params.find((param) => param.englishName === 'vedio_count' || param.name === '视频数量')
     if (!topicParam || !countParam) continue
-    const topics = paramValue(topicParam)
-    const count = Number(paramValue(countParam))
-    if (!Array.isArray(topics)) return `${node.title}：主题字段必须是 JSON 数组，例如 ["买早餐", "公司午睡"]`
-    if (!Number.isFinite(count) || count <= 0) return `${node.title}：视频数量必须是大于 0 的数字`
-    if (topics.length !== count) return `${node.title}：视频数量 ${count} 与主题数量 ${topics.length} 不一致，请一一对应`
-    if (topics.some((topic) => !stringifyValue(topic).trim())) return `${node.title}：主题数组中不能包含空值`
+    const issue = validateStoryTopicInput(topicParam.value.trim() ? paramValue(topicParam) : [], paramValue(countParam))
+    if (issue) return `${node.title}：${issue}`
   }
   return ''
+}
+
+function storyRetakeModelMatches(state: ExecutionState, models: ModelConfig[]): boolean {
+  const recovery = state.storyMediaRetake
+  if (!recovery) return true
+  const video = state.nodeRuns.find(run => run.id === recovery.targetVideoRunId)
+  if (!video || video.node.kind !== 'video' || !video.node.modelId || !recovery.targetVideoModel) return false
+  return matchesStoryVideoModelContract(models.find(model => model.id === video.node.modelId), recovery.targetVideoModel)
 }
 
 function failInputNodeRuns(nodeRuns: NodeRunState[], error: string) {
@@ -1682,6 +1758,17 @@ function workflowQualityDisposition(workflow: Workflow): 'manual-review-v1' | 's
   return undefined
 }
 
+const STORY_SHOT_TIMING_INSTRUCTION = '【逐镜时长与完成状态】不要固定 3 秒。根据每个必须可见的动作、物体交接、人物反应和终态停留，独立规划 3–15 秒整数时长；每个主题的完整剧情必须在本镜内演完，不得删去或挪到另一个主题镜头。若完整剧情超过 15 秒，在 JSON 中返回 error 与原因，让工作流停止并等待重排，不得截断动作。每项另含 visualBeats 数组，按时间顺序列出每个必需动作的 id、action、completion、startSecond、endSecond。每个 visualBeat 只写一次可观察的状态变化，不合并两次动作或省略 content 中的动作。动作必须有可辨识的开始与完成状态；最后一个必需动作结束后至少留 1 秒可读终态。content 用与 duration 一致的秒点描述完整动作，不要在结尾中途切断。'
+const STORY_SHOT_OPTIONAL_END_IMAGE_PARAM: WorkflowParam = { id: 'story-optional-end-image', name: '目标尾帧（可选）', englishName: 'endImage', type: 'image', required: false, value: '' }
+
+function upgradeStoryShotScriptPrompt(prompt: string) {
+  if (prompt.includes('【逐镜时长与完成状态】')) return prompt.replace(
+    '15 秒容不下就缩小单镜剧情范围，保留后续剧情到下一镜，不得把动作压到最后一帧。',
+    '每个主题的完整剧情必须在本镜内演完，不得删去或挪到另一个主题镜头。若完整剧情超过 15 秒，在 JSON 中返回 error 与原因，让工作流停止并等待重排，不得截断动作。')
+  const withoutFixedThreeSeconds = prompt.replace('每项描述一段可执行的3秒单镜头动作，duration 为3，content 与 firstFramePrompt 简洁具体。', '')
+  return `${withoutFixedThreeSeconds.trim()}\n${STORY_SHOT_TIMING_INSTRUCTION}`
+}
+
 // Kept visible to the real cold-start graph regression; dev HMR is disabled.
 // eslint-disable-next-line react-refresh/only-export-components
 export function normalizeWorkflow(workflow: Workflow): Workflow {
@@ -1701,9 +1788,10 @@ export function normalizeWorkflow(workflow: Workflow): Workflow {
     })),
     edges: workflow.edges ?? [],
   }
-  if (workflow.id === 'wf-sanguo-history-drama') return upgradeCoverageCutFrameWorkflow(upgradeCharacterBiographyWorkflow(
+  if (workflow.id === 'wf-sanguo-history-drama') return upgradeCoverageCutSpatialWorkflow(upgradeDurationRetakeAdvisoryWorkflow(upgradeImageReviewRouteWorkflow(upgradeCoverageCutIdentityWorkflow(upgradeDurationAdvisoryWorkflow(upgradeSceneCutGeometryGuideWorkflow(upgradeSceneCutControlledEditWorkflow(upgradeSceneCutClosureStartLayoutWorkflow(upgradeSceneCutClosureLayoutWorkflow(upgradeSceneCutActionStartWorkflow(upgradeSceneCutStagingWorkflow(upgradeSceneCutActionVisibilityWorkflow(upgradeSceneCutEllipsisWorkflow(upgradeSceneCutOpeningProjectionWorkflow(upgradeSceneCutTravelStartWorkflow(upgradeSceneCutOpeningPlanWorkflow(upgradeSceneCutT0ImageContractWorkflow(upgradeSceneCutOpeningStateWorkflow(upgradeSceneCutFirstFrameWorkflow(upgradeNarrationAsrFallbackWorkflow(upgradeNativePrincipleReviewWorkflow(upgradeNarrationTransferWorkflow(upgradeSceneCutBridgeWorkflow(upgradeNativeSequenceQualityWorkflow(upgradePrincipleDurationWorkflow(upgradeCoverageCutFrameWorkflow(upgradeCharacterBiographyWorkflow(
     upgradePersistedSanguoCharacterWorkflow(base, legacy =>
-      upgradeEpisodeBoundary(upgradeSandTableWorkflow(upgradeCharacterVisualWorkflow(upgradeDramaticExpression(upgradeManualReviewQuality(upgradeLeanPrincipleQuality(migrateBranchWorkflow(upgradeActorlessSettingEstablishment(repairSanguoVideoMediaRoute(upgradeLiveActionExceptSandTable(upgradeSanguoVideoConcat(upgradePrincipleQuality(upgradeQualityWorkflow(migrateSanguoWorkflow(legacy)))))))))))))))))
+      upgradeEpisodeBoundary(upgradeSandTableWorkflow(upgradeCharacterVisualWorkflow(upgradeDramaticExpression(upgradeManualReviewQuality(upgradeLeanPrincipleQuality(migrateBranchWorkflow(upgradeActorlessSettingEstablishment(repairSanguoVideoMediaRoute(upgradeLiveActionExceptSandTable(upgradeSanguoVideoConcat(upgradePrincipleQuality(upgradeQualityWorkflow(migrateSanguoWorkflow(legacy))))))))))))))))))))))))))))))))))))))))))
+  if (workflow.id === 'wf-workplace-second-trial-v1') return upgradeWorkplaceShotSubtitles(migrateBranchWorkflow(base))
   if (workflow.id !== 'wf-story') return migrateBranchWorkflow(base)
   const modelImageNode: WorkflowNode = {
     id: 'node-model-images',
@@ -1739,9 +1827,21 @@ export function normalizeWorkflow(workflow: Workflow): Workflow {
       edgeKeys.add(key)
       return true
     })
-  return migrateBranchWorkflow({
+  return upgradeStoryQualityWorkflow(upgradeStoryQualityWorkflow(upgradeStoryQualityWorkflow(upgradeStoryVideoConcat(migrateBranchWorkflow({
     ...base,
+    description: base.description === '脚本生成后由代码节点拆取 JSON 数组，循环节点按数组长度逐段生成首帧和视频分镜。'
+      ? '剧本生成后先做可见的分镜剧本质检，通过后逐镜生成首帧与视频；每镜成片质检通过后再拼接阶段预览。'
+      : base.description,
+    schemaVersion: Math.max(base.schemaVersion ?? 1, 3),
     nodes: nodes.map((node) => {
+      if (node.id === 'node-script') return { ...node, prompt: upgradeStoryShotScriptPrompt(node.prompt) }
+      if (node.id === 'node-video') return {
+        ...node,
+        prompt: upgradeStoryShotVideoPrompt(node.prompt),
+        params: [...node.params.map((param) => param.englishName === 'duration' && param.value === '3'
+          ? { ...param, value: '${shot.duration}' } : param),
+        ...(node.params.some(param => (param.englishName || param.name) === 'endImage') ? [] : [STORY_SHOT_OPTIONAL_END_IMAGE_PARAM])],
+      }
       if (node.id === 'node-input') {
         return {
           ...node,
@@ -1753,12 +1853,6 @@ export function normalizeWorkflow(workflow: Workflow): Workflow {
           }),
         }
       }
-      if (node.id === 'node-script') {
-        return {
-          ...node,
-          prompt: '按顺序基于主题数组"${input.topic}"，为平台"${input.platform}"生成${input.vedio_count}个短视频分镜剧本。\n模特参考图数组：${model_images.items}\n只返回 JSON 数组，不要 Markdown，每个数组对象必须包含：title、content、duration、camera、mood、firstFramePrompt。每个视频只使用主题数组中对应序号的一个主题，并保持模特参考图中的角色特征一致。',
-        }
-      }
       if (node.id === 'node-image') {
         return {
           ...node,
@@ -1768,7 +1862,7 @@ export function normalizeWorkflow(workflow: Workflow): Workflow {
       return node
     }),
     edges,
-  })
+  })))))
 }
 
 function mergeDefaultModels(stored: ModelConfig[]) {
@@ -1865,6 +1959,9 @@ function App() {
   const [workflowDebug, setWorkflowDebug] = useState<WorkflowDebugState | null>(null)
   const suspendedExecutionViewRef = useRef<{ executionId: string; debug: WorkflowDebugState | null } | null>(null)
   const [workflowBreakpoints, setWorkflowBreakpoints] = useState(() => loadWorkflowBreakpoints(window.sessionStorage))
+  const [workflowCuesEnabled, setWorkflowCuesEnabled] = useState(() => loadWorkflowCuesEnabled(window.localStorage))
+  const workflowCuesEnabledRef = useRef(workflowCuesEnabled)
+  workflowCuesEnabledRef.current = workflowCuesEnabled
   const workflowBreakpointsRef = useRef(workflowBreakpoints)
   workflowBreakpointsRef.current = workflowBreakpoints
   const [breakpointEditor, setBreakpointEditor] = useState<BreakpointEditorState | null>(null)
@@ -1882,6 +1979,7 @@ function App() {
     const state = createExecutionState(activeWorkflow, 'step')
     return restoredViewRef.current.executionId ? { ...state, id: restoredViewRef.current.executionId } : state
   })
+  const runnerWorkflow = executionState.executionWorkflowSnapshot ?? executionState.storyMediaRetake?.sourceWorkflow ?? activeWorkflow
   const executionStateIdRef = useRef(executionState.id)
   executionStateIdRef.current = executionState.id
   const [executionRecords, setExecutionRecords] = useState<ExecutionRecordListItem[]>([])
@@ -1902,16 +2000,17 @@ function App() {
       ? selectedNode.kind
       : undefined
   const availableModels = models.filter((model) => selectedCapability && model.capability === selectedCapability)
-  const executionOrder = getExecutionOrder(activeWorkflow)
+  const displayedWorkflow = workflowView === 'run' ? runnerWorkflow : activeWorkflow
+  const executionOrder = getExecutionOrder(displayedWorkflow)
   const debugLoopInfo = workflowDebug
     ? executionState.nodeRuns[workflowDebug.stepIndex]?.inputContext?.loop ?? executionState.nodeRuns[workflowDebug.stepIndex]?.context?.loop
     : undefined
   const debugLoopLabel =
     debugLoopInfo && typeof debugLoopInfo === 'object' && 'index' in debugLoopInfo ? `，第 ${String(debugLoopInfo.index)} 轮` : ''
   const isWorkflowDetail = workflowView === 'detail'
-  const canvasNodes = useMemo(() => projectCanvasNodes(activeWorkflow.nodes, showCanvasMedia), [activeWorkflow.nodes, showCanvasMedia])
+  const canvasNodes = useMemo(() => projectCanvasNodes(displayedWorkflow.nodes, showCanvasMedia), [displayedWorkflow.nodes, showCanvasMedia])
   const canvasYScale = canvasMediaScale(showCanvasMedia)
-  const canvasWorkflow = { ...activeWorkflow, nodes: canvasNodes }
+  const canvasWorkflow = { ...displayedWorkflow, nodes: canvasNodes }
   const graphWidth = Math.max(1300, ...canvasNodes.map((node) => node.position.x + 280))
   const graphHeight = Math.max(560, ...canvasNodes.map((node) => node.position.y + (showCanvasMedia ? CANVAS_MEDIA_NODE_HEIGHT + 120 : 260)))
   const branchScenes = (executionState.branchHistory ?? []).filter(entry => entry.backwards && Array.isArray(entry.scene))
@@ -1940,6 +2039,21 @@ function App() {
     activeLoopIteration = selectedRun.loopIndex
   }
   const viewingHistoricalLoopSnapshot = activeLoopIteration !== undefined && latestLoopIteration !== undefined && activeLoopIteration !== latestLoopIteration
+  const selectedStoryMediaRetake = selectedRun && !viewingBranchHistory && !viewingHistoricalLoopSnapshot
+    && executionState.nodeRuns[selectedRunIndex]?.id === selectedRun.id
+    ? planStoryMediaRetake(executionState.nodeRuns, selectedRunIndex) : undefined
+  const selectedStoryMediaRetakeWorkflow = selectedStoryMediaRetake
+    ? executionState.storyMediaRetake?.sourceWorkflow ?? normalizeWorkflow(activeWorkflow) : undefined
+  const selectedStoryMediaRetakeHasDrift = Boolean(selectedStoryMediaRetake
+    && !executionState.storyMediaRetake?.sourceWorkflow
+    && selectedStoryMediaRetakeWorkflow
+    && hasExecutionPlanMismatch(selectedStoryMediaRetakeWorkflow, executionState.nodeRuns))
+  const selectedStoryMediaRetakeHasInvalidSnapshot = Boolean(selectedStoryMediaRetake
+    && selectedStoryMediaRetakeWorkflow
+    && !checkedStoryMediaRetakeWorkflow(selectedStoryMediaRetakeWorkflow, executionState.nodeRuns))
+  const selectedStoryMediaRetakeHasInvalidModel = Boolean(selectedStoryMediaRetake
+    && (!storyRetakeModelMatches(executionState, models)
+      || !storyVideoModelContract(models.find(model => model.id === executionState.nodeRuns[selectedStoryMediaRetake.videoIndex]?.node.modelId))))
   // Use the exact displayed run, including loop/branch history. Never infer output from aggregate context.
   const canvasRunsByNode = useMemo(() => {
     const result = new Map<string, NodeRunState>()
@@ -1986,7 +2100,7 @@ function App() {
     items={canvasMediaByNode.get(node.id) ?? []} kind={canvasMediaKind(node)}
     status={canvasRunsByNode.get(node.id)?.status} nodeTitle={node.title} onPreview={openCanvasMedia}
   /> : null
-  const runtimeInputNodes = activeWorkflow.nodes.filter((node) => node.kind === 'input')
+  const runtimeInputNodes = runnerWorkflow.nodes.filter((node) => node.kind === 'input')
   const runtimeParamCount = runtimeInputNodes.reduce((count, node) => count + node.params.length, 0)
   const isStepDebugActive = runMode === 'step' && workflowDebug !== null
   const breakpointByNodeId = useMemo(
@@ -2005,7 +2119,13 @@ function App() {
   const canMoveToNextStep = !isDebugBusy && !hasUnsavedExecution && workflowDebug
     ? currentStepRun?.status === 'idle' || canAdvanceStep(currentStepRun?.status, workflowDebug.stepIndex, executionState.nodeRuns.length)
     : false
-  const canContinueToBreakpoint = !isDebugBusy && !hasUnsavedExecution && Boolean(workflowDebug) && currentStepRun?.status !== 'failed'
+  const hasBreakpointContinuation = workflowDebug !== null
+    && canContinueToNextBreakpoint(executionState.nodeRuns, workflowDebug.stepIndex)
+  const hasPendingStep = executionState.nodeRuns.some(run => run.status === 'idle')
+  const continueButtonLabel = !hasPendingStep ? '已到终点' : breakpointNodeIds.size ? '下一断点' : '运行至结束'
+  const continueButtonTitle = !hasPendingStep ? '当前记录已没有待执行节点'
+    : breakpointNodeIds.size ? '连续执行，并在下一个断点节点执行前暂停' : '当前没有启用的断点，将连续执行至结束'
+  const canContinueToBreakpoint = !isDebugBusy && !hasUnsavedExecution && hasBreakpointContinuation
   const rollbackBreakpoints = useMemo(() => [...breakpointByNodeId.values()], [breakpointByNodeId])
   const rollbackTargets = useMemo(
     () => breakpointRollbackCandidates(executionState.nodeRuns, rollbackBreakpoints),
@@ -2294,6 +2414,16 @@ function App() {
   }, [modelTestRuns])
 
   useEffect(() => {
+    if (!workflowCuesEnabled) return
+    window.addEventListener('pointerdown', unlockWorkflowCueAudio)
+    window.addEventListener('keydown', unlockWorkflowCueAudio)
+    return () => {
+      window.removeEventListener('pointerdown', unlockWorkflowCueAudio)
+      window.removeEventListener('keydown', unlockWorkflowCueAudio)
+    }
+  }, [workflowCuesEnabled])
+
+  useEffect(() => {
     if (!configLoaded) return
     saveAppViewState(window.sessionStorage, { page, workflowView, activeWorkflowId, runnerTab, executionId: executionState.id })
   }, [activeWorkflowId, executionState.id, page, runnerTab, workflowView, configLoaded])
@@ -2420,16 +2550,24 @@ function App() {
           }
         }
         if (hydratedWorkflow && recoveredExecution) {
-          const upgradedRuns = migrateBranchRuns(hydratedWorkflow, recoveredExecution.result.nodeRuns)
-          const recovered = recoverInterruptedNodeRuns(upgradedRuns)
+          const upgradedRuns = recoveredExecution.result.storyMediaRetake?.sourceWorkflow || recoveredExecution.result.executionWorkflowSnapshot
+            ? recoveredExecution.result.nodeRuns : migrateBranchRuns(hydratedWorkflow, recoveredExecution.result.nodeRuns)
+          const refreshed = refreshPendingDurationMediaAcceptRuns(hydratedWorkflow,
+            refreshPendingImageReviewRouteRuns(hydratedWorkflow, upgradedRuns))
+          const recovered = recoverInterruptedNodeRuns(refreshed)
+          const recoveryForkId = refreshed !== recoveredExecution.result.nodeRuns || recovered.interrupted
+            ? createId('record') : undefined
           const restoredExecution = {
             ...recoveredExecution.result,
-            ...(upgradedRuns !== recoveredExecution.result.nodeRuns ? { id: createId('record'), requestScopeId: recoveredExecution.result.requestScopeId ?? recoveredExecution.result.id } : {}),
+            ...(recoveryForkId ? { id: recoveryForkId,
+              parentExecutionId: recoveredExecution.result.id,
+              generationScopeId: recoveryForkId,
+              requestScopeId: recoveredExecution.result.requestScopeId ?? recoveredExecution.result.id } : {}),
             historical: false,
             nodeRuns: recovered.nodeRuns,
             selectedNodeId: recovered.nodeRuns[recovered.resumeIndex]?.node.id,
           }
-          if (upgradedRuns !== recoveredExecution.result.nodeRuns) void persistExecution(restoredExecution)
+          if (refreshed !== recoveredExecution.result.nodeRuns || recovered.interrupted) void persistExecution(restoredExecution)
           setRunMode(recoveredExecution.mode)
           setExecutionState(restoredExecution)
           setSelectedNodeId(restoredExecution.selectedNodeId ?? hydratedWorkflow.nodes[0]?.id ?? '')
@@ -2500,7 +2638,12 @@ function App() {
 
   useEffect(() => {
     if (!configLoaded || runMode !== 'step' || workflowView !== 'run' || executionState.historical || executionState.workflowId !== activeWorkflow.id) return
+    if (executionState.storyMediaRetake?.sourceWorkflow || executionState.executionWorkflowSnapshot) return
     if (!hasExecutionPlanMismatch(activeWorkflow, executionState.nodeRuns)) return
+    if (executionState.storyMediaRetake) {
+      setConfigStatus('同镜重拍分支的原工作流配置已变化；已保留原执行快照并停止运行，避免把已付费前缀接到新提示词。')
+      return
+    }
     if (executionState.nodeRuns.some(run => run.status !== 'idle')) {
       const nodeRuns = refreshPendingExecutionNodes(activeWorkflow, executionState.nodeRuns)
       if (nodeRuns !== executionState.nodeRuns) setExecutionState(current => ({ ...current, nodeRuns }))
@@ -2517,7 +2660,7 @@ function App() {
     setSelectedRunIndex(-1)
     setRunResult(executeWorkflow(activeWorkflow))
     setConfigStatus('检测到工作流拓扑升级，已清除旧运行器节点快照')
-  }, [activeWorkflow, configLoaded, executionState.historical, executionState.nodeRuns, executionState.workflowId, runMode, workflowView])
+  }, [activeWorkflow, configLoaded, executionState.historical, executionState.nodeRuns, executionState.storyMediaRetake, executionState.workflowId, runMode, workflowView])
 
   useEffect(() => {
     if (!configLoaded || workflowView !== 'run' || runnerTab !== 'history') return
@@ -2952,6 +3095,10 @@ function App() {
 
   const executeFullRun = async () => {
     if (executionState.persistenceError) return
+    if (executionState.storyMediaRetake?.sourceWorkflow || executionState.executionWorkflowSnapshot) {
+      setConfigStatus('此源版本重拍分支按单步执行；请选择下一步显式启动视频节点。')
+      return
+    }
     const executableWorkflow = normalizeWorkflow(activeWorkflow)
     if (serializedValuesDiffer(activeWorkflow, executableWorkflow)) {
       const upgradedWorkflows = workflows.map((workflow) => workflow.id === executableWorkflow.id ? executableWorkflow : workflow)
@@ -2965,7 +3112,7 @@ function App() {
   const executeRealTask = async (task: StepTask, context: Record<string, unknown>): Promise<unknown> => {
     if (task.node.mapInput) return mapNodeInputs(task.node.mapInput, context, (itemContext, index) => executeRealTask({ ...task, node: { ...task.node, mapInput: undefined }, executionId: `${task.executionId ?? task.node.id}:item-${index}` }, itemContext))
     const node = task.node
-    const executionWorkflow = normalizeWorkflow(activeWorkflow)
+    const executionWorkflow = task.executionWorkflow ?? normalizeWorkflow(activeWorkflow)
     if (node.kind === 'input') return runNode(node, context)
     if (node.kind === 'loop') {
       const loopItems = getLoopItems(context, node)
@@ -2983,6 +3130,8 @@ function App() {
       : rawInput
     const baseContext = { ...context, ...(activeInput ? { input: activeInput } : {}), ...loopContext, uploads: node.uploads.map((asset) => asset.name) }
     let values = nodeParamValues(node, baseContext)
+    if (executionWorkflow.id === 'wf-workplace-second-trial-v1' && node.id === 'node-timeline-compose'
+      && values.reviewDecision === undefined) values = { ...values, reviewDecision: resolvePath(baseContext, 'video_review_decision') }
     const qualityDisposition = workflowQualityDisposition(executionWorkflow)
     if (qualityDisposition) values = { ...values, qualityDisposition }
     if (executionWorkflow.id === 'wf-sanguo-history-drama' && (node.kind === 'video' || node.kind === 'videoConcat')) {
@@ -3002,7 +3151,7 @@ function App() {
     }
     const selectionSensitive = ['history.scene-outline', 'history.storyboard', 'character.lookup'].includes(node.operation ?? '')
     const selections = resolvePath(baseContext, 'input.characterAssetSelections')
-    if (selections && ['character.ensure', 'character.archive'].includes(node.operation ?? '')) values = {...values, characterAssetSelections: selections}
+    if (selections && ['character.lookup', 'character.ensure', 'character.archive'].includes(node.operation ?? '')) values = {...values, characterAssetSelections: selections}
     if (node.operation === 'character.archive' && values.shot === undefined) {
       const shot = resolvePath(baseContext, 'shot_script')
       if (shot && typeof shot === 'object' && !Array.isArray(shot)) values = {...values, shot}
@@ -3104,8 +3253,13 @@ function App() {
     const rawPromptContext = node.kind === 'text' ? nodePromptInputContext(localContext, values.promptInputMode)
       : node.kind === 'video' ? videoPromptInputContext(localContext, values.promptInputMode) : localContext
     const promptRetry = resolvePath(rawPromptContext, 'retry')
-    const promptContext = promptRetry && typeof promptRetry === 'object' && !Array.isArray(promptRetry)
-      ? { ...rawPromptContext, retry: { ...promptRetry, feedback: withoutFailedTextCandidate(resolvePath(rawPromptContext, 'retry.feedback')) } } : rawPromptContext
+    const basePromptContext = promptRetry && typeof promptRetry === 'object' && !Array.isArray(promptRetry)
+      ? { ...rawPromptContext, retry: { ...promptRetry, feedback: withoutFailedTextCandidate(resolvePath(rawPromptContext, 'retry.feedback')) } }
+      : rawPromptContext
+    const promptContext = node.operation === 'history.coverage-cut-first-frame'
+      ? { ...basePromptContext, shot_script: coverageCutImageShot(
+          (resolvePath(basePromptContext, 'shot_script') ?? {}) as Record<string, unknown>) }
+      : basePromptContext
     const writerStage = executionWorkflow.id === 'wf-sanguo-history-drama'
       ? node.operation === 'history.scene-outline' ? 'outline' : node.operation === 'history.storyboard' ? 'storyboard' : undefined
       : undefined
@@ -3119,6 +3273,8 @@ function App() {
     const prompt = interpolate(currentPrompt, promptContext) + renderRetryFeedbackPrompt(resolvePath(promptContext, 'retry.feedback'))
       + (writerStage && selectedCharacterVisuals.length ? '\n【用户指定的本次三视图】' + JSON.stringify(selectedCharacterVisuals)
         + '。出现这些人物的场景和分镜必须原样采用指定visualContext，不改用同人物其他候选。此选择是本作艺术造型，不能作为历史生年或实岁证据；剧情时间仍按史料。' : '')
+      + (node.operation === 'history.coverage-cut-first-frame'
+        ? coverageCutOpeningStatePrompt((resolvePath(localContext, 'shot_script') ?? {}) as Record<string, unknown>) : '')
       + (node.kind === 'video' ? characterEquipmentPrompt(values.equipmentBindings) : '')
     const knownSpeakers = node.kind === 'video' && task.voicePolicy === 'strict' ? knownVoiceSpeakers([
       ...(task.knownVoiceInputs ?? []),
@@ -3126,7 +3282,7 @@ function App() {
       ...executionWorkflow.nodes.filter(n => n.kind === 'video' && !n.parentId && !executionWorkflow.nodes.some(owner => owner.kind === 'loop' && owner.childIds?.includes(n.id))).map(n => nodeParamValues(n, baseContext)),
     ]) : undefined
     const executionContext = { knownVoiceSpeakers: knownSpeakers, voiceExecutionId: task.voiceExecutionId, voicePolicy: task.voicePolicy, requestKey: task.executionId ? `${task.executionId}:${node.id}:${task.loopIndex ?? 0}:${String(resolvePath(localContext, 'scene.id') ?? '')}` : undefined, workflowId: executionWorkflow.id, workflowName: executionWorkflow.name, nodeId: node.id, nodeName: node.title }
-    if (executionWorkflow.id === 'wf-sanguo-history-drama' || (node.kind === 'video' && task.voicePolicy === 'strict')) {
+    if (executionWorkflow.id === 'wf-sanguo-history-drama' || node.kind === 'videoConcat' || (node.kind === 'video' && task.voicePolicy === 'strict')) {
       const runtime = await requestJson<{ historyQualityVersion?: string; voiceContractVersion?: string; videoOutputProfileVersion?: string; characterVisualContextVersion?: string }>('/api/runtime-version').catch(() => ({ historyQualityVersion: undefined, voiceContractVersion: undefined, videoOutputProfileVersion: undefined, characterVisualContextVersion: undefined }))
       if (executionWorkflow.id === 'wf-sanguo-history-drama' && runtime.historyQualityVersion !== HISTORY_QUALITY_VERSION) throw new Error('历史视频服务仍运行旧版本。请重启本地服务后再执行；已阻止新界面调用旧模型适配器。')
       if (executionWorkflow.id === 'wf-sanguo-history-drama' && (executionWorkflow.schemaVersion ?? 0) >= 146 && runtime.characterVisualContextVersion !== CHARACTER_VISUAL_CONTEXT_RUNTIME_VERSION) throw new Error('人物年龄与场景造型服务仍运行旧版本。请重启本地服务后再执行；已阻止旧服务按姓名误用其他年龄的人物图。')
@@ -3136,25 +3292,82 @@ function App() {
     if (node.kind === 'image' && !node.modelId) return { ...uploadedImageOutput(node), prompt, model: undefined, params: values }
     if (node.kind === 'http') {
       if (!node.request || !/^\/api\/[\w/-]+$/.test(node.request.url)) throw new Error('HTTP 节点需配置本地 /api/ 请求地址')
+      if (node.id === 'sanguo-scene-cut-source-archive' && task.executionRecordId)
+        values.executionRecordId = task.executionRecordId
+      if (node.id === 'sanguo-scene-cut-approval' && task.executionRecordId)
+        values.executionRecordId = task.executionRecordId
+      if (node.id === 'sanguo-coverage-approval' && task.executionRecordId)
+        values.executionRecordId = task.executionRecordId
       return requestJson<Record<string, unknown>>(node.request.url, { method: node.request.method, ...(node.request.method === 'POST' ? { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) } : {}) })
     }
     if (node.kind === 'code' || node.kind === 'branch') {
       if (!node.code?.trim()) throw new Error(`${node.title} 未配置 JavaScript 代码`)
       const files = await Promise.all(node.uploads.map(materializeUpload))
-      const response = await runCodeNode(node.code, prompt, values, files, localContext)
+      let codeContext = storyQualityBranchCodeContext(executionWorkflow.id, node, localContext)
+      if (executionWorkflow.id === 'wf-sanguo-history-drama' && node.id === 'sanguo-first-frame-branch'
+        && selections && Object.keys(selections).length) {
+        const savedLookup = resolvePath(codeContext, 'character_lookup') as Record<string, unknown> | undefined
+        const savedAssets = Array.isArray(savedLookup?.existingAssets) ? savedLookup.existingAssets as Record<string, unknown>[] : []
+        const shot = resolvePath(codeContext, 'shot_script') as Record<string, unknown> | undefined
+        const activeNames = Array.isArray(shot?.characters) ? shot.characters as string[] : []
+        if (Object.entries(selections as Record<string, string>).some(([name, assetId]) => activeNames.includes(name)
+          && !savedAssets.some(asset => asset.characterName === name && asset.id === assetId))) {
+          const lookupNode = executionWorkflow.nodes.find(candidate => candidate.id === 'sanguo-character-lookup')
+          if (!lookupNode?.code || lookupNode.operation !== 'character.lookup') throw new Error('CHARACTER_VISUAL_SELECTION_MISMATCH: 缺少可复核的人物检索节点')
+          const actors = withApprovedVoiceCasting(characterInputsForShot(shot), shot ?? {},
+            resolvePath(codeContext, 'approved_scene_outline'))
+          const refreshed = await runBuiltinNode('character.lookup', lookupNode.prompt, {
+            characters: actors, characterAssetSelections: selections, includeVoices: true,
+            shot, workflowId: executionWorkflow.id, episodeNumber: resolvePath(codeContext, 'input.episode_number'),
+            sceneId: resolvePath(codeContext, 'scene.id'), qualityDisposition: values.qualityDisposition,
+          })
+          if (refreshed.status >= 400) throw new Error(JSON.stringify(refreshed.body))
+          const rawLookup = refreshed.body as { items?: Array<{ id?: string; characterName?: string }> }
+          for (const [name, assetId] of Object.entries(selections as Record<string, string>)) if (activeNames.includes(name)
+            && !rawLookup.items?.some(asset => asset.characterName === name && asset.id === assetId))
+            throw new Error(`CHARACTER_VISUAL_SELECTION_MISMATCH: ${name} 未召回用户指定三视图 ${assetId}`)
+          const lookupInput = sceneCutEvidencePlanCodeInput(lookupNode, {}, {
+            ...codeContext, character_lookup_result: refreshed.body,
+          })
+          const resolved = await runCodeNode(lookupNode.code, lookupNode.prompt, lookupInput.values, [], lookupInput.context)
+          if (resolved.status >= 400) throw new Error(`HTTP ${resolved.status}: ${JSON.stringify(resolved.body)}`)
+          codeContext = { ...codeContext, character_lookup: resolved.body }
+        }
+      }
+      const codeInput = executionWorkflow.id === 'wf-sanguo-history-drama'
+        ? sceneCutEvidencePlanCodeInput(node, values, codeContext)
+        : { values, context: codeContext }
+      const response = await runCodeNode(node.code, prompt, codeInput.values, files, codeInput.context)
       if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
       const result = response.body as Record<string, unknown> | undefined
+      if (node.id === 'sanguo-media-accept' && result?.passed === true
+        && result.qualityDisposition === 'manual-review-v1') {
+        const coverageRisks = resolvePath(codeContext, 'video_take.params.coverageCutFrameGate.qualityRisks')
+          ?? resolvePath(codeContext, 'coverage_frame_gate.qualityRisks')
+        if (Array.isArray(coverageRisks) && coverageRisks.length) {
+          const qualityReview = result.qualityReview && typeof result.qualityReview === 'object'
+            ? result.qualityReview as Record<string, unknown> : {}
+          return { ...result,
+            qualityRisks: [...(Array.isArray(result.qualityRisks) ? result.qualityRisks : []), ...coverageRisks],
+            qualityReview: { ...qualityReview, status: 'needs_attention', canProceed: true },
+          }
+        }
+      }
       if (node.id === 'sanguo-scene-outline-accept' && result?.passed === true && result.contentContractVersion === 'cinematic-v1') {
         return { ...result, contextPatch: { approved_scene_outline: result } }
       }
       return response.body && typeof response.body === 'object' ? response.body : { value: response.body }
     }
     const model = models.find((item) => item.id === node.modelId)
-    if (node.operation === 'character.ensure' || node.operation === 'frame.first.resolve') {
+    if (node.operation === 'character.ensure' || node.operation === 'frame.first.resolve'
+      || node.operation === 'story.subtitle-reference') {
       if (node.modelId && !model) throw new Error(`${node.title} 配置的模型不存在`)
       const response = await runBuiltinNode(node.operation, prompt, values, model, executionContext)
       if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
-      if (node.kind === 'validation' && (response.body as Record<string, unknown>)?.passed !== true) throw new Error(`质量校验未通过：${JSON.stringify(response.body)}`)
+      if (node.kind === 'validation' && (response.body as Record<string, unknown>)?.passed !== true
+        && !((response.body as Record<string, unknown>)?.passed === false && validationResultBranch(executionWorkflow, node.id))) {
+        throw new ValidationNodeFailure(response.body)
+      }
       return { ...(response.body && typeof response.body === 'object' ? response.body as Record<string, unknown> : { value: response.body }), operation: node.operation }
     }
     if (node.kind === 'internet' || node.kind === 'validation' || node.kind === 'knowledge' || node.kind === 'asset' || node.kind === 'compose' || node.kind === 'videoConcat') {
@@ -3162,7 +3375,10 @@ function App() {
       if (node.kind === 'asset' && node.modelId && !model) throw new Error(`${node.title} 配置的模型不存在`)
       const response = await runBuiltinNode(node.operation, prompt, values, model, executionContext)
       if (response.status >= 400) throw new Error(`HTTP ${response.status}: ${JSON.stringify(response.body)}`)
-      if (node.kind === 'validation' && (response.body as Record<string, unknown>)?.passed !== true) throw new Error(`质量校验未通过：${JSON.stringify(response.body)}`)
+      if (node.kind === 'validation' && (response.body as Record<string, unknown>)?.passed !== true
+        && !((response.body as Record<string, unknown>)?.passed === false && validationResultBranch(executionWorkflow, node.id))) {
+        throw new ValidationNodeFailure(response.body)
+      }
       return { ...(response.body && typeof response.body === 'object' ? response.body as Record<string, unknown> : { value: response.body }), operation: node.operation }
     }
     if (!model) throw new Error(`${node.title} 未配置模型`)
@@ -3339,7 +3555,7 @@ function App() {
         }
       }
     }
-    return {
+    const mediaOutput = {
       url,
       ...(node.kind === 'image' ? { urls, items: urls.map((itemUrl) => ({ url: itemUrl })) } : {}),
       ...(lastFrameUrl ? { lastFrameUrl } : {}),
@@ -3358,6 +3574,7 @@ function App() {
       params: values,
       model: node.modelId,
     }
+    return mediaOutput
   }
 
   const continueFullRun = async (state: ExecutionState) => {
@@ -3392,6 +3609,7 @@ function App() {
       setExecutionState(failedState)
       setSelectedRunIndex(failed.selectedRunIndex)
       await persistExecution(failedState)
+      if (workflowCuesEnabledRef.current) playWorkflowCue('failed')
       return
     }
     setExecutionState(base)
@@ -3401,6 +3619,10 @@ function App() {
 
   const executeStepRun = () => {
     if (executionState.persistenceError) return
+    if (executionState.storyMediaRetake?.sourceWorkflow || executionState.executionWorkflowSnapshot) {
+      setConfigStatus('此源版本重拍分支已保留执行快照；请选择下一步继续。')
+      return
+    }
     if (stepExecutionLockRef.current || fullExecutionLockRef.current) return
     const executableWorkflow = normalizeWorkflow(activeWorkflow)
     if (serializedValuesDiffer(activeWorkflow, executableWorkflow)) {
@@ -3425,6 +3647,7 @@ function App() {
       setSelectedRunIndex(failed.selectedRunIndex)
       setWorkflowDebug(null)
       persistExecution(failedState)
+      if (workflowCuesEnabledRef.current) playWorkflowCue('failed')
       return
     }
     setWorkflowDebug({ stepIndex: 0 })
@@ -3459,17 +3682,42 @@ function App() {
     options: { breakpointForNode?: (nodeId: string) => WorkflowBreakpoint | undefined; ignoreBreakpointRunId?: string; stopBeforeRun?: (run: NodeRunState) => boolean } = {},
   ): Promise<ExecutionState | undefined> => {
     if (stepExecutionLockRef.current || requestedState.persistenceError) return
-    if (isDurationPolicyTransition(activeWorkflow, requestedState.nodeRuns)) {
+    const sourceWorkflow = requestedState.storyMediaRetake?.sourceWorkflow
+    const executionSnapshot = requestedState.executionWorkflowSnapshot
+    if (sourceWorkflow && !checkedStoryMediaRetakeWorkflow(sourceWorkflow, requestedState.nodeRuns)) {
+      setConfigStatus('同镜重拍分支的源工作流快照与执行记录不一致，已在付费调用前停止。')
+      return
+    }
+    if (!storyRetakeModelMatches(requestedState, models)) {
+      setConfigStatus('同镜重拍的视频模型或生成默认参数已变化；已在付费调用前停止。')
+      return
+    }
+    const executionWorkflow = executionSnapshot ?? sourceWorkflow ?? normalizeWorkflow(activeWorkflow)
+    if (executionSnapshot && hasExecutionPlanMismatch(executionWorkflow, requestedState.nodeRuns)) {
+      setConfigStatus('保存的执行版本与节点快照不一致；已停止执行并保留原证据。')
+      return
+    }
+    if (!sourceWorkflow && !executionSnapshot && activeWorkflow.id === 'wf-story'
+      && requestedState.nodeRuns.some(run => run.node.kind === 'video' && run.status === 'success')
+      && hasExecutionPlanMismatch(executionWorkflow, requestedState.nodeRuns)) {
+      setConfigStatus('此执行已保存付费视频，但当前工作流配置与原执行不一致；已停止运行并保留原证据。')
+      return
+    }
+    if (!sourceWorkflow && requestedState.storyMediaRetake && hasExecutionPlanMismatch(executionWorkflow, requestedState.nodeRuns)) {
+      setConfigStatus('同镜重拍分支与当前工作流配置不一致；已停止执行，原片和已付费前缀保持不变。')
+      return
+    }
+    if (isDurationPolicyTransition(executionWorkflow, requestedState.nodeRuns)) {
       setConfigStatus('此记录使用旧时长策略，已冻结原排程和成片证据；请新建执行，从原分镜节点重新规划。')
       return
     }
-    const currentNodeIds = new Set(activeWorkflow.nodes.map(node => node.id))
+    const currentNodeIds = new Set(executionWorkflow.nodes.map(node => node.id))
     const runNodeIds = new Set(requestedState.nodeRuns.flatMap(run => [run.node.id, ...(run.node.kind === 'loop' ? run.node.childIds ?? [] : [])]))
     if (currentNodeIds.size !== runNodeIds.size || [...currentNodeIds].some(id => !runNodeIds.has(id))) {
       setConfigStatus('此执行记录属于旧拓扑，已保留原证据。请从升级后的恢复记录继续，避免跳过独立验收。')
       return
     }
-    const retryErrors = branchConfigurationErrors(activeWorkflow)
+    const retryErrors = branchConfigurationErrors(executionWorkflow)
     if (retryErrors.length) { setConfigStatus(retryErrors.join('；')); return }
     const safeRequestedIndex = firstBlockingRunIndex(requestedState.nodeRuns, requestedIndex)
     const requestedRun = requestedState.nodeRuns[safeRequestedIndex]
@@ -3477,12 +3725,18 @@ function App() {
     stepExecutionLockRef.current = true
     let checkpointState = requestedState
     const saveCheckpoint = async (state: ExecutionState) => {
+      const previous = checkpointState
       checkpointState = state
       await requireExecutionCheckpoint(() => persistExecution(state))
+      const cue = workflowTerminalCue(previous.nodeRuns, state.nodeRuns)
+      if (cue && workflowCuesEnabledRef.current) playWorkflowCue(cue)
     }
     try {
       let index = safeRequestedIndex
-      const refreshedRuns = refreshPendingExecutionNodes(normalizeWorkflow(activeWorkflow), requestedState.nodeRuns)
+      const refreshedRuns = sourceWorkflow ? requestedState.nodeRuns
+        : refreshPendingDurationMediaAcceptRuns(normalizeWorkflow(activeWorkflow),
+            refreshPendingImageReviewRouteRuns(executionWorkflow,
+              refreshPendingExecutionNodes(executionWorkflow, requestedState.nodeRuns)))
       let baseState = refreshedRuns === requestedState.nodeRuns ? requestedState : { ...requestedState, nodeRuns: refreshedRuns }
       let prepared = prepareStepRun(baseState, index)
 
@@ -3515,6 +3769,7 @@ function App() {
           setSelectedLoopSnapshot({ groupId: prepared.run.loopGroupId, loopIndex: prepared.run.loopIndex })
         }
         await saveCheckpoint(pausedState)
+        if (matchingBreakpoint && workflowCuesEnabledRef.current) playWorkflowCue('breakpoint')
         return pausedState
       }
 
@@ -3544,7 +3799,7 @@ function App() {
         // while other tabs and diagnostics no longer mistake it for unstarted.
         await saveCheckpoint(runningState)
         const effectiveNode = nodeWithRunOverrides(run)
-        const disposition = workflowQualityDisposition(normalizeWorkflow(activeWorkflow))
+        const disposition = workflowQualityDisposition(executionWorkflow)
         const writerInputs = failedTextCandidateWriterInputs(effectiveNode.operation ?? '',
           { ...inputs, ...(disposition ? { qualityDisposition: disposition } : {}) }, inputContext)
         const failedBinding = failedTextRunBinding(baseState, index, inputContext, writerInputs, effectiveNode)
@@ -3561,10 +3816,12 @@ function App() {
               executionIdentity: { executionId: baseState.id, requestScopeId: baseState.requestScopeId ?? baseState.id, workflowId: baseState.workflowId },
               actualTailUrl: typeof actualTail?.url === 'string' ? actualTail.url : undefined }) : undefined
         let output = await executeRealTask({
+          executionWorkflow,
           failedCandidateBinding: failedBinding, storyboardSplitCandidate: splitCandidate,
           knownVoiceInputs: baseState.nodeRuns.filter(item => item.node.kind === 'video' && item.status !== 'skipped').map(item => item.loopItem),
           voiceExecutionId: baseState.requestScopeId ?? baseState.id, voicePolicy: baseState.voicePolicy,
           executionId: `${baseState.generationScopeId ?? baseState.requestScopeId ?? baseState.id}:attempt-${run.attempt ?? 1}:revision-${run.revision ?? 0}`,
+          executionRecordId: baseState.id,
           executionMode: baseState.mode,
           node: effectiveNode,
           policyNodes: baseState.nodeRuns.filter(item => item.loopIndex === undefined
@@ -3576,7 +3833,55 @@ function App() {
           loopPrevious: previousLoopResult,
         }, inputContext)
         if (run.node.kind === 'branch') {
-          const transition = routeBranch(activeWorkflow, runningRuns.map((item, i) => i === index ? { ...item, durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : item), index, output, inputContext)
+          if (executionWorkflow.id === 'wf-sanguo-history-drama'
+            && ['sanguo-coverage-review-route', 'sanguo-scene-cut-review-route'].includes(run.node.id)) {
+            const reviewId = run.node.id === 'sanguo-coverage-review-route'
+              ? 'sanguo-coverage-review' : 'sanguo-scene-cut-review'
+            const review = runningRuns.slice(0, index).reverse().find(item =>
+              item.node.id === reviewId && item.loopGroupId === run.loopGroupId
+              && item.loopIndex === run.loopIndex)
+            const report = review?.output as { passed?: unknown; issues?: unknown } | undefined
+            const decision = output as { value?: unknown; advisory?: unknown; reviewPassed?: unknown;
+              retryCount?: unknown; qualityRisks?: unknown } | undefined
+            const advisory = run.node.id === 'sanguo-coverage-review-route'
+              && report?.passed === false && decision?.value === true && decision.advisory === true
+              && decision.reviewPassed === false && Number(decision.retryCount) === (run.branchState?.counts.false ?? 0) + 1
+              && Number(decision.retryCount) >= 7
+              && resolvePath(inputContext, 'input.qualityDisposition') === 'manual-review-v1'
+              && JSON.stringify(decision.qualityRisks) === JSON.stringify(report.issues)
+            if (review?.node.id !== reviewId || review.status !== 'success'
+              || review.loopGroupId !== run.loopGroupId || review.loopIndex !== run.loopIndex
+              || typeof (review.output as { passed?: unknown } | undefined)?.passed !== 'boolean'
+              || branchDecision(output) !== (report?.passed === true || advisory))
+              throw Error('IMAGE_REVIEW_ROUTE_INVALID: 分支结论与本镜实图审核不一致')
+          }
+          if (executionWorkflow.id === 'wf-story' && run.node.id === STORY_VIDEO_REVIEW_RESULT_BRANCH_NODE_ID) {
+            const review = runningRuns[index - 1]
+            const passed = review?.node.id === 'node-video-review' && review.status === 'success'
+              && review.loopGroupId === run.loopGroupId && review.loopIndex === run.loopIndex
+              && (review.output as Record<string, unknown> | undefined)?.passed === true
+            const savedReview = (review?.output as { storyMediaReview?: { reviewStatus?: string; retryable?: boolean } } | undefined)?.storyMediaReview
+            const advisory = review?.node.id === 'node-video-review' && review.status === 'success'
+              && review.loopGroupId === run.loopGroupId && review.loopIndex === run.loopIndex
+              && savedReview?.reviewStatus === 'uncertain' && savedReview.retryable === false
+            if (branchDecision(output) !== (passed || advisory)) throw new Error('STORY_MEDIA_REVIEW_ROUTE_INVALID: 分支判定与本镜质检报告不一致')
+            if (!passed && !advisory) {
+              const maxAttempts = Number(inputs.maxAttempts)
+              const priorRetakes = run.branchState?.counts.false ?? 0
+              if (!Number.isInteger(maxAttempts) || maxAttempts < 1 || maxAttempts > MAX_NODE_ATTEMPTS
+                || !Number.isSafeInteger(priorRetakes) || priorRetakes < 0 || priorRetakes + 1 >= maxAttempts) {
+                throw new Error('STORY_MEDIA_RETAKE_BUDGET_EXHAUSTED: 本镜重拍次数已达配置上限，原片与质检证据已保留')
+              }
+              const plan = planStoryMediaBranchRetake(runningRuns, index)
+              const returnEdges = executionWorkflow.edges.filter(edge => edge.from === run.node.id && edge.branch === 'false')
+              if (!plan || returnEdges.length !== 1 || returnEdges[0].to !== runningRuns[plan.videoIndex]?.node.id) {
+                throw new Error('STORY_MEDIA_RETAKE_EVIDENCE_INVALID: 本镜质检缺少可核验的重拍证据，已阻止付费回跳')
+              }
+              output = { ...(output && typeof output === 'object' ? output as Record<string, unknown> : { value: false }),
+                feedback: plan.feedback }
+            }
+          }
+          const transition = routeBranch(executionWorkflow, runningRuns.map((item, i) => i === index ? { ...item, durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : item), index, output, inputContext)
           const updated: ExecutionState = { ...baseState, nodeRuns: transition.runs, context: transition.context,
             branchHistory: [...(baseState.branchHistory ?? []), transition.history],
             logs: [...baseState.logs, `${run.node.title} → ${transition.history.value} → ${transition.history.to}`],
@@ -3600,11 +3905,13 @@ function App() {
               ...(run.loopNode ? { [run.loopNode.loop.itemVar]: splitScenes[0] } : {}),
             }
           : run.node.operation === 'history.storyboard' ? expandedSceneOutline(inputContext, run.loopItem, [output as Record<string, unknown>]) : inputContext
-        let nextContext = applyNodeOutputToContext(expandedInputContext, run.node.resultVar, output)
+        let nextContext = applyNodeOutputToContext(expandedInputContext, run.node.resultVar, output, {
+          validationResultVars: validationResultVariables(executionWorkflow.nodes), sourceKind: run.node.kind,
+        })
         let nextRuns = runningRuns.map((item, itemIndex) => (itemIndex === index ? { ...item, output, context: nextContext, status: 'success' as NodeRunStatus, durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : item))
         if (publicSegments.length && run.loopNode && run.loopGroupId) {
           const currentLoopIndex = run.loopIndex ?? 0
-          const loopChildren = getLoopNodes(activeWorkflow, run.loopNode.id)
+          const loopChildren = getLoopNodes(executionWorkflow, run.loopNode.id)
           const insertionIndex = nextRuns.findIndex((item, itemIndex) => itemIndex > index && item.loopGroupId === run.loopGroupId && (item.loopIndex ?? 0) > currentLoopIndex)
           const insertAt = insertionIndex >= 0 ? insertionIndex : nextRuns.findIndex((item, itemIndex) => itemIndex > index && item.loopGroupId !== run.loopGroupId)
           const boundedInsertAt = insertAt >= 0 ? insertAt : nextRuns.length
@@ -3675,7 +3982,7 @@ function App() {
         }
         if (run.node.kind === 'loop' && run.node.loop.enabled) {
           const loopItems = getLoopItems(nextContext, run.node)
-          const loopChildren = getLoopNodes(activeWorkflow, run.node.id)
+          const loopChildren = getLoopNodes(executionWorkflow, run.node.id)
           const childIds = new Set(loopChildren.map((child) => child.id))
           const loopGroupId = `${run.node.id}-${Date.now()}`
           const expandedRuns: NodeRunState[] = []
@@ -3712,7 +4019,7 @@ function App() {
             iterations.set(item.loopIndex ?? 0, iteration)
           })
           const orderedIterations = [...iterations.entries()].sort(([a], [b]) => a - b).map(([, value]) => value)
-          const loopOutputs = aggregateLoopOutputs(orderedIterations, Object.fromEntries(getLoopNodes(activeWorkflow, run.loopNode.id)
+          const loopOutputs = aggregateLoopOutputs(orderedIterations, Object.fromEntries(getLoopNodes(executionWorkflow, run.loopNode.id)
             .map(child => [child.resultVar, child.loopResultMode ?? 'collect'])))
           nextContext = { ...nextContext, ...loopOutputs }
           nextRuns = nextRuns.map((item, itemIndex) => itemIndex === index ? { ...item, context: nextContext } : item)
@@ -3729,11 +4036,41 @@ function App() {
         const logs = [...baseState.logs, `${run.node.title} -> 失败：${message}`]
         const nextRuns = runningRuns.map((item, itemIndex) => (itemIndex === index ? { ...item,
           ...(error instanceof FailedTextCandidateError ? { retryFeedback: withFailedTextCandidate(item.retryFeedback, error.evidence) } : {}),
-          output: { error: message }, context: { ...context, error: message }, status: 'failed' as NodeRunStatus, error: message, durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : item))
+          output: error instanceof ValidationNodeFailure ? { ...error.output, error: message } : { error: message },
+          context: { ...context, error: message }, status: 'failed' as NodeRunStatus, error: message, durationMs: Math.max(1, Math.round(performance.now() - startedAt)) } : item))
         const updated = { ...baseState, nodeRuns: nextRuns, context: { ...context, error: message }, logs, selectedNodeId: run.node.id }
         setExecutionState(updated)
         await saveCheckpoint(updated)
-        return updated
+        const priorCount = baseState.sceneCutAutoRetry?.loopGroupId === run.loopGroupId
+          && baseState.sceneCutAutoRetry?.loopIndex === run.loopIndex
+          ? (baseState.sceneCutAutoRetry?.count ?? 0) : 0
+        const plan = baseState.workflowId === 'wf-sanguo-history-drama'
+          && /^SCENE_CUT_FRAME_REJECTED:/.test(message)
+          ? planSceneCutAutoRetry(nextRuns, index, priorCount)
+          : baseState.workflowId === 'wf-sanguo-history-drama'
+            && /^COVERAGE_FRAME_APPROVAL_INVALID: 首帧身份或连续性实图审核未通过/.test(message)
+            ? planCoverageCutAutoRetry(nextRuns, index, priorCount) : undefined
+        if (!plan) return updated
+        const id = createId('record')
+        const retriedRuns = manualRetryRuns(nextRuns, plan.imageIndex)
+        retriedRuns[plan.imageIndex] = { ...retriedRuns[plan.imageIndex], retryFeedback: plan.feedback }
+        const fork: ExecutionState = { ...updated, id, parentExecutionId: updated.id,
+          requestScopeId: updated.requestScopeId ?? updated.id, generationScopeId: id,
+          sceneCutImageCountRecovery: undefined,
+          sceneCutAutoRetry: { sourceExecutionId: baseState.sceneCutAutoRetry?.loopGroupId === run.loopGroupId
+            && baseState.sceneCutAutoRetry?.loopIndex === run.loopIndex
+            ? baseState.sceneCutAutoRetry?.sourceExecutionId ?? updated.id : updated.id,
+            count: plan.count, sourceReviewRunId: plan.reviewRunId,
+            loopGroupId: run.loopGroupId, loopIndex: run.loopIndex },
+          historical: false, nodeRuns: retriedRuns,
+          context: retriedRuns[plan.imageIndex - 1]?.context ?? {},
+          selectedNodeId: retriedRuns[plan.imageIndex].node.id,
+          logs: [...updated.logs, `首帧实图审核明确拒绝；自动创建第 ${plan.count} 次有界重试 ${id}，从本镜首帧重新生成。原记录 ${updated.id} 保留。`] }
+        await saveCheckpoint(fork)
+        setExecutionState(fork)
+        setWorkflowDebug({ stepIndex: plan.imageIndex })
+        followExecutionInInspector(plan.imageIndex)
+        return fork
       }
     } catch (error) {
       if (!(error instanceof ExecutionPersistenceError)) throw error
@@ -3748,6 +4085,7 @@ function App() {
 
   const continueToNextBreakpoint = async () => {
     if (!workflowDebug || stepExecutionLockRef.current || debugContinueRunning || executionState.persistenceError) return
+    if (!canContinueToNextBreakpoint(executionState.nodeRuns, workflowDebug.stepIndex)) return
     setDebugContinueRunning(true)
     if (runnerAutoFollowRef.current) setRunnerInspectorTab('config')
     try {
@@ -3787,9 +4125,11 @@ function App() {
   }
 
   const loadHistoricalExecution = (record: ExecutionRecord) => {
-    const upgradedRuns = migrateBranchRuns(activeWorkflow, record.result.nodeRuns)
+    const upgradedRuns = record.result.storyMediaRetake?.sourceWorkflow
+      ? record.result.nodeRuns : migrateBranchRuns(activeWorkflow, record.result.nodeRuns)
     if (upgradedRuns !== record.result.nodeRuns) {
-      const result = { ...record.result, id: createId('record'), requestScopeId: record.result.requestScopeId ?? record.result.id, nodeRuns: upgradedRuns,
+      const result = { ...record.result, id: createId('record'), parentExecutionId: record.result.id,
+        requestScopeId: record.result.requestScopeId ?? record.result.id, nodeRuns: upgradedRuns,
         selectedNodeId: upgradedRuns.find(r => r.status === 'failed')?.node.id ?? record.result.selectedNodeId }
       record = { ...record, id: result.id, result }
       void persistExecution(result)
@@ -3829,29 +4169,77 @@ function App() {
     }
   }
 
-  const retryFromRunIndex = async (index: number) => {
+  const retryFromRunIndex = async (index: number, options: { storyMediaRetake?: boolean } = {}): Promise<void> => {
     if (isDebugBusy || failedTextRetryLockRef.current || stepExecutionLockRef.current || fullExecutionLockRef.current || rollbackSaveLock.current || executionState.persistenceError) return
-    if (isDurationPolicyTransition(activeWorkflow, executionState.nodeRuns)) {
+    const sourceWorkflow = executionState.storyMediaRetake?.sourceWorkflow
+    const executionSnapshot = executionState.executionWorkflowSnapshot
+    if (sourceWorkflow && !checkedStoryMediaRetakeWorkflow(sourceWorkflow, executionState.nodeRuns)) {
+      setConfigStatus('同镜重拍分支的源工作流快照与执行记录不一致，已停止重试。')
+      return
+    }
+    if (!storyRetakeModelMatches(executionState, models)) {
+      setConfigStatus('同镜重拍的视频模型或生成默认参数已变化，已停止重试。')
+      return
+    }
+    const retryWorkflow = executionSnapshot ?? sourceWorkflow ?? normalizeWorkflow(activeWorkflow)
+    if (!options.storyMediaRetake && activeWorkflow.id === 'wf-story') {
+      const reviewIndex = failedStoryMediaReviewIndexForVideo(executionState.nodeRuns, index)
+      if (reviewIndex !== undefined) {
+        if (planStoryMediaRetake(executionState.nodeRuns, reviewIndex)?.videoIndex !== index) {
+          setConfigStatus('本镜质检没有可追溯的确证缺口，已阻止直接重拍付费视频。')
+          return
+        }
+        return retryFromRunIndex(reviewIndex, { storyMediaRetake: true })
+      }
+    }
+    if (!sourceWorkflow && !executionSnapshot && activeWorkflow.id === 'wf-story'
+      && executionState.nodeRuns.some(run => run.node.kind === 'video' && run.status === 'success')
+      && hasExecutionPlanMismatch(retryWorkflow, executionState.nodeRuns)) {
+      setConfigStatus('此执行已保存付费视频，当前工作流配置与原执行不一致；已阻止混用旧分镜和新提示词。')
+      return
+    }
+    if (isDurationPolicyTransition(retryWorkflow, executionState.nodeRuns)) {
       setConfigStatus('此记录的旧时长策略已冻结；请从保留原大纲的新重排记录继续，不能将旧视频接到新排程验收。')
       return
     }
     setRunnerFollowMode(true)
-    const validationError = validateRuntimeInputs(activeWorkflow)
+    const validationError = validateRuntimeInputs(retryWorkflow)
     if (validationError) {
       const failed = failInputNodeRuns(executionState.nodeRuns, validationError)
       const failedState = { ...executionState, id: createId('record'), ...failed, selectedNodeId: failed.selectedNodeId }
       setExecutionState(failedState)
       setSelectedRunIndex(failed.selectedRunIndex)
       persistExecution(failedState)
+      if (workflowCuesEnabledRef.current) playWorkflowCue('failed')
       return
     }
-    const currentIds = new Set(activeWorkflow.nodes.map(node=>node.id))
+    const currentIds = new Set(retryWorkflow.nodes.map(node=>node.id))
     const snapshotIds = new Set(executionState.nodeRuns.flatMap(run=>[run.node.id,...(run.node.kind==='loop'?run.node.childIds??[]:[])]))
     if (currentIds.size !== snapshotIds.size || [...currentIds].some(id=>!snapshotIds.has(id))) {
       setConfigStatus('此记录保留旧流程的验收证据。请打开已升级的恢复记录继续，或开始新执行；已阻止旧拓扑绕过独立验收。')
       return
     }
-    const retryIndex = firstBlockingRunIndex(executionState.nodeRuns, index)
+    const storyMediaRetake = options.storyMediaRetake ? planStoryMediaRetake(executionState.nodeRuns, index) : undefined
+    if (options.storyMediaRetake && !storyMediaRetake) {
+      setConfigStatus('当前质检未绑定同一分镜和原片的确证未完成报告，已阻止新视频付费调用。')
+      return
+    }
+    if (storyMediaRetake && !sourceWorkflow && hasExecutionPlanMismatch(retryWorkflow, executionState.nodeRuns)) {
+      setConfigStatus('原执行与当前工作流配置不一致，已阻止将旧分镜首帧接到新提示词。请在源版本工作流中创建同镜重拍分支。')
+      return
+    }
+    if (storyMediaRetake && !checkedStoryMediaRetakeWorkflow(retryWorkflow, executionState.nodeRuns)) {
+      setConfigStatus('同镜重拍需要可核验的质检拓扑和节点快照，已阻止不受约束的付费调用。')
+      return
+    }
+    const retakeVideoModel = storyMediaRetake
+      ? storyVideoModelContract(models.find(model => model.id === executionState.nodeRuns[storyMediaRetake.videoIndex]?.node.modelId))
+      : undefined
+    if (storyMediaRetake && !retakeVideoModel) {
+      setConfigStatus('视频模型配置不能安全固定，已阻止同镜重拍付费调用。')
+      return
+    }
+    const retryIndex = storyMediaRetake?.videoIndex ?? firstBlockingRunIndex(executionState.nodeRuns, index)
     if (executionState.nodeRuns[retryIndex]?.node.kind === 'branch') {
       const nodeRuns = retryBranchRun(executionState.nodeRuns, retryIndex)
       const id = createId('record')
@@ -3874,7 +4262,7 @@ function App() {
       failedTextRetryLockRef.current = true
       setFailedTextRetryLoading(true)
       try {
-        const disposition = workflowQualityDisposition(normalizeWorkflow(activeWorkflow))
+        const disposition = workflowQualityDisposition(retryWorkflow)
         failedCandidateBinding = failedTextRunBinding(executionState, retryIndex, failedRun.inputContext ?? {},
           { ...failedRun.inputs, ...(disposition ? { qualityDisposition: disposition } : {}) })
         if (!failedCandidateBinding) throw new Error('FAILED_TEXT_CANDIDATE_INVALID: missing source run binding')
@@ -3897,6 +4285,9 @@ function App() {
       }
     }
     const baseRuns = manualRetryRuns(sourceRuns, retryIndex, invalidated, failedCandidateBinding)
+    if (storyMediaRetake) baseRuns[retryIndex] = {
+      ...baseRuns[retryIndex], retryFeedback: storyMediaRetake.feedback,
+    }
     const completedRuns = baseRuns.slice(0, retryIndex).filter((run) => run.status === 'success' || run.status === 'skipped')
     const id = createId('record')
     // Transport recovery resumes paid mapped siblings; an intentional new
@@ -3912,8 +4303,18 @@ function App() {
       mode: 'step' as const,
       nodeRuns: baseRuns,
       context: completedRuns.at(-1)?.context ?? {},
-      logs: completedRuns.map((run) => run.label ?? `${run.node.title} -> ${run.node.resultVar}`),
+      logs: [...completedRuns.map((run) => run.label ?? `${run.node.title} -> ${run.node.resultVar}`),
+        ...(storyMediaRetake ? [`从 ${executionState.id} 的已证实未完成质检创建新视频候选；原片与审核报告保留在父记录。`] : [])],
       selectedNodeId: baseRuns[retryIndex]?.node.id,
+      ...(storyMediaRetake ? { storyMediaRetake: {
+        version: 'story-media-retake-v1', sourceExecutionId: executionState.id,
+        sourceReviewRunId: executionState.nodeRuns[index].id,
+        sourceVideoSha256: String(resolvePath((executionState.nodeRuns[index].output ?? {}) as Record<string, unknown>,
+          'storyMediaReview.videoEvidence.sha256')),
+        targetVideoRunId: baseRuns[retryIndex].id,
+        sourceWorkflow: retryWorkflow,
+        targetVideoModel: retakeVideoModel!,
+      } } : {}),
     }
     setRunMode('step')
     setWorkflowDebug({ stepIndex: retryIndex })
@@ -3956,8 +4357,9 @@ function App() {
     rollbackSaveLock.current = true
     setRollbackSaving(true)
     try {
-      if (isDurationPolicyTransition(activeWorkflow, executionState.nodeRuns)) throw Error('此记录使用旧时长策略，请从已升级的恢复记录继续。')
-      const currentIds = new Set(activeWorkflow.nodes.map(node => node.id))
+      const rollbackWorkflow = executionState.executionWorkflowSnapshot ?? activeWorkflow
+      if (isDurationPolicyTransition(rollbackWorkflow, executionState.nodeRuns)) throw Error('此记录使用旧时长策略，请从已升级的恢复记录继续。')
+      const currentIds = new Set(rollbackWorkflow.nodes.map(node => node.id))
       const snapshotIds = new Set(executionState.nodeRuns.flatMap(run => [run.node.id, ...(run.node.kind === 'loop' ? run.node.childIds ?? [] : [])]))
       if (currentIds.size !== snapshotIds.size || [...currentIds].some(id => !snapshotIds.has(id))) throw Error('当前流程与原记录不兼容，请从已升级的恢复记录回退。')
       const { state: fork, plan } = forkBreakpointRollback(executionState, {
@@ -3966,7 +4368,7 @@ function App() {
       // A rollback to the first node leaves the whole queue idle. Refresh its
       // pending definitions before saving so plan reconciliation keeps this
       // fork and its provenance instead of replacing it with a fresh run.
-      const refreshed = { ...fork, nodeRuns: refreshPendingExecutionNodes(normalizeWorkflow(activeWorkflow), fork.nodeRuns) }
+      const refreshed = { ...fork, nodeRuns: refreshPendingExecutionNodes(executionState.executionWorkflowSnapshot ?? normalizeWorkflow(rollbackWorkflow), fork.nodeRuns) }
       const prepared = prepareStepRun(refreshed, plan.targetIndex)
       const next: ExecutionState = prepared ? { ...refreshed, nodeRuns: refreshed.nodeRuns.map((run, index) => index === plan.targetIndex
         ? { ...run, inputs: prepared.inputs, inputContext: prepared.inputContext } : run) } : refreshed
@@ -4005,15 +4407,17 @@ function App() {
   }
 
   const previousRollbackControl = <button type="button" className="ghost-btn" onClick={() => openRollbackDialog('previous')}
+    aria-label="回退到上一个断点"
     disabled={isDebugBusy || hasUnsavedExecution || !previousRollbackTarget}
     title={previousRollbackTarget ? '回退到当前执行位置之前最近一个已到达的断点' : '当前执行位置之前没有可回退的断点'}>
-    <RotateCcw size={17} />回退到上一个断点
+    <RotateCcw size={17} />回退上个断点
   </button>
 
   const rollbackControl = <button type="button" className="ghost-btn" onClick={() => openRollbackDialog('specific')}
+    aria-label="回退到指定断点"
     disabled={isDebugBusy || hasUnsavedExecution || rollbackTargets.length === 0}
     title={rollbackTargets.length ? '选择已到达的断点，保留此前成果并回退到执行前' : '请先为已到达的节点设置断点；条件断点只列出条件匹配的轮次'}>
-    <RotateCcw size={17} />回退到指定断点
+    <RotateCcw size={17} />回退指定断点
   </button>
   const rollbackControls = <div className="rollback-action-pair">{previousRollbackControl}{rollbackControl}</div>
 
@@ -4562,14 +4966,17 @@ function App() {
   }
 
   const renderModelFields = (model: ModelConfig) => {
-    if (model.provider === 'Codex' && model.capability === 'text') {
+    if (model.provider === 'Codex' && (model.capability === 'text' || model.capability === 'image')) {
       return (
         <>
-          <label>Codex 可执行文件<input value={model.settings.executablePath ?? ''} placeholder="codex" onChange={(e) => updateModelSetting(model.id, 'executablePath', e.target.value)} /><small>使用本机 Codex CLI 的现有登录；每次独立调用，不改写全局配置。</small></label>
-          <div className="position-grid">
+          <label>Codex 可执行文件<input value={model.settings.executablePath ?? ''} placeholder="codex" onChange={(e) => updateModelSetting(model.id, 'executablePath', e.target.value)} /><small>{model.capability === 'image' ? '使用本机 Codex CLI 的现有 ChatGPT 登录调用云端 gpt-image-2；本机不运行生图推理。' : '使用本机 Codex CLI 的现有登录；每次独立调用，不改写全局配置。'}</small></label>
+          {model.capability === 'text' ? <div className="position-grid">
             <label>推理强度<select value={model.settings.reasoningEffort ?? ''} onChange={(e) => updateModelSetting(model.id, 'reasoningEffort', e.target.value)}><option value="">沿用默认</option>{['low', 'medium', 'high', 'xhigh', 'max', 'ultra'].map((effort) => <option value={effort} key={effort}>{effort}</option>)}</select></label>
             <label>调用超时（ms）<input type="number" min="1" max="3600000" step="1" value={model.settings.timeoutMs ?? '180000'} onChange={(e) => updateModelSetting(model.id, 'timeoutMs', e.target.value)} /></label>
-          </div>
+          </div> : <div className="position-grid">
+            <label>主代理推理强度<select value={model.settings.reasoningEffort ?? ''} onChange={(e) => updateModelSetting(model.id, 'reasoningEffort', e.target.value)}><option value="">沿用默认</option>{['low', 'medium', 'high', 'xhigh', 'max', 'ultra'].map((effort) => <option value={effort} key={effort}>{effort}</option>)}</select></label>
+            <label>调用超时（ms）<input type="number" min="1" max="3600000" step="1" value={model.settings.timeoutMs ?? '600000'} onChange={(e) => updateModelSetting(model.id, 'timeoutMs', e.target.value)} /></label>
+          </div>}
         </>
       )
     }
@@ -5075,7 +5482,7 @@ function App() {
             <header className="topbar">
               <div>
                 <h1>执行工作流</h1>
-                <p>{activeWorkflow.name} · {executionState.historical ? '历史快照' : '当前拓扑'} · {voicePolicyLabel(executionState.voicePolicy)} · 执行记录 ID：{executionState.id}</p>
+                <p>{runnerWorkflow.name} · {executionState.executionWorkflowSnapshot ? '原执行版本快照' : executionState.storyMediaRetake?.sourceWorkflow ? '源版本重拍快照' : executionState.historical ? '历史快照' : '当前拓扑'} · {voicePolicyLabel(executionState.voicePolicy)} · 执行记录 ID：{executionState.id}</p>
               </div>
               <div className="topbar-actions">
                 <button className="ghost-btn" onClick={() => setWorkflowView('list')}>返回列表</button>
@@ -5114,12 +5521,25 @@ function App() {
               <section className="runner-panel runner-controls">
                 <div className="runner-control-bar">
                   <div className="runner-control-heading">
-                    <h2>运行控制</h2>
-                    <span>{activeWorkflow.nodes.length} 个节点，{runtimeParamCount} 个运行参数</span>
+                    <div className="runner-control-title">
+                      <h2>运行控制</h2>
+                      <label className="runner-sound-toggle" title="断点暂停、执行失败和工作流完成时播放提示音">
+                        <input type="checkbox" checked={workflowCuesEnabled} onChange={(event) => {
+                          const enabled = event.target.checked
+                          workflowCuesEnabledRef.current = enabled
+                          setWorkflowCuesEnabled(enabled)
+                          try { window.localStorage.setItem(WORKFLOW_CUES_STORAGE_KEY, String(enabled)) }
+                          catch { setStorageDiagnostic('音效开关已在当前页面生效，但浏览器存储不可用，刷新后可能恢复默认开启。') }
+                          if (enabled) unlockWorkflowCueAudio()
+                        }} />
+                        <span>提示音</span>
+                      </label>
+                    </div>
+                    <span>{runnerWorkflow.nodes.length} 个节点，{runtimeParamCount} 个运行参数</span>
                   </div>
                   <div className="run-mode-switch compact">
                     <button className={runMode === 'step' ? 'tab-btn active' : 'tab-btn'} disabled={isDebugBusy || hasUnsavedExecution} onClick={() => setRunMode('step')}>单步调试</button>
-                    <button className={runMode === 'run' ? 'tab-btn active' : 'tab-btn'} disabled={isDebugBusy || hasUnsavedExecution} onClick={() => setRunMode('run')}>完整执行</button>
+                    <button className={runMode === 'run' ? 'tab-btn active' : 'tab-btn'} disabled={isDebugBusy || hasUnsavedExecution || Boolean(executionState.storyMediaRetake?.sourceWorkflow || executionState.executionWorkflowSnapshot)} onClick={() => setRunMode('run')}>完整执行</button>
                   </div>
                   <div className="runner-control-actions">
                     {runMode === 'run' ? (
@@ -5136,14 +5556,14 @@ function App() {
                           <button className="primary-btn" onClick={() => moveWorkflowDebugStep(1)} disabled={!canMoveToNextStep}>下一步<ChevronRight size={17} /></button>
                         </div>
                         <div className="breakpoint-actions">
-                          <button className="ghost-btn continue-btn" onClick={() => void continueToNextBreakpoint()} disabled={!canContinueToBreakpoint} title="连续执行，并在下一个断点节点执行前暂停">
-                            <Play size={17} />{debugContinueRunning ? '运行中' : '运行到下一断点'}
+                          <button className="ghost-btn continue-btn" onClick={() => void continueToNextBreakpoint()} disabled={!canContinueToBreakpoint} aria-label={debugContinueRunning ? '运行中' : continueButtonLabel} title={continueButtonTitle}>
+                            <Play size={17} />{debugContinueRunning ? '运行中' : continueButtonLabel}
                           </button>
                           {rollbackControls}
                         </div>
                         <div className={fullExecutionLockRef.current ? 'debug-secondary-actions has-pause' : 'debug-secondary-actions'}>
                           {fullExecutionLockRef.current ? <button className="ghost-btn" disabled={fullPauseRequested} onClick={() => { fullPauseRequestedRef.current = true; setFullPauseRequested(true) }}>{fullPauseRequested ? '等待当前节点完成后暂停' : '完成当前节点后暂停'}</button> : null}
-                          <button className="ghost-btn icon-only" title="使用当前运行参数重新调试" aria-label="重新调试" onClick={executeStepRun} disabled={isDebugBusy || hasUnsavedExecution}><RotateCcw size={17} /></button>
+                          <button className="ghost-btn icon-only" title="使用当前运行参数重新调试" aria-label="重新调试" onClick={executeStepRun} disabled={isDebugBusy || hasUnsavedExecution || Boolean(executionState.storyMediaRetake?.sourceWorkflow || executionState.executionWorkflowSnapshot)}><RotateCcw size={17} /></button>
                         </div>
                       </div>
                     ) : (
@@ -5153,6 +5573,14 @@ function App() {
                       </div>
                     )}
                   </div>
+                  {isStepDebugActive && currentStepRun?.status === 'failed' ? (
+                    <div role="alert" className="empty-note">
+                      <strong>当前节点执行失败，后续步骤已暂停</strong>
+                      <p>{currentStepRun.error || '请查看当前节点输出中的错误详情。'}</p>
+                      <button className="primary-btn" disabled={isDebugBusy || hasUnsavedExecution}
+                        onClick={() => retryFromRunIndex(workflowDebug.stepIndex)}>从当前节点重试</button>
+                    </div>
+                  ) : null}
                   <button className={runtimePanelOpen ? 'params-toggle active' : 'params-toggle'} aria-expanded={runtimePanelOpen} onClick={() => setRuntimePanelOpen((open) => !open)}>
                     <SlidersHorizontal size={17} />
                     <span>运行参数</span>
@@ -5171,7 +5599,7 @@ function App() {
                   <div className="runner-params-panel">
                     <div className="runner-params-intro">
                       <strong>本次运行输入</strong>
-                      <span>{isStepDebugActive ? '调试已开始，修改后需重新调试才会生效。' : '确认输入后选择执行方式。开始后会自动收起。'}</span>
+                      <span>{executionState.executionWorkflowSnapshot || executionState.storyMediaRetake?.sourceWorkflow ? '原执行版本输入只读；本分支沿用已保存的付费前缀。' : isStepDebugActive ? '调试已开始，修改后需重新调试才会生效。' : '确认输入后选择执行方式。开始后会自动收起。'}</span>
                     </div>
                     <div className="runner-params-grid">
                       {runtimeInputNodes.map((inputNode) => (
@@ -5193,13 +5621,14 @@ function App() {
                                   <option value="manual-review-v1">用户验收（推荐）</option><option value="strict-v1">严格质检</option>
                                 </select>
                               ) : param.type === 'json' ? (
-                                <textarea rows={3} value={param.value} onChange={(event) => updateParam(inputNode.id, param.id, { value: event.target.value })} />
+                                <textarea rows={3} value={param.value} disabled={Boolean(executionState.storyMediaRetake?.sourceWorkflow || executionState.executionWorkflowSnapshot)} onChange={(event) => updateParam(inputNode.id, param.id, { value: event.target.value })} />
                               ) : (
                                 <input
                                   type={param.type === 'number' ? 'number' : 'text'}
                                   min={param.englishName === 'episode_number' ? 1 : undefined}
                                   max={param.englishName === 'episode_number' ? 1000 : undefined}
                                   value={param.value}
+                                  disabled={Boolean(executionState.storyMediaRetake?.sourceWorkflow || executionState.executionWorkflowSnapshot)}
                                   onChange={(event) => updateParam(inputNode.id, param.id, { value: event.target.value })}
                                 />
                               )}
@@ -5247,9 +5676,9 @@ function App() {
                   <div className="dag-zoom-layer runner-zoom-layer">
                     <div className="dag-surface" style={{ width: graphWidth, height: graphHeight, transform: `translate(${runnerOffset.x}px, ${runnerOffset.y}px) scale(${runnerZoom})` }}>
                       <svg className="dag-lines" width={graphWidth} height={graphHeight}>
-                        <BranchConnections nodes={canvasNodes} edges={activeWorkflow.edges} prefix="runner-branch" nodeHeight={canvasNodeHeight} />
+                        <BranchConnections nodes={canvasNodes} edges={canvasWorkflow.edges} prefix="runner-branch" nodeHeight={canvasNodeHeight} />
                         <defs><marker id="runner-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="var(--studio-subtle)" /></marker></defs>
-                        {activeWorkflow.edges.filter(edge => edge.branch === undefined).map((edge) => {
+                        {canvasWorkflow.edges.filter(edge => edge.branch === undefined).map((edge) => {
                           const from = canvasNodes.find((node) => node.id === edge.from)
                           const to = canvasNodes.find((node) => node.id === edge.to)
                           if (!from || !to) return null
@@ -5296,11 +5725,11 @@ function App() {
                           ? `${nodeBreakpoint.condition.path} ${breakpointOperatorLabels[nodeBreakpoint.condition.operator]} ${formatBreakpointValue(nodeBreakpoint.condition.value)}`
                           : ''
                         const statusLabel = isRepeatedLoopNode && activeLoopIteration !== undefined
-                          ? `第 ${activeLoopIteration + 1} 轮 · ${runStatusLabels[status]}`
-                          : isStepCurrent && hasBreakpoint && status === 'idle' ? '断点暂停' : isStepCurrent && status === 'idle' ? '当前步骤' : isStepCompleted ? '已完成' : runStatusLabels[status]
+                          ? `第 ${activeLoopIteration + 1} 轮 · ${displayRun ? runStatusLabel(displayRun) : runStatusLabels[status]}`
+                          : isStepCurrent && hasBreakpoint && status === 'idle' ? '断点暂停' : isStepCurrent && status === 'idle' ? '当前步骤' : isStepCompleted ? '已完成' : displayRun ? runStatusLabel(displayRun) : runStatusLabels[status]
                         return (
                           <Fragment key={node.id}>
-                          <article tabIndex={0} aria-label={node.title} data-canvas-node-id={node.id} className={['dag-node', 'runner-dag-node', hasCanvasMedia(node) ? 'has-canvas-media' : '', node.kind === 'branch' ? 'branch-node' : '', node.kind === 'loop' ? 'loop-node' : '', status, isCurrent ? 'selected' : '', isStepCurrent ? 'step-current' : '', isStepCompleted ? 'step-completed' : '', isRepeatedLoopNode ? 'loop-snapshot-node' : '', hasBreakpoint ? 'has-breakpoint' : ''].filter(Boolean).join(' ')} style={{ left: node.position.x, top: node.position.y }} onClick={() => inspectRunnerNode(node.id, runIndex)} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); inspectRunnerNode(node.id, runIndex) } }}>
+                          <article tabIndex={0} aria-label={node.title} data-canvas-node-id={node.id} className={['dag-node', 'runner-dag-node', hasCanvasMedia(node) ? 'has-canvas-media' : '', node.kind === 'branch' ? 'branch-node' : '', node.kind === 'loop' ? 'loop-node' : '', status, isStoryMediaReviewHold(displayRun) ? 'review-hold' : '', isCurrent ? 'selected' : '', isStepCurrent ? 'step-current' : '', isStepCompleted ? 'step-completed' : '', isRepeatedLoopNode ? 'loop-snapshot-node' : '', hasBreakpoint ? 'has-breakpoint' : ''].filter(Boolean).join(' ')} style={{ left: node.position.x, top: node.position.y }} onClick={() => inspectRunnerNode(node.id, runIndex)} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); inspectRunnerNode(node.id, runIndex) } }}>
                             {node.kind === 'branch' && <BranchNodeShape />}<span className="dag-node-top"><Icon size={20} /><strong title={node.title}>{node.title}</strong></span>
                             <small>{nodeMeta[node.kind].label}{model ? ` · ${model.name}` : ''}</small>
                             <code>${'{' + node.resultVar + '}'}</code>
@@ -5370,7 +5799,7 @@ function App() {
                           key={loopIndex}
                         >
                           <span>{loopIndex + 1}</span>
-                          <small>{inspectedRuns.some(run => run.loopGroupId === activeLoopGroupId && run.loopIndex === loopIndex && run.status === 'failed') ? '失败' : loopIndex === latestLoopIteration ? '当前轮' : inspectedRuns.some(run => run.loopGroupId === activeLoopGroupId && run.loopIndex === loopIndex && run.status === 'idle') ? '待执行' : '已完成'}</small>
+                          <small>{inspectedRuns.some(run => run.loopGroupId === activeLoopGroupId && run.loopIndex === loopIndex && isStoryMediaReviewHold(run)) ? '待复核' : inspectedRuns.some(run => run.loopGroupId === activeLoopGroupId && run.loopIndex === loopIndex && run.status === 'failed') ? '失败' : loopIndex === latestLoopIteration ? '当前轮' : inspectedRuns.some(run => run.loopGroupId === activeLoopGroupId && run.loopIndex === loopIndex && run.status === 'idle') ? '待执行' : '已完成'}</small>
                         </button>
                       ))}
                     </div>
@@ -5381,8 +5810,26 @@ function App() {
                   </nav>
                 ) : null}
                 <div className="panel-title runner-context-title">
-                <div><span className="inspector-kicker">节点检查</span><h2>{selectedRun?.node.title ?? '选择一个节点'}</h2><p>{selectedRun ? <>{selectedRun.loopIndex !== undefined ? `第 ${selectedRun.loopIndex + 1} 轮 · ` : ''}{isStepDebugActive && !viewingBranchHistory && currentStepRun?.id === selectedRun.id && selectedRun.status === 'idle' ? '当前步骤' : runStatusLabels[selectedRun.status]}{selectedRun.status !== 'idle' ? <> · <RunDuration run={selectedRun} /></> : null}</> : '点击 DAG 节点查看配置、输入和输出'}</p></div>
-                  {selectedRun && !viewingBranchHistory && selectedRun.status !== 'idle' ? <button className="ghost-btn" disabled={isDebugBusy || hasUnsavedExecution} onClick={() => retryFromRunIndex(selectedRunIndex)}>从此节点重试</button> : null}
+                <div><span className="inspector-kicker">节点检查</span><h2>{selectedRun?.node.title ?? '选择一个节点'}</h2><p>{selectedRun ? <>{selectedRun.loopIndex !== undefined ? `第 ${selectedRun.loopIndex + 1} 轮 · ` : ''}{isStepDebugActive && !viewingBranchHistory && currentStepRun?.id === selectedRun.id && selectedRun.status === 'idle' ? '当前步骤' : runStatusLabel(selectedRun)}{selectedRun.status !== 'idle' ? <> · <RunDuration run={selectedRun} /></> : null}</> : '点击 DAG 节点查看配置、输入和输出'}</p></div>
+                  {selectedRun && !viewingBranchHistory && selectedRun.status !== 'idle' ? <>
+                    <button className="ghost-btn" disabled={isDebugBusy || hasUnsavedExecution} onClick={() => retryFromRunIndex(selectedRunIndex)}
+                      title={selectedRun.node.operation === 'story.media-review' ? '对已保存视频重新调用质检，不重新生成视频' : undefined}>
+                      {selectedRun.node.operation === 'story.media-review' ? '同片重新质检' : '从此节点重试'}
+                    </button>
+                    {selectedStoryMediaRetake
+                      ? <button className="ghost-btn" disabled={isDebugBusy || hasUnsavedExecution || selectedStoryMediaRetakeHasDrift || selectedStoryMediaRetakeHasInvalidSnapshot || selectedStoryMediaRetakeHasInvalidModel}
+                          title={selectedStoryMediaRetakeHasDrift
+                            ? '原执行与当前工作流配置不一致；请在源版本工作流中创建同镜重拍分支'
+                            : selectedStoryMediaRetakeHasInvalidSnapshot ? '质检拓扑或源节点快照不一致，已阻止付费调用'
+                              : selectedStoryMediaRetakeHasInvalidModel ? '视频模型配置与已固定的生成设置不一致，已阻止付费调用'
+                              : '保留原执行和原片，创建新执行并调用视频模型生成候选片'}
+                          onClick={() => retryFromRunIndex(selectedRunIndex, { storyMediaRetake: true })}>
+                          根据质检重拍视频
+                        </button> : null}
+                    {selectedStoryMediaRetakeHasDrift ? <small role="status">当前工作流已改动，旧片重拍已暂停，避免混用分镜与提示词。</small> : null}
+                    {!selectedStoryMediaRetakeHasDrift && selectedStoryMediaRetakeHasInvalidSnapshot
+                      ? <small role="status">分镜质检拓扑或源节点快照无法核验，已暂停重拍。</small> : null}
+                  </> : null}
                 </div>
                 {selectedRun ? (
                   <>
@@ -5766,8 +6213,8 @@ function App() {
                     </div>
                     <label>模型名称<input value={model.name} onChange={(event) => updateModel(model.id, { name: event.target.value })} /></label>
                     <div className="position-grid">
-                      <label>Provider<select value={model.provider} onChange={(event) => updateModel(model.id, { provider: event.target.value as ModelProvider })}><option value="Anthropic">Anthropic</option><option value="OpenAI">OpenAI</option>{model.capability === 'text' ? <option value="Codex">Codex（本机 CLI）</option> : null}<option value="Ofox">Ofox</option><option value="Kling">Kling</option><option value="Bailian">百炼 TTS</option><option value="Local">Local</option><option value="Custom">Custom</option></select></label>
-                      <label>Model ID<input value={model.settings.model ?? ''} onChange={(event) => updateModelSetting(model.id, 'model', event.target.value)} /></label>
+                      <label>Provider<select value={model.provider} onChange={(event) => updateModel(model.id, { provider: event.target.value as ModelProvider })}><option value="Anthropic">Anthropic</option><option value="OpenAI">OpenAI</option>{model.capability === 'text' || model.capability === 'image' ? <option value="Codex">Codex（本机 CLI）</option> : null}<option value="Ofox">Ofox</option><option value="Kling">Kling</option><option value="Bailian">百炼 TTS</option><option value="Local">Local</option><option value="Custom">Custom</option></select></label>
+                      <label>{model.provider === 'Codex' ? 'Codex 主代理 Model ID' : 'Model ID'}<input value={model.settings.model ?? ''} onChange={(event) => updateModelSetting(model.id, 'model', event.target.value)} />{model.provider === 'Codex' && model.capability === 'image' ? <small>留空使用 Codex 默认主代理模型；此处不切换生图模型，生图固定使用 gpt-image-2。</small> : null}</label>
                     </div>
                     {renderModelFields(model)}
                     <div className="model-card-actions">

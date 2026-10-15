@@ -2,6 +2,32 @@ import { speechBoundaryEvidence } from './speech-metrics.ts'
 
 type Value = Record<string, unknown>
 
+/** A live-action scene cut with dialogue promises a readable, speech-free
+ * ending. Use the latest possible word end reported by ASR, rather than its
+ * optimistic aligned end, before the media can be accepted. */
+export function enforceSceneCutDialogueTail(evidence: Value, latestSpeechEnd: number) {
+  const alignment = Array.isArray(evidence.alignment) ? evidence.alignment as Value[] : []
+  const finite = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
+  const ends = alignment.flatMap(row => [row.actualEnd, row.matchedEnd,
+    row.utteranceCandidateEnd, (row.endBoundaryRange as Value | undefined)?.upper])
+  const values = [evidence.lastSpeechEnd, ...ends]
+  const complete = finite(latestSpeechEnd) && latestSpeechEnd > 0
+    && alignment.length > 0 && values.every(finite)
+  const observedEndUpper = complete ? Math.max(...values as number[]) : null
+  const withinReserve = observedEndUpper !== null
+    && observedEndUpper <= latestSpeechEnd + 1e-9
+  const issues = Array.isArray(evidence.issues)
+    ? evidence.issues.filter((issue): issue is string => typeof issue === 'string') : []
+  if (!withinReserve) issues.push(complete
+    ? `最后人声上界 ${observedEndUpper!.toFixed(3)} 秒，超过脚本最晚发声 ${latestSpeechEnd.toFixed(3)} 秒`
+    : '最后人声上界或脚本收尾余量缺少可靠证据')
+  return { ...evidence, passed: evidence.passed === true && withinReserve,
+    dialogueCompletenessVerified: evidence.dialogueCompletenessVerified === true && withinReserve,
+    issues, sceneCutDialogueTail: { version: 'scene-cut-dialogue-tail-v1',
+      latestSpeechEnd, observedEndUpper, withinReserve,
+      fields: 'lastSpeechEnd,actualEnd,matchedEnd,utteranceCandidateEnd,endBoundaryRange.upper' } }
+}
+
 /** ASR provides observations. Directorial timestamps are approximate; dialogue
  * content/order and a silent continuity handle are the blocking requirements. */
 export function validateSpeechEvidence(evidence: Value, expectedWindows: number, latestSpeechEnd: number, options: { requireReliableBoundaries?: boolean } = {}) {

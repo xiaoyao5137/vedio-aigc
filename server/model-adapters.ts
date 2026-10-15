@@ -4,6 +4,7 @@ import { isHistoricalSandTable } from '../src/sand-table-contract.ts'
 import { assertVoiceObligationCoverage } from '../src/voice-obligation.ts'
 import { pronunciationInstruction } from '../src/pronunciation-hints.ts'
 import { compactManagedVideoProviderPrompt, renderVideoProviderPrompt, subtitleFreeVideoPrompt, videoSubtitleContract, VIDEO_NO_SUBTITLES_NEGATIVE } from '../src/video-provider-prompt.ts'
+import { durationCausalVideoGuard } from '../src/duration-causal-prompt.ts'
 import { isTransientTransportError } from './transport-errors.ts'
 import { MAX_NODE_ATTEMPTS } from '../src/retry-budget.ts'
 import { classifyModelFailure } from '../src/model-failure.ts'
@@ -18,6 +19,7 @@ import type { LookupFunction } from 'node:net'
 import path from 'node:path'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import { detectVerticalTriptych, prepareThreeViewFrontReference, prepareThreeViewVideoReferences } from './image-references.ts'
+import { validateSceneCutVideoPayment } from './scene-cut-frame-approval.ts'
 
 export type ExternalModelConfig = {
   id: string
@@ -34,6 +36,8 @@ export type KlingAdapterDependencies = {
   fetch?: FetchLike
   sleep?: (milliseconds: number) => Promise<void>
   generatedAssetsDirectory?: string
+  /** Set only after the persisted scene-cut tail-guide route has been checked. */
+  sceneCutTailGuideValidated?: boolean
 }
 
 export const KLING_PROMPT_MAX_LENGTH = 2500
@@ -449,6 +453,9 @@ export function klingAuthorization(settings: Record<string, string>) {
 
 export function buildKlingImageRequest(model: ExternalModelConfig, prompt: string, params: Record<string, unknown>) {
   const settings = model.settings
+  const coverageSources = isRecord(params.coverageSources) && params.coverageSources.version === 'coverage-cut-sources-v1'
+  const coverageIdentities = coverageSources && Array.isArray(params.referenceImages)
+    ? params.referenceImages.flatMap(imageValue) : []
   const referenceImage = collectReferenceImages(params)[0]
   const requestedAspectRatio = optionalString(params.aspectRatio ?? params.aspect_ratio)
     ?? imageSizeToAspectRatio(params.size)
@@ -463,9 +470,11 @@ export function buildKlingImageRequest(model: ExternalModelConfig, prompt: strin
     aspect_ratio: requestedAspectRatio,
   }
   if (referenceImage) {
-    if (params.imageEdit === true && /^kling-v3(?:-omni)?$/.test(String(settings.model))) {
+    if (params.imageEdit === true && /^kling-v3(?:-omni)?$/.test(String(settings.model || 'kling-v3'))) {
       request.model_name = 'kling-v3-omni'
-      request.image_list = [{ image: stripImageDataUrlPrefix(referenceImage) }]
+      request.image_list = (coverageSources
+        ? [imageValue(params.referenceImage)[0], ...coverageIdentities]
+        : [referenceImage]).map(image => ({ image: stripImageDataUrlPrefix(image) }))
       request.result_type = 'single'
     } else request.image = stripImageDataUrlPrefix(referenceImage)
   } else {
@@ -475,6 +484,15 @@ export function buildKlingImageRequest(model: ExternalModelConfig, prompt: strin
   const watermarkEnabled = optionalBoolean(params.watermarkEnabled ?? settings.watermarkEnabled)
   if (watermarkEnabled !== undefined) request.watermark_info = { enabled: watermarkEnabled }
   return request
+}
+
+function coverageCutIdentityPrompt(prompt: string, params: Record<string, unknown>) {
+  if (!isRecord(params.coverageSources) || params.coverageSources.version !== 'coverage-cut-sources-v1') return prompt
+  const bindings = Array.isArray(params.referenceBindings) ? params.referenceBindings : []
+  const names = bindings.map(binding => isRecord(binding) ? optionalString(binding.characterName) : undefined)
+  if (!names.length || names.some(name => !name)) throw new Error('COVERAGE_SOURCE_INVALID: 缺少具名人物身份说明')
+  return `【输入图片身份映射】<<<image_1>>> 是前镜真实尾帧，只用于现场、轴线和位置连续性。${names.map((name, index) =>
+    `<<<image_${index + 2}>>> 是${name}已选定的人物三视图，只用于${name}的脸、发须、年龄、体型与服装；三列是同一个人，不是三名演员。`).join('')}画面内具名角色必须严格对应各自三视图；尾帧中的士兵不能替代主角。只输出一张新机位的单场景首帧，不复制三视图排版。\n${prompt}`
 }
 
 function referenceBindingNames(params: Record<string, unknown>) {
@@ -526,7 +544,7 @@ async function verifyKlingImageLayout(
     return {
       status: 502,
       body: {
-        error: 'Kling 返回了纵向三段式拼贴图，已被尾帧质量检查拒绝；请重试该节点',
+        error: 'Kling 返回了纵向三段式拼贴图，已被单幅画面布局检查拒绝；请重试该节点',
         rejected_layout: 'vertical-triptych',
         layout_diagnostics: layout,
         provider_response: annotated,
@@ -536,7 +554,7 @@ async function verifyKlingImageLayout(
     return {
       status: 502,
       body: {
-        error: `尾帧布局质量检查无法读取生成图片：${error instanceof Error ? error.message : String(error)}`,
+        error: `单幅画面布局检查无法读取生成图片：${error instanceof Error ? error.message : String(error)}`,
         rejected_layout: 'unverified',
         provider_response: annotated,
       },
@@ -646,10 +664,14 @@ export function buildKlingVideoRequest(model: ExternalModelConfig, prompt: strin
   if (resolution && !['720p', '1080p', '4k'].includes(resolution)) throw new Error(`KLING_RESOLUTION_INVALID: 不支持 ${resolution}`)
   const useOmni = referenceImages.length > 0 || configuredModelName.includes('omni') || resolution === '4k'
   const modelName = useOmni && !configuredModelName.includes('omni') ? 'kling-v3-omni' : configuredModelName
-  const requestedDuration = optionalNumber(params.duration ?? settings.duration) ?? 5
-  const duration = modelName.startsWith('kling-v3')
-    ? Math.min(15, Math.max(3, requestedDuration))
-    : requestedDuration
+  const durationInput = params.duration ?? settings.duration
+  const parsedDuration = optionalNumber(durationInput)
+  const requestedDuration = parsedDuration ?? 5
+  if (modelName.startsWith('kling-v3') && (
+    durationInput !== undefined && durationInput !== null && durationInput !== '' && parsedDuration === undefined
+    || !Number.isInteger(requestedDuration) || requestedDuration < 3 || requestedDuration > 15
+  )) throw new Error(`KLING_DURATION_INVALID: Kling 3.0 时长须为 3–15 秒整数，收到 ${String(durationInput)}`)
+  const duration = requestedDuration
   const performanceContract = speechPerformanceContract(params)
   const authoredBeats = isRecord(params.pacing) && Array.isArray(params.pacing.beats) ? params.pacing.beats : undefined
   const pictureOnly = params.pacingVersion === 'independent-narration-v1' && params.audioType === '环境声' && params.audioText === ''
@@ -671,9 +693,24 @@ export function buildKlingVideoRequest(model: ExternalModelConfig, prompt: strin
     hardenedPrompt,
   )
   const voiceCompilation = compileKlingVoices(visualPrompt, { ...params, duration, mode: params.mode ?? settings.mode ?? 'std', sound: params.sound ?? settings.sound }, modelName, useOmni)
-  const referencedPrompt = Array.from(voiceCompilation.prompt).length > KLING_PROMPT_MAX_LENGTH
-    ? compactManagedVideoProviderPrompt(voiceCompilation.prompt, params) : voiceCompilation.prompt
-  if ((subtitleContract || readingInstruction || performanceContract || isHistoricalSandTable(params) || referencedPrompt.includes('【场景与开场实景】') || Array.isArray(params.characterVoices) && params.characterVoices.length > 0 || Array.isArray(params.nativeGroupVoices) && params.nativeGroupVoices.length > 0) && Array.from(referencedPrompt).length > KLING_PROMPT_MAX_LENGTH) {
+  const causalGuard = pictureOnly && isRecord(params.pacing) && params.pacing.version === 'duration-v2'
+    ? durationCausalVideoGuard({ ...params, pacingVersion: 'duration-v2' }, { pictureOnly: true })
+    : durationCausalVideoGuard(params)
+  if (pictureOnly && causalGuard && !prompt.includes(causalGuard)) {
+    throw new Error('DURATION_CAUSAL_PROMPT_INVALID: 独立画面投影丢失已验证因果动作锁')
+  }
+  const withCausalGuard = causalGuard && !voiceCompilation.prompt.includes(causalGuard)
+    ? `${voiceCompilation.prompt}\n${causalGuard}` : voiceCompilation.prompt
+  const promptOverflowPolicy = params.promptOverflowPolicy
+  if (promptOverflowPolicy !== undefined && promptOverflowPolicy !== 'reject' && promptOverflowPolicy !== 'truncate') {
+    throw new Error(`KLING_PROMPT_OVERFLOW_POLICY_INVALID: 不支持 ${String(promptOverflowPolicy)}`)
+  }
+  if (promptOverflowPolicy === 'reject' && Array.from(withCausalGuard).length > KLING_PROMPT_MAX_LENGTH) {
+    throw new Error('STORYBOARD_PROMPT_OVERLOAD: 完整视频提示超过2500字符；已阻止截断剧情后付费生成，请精简静态布景和重复约束')
+  }
+  const referencedPrompt = Array.from(withCausalGuard).length > KLING_PROMPT_MAX_LENGTH
+    ? compactManagedVideoProviderPrompt(withCausalGuard, params, { preserveCausalRoom: Boolean(causalGuard) }) : withCausalGuard
+  if ((causalGuard || subtitleContract || readingInstruction || performanceContract || isHistoricalSandTable(params) || referencedPrompt.includes('【场景与开场实景】') || Array.isArray(params.characterVoices) && params.characterVoices.length > 0 || Array.isArray(params.nativeGroupVoices) && params.nativeGroupVoices.length > 0) && Array.from(referencedPrompt).length > KLING_PROMPT_MAX_LENGTH) {
     throw new Error('STORYBOARD_PROMPT_OVERLOAD: 完整视频提示超过2500字符；已阻止截断剧情后付费生成，请精简静态布景和重复约束')
   }
   const request: Record<string, unknown> = {
@@ -683,11 +720,36 @@ export function buildKlingVideoRequest(model: ExternalModelConfig, prompt: strin
     duration: String(duration),
     mode: String(params.mode ?? settings.mode ?? 'std'),
   }
+  // Workflows may declare text that the final paid request must carry intact.
+  // Check the provider payload after all generic prompt transforms and limits.
+  if (params.requiredPromptText !== undefined) {
+    if (typeof params.requiredPromptText !== 'string' || !params.requiredPromptText.trim()) {
+      throw new Error('VIDEO_REQUIRED_PROMPT_TEXT_INVALID: 必需提示片段必须是非空文字')
+    }
+    if (!(request.prompt as string).includes(params.requiredPromptText)) {
+      throw new Error('VIDEO_REQUIRED_PROMPT_TEXT_MISSING: 最终视频提示缺少节点要求的完整文字，已阻止付费调用')
+    }
+  }
   // std already denotes the low-cost 720p path. Only transmit the new native
   // 4K field so older debug endpoints keep their established request contract.
   if (resolution === '4k') request.resolution = '4k'
   const sound = optionalString(params.sound ?? settings.sound)
   if (sound) request.sound = sound
+  if (params.expectedDuration !== undefined) {
+    const expected = optionalNumber(params.expectedDuration)
+    if (expected === undefined || !Number.isFinite(expected) || expected <= 0) {
+      throw new Error('VIDEO_EXPECTED_DURATION_INVALID: 剧本要求时长必须是正数')
+    }
+    if (Number(request.duration) !== expected) {
+      throw new Error('VIDEO_EXPECTED_DURATION_MISMATCH: 视频请求时长与节点声明的剧本时长不一致，已阻止付费调用')
+    }
+  }
+  if (params.requiredSound !== undefined) {
+    if (typeof params.requiredSound !== 'string' || !params.requiredSound.trim()
+      || request.sound !== params.requiredSound) {
+      throw new Error('VIDEO_REQUIRED_SOUND_MISSING: 视频请求未满足节点声明的原生声音要求，已阻止付费调用')
+    }
+  }
   const negativePrompt = optionalString(params.negative_prompt ?? params.negativePrompt ?? settings.negative_prompt ?? settings.negativePrompt)
   const dialogueNegative = noNativeVoice ? '额外对白，群体喊话，吟诵，歌唱，无声语言口型'
     : hardenedPrompt.includes('【同期声音与可见口型】')
@@ -831,6 +893,23 @@ export async function callKlingVideo(
     body = queried.body
     status = queried.status
   } else {
+    const sceneCutShot = params.sceneCutShot && typeof params.sceneCutShot === 'object'
+      ? params.sceneCutShot as Record<string, unknown> : {}
+    const shotContinuity = sceneCutShot.continuity && typeof sceneCutShot.continuity === 'object'
+      ? sceneCutShot.continuity as Record<string, unknown> : {}
+    if (params.endImage && (params.continuityMode === 'scene_cut'
+      || shotContinuity.mode === 'scene_cut')
+      && (params.visualTreatment === 'live_action'
+        || sceneCutShot.visualTreatment === 'live_action')
+      && dependencies.sceneCutTailGuideValidated !== true) {
+      throw new Error('SCENE_CUT_TAIL_GUIDE_INVALID: 真人换场目标尾帧未经当前执行记录验证')
+    }
+    if (params.continuityMode === 'scene_cut' || shotContinuity.mode === 'scene_cut'
+      || params.sceneCutFrameGate !== undefined) {
+      const assetRoot = dependencies.generatedAssetsDirectory
+        ? path.resolve(dependencies.generatedAssetsDirectory, '../..') : process.cwd()
+      validateSceneCutVideoPayment(params, assetRoot)
+    }
     const localImageParams = omitGenericCrowdVideoReferences(await prepareKlingImageInputs(params, dependencies.generatedAssetsDirectory))
     const preparedParams = await prepareThreeViewVideoReferences(localImageParams, fetchImpl as typeof fetch)
     const preparedPrompt = klingThreeViewVideoPrompt(prompt, preparedParams)
@@ -925,7 +1004,7 @@ export async function callKlingImage(
   }
   const localImageParams = await prepareKlingImageInputs(params, dependencies.generatedAssetsDirectory)
   const preparedParams = await prepareThreeViewFrontReference(localImageParams, fetchImpl as typeof fetch)
-  const preparedPrompt = klingIdentityReferencePrompt(prompt, preparedParams)
+  const preparedPrompt = coverageCutIdentityPrompt(klingIdentityReferencePrompt(prompt, preparedParams), preparedParams)
   const requestBody = buildKlingImageRequest(model, preparedPrompt, preparedParams)
   const configuredEndpoint = settings.endpoint.replace(/\/$/, '')
   const endpoint = Array.isArray(requestBody.image_list) ? configuredEndpoint.replace(/\/generations$/, '/omni-image') : configuredEndpoint
@@ -933,7 +1012,8 @@ export async function callKlingImage(
   const annotate = (value: unknown) => diagnostics && isRecord(value)
     ? { ...value, app_reference_diagnostics: diagnostics }
     : value
-  const acceptSucceededImage = (succeededStatus: number, succeededBody: unknown) => preparedParams.referenceMode === 'three-view-front'
+  const requiresSingleFrame = preparedParams.referenceMode === 'three-view-front' || optionalBoolean(preparedParams.singleFrame) === true
+  const acceptSucceededImage = (succeededStatus: number, succeededBody: unknown) => requiresSingleFrame
     ? verifyKlingImageLayout(succeededStatus, succeededBody, fetchImpl, annotate)
     : Promise.resolve({ status: succeededStatus, body: annotate(succeededBody) })
   const resumeTaskId = optionalString(params.resumeTaskId)

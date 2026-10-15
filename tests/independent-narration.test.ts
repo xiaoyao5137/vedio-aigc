@@ -13,7 +13,7 @@ import { buildKlingVideoRequest } from '../server/model-adapters.ts'
 const exec = promisify(execFile)
 const ffmpeg = createRequire(import.meta.url)('ffmpeg-static') as string
 
-test('mixing retry recalls completed paid picture and preserves picture duration plus environmental tail', async () => {
+test('mixing retry recalls the paid picture, preserves duration, and excludes its tail audio', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'narration-mix-'))
   const dir = path.join(root, 'public/generated'); await mkdir(dir, { recursive: true })
   try {
@@ -26,9 +26,18 @@ test('mixing retry recalls completed paid picture and preserves picture duration
     await exec(ffmpeg, ['-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=1', path.join(dir, 'tts-aaaaaaaa.wav')])
     const result = await composeNarration('/generated/picture.mp4', [{ beatId: 'n', text: '旁白', start: 0, end: 2, url: '/generated/tts-aaaaaaaa.wav', sourceDuration: 1, duration: 1, tempo: 1, voiceId: 'original', sha256: 'fixture' }], 3, '16:9', root)
     assert.ok(Math.abs(result.metadata.duration - 3) < .1)
-    const tail = await exec(ffmpeg, ['-hide_banner', '-ss', '2', '-i', path.join(root, 'public', result.url), '-t', '0.5', '-vn', '-af', 'volumedetect', '-f', 'null', '-'])
-    assert.doesNotMatch(tail.stderr, /mean_volume: -inf/)
-    assert.match(tail.stderr, /mean_volume: -\d+(?:\.\d+)? dB/)
+    const samples = async (filename: string) => {
+      const { stdout } = await exec(ffmpeg, ['-v', 'error', '-ss', '2', '-i', filename, '-t', '0.5', '-vn',
+        '-ac', '1', '-ar', '16000', '-f', 'f32le', '-'], { encoding: 'buffer', maxBuffer: 1024 * 1024 })
+      const bytes = stdout as Buffer, count = bytes.length / 4
+      let square = 0
+      for (let i = 0; i < count; i++) square += bytes.readFloatLE(i * 4) ** 2
+      return Math.sqrt(square / count)
+    }
+    const pictureTail = await samples(path.join(dir, 'picture.mp4'))
+    const finalTail = await samples(path.join(root, 'public', result.url))
+    assert.ok(pictureTail > .01, `fixture picture tail must have source audio: ${pictureTail}`)
+    assert.ok(finalTail < .001, `independent narration must not retain supplier tail audio: ${finalTail}`)
   } finally { await rm(root, { recursive: true, force: true }) }
 })
 

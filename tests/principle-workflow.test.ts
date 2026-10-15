@@ -69,7 +69,9 @@ test('same-schema saved media policy refreshes its managed block and source prom
   const workflow = { id: input.id, schemaVersion: 116, nodes: [node('sanguo-media-accept', 'code', staleCode), node('sanguo-media-review', 'text')] }
   const before = structuredClone(workflow), migrated = upgradePrincipleQuality(workflow)
   assert.equal(migrated.schemaVersion, 117)
-  assert.equal(migrated.nodes[1].prompt, PRINCIPLE_MEDIA_REVIEW_PROMPT)
+  assert.ok(migrated.nodes[1].prompt.startsWith(PRINCIPLE_MEDIA_REVIEW_PROMPT.split('只判断成片')[0]))
+  assert.match(migrated.nodes[1].prompt, /duration-v2的必需节拍、先后顺序与收尾余量/)
+  assert.match(migrated.nodes[1].prompt, /duration-v2逐节拍完成证据/)
   assert.equal(migrated.nodes[0].code.includes('oldFrameOnlyGate'), false)
   assert.equal(migrated.nodes[0].code.split('// PRINCIPLE_POLICY_START').length - 1, 1)
   assert.equal(upgradePrincipleQuality(migrated), migrated)
@@ -78,7 +80,39 @@ test('same-schema saved media policy refreshes its managed block and source prom
   assert.equal(strict.customStrictGate, true)
   const fixture = JSON.parse(readFileSync(new URL('./fixtures/principle-media-fuik-era.json', import.meta.url), 'utf8'))
   Object.assign(fixture.context.media_review.issues[0].evidence, fixture.verifiedSourceProof)
+  fixture.context.shot_script.pacing.version = 'dynamic-v1'
   const accepted = await executeCodeNode({ code: migrated.nodes[0].code, params: { qualityMode: 'principle-v1' }, context: fixture.context })
   assert.equal(accepted.passed, false)
   assert.equal(accepted.qualityReview.principleIssues[0].code, 'historical_era')
+})
+
+test('principle media accept cannot bypass duration-v2 completion evidence', async () => {
+  const workflow = upgradePrincipleQuality({ id: input.id, schemaVersion: 158,
+    nodes: [node('sanguo-media-accept', 'code'), node('sanguo-media-request', 'code')] })
+  const acceptCode = workflow.nodes[0].code
+  const shot = { duration: 9, pacing: { version: 'duration-v2', scheduleHash: 'active-schedule', timingPolicy: { endingReadabilityReserve: .5 },
+    beats: [{ id: 'bind', sourceBeatId: 'source-bind', kind: 'action', actorIds: ['guard'], dependsOn: [],
+      completion: { requiredThisClip: true, finalState: '双腕绑好', modality: 'visual' }, timingConstraint: { mode: 'reference' } }],
+    schedule: [{ beatId: 'bind', sourceBeatId: 'source-bind', timingConstraint: { mode: 'reference' } }] } }
+  const context = { shot_script: shot, video_take: { url: '/generated/active.mp4', params: { scheduleHash: 'active-schedule' } },
+    video_evidence: { url: '/generated/active.mp4', originalUrl: '/generated/active.mp4', evidenceUrl: '/generated/active.json',
+      duration: 9, decoded: true, frameTimes: [0, 8.9], frames: ['/generated/first.jpg', '/generated/last.jpg'] },
+    media_review: { decision: 'pass', issues: [] } }
+  const result = await executeCodeNode({ code: acceptCode, params: { qualityMode: 'principle-v1' }, context })
+  assert.equal(result.passed, false)
+  assert.equal(result.durationCompletion.assessment, 'uncertain')
+  assert.ok(result.durationCompletion.remainingMandatoryBeats.includes('bind'))
+  const staleVideo = await executeCodeNode({ code: acceptCode, params: { qualityMode: 'principle-v1' },
+    context: { ...context, video_take: { ...context.video_take, params: { scheduleHash: 'stale' } } } })
+  assert.match(staleVideo.routeError, /DURATION_CONTRACT_INVALID/)
+})
+
+test('schema 163 hydration retains the native sequence transport in the active principle branch', () => {
+  const workflow = { id: input.id, schemaVersion: 163,
+    nodes: [node('sanguo-media-metrics', 'code'), node('sanguo-media-review', 'text')] }
+  const upgraded = upgradePrincipleQuality(workflow)
+  assert.match(upgraded.nodes[0].code, /NATIVE_PRINCIPLE_SEQUENCE_GRID_SCHEMA163/)
+  assert.equal(upgraded.nodes[1].params.find(param => param.englishName === 'reviewImageDetail')?.value,
+    '${media_metrics.nativeReviewImageDetail}')
+  assert.equal(upgradePrincipleQuality(upgraded), upgraded)
 })

@@ -1,7 +1,7 @@
 import { inferCharacterVoices } from './server/voice-design-inference.ts'
 import { serveGeneratedAudio } from './server/generated-audio.ts'
 import { callBailianTts } from './server/bailian-tts.ts'
-import { synthesizeNarrationTrack, composeNarration, cachedNarrationPicture, composeIllustrationMotionVideo, composeHistoricalMapPortraitVideo, validateHistoricalMapPortraitInputs, projectHistoricalMapPortraitPicture } from './server/independent-narration.ts'
+import { synthesizeNarrationTracks, composeNarration, cachedNarrationPicture, composeIllustrationMotionVideo, composeHistoricalMapPortraitVideo, validateHistoricalMapPortraitInputs, projectHistoricalMapPortraitPicture } from './server/independent-narration.ts'
 import { projectIndependentNarration, projectIndependentOffscreenDialogue } from './server/narration-projection.ts'
 import { originalVoiceSchema, publicOriginalVoice } from './server/original-character-voices.ts'
 import { readVoiceMetrics } from './server/voice-metrics.ts'
@@ -17,6 +17,17 @@ import { encodeExecutionState } from './src/execution-storage.ts'
 import { collectImageEvidence } from './server/image-evidence.ts'
 import { archiveCoverageCutSources, persistCoverageCutFirstFrameResponse } from './server/coverage-cut-frame-storage.ts'
 import { issueRecordedCoverageCutFrameApproval, validateCoverageCutPaidImageRequest, validateCoverageCutPaidVideoRequest } from './server/coverage-cut-runtime.ts'
+import { archiveSceneCutSources } from './server/scene-cut-frame-storage.ts'
+import { assertSceneCutAcceptedSourceLedger, assertSceneCutAcceptedSourceRecord } from './server/scene-cut-source-ledger.ts'
+import { deriveSceneCutOpeningPlan } from './server/scene-cut-opening-plan.ts'
+import { issueRecordedSceneCutFrameApproval, validateSceneCutPaidImageRequest, validateSceneCutPaidVideoRequest } from './server/scene-cut-frame-runtime.ts'
+import { bindSceneCutRejectedEditReference,
+  readSceneCutRepairVideoContext } from './server/scene-cut-rejected-edit-binder.mjs'
+import { bindA8B6FreshEditReference } from './server/staged-scene-cut-a8b6-fresh-edit.mjs'
+import { bindA8B6FreshV5EditReference } from './server/staged-scene-cut-a8b6-fresh-edit-v5.mjs'
+import { bindA8B6FreshV6EditReference } from './server/staged-scene-cut-a8b6-fresh-edit-v6.mjs'
+import { bindA8B6FreshV7EditReference } from './server/staged-scene-cut-a8b6-fresh-edit-v7.mjs'
+import { bindA8B6FreshV8EditReference } from './server/staged-scene-cut-a8b6-fresh-edit-v8.mjs'
 import { issueHistoricalMapAnnotationApproval, composeHistoricalMapAnnotationsVideo, validateHistoricalMapAnnotations } from './server/historical-map-annotations.ts'
 import { issueHistoricalMapFrameApproval } from './server/historical-map-frame-approval.ts'
 import { assertHistoricalMapReviewLedgerRecord } from './server/historical-map-review-ledger.ts'
@@ -31,6 +42,8 @@ import { persistGeneratedImageResponse } from './server/generated-image-storage.
 import { callRemoteText, supportsRemoteText } from './server/remote-text.ts'
 import { TEXT_CHANNEL_PROBE_LIMIT, TEXT_TRANSPORT_DEADLINE_MS } from './server/anthropic-text.ts'
 import { callCodexText, resolveCodexTextConfig, CodexTextError } from './server/codex-text.ts'
+import { callCodexImage, resolveCodexImageConfig, CodexImageError } from './server/codex-image.ts'
+import { loadCodexTextFrames } from './server/codex-reference-images.ts'
 import { HISTORY_QUALITY_VERSION } from './src/history-media.ts'
 import { CHARACTER_VISUAL_CONTEXT_RUNTIME_VERSION } from './src/character-visual-workflow.ts'
 import { VIDEO_OUTPUT_PROFILE_VERSION } from './src/video-output-profile.ts'
@@ -47,6 +60,7 @@ import { loadReviewImages, reviewImagesFingerprint, type LoadedReviewImage } fro
 import path from 'node:path'
 import { executeBuiltinNode } from './server/builtin-nodes.ts'
 import { assertHistoricalImageProvider } from './server/history-image-policy.ts'
+import { assertWorkflowSchemaNotStale, workflowConfigContentChanged } from './server/workflow-save-policy.ts'
 import { assertModelProviderAllowed } from './server/provider-policy.ts'
 import { executeCodeNode } from './server/code-node.ts'
 import { readKnowledgeStats } from './server/knowledge.ts'
@@ -56,6 +70,7 @@ import type { InternetSourceInput } from './server/web-sources.ts'
 import { runLocalModel } from './server/local-model.ts'
 import { readJson } from './server/request-json.ts'
 import { collectVideoEvidence, inspectGeneratedVideo } from './server/video-inspection.ts'
+import { reviewStoryShotVideo } from './server/story-media-review.ts'
 import { validateVideoMetadata } from './server/video-inspection.ts'
 import { prepareWorkflowMediaRequest, validateHistoricalMapPaidImageRequest, validateWorkflowMediaContract } from './server/workflow-contracts.ts'
 import { assertCurrentCharacterEquipmentBindings } from './server/character-equipment-paid-gate.ts'
@@ -484,7 +499,7 @@ function modelExecutionStatus(httpStatus: number, body: unknown) {
   return 'succeeded'
 }
 
-async function saveModelExecutionRecord(record: ModelExecutionRecord) {
+async function saveModelExecutionRecord(record: ModelExecutionRecord): Promise<boolean> {
   try {
     await ensureSchema()
     await pool.query(
@@ -500,8 +515,10 @@ async function saveModelExecutionRecord(record: ModelExecutionRecord) {
         record.nodeId ?? null, record.nodeName ?? null, JSON.stringify(safeExecutionPayload(record.requestData)),
         JSON.stringify(safeExecutionPayload(record.responseData)), record.error ?? null, record.durationMs],
     )
+    return true
   } catch {
     // 流水持久化失败不能阻断真实模型调用。
+    return false
   }
 }
 
@@ -633,15 +650,14 @@ async function saveWorkflows(workflows: Workflow[]) {
     // whole array on every change, which silently reverted an already-deployed schema upgrade and
     // undid the fix it carried. Never move a workflow backwards; the tab must reload to pick up
     // the newer persisted state. User edits keep or raise schemaVersion, so they are unaffected.
-    const stored = await client.query('select id, schema_version from workflow_configs where id = any($1::text[])', [workflows.map((workflow) => workflow.id)])
-    const storedVersions = new Map(stored.rows.map((row) => [String(row.id), Number(row.schema_version ?? 0)]))
+    const stored = await client.query(`select id,name,description,nodes,edges,schema_version,voice_policy
+      from workflow_configs where id = any($1::text[]) for update`, [workflows.map((workflow) => workflow.id)])
+    const storedById = new Map(stored.rows.map((row) => [String(row.id), row]))
     for (const workflow of workflows) {
       if (workflow.voicePolicy !== undefined) newExecutionVoicePolicy(workflow.voicePolicy)
-      const persisted = storedVersions.get(workflow.id) ?? 0
+      const persisted = Number(storedById.get(workflow.id)?.schema_version ?? 0)
       const incoming = workflow.schemaVersion ?? 1
-      if (incoming < persisted) {
-        throw new Error(`工作流 ${workflow.id} 的页面副本是 schema ${incoming}，数据库已是 ${persisted}。已拒绝回滚已部署的升级，请刷新页面后重试`)
-      }
+      assertWorkflowSchemaNotStale(workflow.id, incoming, persisted)
     }
     // A same-version tab may still lack newly managed map gate parameters.
     // Reapply the narrowly scoped migration after the downgrade check so a
@@ -649,6 +665,7 @@ async function saveWorkflows(workflows: Workflow[]) {
     const normalizedWorkflows = workflows.map(workflow => upgradeSandTableWorkflow(workflow as never) as Workflow)
     await client.query('delete from workflow_configs where not (id = any($1::text[]))', [normalizedWorkflows.map((workflow) => workflow.id)])
     for (const workflow of normalizedWorkflows) {
+      if (!workflowConfigContentChanged(storedById.get(workflow.id), workflow)) continue
       await client.query(
         `
           insert into workflow_configs (id, name, description, nodes, edges, schema_version, voice_policy, updated_at)
@@ -661,6 +678,11 @@ async function saveWorkflows(workflows: Workflow[]) {
             schema_version = excluded.schema_version,
             voice_policy = coalesce(excluded.voice_policy, workflow_configs.voice_policy),
             updated_at = now()
+          where workflow_configs.name is distinct from excluded.name
+            or workflow_configs.description is distinct from excluded.description
+            or workflow_configs.nodes is distinct from excluded.nodes
+            or workflow_configs.edges is distinct from excluded.edges
+            or workflow_configs.voice_policy is distinct from coalesce(excluded.voice_policy, workflow_configs.voice_policy)
         `,
         [workflow.id, workflow.name, workflow.description, JSON.stringify(workflow.nodes), JSON.stringify(workflow.edges), workflow.schemaVersion ?? 1, workflow.voicePolicy ?? null],
       )
@@ -687,8 +709,9 @@ async function callExternal(model: ModelConfig, params: Record<string, unknown> 
   }
 
   if (model.provider === 'Codex') {
+    if (model.capability === 'image') return callCodexImage(resolveCodexImageConfig(model, params), model.testInput)
     const config = resolveCodexTextConfig(model, params)
-    const frames = await loadReviewImages(params.reviewImages, process.cwd(), params.reviewImageDetail)
+    const frames = await loadCodexTextFrames(params)
     return callCodexText(config, model.testInput, frames)
   }
 
@@ -789,8 +812,9 @@ async function callNodeExternalUntracked({ model, prompt, params, operation, exe
   }
 
   if (model.provider === 'Codex') {
+    if (model.capability === 'image') return callCodexImage(resolveCodexImageConfig(model, params), prompt)
     const config = resolveCodexTextConfig(model, params)
-    const frames = reviewFrames ?? await loadReviewImages(params.reviewImages, process.cwd(), params.reviewImageDetail)
+    const frames = reviewFrames ?? await loadCodexTextFrames(params)
     return callCodexText(config, prompt, frames)
   }
 
@@ -847,12 +871,11 @@ async function callNodeExternalUntracked({ model, prompt, params, operation, exe
         await validateHistoricalMapPortraitInputs(params.referenceImages, params.referenceBindings, params.illustrationLayers,
           Number(params.duration), process.cwd())
       }
-      const voice = (params.offscreenDialogueVoice ?? params.narrationVoice) as Parameters<typeof synthesizeNarrationTrack>[1]
+      const voice = (params.offscreenDialogueVoice ?? params.narrationVoice) as Parameters<typeof synthesizeNarrationTracks>[1]
       const tts = (await pool.query('select id,name,provider,capability,settings from model_configs where id=$1', [voice.modelId])).rows[0]
       if (!tts) throw Error('VOICE_PROVIDER_UNSUPPORTED: 旁白 TTS 模型配置不存在')
       const projection = dialogue ? projectIndependentOffscreenDialogue(prompt, params) : projectIndependentNarration(prompt, params)
-      const tracks = []
-      if (!historicalMapLayers) for (const segment of projection.segments) tracks.push(await synthesizeNarrationTrack(tts, voice, segment))
+      let tracks = historicalMapLayers ? [] : await synthesizeNarrationTracks(tts, voice, projection.segments)
       if (isStaticIllustrationStyle(params.visualTreatment, params.animationStyle)) {
         const referenceImage = String(params.referenceImage ?? '').trim()
         if (!referenceImage) throw Error('STATIC_ILLUSTRATION_INVALID: 静态插画缺少已生成首图')
@@ -898,7 +921,7 @@ async function callNodeExternalUntracked({ model, prompt, params, operation, exe
             params.referenceBindings as Parameters<typeof composeHistoricalMapPortraitVideo>[5], params.illustrationLayers,
             params.resolution === '4k' ? '4k' : '720p')
           : undefined
-        if (historicalMapLayers) for (const segment of projection.segments) tracks.push(await synthesizeNarrationTrack(tts, voice, segment))
+        if (historicalMapLayers) tracks = await synthesizeNarrationTracks(tts, voice, projection.segments)
         const narration = await composeNarration(mapPortraitOverlay?.url ?? annotationOverlay?.url ?? videos[0].url, tracks, projection.duration,
           String(params.aspectRatio ?? '16:9'), process.cwd(), params.resolution === '4k' ? '4k' : '720p',
           dialogue ? 'offscreen-dialogue' : 'narration')
@@ -972,6 +995,8 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
   let resumeQueryMode = ''
   let voicePreparationMs: number | undefined
   let fingerprint = modelRequestFingerprint(request)
+  let sceneCutRepairBinding: Awaited<ReturnType<typeof bindSceneCutRejectedEditReference>> | undefined
+  let freshEditBinding: Awaited<ReturnType<typeof bindA8B6FreshEditReference>> | undefined
   try {
     if (request.operation?.startsWith('history.') && request.prompt.includes('[object Object]')) throw new Error('HISTORY_INPUT_SERIALIZATION: 历史资料被错误转成 [object Object]，已阻止缺失正文的模型请求')
     if (request.model.capability === 'video' && request.executionContext?.voicePolicy === 'strict') {
@@ -980,6 +1005,22 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
       finally { voicePreparationMs = Date.now() - preparingAt }
     }
     request = prepareWorkflowMediaRequest(request)
+    sceneCutRepairBinding = await bindSceneCutRejectedEditReference(pool, request)
+    request = sceneCutRepairBinding.request as NodeRunRequest
+    freshEditBinding = await bindA8B6FreshEditReference(request)
+    request = freshEditBinding.request as NodeRunRequest
+    const v5EditBinding = await bindA8B6FreshV5EditReference(request)
+    request = v5EditBinding.request as NodeRunRequest
+    if (v5EditBinding.applied) freshEditBinding = v5EditBinding
+    const v6EditBinding = await bindA8B6FreshV6EditReference(request)
+    request = v6EditBinding.request as NodeRunRequest
+    if (v6EditBinding.applied) freshEditBinding = v6EditBinding
+    const v7EditBinding = await bindA8B6FreshV7EditReference(request)
+    request = v7EditBinding.request as NodeRunRequest
+    if (v7EditBinding.applied) freshEditBinding = v7EditBinding
+    const v8EditBinding = await bindA8B6FreshV8EditReference(request)
+    request = v8EditBinding.request as NodeRunRequest
+    if (v8EditBinding.applied) freshEditBinding = v8EditBinding
     fingerprint = modelRequestFingerprint(request)
     validateWorkflowMediaContract(request)
     if (request.model.capability === 'video' && Array.isArray(request.params.equipmentBindings)
@@ -987,7 +1028,9 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
       await ensureSchema()
       await assertCurrentCharacterEquipmentBindings(pool, request)
     }
-    const reviewFrames = await loadReviewImages(request.params.reviewImages, process.cwd(), request.params.reviewImageDetail)
+    const reviewFrames = request.model.provider === 'Codex'
+      ? request.model.capability === 'text' ? await loadCodexTextFrames(request.params) : []
+      : await loadReviewImages(request.params.reviewImages, process.cwd(), request.params.reviewImageDetail)
     const reviewImageHashes = reviewFrames.map(frame => ({ url: frame.url, sha256: createHash('sha256').update(frame.bytes).digest('hex') }))
     fingerprint = reviewImagesFingerprint(fingerprint, reviewFrames)
     if (request.model.capability === 'text' && request.executionContext?.requestKey) {
@@ -1039,6 +1082,24 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
     }
     validateHistoricalMapPaidImageRequest(effectiveRequest)
     validateCoverageCutPaidImageRequest(effectiveRequest)
+    let sceneCutSchemaVersion = 167
+    if (effectiveRequest.executionContext?.workflowId === 'wf-sanguo-history-drama'
+      && (effectiveRequest.model.capability === 'image'
+        && effectiveRequest.executionContext.nodeId === 'sanguo-scene-cut-first-frame'
+        || effectiveRequest.model.capability === 'video'
+        && effectiveRequest.executionContext.nodeId === 'sanguo-video')) {
+      await ensureSchema()
+      const saved = await pool.query(`select schema_version from workflow_configs
+        where id='wf-sanguo-history-drama'`)
+      sceneCutSchemaVersion = Number(saved.rows[0]?.schema_version ?? 0)
+      if (sceneCutSchemaVersion < 165) throw Error('SCENE_CUT_FRAME_BLOCKED: 当前工作流版本无法核对')
+    }
+    await validateSceneCutPaidImageRequest(effectiveRequest, process.cwd(), sceneCutSchemaVersion)
+    if (sceneCutSchemaVersion >= 171 && effectiveRequest.model.capability === 'image'
+      && effectiveRequest.executionContext?.workflowId === 'wf-sanguo-history-drama'
+      && effectiveRequest.executionContext.nodeId === 'sanguo-scene-cut-first-frame')
+      await assertSceneCutAcceptedSourceLedger(pool, effectiveRequest.params.sceneCutShot,
+        effectiveRequest.params.sceneCutSources)
     let reusedVideoResult: { status: number; body: unknown } | undefined
     if (request.model.provider === 'Kling' && request.model.capability === 'video' && !request.params.resumeTaskId && request.executionContext?.workflowId && request.executionContext.nodeId) {
       await ensureSchema()
@@ -1053,6 +1114,7 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
       if (pending.rows[0]) effectiveRequest = { ...request, params: { ...request.params, resumeTaskId: pending.rows[0].task_id,
         resumeQueryMode: pending.rows[0].response_data?.resumeQueryMode ?? (Array.isArray(request.params.referenceImages) && request.params.referenceImages.length ? 'omni' : request.params.referenceImage ? 'image2video' : 'text2video') } }
     }
+    let sceneCutTailGuideValidated = false
     if (effectiveRequest.model.capability === 'video'
       && effectiveRequest.executionContext?.workflowId === 'wf-sanguo-history-drama'
       && effectiveRequest.executionContext?.nodeId === 'sanguo-video') {
@@ -1067,6 +1129,17 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
         paidResumeRecord = paid.rows[0]
       }
       validateCoverageCutPaidVideoRequest(effectiveRequest, paidResumeRecord)
+      const sceneCutRepairContext = sceneCutSchemaVersion >= 177
+        ? await readSceneCutRepairVideoContext(pool, effectiveRequest) : undefined
+      validateSceneCutPaidVideoRequest(effectiveRequest, paidResumeRecord,
+        process.cwd(), sceneCutSchemaVersion, sceneCutRepairContext ?? undefined)
+      sceneCutTailGuideValidated = !effectiveRequest.params.resumeTaskId
+        && Boolean(sceneCutRepairContext?.tailGuide)
+      if (sceneCutSchemaVersion >= 171 && !effectiveRequest.params.resumeTaskId
+        && effectiveRequest.params.continuityMode === 'scene_cut'
+        && effectiveRequest.params.visualTreatment === 'live_action')
+        await assertSceneCutAcceptedSourceLedger(pool, effectiveRequest.params.sceneCutShot,
+          effectiveRequest.params.sceneCutSources)
     }
     if (reusedVideoResult) return reusedVideoResult
     if (effectiveRequest.model.capability === 'video' && Array.isArray(effectiveRequest.params.characterVoices)) {
@@ -1074,6 +1147,7 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
       await assertVoiceSynthesisAllowed(pool, effectiveRequest.params)
     }
     const result = await callNodeExternalUntracked(effectiveRequest, {
+      sceneCutTailGuideValidated,
       onTaskSubmitted: async (submitted, endpoint) => {
         submittedTaskId = executionTaskInfo(submitted.body).taskId
         resumeQueryMode = request.model.capability === 'image' ? (endpoint.includes('/omni-image') ? 'omni-image' : 'image')
@@ -1082,7 +1156,7 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
           provider: request.model.provider, capability: request.model.capability, status: 'processing', httpStatus: submitted.status,
           taskId: submittedTaskId, workflowId: request.executionContext?.workflowId, workflowName: request.executionContext?.workflowName,
           nodeId: request.executionContext?.nodeId, nodeName: request.executionContext?.nodeName,
-          requestData: { voicePolicy: request.executionContext?.voicePolicy, voicePreparationMs, fingerprint, requestKey: request.executionContext?.requestKey, prompt: request.prompt, params: request.params, operation: request.operation, reviewImageHashes },
+          requestData: { voicePolicy: request.executionContext?.voicePolicy, voicePreparationMs, fingerprint, requestKey: request.executionContext?.requestKey, prompt: request.prompt, promptSha256: createHash('sha256').update(request.prompt).digest('hex'), params: request.params, operation: request.operation, reviewImageHashes },
           responseData: { ...(submitted.body as object), resumeQueryMode }, durationMs: Date.now() - startedAt })
       },
     }, reviewFrames)
@@ -1109,8 +1183,14 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
       result.body = await persistCoverageCutFirstFrameResponse(result.body)
     }
     if (submittedTaskId && result.body && typeof result.body === 'object') result.body = { ...result.body, resumeQueryMode }
+    if (sceneCutRepairBinding?.applied && result.status < 400
+      && result.body && typeof result.body === 'object' && !Array.isArray(result.body)) {
+      result.body = { ...result.body, modelExecutionId: id,
+        repairRequestFingerprint: fingerprint,
+        sceneCutRepairReceiptSha256: sceneCutRepairBinding.ledgerIdentity?.repairReceiptSha256 }
+    }
     const task = executionTaskInfo(result.body)
-    await saveModelExecutionRecord({
+    const modelLedgerSaved = await saveModelExecutionRecord({
       id,
       channel: 'workflow',
       modelId: request.model.id,
@@ -1124,11 +1204,19 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
       workflowName: request.executionContext?.workflowName,
       nodeId: request.executionContext?.nodeId,
       nodeName: request.executionContext?.nodeName,
-      requestData: { voicePolicy: request.executionContext?.voicePolicy, voicePreparationMs, fingerprint, requestKey: request.executionContext?.requestKey, prompt: request.prompt, params: request.params, operation: request.operation, reviewImageHashes },
+      requestData: { voicePolicy: request.executionContext?.voicePolicy, voicePreparationMs, fingerprint, requestKey: request.executionContext?.requestKey, prompt: request.prompt, promptSha256: createHash('sha256').update(request.prompt).digest('hex'), params: request.params, operation: request.operation, reviewImageHashes,
+        ...(sceneCutRepairBinding?.applied ? { sceneCutRepairReceiptSha256: sceneCutRepairBinding.ledgerIdentity?.repairReceiptSha256 } : {}),
+        ...(freshEditBinding?.applied ? { sceneCutFreshEditReceiptSha256: freshEditBinding.receiptSha256 } : {}) },
       responseData: submittedTaskId ? { ...(result.body as object), resumeQueryMode } : 'transport' in result ? { ...(typeof result.body === 'object' && result.body ? result.body : { upstream: result.body }), transport: result.transport } : result.body,
       error: result.status >= 400 ? `HTTP ${result.status}: ${typeof result.body === 'string' ? result.body : JSON.stringify(result.body)}` : undefined,
       durationMs: Date.now() - startedAt,
     })
+    if (sceneCutRepairBinding?.applied && !modelLedgerSaved
+      && result.body && typeof result.body === 'object' && !Array.isArray(result.body)) {
+      // Keep the paid image in the execution; approval remains closed until
+      // its model ledger is recovered, so a retry need not buy the image again.
+      result.body = { ...result.body, modelLedgerPending: true }
+    }
     return result
   } catch (error) {
     const message = `${errorMessage(error)}${submittedTaskId ? `（已提交 task_id: ${submittedTaskId}，使用 resumeTaskId 和 resumeQueryMode=${resumeQueryMode} 恢复查询，勿重复提交）` : ''}`
@@ -1141,7 +1229,7 @@ async function callNodeExternalOnce(request: NodeRunRequest) {
       capability: request.model.capability,
       status: submittedTaskId ? 'processing' : 'failed',
       taskId: submittedTaskId,
-      responseData: { task_id: submittedTaskId, resumeQueryMode, ...(error instanceof CodexTextError ? { provider: 'Codex', raw: error.raw } : {}) },
+      responseData: { task_id: submittedTaskId, resumeQueryMode, ...((error instanceof CodexTextError || error instanceof CodexImageError) ? { provider: 'Codex', raw: error.raw } : {}) },
       workflowId: request.executionContext?.workflowId,
       workflowName: request.executionContext?.workflowName,
       nodeId: request.executionContext?.nodeId,
@@ -1323,7 +1411,7 @@ export default defineConfig({
                 id, channel: 'experience', modelId: request.model.id, modelName: request.model.name,
                 provider: request.model.provider, capability: request.model.capability, status: 'failed',
                 requestData: { prompt: request.model.testInput, params: request.params ?? {} },
-                ...(error instanceof CodexTextError ? { responseData: { provider: 'Codex', raw: error.raw } } : {}),
+                ...((error instanceof CodexTextError || error instanceof CodexImageError) ? { responseData: { provider: 'Codex', raw: error.raw } } : {}),
                 error: errorMessage(error), durationMs: Date.now() - startedAt,
               })
               throw error
@@ -1386,6 +1474,44 @@ export default defineConfig({
             await readJson<Parameters<typeof issueRecordedCoverageCutFrameApproval>[1]>(req))) }
           catch (error) { return jsonResponse(res, 422, { error: errorMessage(error) }) }
         })
+        server.middlewares.use('/api/scene-cut-source-archive', async (req, res) => {
+          if (req.method !== 'POST') return jsonResponse(res, 405, { error: 'Method not allowed' })
+          try {
+            const input = await readJson<Parameters<typeof archiveSceneCutSources>[0] & { executionRecordId?: unknown }>(req)
+            if (input.sceneCutBoundaryVersion === 'scene-cut-approved-boundary-v1') {
+              if (typeof input.executionRecordId !== 'string' || !/^record-[\w-]+$/.test(input.executionRecordId))
+                throw Error('SCENE_CUT_SOURCE_LEDGER_INVALID: 缺少当前持久化执行记录身份')
+              const rows = await pool.query(`select id,workflow_id,result from execution_records
+                where id=$1 and workflow_id='wf-sanguo-history-drama'`, [input.executionRecordId])
+              if (rows.rows.length !== 1) throw Error('SCENE_CUT_SOURCE_LEDGER_INVALID: 执行记录不存在')
+              const acceptedRecordBinding = assertSceneCutAcceptedSourceRecord(rows.rows[0],
+                { executionRecordId: input.executionRecordId,
+                  approvedOutline: input.approvedOutline, shot: input.shot,
+                  previous: input.previous })
+              return jsonResponse(res, 200, await archiveSceneCutSources({ ...input, acceptedRecordBinding }))
+            }
+            return jsonResponse(res, 200, await archiveSceneCutSources(input))
+          }
+          catch (error) { return jsonResponse(res, 422, { error: errorMessage(error) }) }
+        })
+        server.middlewares.use('/api/scene-cut-opening-plan', async (req, res) => {
+          if (req.method !== 'POST') return jsonResponse(res, 405, { error: 'Method not allowed' })
+          try { const input = await readJson<{ shot: unknown }>(req)
+            await ensureSchema()
+            const saved = await pool.query(`select schema_version from workflow_configs
+              where id='wf-sanguo-history-drama'`)
+            const schemaVersion = Number(saved.rows[0]?.schema_version ?? 0)
+            if (schemaVersion < 168) throw Error('SCENE_CUT_OPENING_PLAN_INVALID: 当前工作流版本不可核对')
+            return jsonResponse(res, 200, deriveSceneCutOpeningPlan(input.shot,
+              schemaVersion >= 195 ? 4 : schemaVersion >= 170 ? 3 : schemaVersion >= 169 ? 2 : 1)) }
+          catch (error) { return jsonResponse(res, 422, { error: errorMessage(error) }) }
+        })
+        server.middlewares.use('/api/scene-cut-frame-approval', async (req, res) => {
+          if (req.method !== 'POST') return jsonResponse(res, 405, { error: 'Method not allowed' })
+          try { return jsonResponse(res, 200, await issueRecordedSceneCutFrameApproval(pool,
+            await readJson<Parameters<typeof issueRecordedSceneCutFrameApproval>[1]>(req))) }
+          catch (error) { return jsonResponse(res, 422, { error: errorMessage(error) }) }
+        })
         server.middlewares.use('/api/historical-map-annotation-approval', async (req, res) => {
           if (req.method !== 'POST') return jsonResponse(res, 405, { error: 'Method not allowed' })
           try {
@@ -1421,6 +1547,19 @@ export default defineConfig({
           try {
             const request = await readJson<Parameters<typeof inspectGeneratedVideo>[0]>(req)
             return jsonResponse(res, 200, await inspectGeneratedVideo(request))
+          } catch (error) { return jsonResponse(res, 422, { error: errorMessage(error) }) }
+        })
+        server.middlewares.use('/api/story-shot-review', async (req, res) => {
+          if (req.method !== 'POST') return jsonResponse(res, 405, { error: 'Method not allowed' })
+          try {
+            const request = await readJson<{ shot: unknown; videoUrl: string; reviewerModelId: string; executionContext?: NodeRunRequest['executionContext'] }>(req)
+            if (request.executionContext?.workflowId !== 'wf-story') throw new Error('STORY_REVIEW_SCOPE_INVALID: 仅接受打工猫分镜工作流的当前视频')
+            const configured = (await readAppConfig()).models.find(item => item.id === request.reviewerModelId)
+            const model = configured ?? { id: '', name: '', provider: 'Local' as const, capability: 'text' as const,
+              settings: {}, testInput: '' }
+            const result = await reviewStoryShotVideo({ shot: request.shot, videoUrl: request.videoUrl, model,
+              execute: input => callNodeExternal(input as NodeRunRequest), executionContext: request.executionContext })
+            return jsonResponse(res, 200, result)
           } catch (error) { return jsonResponse(res, 422, { error: errorMessage(error) }) }
         })
         server.middlewares.use('/api/runtime-assets', async (req, res) => {

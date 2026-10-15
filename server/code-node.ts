@@ -1,5 +1,6 @@
 import { Script, createContext } from 'node:vm'
 import readExcelFile from 'read-excel-file/node'
+import ts from 'typescript'
 
 export type CodeNodeUpload = {
   id?: string
@@ -32,8 +33,8 @@ const MAX_FILE_BYTES = 15 * 1024 * 1024
 const MAX_ROWS = 20_000
 const MAX_COLUMNS = 500
 const MAX_FILES = 5
-const MAX_PAYLOAD_BYTES = 12 * 1024 * 1024
-const MAX_RESULT_BYTES = 4 * 1024 * 1024
+const MAX_PAYLOAD_BYTES = 48 * 1024 * 1024
+const MAX_RESULT_BYTES = 32 * 1024 * 1024
 const EXECUTION_TIMEOUT_MS = 1_500
 const unsafeKeys = new Set(['__proto__', 'constructor', 'prototype'])
 const reservedBindings = new Set(['context', 'params', 'files', 'excel', 'prompt', 'console', 'globalThis'])
@@ -94,6 +95,41 @@ async function prepareWorkbook(upload: CodeNodeUpload, index: number): Promise<P
 
 function safeBindingNames(context: Record<string, unknown>) {
   return Object.keys(context).filter((key) => /^[A-Za-z_$][\w$]*$/.test(key) && !unsafeKeys.has(key) && !reservedBindings.has(key))
+}
+
+/** Code nodes receive only the context keys they statically read. The saved
+ * execution keeps the full context; dynamic reads retain the full payload. */
+export function projectCodeContext(code: string, context: Record<string, unknown>) {
+  const source = ts.createSourceFile('workflow-code-node.js', code,
+    ts.ScriptTarget.Latest, true, ts.ScriptKind.JS)
+  const used = new Set<string>()
+  let dynamic = false
+  const visit = (node: ts.Node) => {
+    if (ts.isIdentifier(node)) {
+      if (node.text === 'context') {
+        const parent = node.parent
+        if (ts.isPropertyAccessExpression(parent) && parent.expression === node)
+          used.add(parent.name.text)
+        else if (ts.isElementAccessExpression(parent) && parent.expression === node
+          && parent.argumentExpression && ts.isStringLiteral(parent.argumentExpression))
+          used.add(parent.argumentExpression.text)
+        else if (ts.isParameter(parent) && parent.name === node
+          || ts.isSpreadAssignment(parent) && parent.expression === node)
+          void 0
+        else if (ts.isCallExpression(parent) && parent.arguments.includes(node as ts.Expression)
+          && !/^(?:Object|JSON|Reflect|console)\./u.test(parent.expression.getText(source)))
+          void 0
+        else dynamic = true
+      } else if (Object.hasOwn(context, node.text) && safeBindingNames(context).includes(node.text))
+        used.add(node.text)
+    }
+    ts.forEachChild(node, visit)
+  }
+  visit(source)
+  for (const match of code.matchAll(/\$\{([A-Za-z_$][\w$]*)(?:\.[A-Za-z_$][\w$]*)*\}/g))
+    used.add(match[1])
+  return dynamic ? context : Object.fromEntries(Object.entries(context)
+    .filter(([key]) => used.has(key)))
 }
 
 function jsonText(value: unknown, label: string, maxBytes = MAX_PAYLOAD_BYTES) {
@@ -250,7 +286,7 @@ function serializeResult(value: unknown) {
     throw new Error(`代码执行结果必须是可序列化数据：${error instanceof Error ? error.message : String(error)}`, { cause: error })
   }
   if (serialized === undefined) throw new Error('代码执行没有返回结果，请使用 return 返回可序列化对象')
-  if (Buffer.byteLength(serialized, 'utf8') > MAX_RESULT_BYTES) throw new Error('代码执行结果超过 4MB 限制')
+  if (Buffer.byteLength(serialized, 'utf8') > MAX_RESULT_BYTES) throw new Error('代码执行结果超过 32MB 限制')
   return JSON.parse(serialized) as unknown
 }
 
@@ -261,7 +297,7 @@ export async function executeCodeNode(request: CodeNodeRequest) {
   if (uploads.length > MAX_FILES) throw new Error(`代码节点最多上传 ${MAX_FILES} 个 Excel 文件`)
   const prepared = await Promise.all(uploads.map(prepareWorkbook))
   const workbooksJson = jsonText(prepared, 'Excel 解析数据')
-  const contextValue = sanitizeJson(request.context ?? {}) as Record<string, unknown>
+  const contextValue = sanitizeJson(projectCodeContext(code, request.context ?? {})) as Record<string, unknown>
   const sandbox = {
     __contextJson: jsonText(contextValue, '流程上下文'),
     __paramsJson: jsonText(request.params ?? {}, '节点参数'),

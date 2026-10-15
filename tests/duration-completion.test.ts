@@ -58,6 +58,19 @@ test('sound tail, a single still, missing native frames and stale material canno
   }
 })
 
+test('uncertain action requests a bounded native window while retaining the legal search range', () => {
+  for (const assess of assessors) {
+    const f = fixture()
+    delete (f.evidence as Record<string, unknown>).nativeSequence
+    const result = assess(f.shot, f.evidence, f.review)
+    const request = result.evidenceRequests.find(item => item.beatId === 'response')!
+    assert.equal(request.kind, 'native-sequence')
+    assert.equal(request.startSecond, 4.5)
+    assert.equal(request.endSecond, 6.5)
+    assert.deepEqual(request.searchWindow, { start: 0, end: 9 })
+  }
+})
+
 test('hard timing is not relaxed by reference scopes or measurement tolerance', () => {
   for (const assess of assessors) {
     const f = fixture(), constraint = { mode: 'hard', deadlineSecond: 5 }
@@ -106,6 +119,82 @@ test('incomplete terminal phonetic alignment never substitutes an earlier matche
       boundaryEvidenceVersion: 2, alignmentCoverage: 1, boundaryUncertaintyReasons: [],
       endBoundaryRange: point(5.53) }); row.observedEnd = point(5.53)
     assert.equal(assess(f.shot, f.evidence, f.review).route, 'accept')
+  }
+})
+
+test('independent narration accepts only bound source receipt and decoded full plus final-word transfer', () => {
+  const transferFixture = () => {
+    const f = fixture(), b = { ...beat('response', 'speech', 'audio'), actorIds: ['旁白'], deliveryStyle: 'narration' }
+    f.shot.pacing.beats = [b]
+    f.evidence.sha256 = 'd'.repeat(64)
+    f.evidence.originalUrl = '/generated/narrated-' + 'e'.repeat(64) + '.mp4'
+    const row = f.review.durationCompletion.checks[0]
+    row.reason = '成片解码音轨逐句与独立旁白源音轨一致，末词已进入成片。'
+    row.observedStart = point(4); row.observedEnd = point(4.8)
+    row.audio.evidenceIds = ['independent-track-0']
+    const window = (start: number, end: number) => ({ start, end, samples: Math.round((end - start) * 16000),
+      correlation: .999, normalizedError: .03, noTrackErrorRatio: 12, contributionRms: .08, actualRms: .1, passed: true })
+    f.evidence.independentNarrationTransfer = { version: 'independent-track-transfer-v1', method: 'independent-track-transfer',
+      status: 'confirmed', audioRole: 'narration', evidenceRef: f.evidence.evidenceUrl, originalUrl: f.evidence.originalUrl,
+      outputVideoSha256: f.evidence.sha256, compositionReceiptSha256: '2'.repeat(64), pictureSha256: '3'.repeat(64),
+      mixerVersion: 5, sourceSpeechIsolation: { version: 'source-speech-isolation-v1', status: 'confirmed',
+        mode: 'full-source-mute', pictureSha256: '3'.repeat(64), mixerVersion: 5 },
+      sampleRate: 16000, decodedAudioDuration: 9, expectedAudioDuration: 9, lines: [{
+        id: 'independent-track-0', beatId: b.id, text: b.textOrVocalization, actorIds: ['旁白'],
+        sourceReceiptKey: 'a'.repeat(64), sourceReceiptSha256: 'b'.repeat(64), sourceWavSha256: 'c'.repeat(64),
+        fittedWavSha256: 'c'.repeat(64), sourceAsr: { method: 'isolated-source-asr-v2', reliable: true,
+          recognizedText: b.textOrVocalization, boundaryStatus: 'reliable', receiptKey: 'e'.repeat(64),
+          receiptSha256: 'f'.repeat(64), issues: [] },
+        scheduledStart: 4, scheduledEnd: 5, observedStart: point(4), observedEnd: point(4.8),
+        fullWindow: window(4, 4.8), lastWordWindow: window(4.45, 4.8), status: 'confirmed',
+      }] }
+    return f
+  }
+  for (const assess of assessors) {
+    const valid = transferFixture()
+    assert.equal(assess(valid.shot, valid.evidence, valid.review).route, 'accept')
+    const current = transferFixture()
+    current.evidence.independentNarrationTransfer.mixerVersion = 6
+    current.evidence.independentNarrationTransfer.sourceSpeechIsolation.mixerVersion = 6
+    current.evidence.independentNarrationTransfer.sourceSpeechIsolation.mode = 'full-source-mute'
+    assert.equal(assess(current.shot, current.evidence, current.review).route, 'accept')
+    const oldPreserved = transferFixture()
+    oldPreserved.evidence.independentNarrationTransfer.sourceSpeechIsolation.status = 'unverified'
+    oldPreserved.evidence.independentNarrationTransfer.sourceSpeechIsolation.mode = 'preserved'
+    assert.equal(assess(oldPreserved.shot, oldPreserved.evidence, oldPreserved.review).route,
+      'same-media-evidence', 'a v5 preserved/empty-detection source track cannot certify a narration line')
+    const medium = transferFixture(), mediumAsr = medium.evidence.independentNarrationTransfer.lines[0].sourceAsr as Record<string, unknown>
+    Object.assign(mediumAsr, { method: 'isolated-source-asr-v3', modelVersion: 'Systran/faster-whisper-medium@08e178d48790749d25932bbc082711ddcfdfbc4f',
+      primaryAsr: { method: 'isolated-source-asr-v2', reliable: false, boundaryStatus: 'uncertain',
+        receiptKey: '1'.repeat(64), receiptSha256: '2'.repeat(64) } })
+    assert.equal(assess(medium.shot, medium.evidence, medium.review).route, 'accept')
+    for (const mutate of [
+      (asr: Record<string, unknown>) => { asr.modelVersion = 'unknown-model' },
+      (asr: Record<string, unknown>) => { (asr.primaryAsr as Record<string, unknown>).reliable = true },
+      (asr: Record<string, unknown>) => { (asr.primaryAsr as Record<string, unknown>).boundaryStatus = 'reliable' },
+      (asr: Record<string, unknown>) => { (asr.primaryAsr as Record<string, unknown>).receiptSha256 = 'wrong' },
+    ]) {
+      const stale = transferFixture(), asr = stale.evidence.independentNarrationTransfer.lines[0].sourceAsr as Record<string, unknown>
+      Object.assign(asr, structuredClone(mediumAsr)); mutate(asr)
+      assert.equal(assess(stale.shot, stale.evidence, stale.review).route, 'same-media-evidence')
+    }
+    for (const mutate of [
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.sha256 = '1'.repeat(64) },
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.independentNarrationTransfer.originalUrl = '/generated/wrong.mp4' },
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.independentNarrationTransfer.sourceSpeechIsolation.status = 'unverified' },
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.independentNarrationTransfer.sourceSpeechIsolation.mode = 'observed-speech-muted' },
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.independentNarrationTransfer.sourceSpeechIsolation.pictureSha256 = '4'.repeat(64) },
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.independentNarrationTransfer.evidenceRef = '/generated/stale.json' },
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.independentNarrationTransfer.lines[0].sourceReceiptKey = 'wrong' },
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.independentNarrationTransfer.lines[0].sourceAsr.reliable = false },
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.independentNarrationTransfer.lines[0].lastWordWindow.noTrackErrorRatio = 1 },
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.independentNarrationTransfer.lines[0].lastWordWindow.end = 9.2 },
+      (f: ReturnType<typeof transferFixture>) => { f.evidence.independentNarrationTransfer.lines[0].scheduledEnd = 6 },
+      (f: ReturnType<typeof transferFixture>) => { f.shot.pacing.beats[0].actorIds = ['张飞'] },
+    ]) {
+      const f = transferFixture(); mutate(f)
+      assert.equal(assess(f.shot, f.evidence, f.review).route, 'same-media-evidence')
+    }
   }
 })
 

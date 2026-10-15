@@ -99,7 +99,7 @@ test('manual review still rejects malformed execution, missing speech, unknown a
   assert.throws(() => verifyDurationSchedule(result, { scene: expected.scene, qualityDisposition: 'manual-review-v1' }))
 })
 
-test('manual continuity preflight reports narrative uncertainty while still requiring the take actual tail', () => {
+test('manual continuity preflight blocks an unfinished unit before the next cut and still requires the actual tail', () => {
   const { expected } = fixture(), shot = structuredClone(expected.previousShot)
   shot.storyProgress = { ...shot.storyProgress, status: 'continuing', unitId: 'unfinished-prior-unit' }
   const video = { qualityPolicy: 'principle-v1', qualityDisposition: 'manual-review-v1',
@@ -109,10 +109,10 @@ test('manual continuity preflight reports narrative uncertainty while still requ
     lastFrameUrl: '/generated/actual-tail.jpg', frames: ['/generated/actual-tail.jpg'] }
   const context = { qualityDisposition: 'manual-review-v1', scene: expected.scene,
     loop: { previous: { shot_script: shot, video_shot: video, last_frame: { available: true, url: video.lastFrameUrl } } } }
-  const projected = storyboardContinuityContext(context)
-  assert.ok((projected.storyboardQualityWarnings as string[]).some(warning => warning.includes('NARRATIVE_INCOMPLETE')))
+  assert.throws(() => storyboardContinuityContext(context), /NARRATIVE_INCOMPLETE/)
   assert.deepEqual(context.loop.previous.shot_script, shot)
   assert.throws(() => storyboardContinuityContext({ ...context, qualityDisposition: 'strict-v1' }), /NARRATIVE_INCOMPLETE/)
+  shot.storyProgress.unitId = expected.scene.dramaticUnitId
   context.loop.previous.last_frame.url = '/generated/unrelated-planned-tail.jpg'
   assert.throws(() => storyboardContinuityContext(context), /CONTINUITY_EVIDENCE_MISSING/)
 })

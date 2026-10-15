@@ -8,7 +8,7 @@ type Binding = { characterName: string; assetId: string; url: string; [key: stri
 type SourceInput = { previousTail: { url: string; available: true; source: 'extracted-from-video'; videoTailUrl: string };
   referenceBindings: Binding[] }
 
-async function archiveCoverageImage(url: string, root: string) {
+export async function archiveCoverageImage(url: string, root: string) {
   const directory = path.join(root, 'public/generated')
   await mkdir(directory, { recursive: true })
     let bytes: Buffer

@@ -12,6 +12,8 @@ import { prepareWorkflowMediaRequest, validateHistoricalMapPaidImageRequest, val
 import { validateCoverageCutPaidImageRequest, validateCoverageCutPaidVideoRequest } from '../server/coverage-cut-runtime.ts'
 import { persistCoverageCutFirstFrameResponse } from '../server/coverage-cut-frame-storage.ts'
 import { loadReviewImages, reviewImagesFingerprint } from '../server/review-images.ts'
+import { CodexImageError } from '../server/codex-image.ts'
+import { validateSceneCutPaidImageRequest, validateSceneCutPaidVideoRequest } from '../server/scene-cut-frame-runtime.ts'
 
 const originalContext = Object.freeze({ requestKey: 'record-test:attempt-1:revision-0:writer:0:', workflowId: 'workflow', nodeId: 'writer' })
 const request = { model: { id: 'writer-model', provider: 'Anthropic', capability: 'text', settings: { model: 'configured-writer' } },
@@ -35,10 +37,18 @@ function checkpointServer(provider: () => Promise<Result>) {
   const persisted = new Map<string, Result>()
   const identities: string[] = []
   const records: Array<{ status: string; httpStatus: number; requestData: { requestKey: string; fingerprint: string; operation: string }; responseData: Result['body'] }> = []
+  const unchangedBinding = async (value: Request) => ({ request: value, applied: false })
   const env = { createInflightModelRequests, modelRequestFingerprint, assertModelProviderAllowed, assertHistoricalImageProvider,
     withModelRequestAdvisoryLock: async (_pool: unknown, _identity: string | undefined, execute: () => Promise<unknown>) => execute(),
     prepareWorkflowMediaRequest, validateHistoricalMapPaidImageRequest, validateWorkflowMediaContract,
-    validateCoverageCutPaidImageRequest, validateCoverageCutPaidVideoRequest, persistCoverageCutFirstFrameResponse,
+    bindSceneCutRejectedEditReference: async (_pool: unknown, value: Request) => unchangedBinding(value),
+    bindA8B6FreshEditReference: unchangedBinding,
+    bindA8B6FreshV5EditReference: unchangedBinding,
+    bindA8B6FreshV6EditReference: unchangedBinding,
+    bindA8B6FreshV7EditReference: unchangedBinding,
+    bindA8B6FreshV8EditReference: unchangedBinding,
+    validateCoverageCutPaidImageRequest, validateCoverageCutPaidVideoRequest,
+    validateSceneCutPaidImageRequest, validateSceneCutPaidVideoRequest, persistCoverageCutFirstFrameResponse,
     loadReviewImages, reviewImagesFingerprint,
     ensureSchema: async () => {},
     pool: { query: async (sql: string, values: string[]) => {
@@ -56,7 +66,7 @@ function checkpointServer(provider: () => Promise<Result>) {
         { status: record.httpStatus, body: record.responseData })
     },
     errorMessage: (error: unknown) => error instanceof Error ? error.message : String(error),
-    CodexTextError: class extends Error {},
+    CodexTextError: class extends Error {}, CodexImageError,
   }
   const execute = new Function('env', `const {${Object.keys(env).join(',')}}=env;\n${dispatchCode}\nreturn callNodeExternal;`)(env) as (request: Request) => Promise<Result>
   const send = async (_url: string, payload: unknown) => {

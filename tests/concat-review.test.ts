@@ -49,6 +49,15 @@ test('later narrator pass preserves earlier native group uncertainty, quality ad
   assert.equal(prefix.qualityWarnings.length, result.qualityWarnings.length, 'prefix advice must not multiply on each later concat')
 })
 
+test('advisory duration risks stay attached to their source clip in rolling concat', () => {
+  const risk = { code: 'duration_completion_unverified', beatId: 'bind', evidenceRef: '/generated/source-evidence.json' }
+  const first = aggregateConcatReviews({ currentVideo: { ...current, qualityRisks: [risk] } }, [{ url: current.url }])
+  const later = aggregateConcatReviews({ previousVideo: { ...first, clips: [{ url: current.url }] },
+    currentVideo: { ...current, url: '/generated/later.mp4' } }, [{ url: current.url }, { url: '/generated/later.mp4' }])
+  assert.deepEqual(later.clipReviews[0].qualityRisks, [risk])
+  assert.equal(later.clipReviews[1].qualityRisks, undefined)
+})
+
 test('even individual user-listening passes do not certify the whole assembly; stale attribution remains unknown', () => {
   const passed = { status: 'passed', method: 'user-listening', note: '已听本段' }
   const result = aggregateConcatReviews({ currentVideo: { ...current, voiceConsistency: passed } }, [{ url: current.url }])
@@ -81,4 +90,34 @@ test('a changed source hash cannot inherit a same-URL listening pass', () => {
   assert.equal(result.clipReviews[0].qualityReview.status, 'unavailable')
   assert.equal(result.clipReviews[0].sourceSha256, 'new')
   assert.equal(result.clipReviews[0].qualityWarnings[0].code, 'source_bytes_changed')
+})
+
+test('story beat review remains attached to its clip across staged assemblies', () => {
+  const firstUrl = '/generated/story-one.mp4'
+  const secondUrl = '/generated/story-two.mp4'
+  const first = aggregateConcatReviews({ currentVideo: { url: firstUrl, storyMediaReview: {
+    version: 'story-shot-media-review-v1', passed: true, reviewStatus: 'passed',
+    videoEvidence: { url: firstUrl, sha256: 'hash-one', evidenceUrl: '/generated/first-evidence.json' },
+    observations: { frames: Array(24).fill('large source observations') },
+  } } }, [{ url: firstUrl, sha256: 'hash-one' }])
+  const second = aggregateConcatReviews({ previousVideo: { ...first, clips: [{ url: firstUrl, sha256: 'hash-one' }] },
+    currentVideo: { url: secondUrl } }, [{ url: firstUrl, sha256: 'hash-one' }, { url: secondUrl, sha256: 'hash-two' }])
+  assert.deepEqual(second.clipReviews[0].storyMediaReview, {
+    version: 'story-shot-media-review-v1', passed: true, reviewStatus: 'passed', issues: [],
+    videoEvidence: { url: firstUrl, sha256: 'hash-one', evidenceUrl: '/generated/first-evidence.json' },
+  })
+  assert.equal(second.qualityReview.fullVideoWatched, false)
+  assert.equal(second.voiceConsistency.fullVideoListened, false)
+})
+
+test('uncertain story review keeps its concrete doubts in the staged preview', () => {
+  const url = '/generated/uncertain-story.mp4'
+  const issue = '卡片接触关系被遮挡'
+  const result = aggregateConcatReviews({ currentVideo: { url, storyMediaReview: {
+    version: 'story-shot-media-review-v1', passed: false, reviewStatus: 'uncertain',
+    issues: [issue], videoEvidence: { url, sha256: 'same', evidenceUrl: '/generated/report.json' },
+  } } }, [{ url, sha256: 'same' }])
+  assert.deepEqual(result.clipReviews[0].storyMediaReview.issues, [issue])
+  assert.ok(result.qualityWarnings.some(warning =>
+    typeof warning === 'object' && warning !== null && warning.warning?.problem === issue))
 })

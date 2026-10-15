@@ -60,6 +60,21 @@ export function assessDurationCompletion(shot: Record<string, unknown>, evidence
   }
   const lexical = (value: unknown) => String(value ?? '').replace(/[^\p{Script=Han}\p{L}\p{N}]/gu, '')
   const speech = record(evidence.speechValidation), alignments = rows(speech.alignment), audioObservations = rows(evidence.audioObservations)
+  const transfer = record(evidence.independentNarrationTransfer), transferredLines = rows(transfer.lines)
+  const sourceSpeechIsolation = record(transfer.sourceSpeechIsolation)
+  const transferBound = transfer.version === 'independent-track-transfer-v1' && transfer.method === 'independent-track-transfer'
+    && transfer.audioRole === 'narration'
+    && transfer.status === 'confirmed' && transfer.evidenceRef === evidenceRef && transfer.originalUrl === evidence.originalUrl
+    && typeof evidence.sha256 === 'string' && /^[a-f\d]{64}$/.test(evidence.sha256)
+    && transfer.outputVideoSha256 === evidence.sha256 && [5, 6].includes(Number(transfer.mixerVersion))
+    && sourceSpeechIsolation.version === 'source-speech-isolation-v1' && sourceSpeechIsolation.status === 'confirmed'
+    && sourceSpeechIsolation.mode === 'full-source-mute'
+    && sourceSpeechIsolation.pictureSha256 === transfer.pictureSha256 && sourceSpeechIsolation.mixerVersion === transfer.mixerVersion
+    && typeof transfer.compositionReceiptSha256 === 'string' && /^[a-f\d]{64}$/.test(transfer.compositionReceiptSha256)
+    && typeof transfer.pictureSha256 === 'string' && /^[a-f\d]{64}$/.test(transfer.pictureSha256)
+    && transfer.sampleRate === 16000 && Number.isFinite(Number(transfer.expectedAudioDuration))
+    && Number(transfer.expectedAudioDuration) >= duration - .05
+    && Number.isFinite(Number(transfer.decodedAudioDuration)) && Number(transfer.decodedAudioDuration) >= duration - .05
   const checks: Check[] = []
   const evidenceRequests: Row[] = []
   for (const beat of mandatory) {
@@ -126,6 +141,42 @@ export function assessDurationCompletion(shot: Record<string, unknown>, evidence
           && alignment.firstTokenMatched === true && alignment.lastTokenMatched === true) {
           const a = range(alignment.startBoundaryRange), b = range(alignment.endBoundaryRange)
           if (a && b) candidates.push({ start: a, end: b })
+        } else if (!audioFailure && /^independent-track-\d+$/.test(String(id)) && transferBound
+          && beat.kind === 'speech' && beat.deliveryStyle === 'narration'
+          && Array.isArray(beat.actorIds) && beat.actorIds.length === 1 && beat.actorIds[0] === '旁白') {
+          const items = transferredLines.filter(item => item.id === id), line = items[0]
+          const sourceAsr = record(line?.sourceAsr), full = record(line?.fullWindow), tail = record(line?.lastWordWindow)
+          const sourceHashes = [line?.sourceReceiptKey, line?.sourceReceiptSha256, line?.sourceWavSha256,
+            line?.fittedWavSha256, sourceAsr.receiptKey, sourceAsr.receiptSha256]
+          const primaryAsr = record(sourceAsr.primaryAsr)
+          const asrProvenance = sourceAsr.method === 'isolated-source-asr-v2'
+            || (sourceAsr.method === 'isolated-source-asr-v3'
+              && sourceAsr.modelVersion === 'Systran/faster-whisper-medium@08e178d48790749d25932bbc082711ddcfdfbc4f'
+              && primaryAsr.method === 'isolated-source-asr-v2' && primaryAsr.reliable === false
+              && primaryAsr.boundaryStatus !== 'reliable'
+              && typeof primaryAsr.receiptKey === 'string' && /^[a-f\d]{64}$/.test(primaryAsr.receiptKey)
+              && typeof primaryAsr.receiptSha256 === 'string' && /^[a-f\d]{64}$/.test(primaryAsr.receiptSha256))
+          const scheduledStart = Number(scheduled.startSecond), scheduledEnd = Number(scheduled.endSecond)
+          const a = range(line?.observedStart), b = range(line?.observedEnd)
+          const validWindow = (window: Row) => window.passed === true && Number(window.samples) >= 1920
+            && Number(window.correlation) >= .98 && Number(window.normalizedError) <= .15
+            && Number(window.noTrackErrorRatio) >= 3 && Number(window.contributionRms) >= .003
+            && Number(window.actualRms) >= .003 && Number.isFinite(Number(window.start)) && Number.isFinite(Number(window.end))
+            && Number(window.end) > Number(window.start) && Number(window.end) <= Number(transfer.decodedAudioDuration) + epsilon
+          if (items.length === 1 && line.status === 'confirmed' && line.beatId === beat.id
+            && lexical(line.text) === lexical(beat.textOrVocalization) && lexical(line.text)
+            && Array.isArray(line.actorIds) && line.actorIds.length === 1 && line.actorIds[0] === '旁白'
+            && sourceHashes.every(value => typeof value === 'string' && /^[a-f\d]{64}$/.test(value))
+            && asrProvenance && sourceAsr.reliable === true
+            && sourceAsr.boundaryStatus === 'reliable' && nonempty(sourceAsr.recognizedText)
+            && Array.isArray(sourceAsr.issues) && sourceAsr.issues.length === 0
+            && validWindow(full) && validWindow(tail)
+            && Math.abs(Number(line.scheduledStart) - scheduledStart) <= .001
+            && Math.abs(Number(line.scheduledEnd) - scheduledEnd) <= .001
+            && a && b && a.lower >= scheduledStart - .1 && b.upper <= scheduledEnd + .15
+            && Number(full.start) >= a.lower - epsilon && Number(full.end) <= b.upper + epsilon
+            && Number(tail.end) >= b.lower - .08 && Number(tail.start) < b.lower
+            && b.upper <= Number(transfer.decodedAudioDuration) + epsilon) candidates.push({ start: a, end: b })
         } else {
           const items = audioObservations.filter(item => item.id === id), audio = items[0]
           const actorIds = audio?.actorIds
@@ -172,11 +223,19 @@ export function assessDurationCompletion(shot: Record<string, unknown>, evidence
       ...(status === 'incomplete' ? { defect: { kind: row.status === 'incomplete' ? String(record(row.defect).kind) : 'hard-timing',
         reason: row.status === 'incomplete' ? String(record(row.defect).reason) : reasons[reasons.length - 1],
         modality: row.status === 'incomplete' ? String(defectModality) : String(completion.modality) } } : {}) })
+    const plannedStart = Number(scheduled.startSecond), plannedEnd = Number(scheduled.endSecond)
+    const candidateStart = start?.lower ?? (Number.isFinite(plannedStart) ? plannedStart : searchStart)
+    const candidateEnd = end?.upper ?? (Number.isFinite(plannedEnd) ? plannedEnd : searchEnd)
+    const fullAbsenceSearch = visualFailure && defect.kind === 'missing-action'
+    const boundedStart = fullAbsenceSearch ? searchStart : Math.max(searchStart, candidateStart - .5)
+    const boundedEnd = fullAbsenceSearch ? searchEnd : Math.min(searchEnd, candidateEnd + .5)
+    const requestStart = Number.isFinite(boundedStart) && Number.isFinite(boundedEnd) && boundedEnd > boundedStart ? boundedStart : searchStart
+    const requestEnd = Number.isFinite(boundedStart) && Number.isFinite(boundedEnd) && boundedEnd > boundedStart ? boundedEnd : searchEnd
     if (status === 'uncertain') evidenceRequests.push({ beatId: beat.id, sourceBeatId: beat.sourceBeatId,
       evidenceRef, scheduleHash: pacing.scheduleHash,
       modality: !audioReliable ? (!visualReliable ? 'audio-visual' : 'audio') : 'visual',
       kind: !audioReliable ? 'audio-review' : !visualReliable ? 'native-sequence' : 'report-review', timingConstraint: { ...constraint },
-      startSecond: searchStart, endSecond: searchEnd, searchWindow: { start: searchStart, end: searchEnd }, reasons: [...reasons] })
+      startSecond: requestStart, endSecond: requestEnd, searchWindow: { start: searchStart, end: searchEnd }, reasons: [...reasons] })
   }
   // Resolve dependencies repeatedly so a later-listed predecessor becoming
   // uncertain cannot leave an earlier-listed dependent spuriously complete.
@@ -218,7 +277,7 @@ export function assessDurationCompletion(shot: Record<string, unknown>, evidence
   if (assessment === 'uncertain' && !evidenceRequests.length) evidenceRequests.push({ evidenceRef, scheduleHash: pacing.scheduleHash,
     modality: 'visual', kind: 'native-sequence', startSecond: completionRange?.lower ?? 0, endSecond: duration,
     searchWindow: { start: completionRange?.lower ?? 0, end: duration }, reasons: [...globalReasons] })
-  return { applicable: true, assessment, route: assessment === 'complete' ? 'accept' as const
+  return { applicable: true, scheduleHash: pacing.scheduleHash, evidenceRef, assessment, route: assessment === 'complete' ? 'accept' as const
     : assessment === 'incomplete' ? 'replan' as const : 'same-media-evidence' as const,
     passed: assessment === 'complete', checks, reasons: [...globalReasons, ...checks.flatMap(check => check.reasons)],
     remainingMandatoryBeats: checks.filter(check => check.status !== 'complete').map(check => check.beatId), actualCompletionInterval: completionRange,
@@ -230,6 +289,6 @@ export function assessDurationCompletion(shot: Record<string, unknown>, evidence
 export const DURATION_COMPLETION_REVIEW_PROMPT = `【duration-v2逐节拍完成证据】
 仅pacing.version=duration-v2时输出durationCompletion:{scheduleHash:原排程哈希,evidenceRef:本次video_evidence.evidenceUrl,checks:[{beatId:原id,sourceBeatId:原sourceBeatId,status:complete/incomplete/uncertain,reason:实际证据,observedStart:{lower:实际开始下界,upper:实际上界},observedEnd:{lower:实际完成下界,upper:实际上界},visual:{frameIndices:[连续原生帧编号],observedChange:前后实际变化,observedFinalState:实际结束态},audio:{evidenceIds:[真实音频证据id]},defect:{kind:truncated/missing-action/hard-timing,modality:visual/audio/audio-visual,reason:确证不符}}]}。
 逐个覆盖completion.requiredThisClip=true节拍。声画可在不同时刻完成，整体结束区间取必要模态结束的最大值；visual可另填observedStart/observedEnd区间；某一模态已完整不能抹去另一必要模态的确证截断，defect.modality须明确归属。省略不适用的visual/audio/defect。开始和完成时刻无法确定则省略时间区间、status=uncertain。visual必须引用本次帧编号及连续原生PTS从开始到结束的实际过程，单张静帧或计划不证明变化；截断必须看实际最后原生帧，微动不独证截断。
-audio.evidenceIds只引用真实video_evidence.audioObservations.id或可靠speechValidation.alignment的speech-0等编号。无词声部仍须音频听证，包括可听发声、声部及明确要求的同曲调关系；看人物姿态、空文字或ASR有声音均不能代替。无能力或句尾未可靠匹配时uncertain，复核同一素材，不能重拍制造证据。
+audio.evidenceIds只引用真实video_evidence.audioObservations.id、可靠speechValidation.alignment的speech-0等编号，或video_evidence.independentNarrationTransfer中status=confirmed的independent-track-0等编号。成片ASR句尾uncertain但独立旁白transfer确证时，可引用对应independent-track编号，同时保留ASR原始uncertain结论；该节拍observedStart/observedEnd须覆盖transfer.lines对应实际观测区间，不能抄排程窗末端。transfer只用于同一成片、同一排程、同一文本与声部的独立旁白，须有原TTS合成回执、单句可靠音源ASR、最终音轨逐句和句尾机器对照；它只证明既有旁白音轨完整进入成片，不声称人耳核听、真实声调、口型或其他人声正确。无词声部仍须音频听证，包括可听发声、声部及明确要求的同曲调关系；看人物姿态、空文字或ASR有声音均不能代替。无能力或句尾未可靠匹配时uncertain，复核同一素材，不能重拍制造证据。
 v2原要求有timingBeatId/sourceBeatId及eventSearchRanges时，只审该独立节拍的原beatQuote。参考窗可查找实际事件，不能把短暂动作变成全片持续义务；同一并行窗的硬节拍不能借用另一个参考节拍范围。confirmed script defect还须逐字原quote及相同timingBeatId/sourceBeatId；参考节拍defect的startSecond/endSecond和帧必须在本报告该节拍实际observedStart.lower至observedEnd.upper内，不能拿事件之前的姿态作反证。硬约束不加测量容差放宽。
 参考窗口只提示事件查找位置，可在同素材内按原sourceBeatId查找实际发生与结束；硬notBeforeSecond/deadlineSecond和dependsOn不得放宽或改写。完整且可读余量足够才可通过。确证不足交回重新排程，不原样重拍；证据不足保持unknown并补同素材。【duration-v2逐节拍完成证据结束】`

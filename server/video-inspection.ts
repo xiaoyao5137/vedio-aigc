@@ -1,6 +1,6 @@
 import { historyTailSeconds } from '../src/history-pacing.ts'
 import { speechMetrics } from './speech-metrics.ts'
-import { validateSpeechEvidence } from './speech-quality.ts'
+import { enforceSceneCutDialogueTail, validateSpeechEvidence } from './speech-quality.ts'
 import { createHash } from 'node:crypto'
 import { execFile } from 'node:child_process'
 import { createRequire } from 'node:module'
@@ -11,6 +11,8 @@ import sharp from 'sharp'
 import { plannedSpeechWindows } from '../src/storyboard-runtime.ts'
 import { isPublicInternetUrl } from './web-sources.ts'
 import { collectNativeFrameArchive, NATIVE_REVIEW_SELECTION_VERSION, resolveNativeSequenceConfig, selectNativeReviewFrames, type NativeSequenceOptions } from './native-video-sequence.ts'
+import { collectIndependentNarrationTransferEvidence } from './narration-transfer-evidence.ts'
+import { verifySceneCutFrameApproval } from './scene-cut-frame-approval.ts'
 
 const require = createRequire(import.meta.url)
 const ffmpeg = require('ffmpeg-static') as string
@@ -20,6 +22,10 @@ export type VideoSamplingOptions = { sampleTimes?: number[]; frameFractions?: nu
 export type VideoSamplingPlan = { mode: 'default' | 'sample-times' | 'frame-fractions'; requested: number[]; times: number[] }
 const DEFAULT_FRAME_FRACTIONS = [0, .2, .45, .7, .9, 1]
 const MAX_EVIDENCE_FRAMES = 24
+// Evidence reports are immutable. A changed narration transfer assessor must
+// receive a new report key, otherwise writeFile(wx) returns an older receipt
+// even when the same paid video is inspected again.
+export const NARRATION_TRANSFER_EVIDENCE_REVISION = 'source-asr-medium-isolation-all-routes-v3'
 
 function requestedVideoSampling(options: VideoSamplingOptions, maxFrames = MAX_EVIDENCE_FRAMES): Omit<VideoSamplingPlan, 'times'> {
   if (options.sampleTimes !== undefined && options.frameFractions !== undefined) throw new Error('MEDIA_CONFIG_INVALID: sampleTimes 与 frameFractions 不能同时配置')
@@ -53,7 +59,11 @@ export function resolveVideoSamplingPlan(options: VideoSamplingOptions, duration
 }
 
 type ReviewEvidenceInputs = Pick<Parameters<typeof collectVideoEvidence>[0],
-  'audioText' | 'audioType' | 'speechWindows' | 'latestSpeechEnd' | 'previousTail' | 'qualityMode'>
+  'audioText' | 'audioType' | 'speechWindows' | 'latestSpeechEnd' | 'previousTail' | 'qualityMode'
+  | 'sceneCutFrameGate' | 'sceneCutReferenceImage' | 'continuityMode' | 'visualTreatment'>
+const strictSceneCutDialogueTail = (review: ReviewEvidenceInputs) =>
+  review.continuityMode === 'scene_cut' && review.visualTreatment === 'live_action'
+  && review.audioType === '对白' && Boolean(review.audioText)
 
 /** Frame timing alone does not identify a speech/continuity assessment. Every
  * new non-native receipt gets a versioned namespace so even old unkeyed
@@ -62,9 +72,13 @@ export function samplingEvidenceKey(videoKey: string, plan: Omit<VideoSamplingPl
   const base = plan.mode === 'default' ? videoKey
     : `${videoKey}-sampling-${createHash('sha256').update(JSON.stringify({ version: 1, ...plan })).digest('hex').slice(0, 16)}`
   const contract = { audioText: review.audioText, audioType: review.audioType, speechWindows: review.speechWindows,
-    latestSpeechEnd: review.latestSpeechEnd, previousTail: review.previousTail, qualityMode: review.qualityMode }
-  const digest = createHash('sha256').update(JSON.stringify({ version: 2, contract })).digest('hex').slice(0, 16)
-  return `${base}-review-v2-${digest}`
+    latestSpeechEnd: review.latestSpeechEnd, previousTail: review.previousTail, qualityMode: review.qualityMode,
+    sceneCutFrameGate: review.sceneCutFrameGate, sceneCutReferenceImage: review.sceneCutReferenceImage,
+    continuityMode: review.continuityMode, visualTreatment: review.visualTreatment,
+    ...(strictSceneCutDialogueTail(review) ? { sceneCutDialogueTailRevision: 1 } : {}) }
+  const digest = createHash('sha256').update(JSON.stringify({ version: 3,
+    narrationTransferEvidenceRevision: NARRATION_TRANSFER_EVIDENCE_REVISION, contract })).digest('hex').slice(0, 16)
+  return `${base}-review-v3-${digest}`
 }
 
 export function parseFfmpegMetadata(stderr: string): RecordValue {
@@ -120,8 +134,23 @@ export async function collectOptionalSpeechEvidence(transcribe: () => Promise<un
 
 /** Inspect the delivered bytes, not a provider's optimistic status flag. Save a
  * durable local clip and actual tail so another round cannot reuse a URL echo. */
-export async function collectVideoEvidence(options: { url: string; audioText?: string; audioType?: string; speechWindows?: RecordValue[]; latestSpeechEnd?: number; previousTail?: string; qualityMode?: string } & VideoSamplingOptions, root = process.cwd()) {
+export async function collectVideoEvidence(options: { url: string; audioText?: string; audioType?: string; speechWindows?: RecordValue[]; latestSpeechEnd?: number; previousTail?: string; qualityMode?: string;
+  sceneCutFrameGate?: unknown; sceneCutReferenceImage?: string; continuityMode?: string; visualTreatment?: string } & VideoSamplingOptions, root = process.cwd()) {
+  const strictDialogueTail = strictSceneCutDialogueTail(options)
   if (!ffmpeg) throw new Error('视频检查缺少 ffmpeg')
+  const gatePresent = options.sceneCutFrameGate !== undefined && options.sceneCutFrameGate !== null
+    && options.sceneCutFrameGate !== '' && !(typeof options.sceneCutFrameGate === 'object'
+      && !Array.isArray(options.sceneCutFrameGate) && Object.keys(options.sceneCutFrameGate).length === 0)
+  const referencePresent = typeof options.sceneCutReferenceImage === 'string'
+    && Boolean(options.sceneCutReferenceImage.trim())
+  const liveSceneCut = options.continuityMode === 'scene_cut' && options.visualTreatment === 'live_action'
+  if (options.continuityMode === 'scene_cut' && !options.visualTreatment)
+    throw Error('SCENE_CUT_OUTPUT_EVIDENCE_INVALID: 换场采证缺少视觉类型')
+  if (liveSceneCut && (!gatePresent || !referencePresent))
+    throw Error('SCENE_CUT_OUTPUT_EVIDENCE_INVALID: 真人换场缺少已签首帧或候选图')
+  if (gatePresent && (options.continuityMode && !liveSceneCut || !referencePresent))
+    throw Error('SCENE_CUT_OUTPUT_EVIDENCE_INVALID: 非真人换场不能附带首帧凭证，且凭证须有候选图')
+  const compareSceneCutOpening = liveSceneCut || gatePresent
   const nativeConfig = resolveNativeSequenceConfig(options.nativeSequence)
   const requestedSampling = requestedVideoSampling(options, nativeConfig?.reviewMaxFrames)
   const dir = path.resolve(root, 'public/generated')
@@ -130,7 +159,8 @@ export async function collectVideoEvidence(options: { url: string; audioText?: s
   // Downloaded media remains shared by URL. Every explicit sampling request
   // gets separate frame/report/rejection paths, preserving earlier evidence.
   let evidenceKey = nativeConfig
-    ? `${key}-native-${createHash('sha256').update(JSON.stringify({ version: 2, requestedSampling, nativeConfig })).digest('hex').slice(0, 16)}`
+    ? `${key}-native-${createHash('sha256').update(JSON.stringify({ version: 3,
+      narrationTransferEvidenceRevision: NARRATION_TRANSFER_EVIDENCE_REVISION, requestedSampling, nativeConfig })).digest('hex').slice(0, 16)}`
     : samplingEvidenceKey(key, requestedSampling, options)
   const filename = `verified-${key}.mp4`
   const target = path.join(dir, filename)
@@ -165,21 +195,26 @@ export async function collectVideoEvidence(options: { url: string; audioText?: s
     const metadata = { duration: Number((parsed.format as RecordValue).duration), width: Number(video?.width), height: Number(video?.height), hasAudio: streams.some(s => s.codec_type === 'audio') }
     if (!video || !Number.isFinite(metadata.duration)) throw new Error('MEDIA_DECODE_FAILED: 没有可解码视频流')
     const samplingPlan = resolveVideoSamplingPlan(options, metadata.duration)
-    if (nativeArchive) evidenceKey = `${key}-native-${createHash('sha256').update(JSON.stringify({ version: 4, selectionVersion: NATIVE_REVIEW_SELECTION_VERSION,
+    if (nativeArchive) evidenceKey = `${key}-native-${createHash('sha256').update(JSON.stringify({ version: 5,
+      narrationTransferEvidenceRevision: NARRATION_TRANSFER_EVIDENCE_REVISION,
+      selectionVersion: NATIVE_REVIEW_SELECTION_VERSION,
       sourceVideoSha256: nativeArchive.archive.sourceVideoSha256, archiveSha256: nativeArchive.archiveSha256,
       requestedSampling, nativeConfig, audioText: options.audioText, audioType: options.audioType,
       speechWindows: options.speechWindows, latestSpeechEnd: options.latestSpeechEnd,
-      previousTail: options.previousTail, qualityMode: options.qualityMode })).digest('hex').slice(0, 16)}`
+      previousTail: options.previousTail, qualityMode: options.qualityMode,
+      sceneCutFrameGate: options.sceneCutFrameGate, sceneCutReferenceImage: options.sceneCutReferenceImage,
+      continuityMode: options.continuityMode, visualTreatment: options.visualTreatment,
+      ...(strictDialogueTail ? { sceneCutDialogueTailRevision: 1 } : {}) })).digest('hex').slice(0, 16)}`
     const nativeSelection = nativeArchive && nativeConfig ? selectNativeReviewFrames(nativeArchive.archive, samplingPlan.times, nativeConfig, metadata.duration) : undefined
     let meanVolumeDb: number | undefined
     if (metadata.hasAudio) {
-      const { stderr } = await exec(ffmpeg, ['-hide_banner', '-i', target, '-vn', '-af', 'volumedetect', '-f', 'null', '-'], { timeout: 30_000 })
+      const { stderr } = await exec(ffmpeg, ['-hide_banner', '-i', target, '-map', '0:a:0', '-af', 'volumedetect', '-f', 'null', '-'], { timeout: 30_000 })
       meanVolumeDb = Number(stderr.match(/mean_volume:\s*(-?[\d.]+) dB/)?.[1] ?? '-Infinity')
 
     }
     const expectedAudioText = options.audioText
     const shouldDetectSpeech = metadata.hasAudio && (Boolean(expectedAudioText) || options.audioType === '环境声')
-    const speechEvidence = shouldDetectSpeech ? await collectOptionalSpeechEvidence(async () => {
+    const rawSpeechEvidence: CollectedSpeechEvidence = shouldDetectSpeech ? await collectOptionalSpeechEvidence(async () => {
       const python = path.resolve(root, '.venv-quality/bin/python')
       try { await access(python) } catch { throw new Error('实际人声自检尚未安装：请运行 npm run setup:quality') }
       const args = [path.resolve(root, 'scripts/transcribe-quality.py'), target]
@@ -187,6 +222,10 @@ export async function collectVideoEvidence(options: { url: string; audioText?: s
       const { stdout } = await exec(python, args, { timeout: 180_000, maxBuffer: 4 * 1024 * 1024 })
       return JSON.parse(stdout)
     }, options.qualityMode, Boolean(expectedAudioText)) : {}
+    const speechEvidence = strictDialogueTail && rawSpeechEvidence.speechValidation
+      ? { ...rawSpeechEvidence, speechValidation: enforceSceneCutDialogueTail(
+        rawSpeechEvidence.speechValidation, Number(options.latestSpeechEnd)) }
+      : rawSpeechEvidence
     const times = nativeSelection ? nativeSelection.frameReferences.map(frame => frame.second) : samplingPlan.times
     const frames: string[] = nativeSelection ? nativeSelection.frameReferences.map(frame => frame.url) : []
     for (const [index, second] of (nativeSelection ? [] : times).entries()) {
@@ -209,8 +248,40 @@ export async function collectVideoEvidence(options: { url: string; audioText?: s
       firstFrameDifference = previous.reduce((sum, pixel, i) => sum + Math.abs(pixel - first[i]), 0) / (previous.length * 255)
 
     }
-    const report = { ...metadata, sha256: createHash('sha256').update(await readFile(target)).digest('hex'), meanVolumeDb: Number.isFinite(meanVolumeDb) ? meanVolumeDb : null,
+    const outputSha256 = createHash('sha256').update(await readFile(target)).digest('hex')
+    const evidenceUrl = `/generated/verified-${evidenceKey}-evidence.json`
+    let sceneCutOutputFirstFrame: RecordValue | undefined
+    if (compareSceneCutOpening) {
+      const certificate = verifySceneCutFrameApproval(options.sceneCutFrameGate, root)
+      const candidateUrl = options.sceneCutReferenceImage
+      if (!candidateUrl || candidateUrl !== certificate.frame.sourceUrl
+        || !/^\/generated\/[\w.-]+\.(?:png|jpe?g|webp)$/i.test(candidateUrl)) {
+        throw Error('SCENE_CUT_OUTPUT_EVIDENCE_INVALID: 候选首帧与签发凭证不匹配')
+      }
+      const candidate = await readFile(path.join(root, 'public', candidateUrl))
+      const outputFirst = await readFile(path.join(root, 'public', frames[0]))
+      const candidateSha256 = createHash('sha256').update(candidate).digest('hex')
+      if (candidateSha256 !== certificate.sourceSha256s[0]) {
+        throw Error('SCENE_CUT_OUTPUT_EVIDENCE_INVALID: 候选首帧字节与签发凭证不匹配')
+      }
+      const pixels = (bytes: Buffer) => sharp(bytes, { failOn: 'error' })
+        .resize(256, 144, { fit: 'fill' }).removeAlpha().raw().toBuffer()
+      const [expectedPixels, actualPixels] = await Promise.all([pixels(candidate), pixels(outputFirst)])
+      const difference = expectedPixels.reduce((sum, pixel, index) => sum + Math.abs(pixel - actualPixels[index]), 0)
+        / (expectedPixels.length * 255)
+      const maximumDifference = .1
+      sceneCutOutputFirstFrame = { version: 'scene-cut-output-first-frame-v1',
+        status: difference <= maximumDifference ? 'matched' : 'unverified',
+        evidenceUrl, outputVideoSha256: outputSha256, decodedFirstFrameUrl: frames[0],
+        decodedFirstFrameSha256: createHash('sha256').update(outputFirst).digest('hex'),
+        candidateUrl, candidateSha256, approvalSignature: certificate.signature,
+        difference, maximumDifference }
+    }
+    const independentNarrationTransfer = await collectIndependentNarrationTransferEvidence(options.url, target, evidenceUrl, outputSha256, root)
+    const report = { ...metadata, sha256: outputSha256, meanVolumeDb: Number.isFinite(meanVolumeDb) ? meanVolumeDb : null,
       ...speechEvidence,
+      ...(independentNarrationTransfer ? { independentNarrationTransfer } : {}),
+      ...(sceneCutOutputFirstFrame ? { sceneCutOutputFirstFrame } : {}),
       ...(firstFrameDifference === undefined ? {} : { firstFrameDifference }), url: `/generated/${filename}`, originalUrl: options.url,
       lastFrameUrl: frames.at(-1)!, frames, frameTimes: times, evidenceVersion: nativeSelection ? 2 : 1, decoded: true,
       frameTimeSemantics: nativeSelection ? 'native-pts-relative-to-first-frame' : 'requested-seek',
@@ -220,7 +291,7 @@ export async function collectVideoEvidence(options: { url: string; audioText?: s
           totalNativeFrames: nativeArchive.archive.frames.length, selectedNativeFrameIndices: nativeSelection.frameReferences.map(frame => frame.nativeFrameIndex),
           windows: nativeSelection.windows, preservedSamples: nativeSelection.preservedSamples, limits: nativeConfig } } : {}),
       samplingPlan: nativeSelection ? { mode: 'native-sequence', requested: samplingPlan.requested, times, baseSamplingPlan: samplingPlan } : samplingPlan,
-      evidenceRequest: options, evidenceUrl: `/generated/verified-${evidenceKey}-evidence.json` }
+      evidenceRequest: options, evidenceUrl }
     try { await writeFile(path.join(dir, `verified-${evidenceKey}-evidence.json`), JSON.stringify(report, null, 2), { flag: 'wx' }) }
     catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error

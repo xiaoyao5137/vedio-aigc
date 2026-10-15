@@ -2,7 +2,28 @@ import type { DurationBeat, DurationScheduleRow } from './duration-schedule.ts'
 
 type EntranceAction = Pick<DurationBeat, 'kind' | 'actorIds' | 'textOrVocalization' | 'performanceInstruction'>
 export type StoryboardEntrance = { name: string; startSecond: number; endSecond: number; path: string }
-const interior = /入内|(?:走入|步入|进入)(?:室内|屋内|殿内|厅内|堂内)|推门而入|掀帘而入/
+
+/** A reference first frame must show the origin of an immediately starting
+ * travel action. Otherwise the image gate cannot verify the actor's state. */
+export function openingTravelVisibilityIssue(shot: {
+  continuity?: { mode?: string }; firstFrameMode?: string;
+  enteringCharacters?: StoryboardEntrance[];
+  pacing?: { beats?: EntranceAction[]; schedule?: DurationScheduleRow[] }
+}): string | undefined {
+  if (shot.continuity?.mode !== 'scene_cut' || shot.firstFrameMode !== 'reference') return
+  const beats = shot.pacing?.beats ?? []
+  const schedule = shot.pacing?.schedule ?? []
+  for (const entry of shot.enteringCharacters ?? []) {
+    if (entry.startSecond > 0.1) continue
+    const travel = beats.find(beat => beat.kind === 'action'
+      && beat.actorIds?.includes(entry.name)
+      && /押|跨|走|步|进入|行进|移动|靠近|抵达/.test(
+        `${beat.textOrVocalization ?? ''} ${beat.performanceInstruction ?? ''}`)
+      && Number(schedule.find(row => row.beatId === (beat as DurationBeat).id)?.startSecond ?? 0) <= 0.1)
+    if (travel) return entry.name
+  }
+}
+const interior = /入内|(?:走入|步入|进入)(?:室内|屋内|殿内|厅内|堂内|院内)|推门而入|掀帘而入/
 const onScreen = /入画|(?:走入|步入|进入)画面/
 // A directional authored path can terminate at a person, an outdoor place or
 // a room. Match the Chinese locomotion family instead of maintaining a brittle

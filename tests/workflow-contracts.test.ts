@@ -118,9 +118,14 @@ test('editorial scene labels retain the paid-request scene and identity contract
 test('the boundary-frame contract does not affect unrelated video workflows', () => {
   assert.doesNotThrow(() => validateWorkflowMediaContract({
     model: { capability: 'video' },
-    executionContext: { workflowId: 'wf-story', nodeId: 'node-video' },
+    executionContext: { workflowId: 'wf-other', nodeId: 'node-video' },
     params: { duration: 3 },
   }))
+  assert.throws(() => validateWorkflowMediaContract({
+    model: { capability: 'video' },
+    executionContext: { workflowId: 'wf-story', nodeId: 'node-video' },
+    params: { duration: 3 },
+  }), /STORY_PAID_SHOT_REQUIRED/)
 })
 
 test('animated maps require both generated boundary frames and accept a scene-cut first frame', () => {

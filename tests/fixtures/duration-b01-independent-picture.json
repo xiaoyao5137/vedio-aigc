@@ -1,0 +1,523 @@
+{
+  "prompt": "【本镜影视处理】live_action / episode_opening\n【动画叙事类型与美术风格】 / \n【场景与开场画面】16:9，真人实景，自然日光，东汉服化道。江州城内战后街口，夯土墙与木构门面形成纵深，地面有尘土。首帧为单一时刻全画幅：张飞在画面左侧，严颜在右侧，相距约两步；匿名军士已在严颜两侧及侧后方，身前尚留缺口，近身军士持用于缚腕的绳索。严颜双腕尚未缚住。张飞为成熟成年男性，方阔端正脸形、浓黑眉、挺直鼻梁、清晰下颌，肤色白净偏暖，肩背宽阔、胸廓厚实、腰腹收束；黑色短髭和尖形颏须，深色长发束髻、余发披背，黑色小冠配横穿褐色簪杆；深褐袍配黑交领、白色内领缘，暗褐札甲、黑色宽革带、圆形金属扣及黑靴，衣甲有行军尘土。严颜为成熟成年男性，长脸、清晰眉骨、暖肤色，深色束发、小冠横簪、黑髭及较长尖形下颌须；灰褐袍、旧色札甲与前垂甲片、深色护臂和靴，身形结实挺直，衣甲带战后尘痕。动作执行：0–2.5秒，张飞抬手示意军士合拢，封住严颜身前的缺口；2.5–7.5秒，军士将严颜双腕缚住，双腕及绕绳结绳过程无遮挡；7.5–9.5秒，张飞走到严颜面前，停在不遮挡双腕的位置；9.5–13秒，在场人物保留自然呼吸，旁白提出问题，无人开口回答。全片无字幕、标题、水印、乱码和现代物件。\n【视觉处理硬约束】live_action 必须生成具有真实空间深度、自然光影和可信时代环境的完整实景；animated 严格执行 animationStyle 与 animationAesthetic，可使用历史人物插画、历史场景、象征物、时间或环境动画，不默认地图。character_illustration 使用系统二维插画编排路线：人物素材内部姿态、表情、嘴部和衣物全程不变，只允许整个人物图层在合适的历史背景上淡入、平移、缩放、淡出；historical_tableau 仅允许整幅定格画面轻微缩放、平移或渐变。二者均不向视频模型请求人物走路、转身、说话等肢体动画，背景由独立画外旁白讲清。其他动画按分镜运动。禁止低幼卡通、Q版、现代动漫符号、游戏CG和玄幻光效。旧 animated_map/historical_montage 分别按 historical_map/historical_tableau 兼容。人物参考附件只用于身份、脸部、体型和服装。\n0-2.5秒：（节拍 b01-close，0至2.5秒，导演参考）场景：江州城内战后街口，日间；张飞、看押军士张飞抬手示意军士合拢，封住严颜身前的缺口。张飞的手势短而明确；原在严颜两侧的军士应手势向缺口收拢，完成封堵。；完成态：严颜身前原有的缺口被军士封住。。同时，（节拍 b01-narration-1，0至2.5秒，导演参考）画外旁白，平实清楚；逗号处短停，交代双方交战背景。画内人物不配旁白口型。；画外旁白自然朗读：刘备入益州后，转攻刘璋。；完成态：完整交代刘备入益州后转攻刘璋。。\n2.5-7.5秒：（节拍 b01-narration-2，2.5至7.1秒，导演参考）承接上一句的刘备，清楚读出张飞、江州与严颜的身份关系；不采用人物自述语气。；画外旁白自然朗读：他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。；完成态：完整交代张飞所属一方、江州战果及严颜的身份。。同时，（节拍 b01-bind，2.5至7.5秒，导演参考）看押军士、严颜军士将严颜双腕缚住。近身军士控制严颜的前臂，在他身前并住双腕，绕绳、收紧并完成绳结；严颜双腕随控制就位，身体保持站立。缠绕至结成的过程持续可见。；完成态：严颜双腕在身前被绳索缚住，军士保持看押。。\n7.5-9.5秒：（节拍 b01-approach，7.5至9.5秒，导演参考）张飞走到严颜面前。张飞从原处沿军士封堵线内侧走近，在严颜面前停下，目光落到严颜脸上；停步时不遮住严颜被缚的双腕。；完成态：张飞已在严颜面前站定，问责尚未开始。。\n9.5-11.75秒：（节拍 b01-narration-3，9.5至11.75秒，导演参考）张飞停步后提出问题，逗号处短停，问句轻收。画内无人回答，保留下一场问责的悬念。；画外旁白自然朗读：城破了，他会低头吗？；完成态：观众听见严颜是否低头的问题，画内尚无答复。。\n11.75-13秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.2-brisk-narration 和已编译节拍分别完成下列声部：[{\"beatId\":\"b01-narration-1\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"刘备入益州后，转攻刘璋。\"},{\"beatId\":\"b01-narration-2\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。\"},{\"beatId\":\"b01-narration-3\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"城破了，他会低头吗？\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。\n【本镜结束时的自然动作结果】16:9真人实景单一末帧，江州城内同一战后街口，日光、墙面及空间方向延续首帧。张飞在严颜面前站定，处于画面左侧，严颜在右侧，双方脸部及严颜身前被绳索缚住的双腕清楚可见。匿名军士仍在封堵及看押位置，不遮挡双腕。张飞保持方阔端正脸形、白净偏暖肤色、宽阔肩背、黑发黑髭尖形颏须和深褐袍暗褐札甲；严颜保持成熟成年长脸、黑发黑须、灰褐袍及旧色札甲。无人开口，问责尚未开始。无拼贴、分栏、重复人物、字幕、标题、水印或现代物件。\n运镜：单一连续镜头，平视略偏严颜正面的斜侧全景，约35毫米等效焦段；严颜双腕置于清楚可辨的画幅区域，军士不以背部遮挡绳结。以张飞与严颜的连线为视线轴，全程在同一侧。张飞从左侧沿封堵线内侧走近右侧严颜，摄影机仅作小幅跟摇维持构图，保留脚步、双腕及双方脸部，不切断动作。\n人声类型：旁白\n【音轨文本；环境声模式为空且禁止人声】刘备入益州后，转攻刘璋。\n旁白：他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。\n旁白：城破了，他会低头吗？",
+  "params": {
+    "duration": 13,
+    "pacingVersion": "duration-v2",
+    "scheduleHash": "duration-v2-sha256-d86c63cad7eae372c255a00069f6a109cb9f376615448cb14b8b8f718068d708",
+    "videoTimeline": "0-2.5秒：（节拍 b01-close，0至2.5秒，导演参考）场景：江州城内战后街口，日间；张飞、看押军士张飞抬手示意军士合拢，封住严颜身前的缺口。张飞的手势短而明确；原在严颜两侧的军士应手势向缺口收拢，完成封堵。；完成态：严颜身前原有的缺口被军士封住。。同时，（节拍 b01-narration-1，0至2.5秒，导演参考）画外旁白，平实清楚；逗号处短停，交代双方交战背景。画内人物不配旁白口型。；画外旁白自然朗读：刘备入益州后，转攻刘璋。；完成态：完整交代刘备入益州后转攻刘璋。。\n2.5-7.5秒：（节拍 b01-narration-2，2.5至7.1秒，导演参考）承接上一句的刘备，清楚读出张飞、江州与严颜的身份关系；不采用人物自述语气。；画外旁白自然朗读：他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。；完成态：完整交代张飞所属一方、江州战果及严颜的身份。。同时，（节拍 b01-bind，2.5至7.5秒，导演参考）看押军士、严颜军士将严颜双腕缚住。近身军士控制严颜的前臂，在他身前并住双腕，绕绳、收紧并完成绳结；严颜双腕随控制就位，身体保持站立。缠绕至结成的过程持续可见。；完成态：严颜双腕在身前被绳索缚住，军士保持看押。。\n7.5-9.5秒：（节拍 b01-approach，7.5至9.5秒，导演参考）张飞走到严颜面前。张飞从原处沿军士封堵线内侧走近，在严颜面前停下，目光落到严颜脸上；停步时不遮住严颜被缚的双腕。；完成态：张飞已在严颜面前站定，问责尚未开始。。\n9.5-11.75秒：（节拍 b01-narration-3，9.5至11.75秒，导演参考）张飞停步后提出问题，逗号处短停，问句轻收。画内无人回答，保留下一场问责的悬念。；画外旁白自然朗读：城破了，他会低头吗？；完成态：观众听见严颜是否低头的问题，画内尚无答复。。\n11.75-13秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。\n【声部与收束】按共享策略 duration-policy-v2.2-brisk-narration 和已编译节拍分别完成下列声部：[{\"beatId\":\"b01-narration-1\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"刘备入益州后，转攻刘璋。\"},{\"beatId\":\"b01-narration-2\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。\"},{\"beatId\":\"b01-narration-3\",\"actorIds\":[\"旁白\"],\"kind\":\"speech\",\"deliveryStyle\":\"narration\",\"textOrVocalization\":\"城破了，他会低头吗？\"}]。对白按角色绑定嘴唇，画外旁白不绑定画内口型；歌谣、吟诵和歌唱遵循各自表演节奏，不强制改成每秒4.5字的对话。已声明的无词群体声部必须实际可听，不能因不在audioText中而静音；未声明声部不得新增可辨语言。完整保留每句台词及原动作先后关系，动作与必需回应完成后保留 0.5 秒可读收尾，允许自然呼吸微动，不新增剧情动作或以静帧补齐缺失动作。导演参考窗口用于定位表演，硬边界和前置依赖必须遵守。",
+    "audioType": "旁白",
+    "audioText": "刘备入益州后，转攻刘璋。\n旁白：他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。\n旁白：城破了，他会低头吗？",
+    "pacing": {
+      "beats": [
+        {
+          "id": "b01-close",
+          "kind": "action",
+          "actorIds": [
+            "张飞",
+            "guards"
+          ],
+          "dependsOn": [],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "严颜身前原有的缺口被军士封住。",
+            "evidenceAnchor": "张飞抬手示意军士合拢，封住严颜身前的缺口",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-01",
+          "durationEstimate": {
+            "lower": 1.8,
+            "upper": 2.5,
+            "source": "按一次抬手示意及近处军士短距离合拢估算，包含识别手势和停步时间。",
+            "expected": 2.2,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [
+            "b01-narration-1"
+          ],
+          "textOrVocalization": "张飞抬手示意军士合拢，封住严颜身前的缺口。张飞的手势短而明确；原在严颜两侧的军士应手势向缺口收拢，完成封堵。"
+        },
+        {
+          "id": "b01-narration-1",
+          "kind": "speech",
+          "actorIds": [
+            "旁白"
+          ],
+          "dependsOn": [],
+          "resources": [
+            "voice"
+          ],
+          "completion": {
+            "modality": "audio",
+            "finalState": "完整交代刘备入益州后转攻刘璋。",
+            "evidenceAnchor": "刘备入益州后，转攻刘璋。",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-01",
+          "deliveryStyle": "narration",
+          "durationEstimate": {
+            "lower": 2,
+            "upper": 2.5,
+            "source": "按10个汉字、旁白参考语速及启动和句内停顿估算。",
+            "expected": 2.3,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [
+            "b01-close"
+          ],
+          "textOrVocalization": "刘备入益州后，转攻刘璋。",
+          "performanceInstruction": "画外旁白，平实清楚；逗号处短停，交代双方交战背景。画内人物不配旁白口型。"
+        },
+        {
+          "id": "b01-bind",
+          "kind": "action",
+          "actorIds": [
+            "guards",
+            "严颜"
+          ],
+          "dependsOn": [
+            "b01-close",
+            "b01-narration-1"
+          ],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "严颜双腕在身前被绳索缚住，军士保持看押。",
+            "evidenceAnchor": "军士将严颜双腕缚住",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-01",
+          "durationEstimate": {
+            "lower": 3.8,
+            "upper": 5,
+            "source": "按近身控制、并腕、绕绳和结绳的连续表演估算，不用剪切省略束缚过程。",
+            "expected": 4.5,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [
+            "b01-narration-2"
+          ],
+          "textOrVocalization": "军士将严颜双腕缚住。近身军士控制严颜的前臂，在他身前并住双腕，绕绳、收紧并完成绳结；严颜双腕随控制就位，身体保持站立。缠绕至结成的过程持续可见。"
+        },
+        {
+          "id": "b01-narration-2",
+          "kind": "speech",
+          "actorIds": [
+            "旁白"
+          ],
+          "dependsOn": [
+            "b01-close",
+            "b01-narration-1"
+          ],
+          "resources": [
+            "voice"
+          ],
+          "completion": {
+            "modality": "audio",
+            "finalState": "完整交代张飞所属一方、江州战果及严颜的身份。",
+            "evidenceAnchor": "他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-01",
+          "deliveryStyle": "narration",
+          "durationEstimate": {
+            "lower": 3.8,
+            "upper": 4.6,
+            "source": "按21个汉字、旁白参考语速及启动、逗号和句末停顿估算。",
+            "expected": 4.2,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [
+            "b01-bind"
+          ],
+          "textOrVocalization": "他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。",
+          "performanceInstruction": "承接上一句的刘备，清楚读出张飞、江州与严颜的身份关系；不采用人物自述语气。"
+        },
+        {
+          "id": "b01-approach",
+          "kind": "action",
+          "actorIds": [
+            "张飞"
+          ],
+          "dependsOn": [
+            "b01-bind",
+            "b01-narration-2"
+          ],
+          "resources": [
+            "body"
+          ],
+          "completion": {
+            "modality": "visual",
+            "finalState": "张飞已在严颜面前站定，问责尚未开始。",
+            "evidenceAnchor": "张飞走到严颜面前",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-01",
+          "durationEstimate": {
+            "lower": 1.4,
+            "upper": 2,
+            "source": "按开场相距约两步、走近并站稳估算。",
+            "expected": 1.7,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "张飞走到严颜面前。张飞从原处沿军士封堵线内侧走近，在严颜面前停下，目光落到严颜脸上；停步时不遮住严颜被缚的双腕。"
+        },
+        {
+          "id": "b01-narration-3",
+          "kind": "speech",
+          "actorIds": [
+            "旁白"
+          ],
+          "dependsOn": [
+            "b01-approach"
+          ],
+          "resources": [
+            "voice"
+          ],
+          "completion": {
+            "modality": "audio",
+            "finalState": "观众听见严颜是否低头的问题，画内尚无答复。",
+            "evidenceAnchor": "城破了，他会低头吗？",
+            "requiredThisClip": true
+          },
+          "sourceBeatId": "beat-01",
+          "deliveryStyle": "narration",
+          "durationEstimate": {
+            "lower": 1.7,
+            "upper": 2.25,
+            "source": "按8个汉字、旁白自然语速及启动、短停和问句收音估算。",
+            "expected": 2,
+            "confidence": "medium"
+          },
+          "timingConstraint": {
+            "mode": "reference"
+          },
+          "overlapAllowedWith": [],
+          "textOrVocalization": "城破了，他会低头吗？",
+          "performanceInstruction": "张飞停步后提出问题，逗号处短停，问句轻收。画内无人回答，保留下一场问责的悬念。"
+        }
+      ],
+      "version": "duration-v2",
+      "schedule": [
+        {
+          "kind": "action",
+          "beatId": "b01-close",
+          "actorIds": [
+            "张飞",
+            "guards"
+          ],
+          "endSecond": 2.5,
+          "startSecond": 0,
+          "sourceBeatId": "beat-01",
+          "budgetSeconds": 2.5,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "speech",
+          "beatId": "b01-narration-1",
+          "actorIds": [
+            "旁白"
+          ],
+          "endSecond": 2.5,
+          "startSecond": 0,
+          "sourceBeatId": "beat-01",
+          "budgetSeconds": 2.5,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "action",
+          "beatId": "b01-bind",
+          "actorIds": [
+            "guards",
+            "严颜"
+          ],
+          "endSecond": 7.5,
+          "startSecond": 2.5,
+          "sourceBeatId": "beat-01",
+          "budgetSeconds": 5,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "speech",
+          "beatId": "b01-narration-2",
+          "actorIds": [
+            "旁白"
+          ],
+          "endSecond": 7.1,
+          "startSecond": 2.5,
+          "sourceBeatId": "beat-01",
+          "budgetSeconds": 4.6,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "action",
+          "beatId": "b01-approach",
+          "actorIds": [
+            "张飞"
+          ],
+          "endSecond": 9.5,
+          "startSecond": 7.5,
+          "sourceBeatId": "beat-01",
+          "budgetSeconds": 2,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        },
+        {
+          "kind": "speech",
+          "beatId": "b01-narration-3",
+          "actorIds": [
+            "旁白"
+          ],
+          "endSecond": 11.75,
+          "startSecond": 9.5,
+          "sourceBeatId": "beat-01",
+          "budgetSeconds": 2.25,
+          "timingConstraint": {
+            "mode": "reference"
+          }
+        }
+      ],
+      "actorGroups": [
+        {
+          "id": "guards",
+          "label": "看押军士",
+          "memberDescription": "张飞所属的匿名真人军士，开场已在严颜两侧及侧后方；前侧军士负责合拢缺口，近身军士负责缚腕，穿东汉军士服装，不设具名副将。"
+        }
+      ],
+      "sampleTimes": [
+        0,
+        1.25,
+        2.5,
+        4.8,
+        5,
+        7.1,
+        7.5,
+        8.5,
+        9.5,
+        10.625,
+        11.75,
+        12.92
+      ],
+      "scheduleHash": "duration-v2-sha256-d86c63cad7eae372c255a00069f6a109cb9f376615448cb14b8b8f718068d708",
+      "timingPolicy": {
+        "speech": {
+          "chant": {
+            "maximumRate": 4.5,
+            "referenceRate": 3.3,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 2.8
+          },
+          "singing": {
+            "maximumRate": 3.5,
+            "referenceRate": 2.8,
+            "startupAllowance": 0.35,
+            "minimumNaturalRate": 2
+          },
+          "dialogue": {
+            "maximumRate": 5,
+            "referenceRate": 4.5,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 3.3
+          },
+          "narration": {
+            "maximumRate": 6.5,
+            "referenceRate": 5.8,
+            "startupAllowance": 0.25,
+            "minimumNaturalRate": 5.5
+          }
+        },
+        "version": "duration-policy-v2.2-brisk-narration",
+        "linePauseSeconds": 0.2,
+        "shortPauseSeconds": 0.15,
+        "minimumActionSeconds": 0.3,
+        "sentencePauseSeconds": 0.25,
+        "minimumReactionSeconds": 0.5,
+        "maximumProviderDuration": 15,
+        "minimumProviderDuration": 3,
+        "endingReadabilityReserve": 0.5,
+        "minimumVocalizationSeconds": 0.8,
+        "maxConservativeExtraSeconds": 1,
+        "measurementToleranceSeconds": 0.25
+      },
+      "sourceBeatIds": [
+        "beat-01"
+      ],
+      "speechWindows": [
+        {
+          "end": 2.5,
+          "text": "刘备入益州后，转攻刘璋。",
+          "start": 0,
+          "beatId": "b01-narration-1",
+          "actorIds": [
+            "旁白"
+          ],
+          "sourceBeatId": "beat-01",
+          "deliveryStyle": "narration"
+        },
+        {
+          "end": 7.1,
+          "text": "他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。",
+          "start": 2.5,
+          "beatId": "b01-narration-2",
+          "actorIds": [
+            "旁白"
+          ],
+          "sourceBeatId": "beat-01",
+          "deliveryStyle": "narration"
+        },
+        {
+          "end": 11.75,
+          "text": "城破了，他会低头吗？",
+          "start": 9.5,
+          "beatId": "b01-narration-3",
+          "actorIds": [
+            "旁白"
+          ],
+          "sourceBeatId": "beat-01",
+          "deliveryStyle": "narration"
+        }
+      ],
+      "timelineWindows": [
+        {
+          "beatIds": [
+            "b01-close",
+            "b01-narration-1"
+          ],
+          "endSecond": 2.5,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 b01-close，0至2.5秒，导演参考）场景：江州城内战后街口，日间；张飞、看押军士张飞抬手示意军士合拢，封住严颜身前的缺口。张飞的手势短而明确；原在严颜两侧的军士应手势向缺口收拢，完成封堵。；完成态：严颜身前原有的缺口被军士封住。。",
+              "beatId": "b01-close"
+            },
+            {
+              "quote": "（节拍 b01-narration-1，0至2.5秒，导演参考）画外旁白，平实清楚；逗号处短停，交代双方交战背景。画内人物不配旁白口型。；画外旁白自然朗读：刘备入益州后，转攻刘璋。；完成态：完整交代刘备入益州后转攻刘璋。。",
+              "beatId": "b01-narration-1"
+            }
+          ],
+          "startSecond": 0
+        },
+        {
+          "beatIds": [
+            "b01-narration-2",
+            "b01-bind"
+          ],
+          "endSecond": 7.5,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 b01-narration-2，2.5至7.1秒，导演参考）承接上一句的刘备，清楚读出张飞、江州与严颜的身份关系；不采用人物自述语气。；画外旁白自然朗读：他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。；完成态：完整交代张飞所属一方、江州战果及严颜的身份。。",
+              "beatId": "b01-narration-2"
+            },
+            {
+              "quote": "（节拍 b01-bind，2.5至7.5秒，导演参考）看押军士、严颜军士将严颜双腕缚住。近身军士控制严颜的前臂，在他身前并住双腕，绕绳、收紧并完成绳结；严颜双腕随控制就位，身体保持站立。缠绕至结成的过程持续可见。；完成态：严颜双腕在身前被绳索缚住，军士保持看押。。",
+              "beatId": "b01-bind"
+            }
+          ],
+          "startSecond": 2.5
+        },
+        {
+          "beatIds": [
+            "b01-approach"
+          ],
+          "endSecond": 9.5,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 b01-approach，7.5至9.5秒，导演参考）张飞走到严颜面前。张飞从原处沿军士封堵线内侧走近，在严颜面前停下，目光落到严颜脸上；停步时不遮住严颜被缚的双腕。；完成态：张飞已在严颜面前站定，问责尚未开始。。",
+              "beatId": "b01-approach"
+            }
+          ],
+          "startSecond": 7.5
+        },
+        {
+          "beatIds": [
+            "b01-narration-3"
+          ],
+          "endSecond": 11.75,
+          "beatQuotes": [
+            {
+              "quote": "（节拍 b01-narration-3，9.5至11.75秒，导演参考）张飞停步后提出问题，逗号处短停，问句轻收。画内无人回答，保留下一场问责的悬念。；画外旁白自然朗读：城破了，他会低头吗？；完成态：观众听见严颜是否低头的问题，画内尚无答复。。",
+              "beatId": "b01-narration-3"
+            }
+          ],
+          "startSecond": 9.5
+        },
+        {
+          "beatIds": [],
+          "endSecond": 13,
+          "beatQuotes": [],
+          "startSecond": 11.75
+        }
+      ],
+      "compiledVideoPrompt": "0-2.5秒：（节拍 b01-close，0至2.5秒，导演参考）场景：江州城内战后街口，日间；张飞、看押军士张飞抬手示意军士合拢，封住严颜身前的缺口。张飞的手势短而明确；原在严颜两侧的军士应手势向缺口收拢，完成封堵。；完成态：严颜身前原有的缺口被军士封住。。同时，（节拍 b01-narration-1，0至2.5秒，导演参考）画外旁白，平实清楚；逗号处短停，交代双方交战背景。画内人物不配旁白口型。；画外旁白自然朗读：刘备入益州后，转攻刘璋。；完成态：完整交代刘备入益州后转攻刘璋。。\n2.5-7.5秒：（节拍 b01-narration-2，2.5至7.1秒，导演参考）承接上一句的刘备，清楚读出张飞、江州与严颜的身份关系；不采用人物自述语气。；画外旁白自然朗读：他的部将张飞攻破江州，生擒刘璋的巴郡太守严颜。；完成态：完整交代张飞所属一方、江州战果及严颜的身份。。同时，（节拍 b01-bind，2.5至7.5秒，导演参考）看押军士、严颜军士将严颜双腕缚住。近身军士控制严颜的前臂，在他身前并住双腕，绕绳、收紧并完成绳结；严颜双腕随控制就位，身体保持站立。缠绕至结成的过程持续可见。；完成态：严颜双腕在身前被绳索缚住，军士保持看押。。\n7.5-9.5秒：（节拍 b01-approach，7.5至9.5秒，导演参考）张飞走到严颜面前。张飞从原处沿军士封堵线内侧走近，在严颜面前停下，目光落到严颜脸上；停步时不遮住严颜被缚的双腕。；完成态：张飞已在严颜面前站定，问责尚未开始。。\n9.5-11.75秒：（节拍 b01-narration-3，9.5至11.75秒，导演参考）张飞停步后提出问题，逗号处短停，问句轻收。画内无人回答，保留下一场问责的悬念。；画外旁白自然朗读：城破了，他会低头吗？；完成态：观众听见严颜是否低头的问题，画内尚无答复。。\n11.75-13秒：保留前述已完成动作的自然结果供观众看清，允许呼吸与微动，不引入新的剧情动作或人声。",
+      "sourceBeatRequirements": [
+        {
+          "id": "beat-01",
+          "anchors": [
+            "张飞抬手示意军士合拢，封住严颜身前的缺口",
+            "军士将严颜双腕缚住",
+            "张飞走到严颜面前"
+          ],
+          "setting": "江州城内战后街口，日间"
+        }
+      ]
+    },
+    "characters": [
+      "张飞",
+      "严颜"
+    ],
+    "presentCharacters": [
+      "张飞",
+      "严颜"
+    ],
+    "qualityDisposition": "manual-review-v1",
+    "qualityMode": "principle-v1",
+    "visualTreatment": "live_action",
+    "editorialRole": "episode_opening",
+    "subtitlePolicy": "none",
+    "sound": "on",
+    "referenceImage": "data:image/png;base64,YQ==",
+    "endImage": "data:image/jpeg;base64,Yg==",
+    "referenceImages": [
+      "data:image/png;base64,Yw==",
+      "data:image/png;base64,ZA=="
+    ],
+    "referenceBindings": [
+      {
+        "characterName": "张飞",
+        "role": "identity"
+      },
+      {
+        "characterName": "严颜",
+        "role": "identity"
+      }
+    ]
+  }
+}

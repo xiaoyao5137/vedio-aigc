@@ -12,7 +12,17 @@ export function createDramaGenerationBudget(feedback: unknown, configuredLimit =
   const value = feedback && typeof feedback === 'object' ? feedback as Record<string, unknown> : {}
   const previous = value.previousCandidate as Record<string, unknown> | undefined
   const provenance = previous?.repairProvenance as Record<string, unknown> | undefined
-  let used = Number(provenance?.generationAttempts ?? 0)
+  const completion = value.durationCompletion as Record<string, unknown> | undefined
+  // A signed media review may route an already generated shot back to its
+  // writer. That is a new, bounded shot plan, not another draft of the old
+  // writer request. Keep the old provenance for audit, but give the replan its
+  // own budget only when the failed video and schedule are source-bound.
+  const mediaReplan = completion?.route === 'replan' && completion.passed === false
+    && typeof value.sourceVideo === 'string' && value.sourceVideo.startsWith('/generated/verified-')
+    && typeof completion.scheduleHash === 'string'
+    && completion.scheduleHash === (previous?.pacing as Record<string, unknown> | undefined)?.scheduleHash
+    && Array.isArray(value.issues) && value.issues.length > 0
+  let used = mediaReplan ? 0 : Number(provenance?.generationAttempts ?? 0)
   if (!Number.isInteger(used) || used < 0) throw new Error('DRAMA_GENERATION_LIMIT: 无效的实际生成次数')
   return {
     consume() {

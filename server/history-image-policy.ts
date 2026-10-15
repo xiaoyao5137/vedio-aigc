@@ -1,6 +1,6 @@
 type ImageRequest = {
   model?: { provider: string; capability: string }
-  executionContext?: { workflowId?: string }
+  executionContext?: { workflowId?: string; nodeId?: string }
 }
 
 export function isHistoricalImageWorkflow(request: ImageRequest) {
@@ -8,7 +8,10 @@ export function isHistoricalImageWorkflow(request: ImageRequest) {
 }
 
 export function assertHistoricalImageProvider(request: ImageRequest) {
-  if (isHistoricalImageWorkflow(request) && request.model?.capability === 'image' && request.model.provider !== 'Kling') {
+  const codexSceneCutOpening = request.executionContext?.nodeId === 'sanguo-scene-cut-first-frame'
+    && request.model?.provider === 'Codex'
+  if (isHistoricalImageWorkflow(request) && request.model?.capability === 'image'
+    && request.model.provider !== 'Kling' && !codexSceneCutOpening) {
     throw new Error('HISTORY_IMAGE_PROVIDER_REQUIRED: 历史视频生图仅允许可灵，请将图片节点切换到可灵生图。')
   }
 }

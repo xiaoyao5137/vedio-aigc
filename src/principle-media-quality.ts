@@ -18,6 +18,12 @@ export function principleMediaQualityRuntimeFactory(eventRuntime = audioVisualEv
     typeof item === 'string' ? Boolean(item.trim()) : Boolean(item && typeof item === 'object' && !Array.isArray(item) && Object.keys(item).length)) : []
   const text = (value: unknown) => typeof value === 'string' ? value.trim() : ''
   const time = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
+  const canonical = (value: unknown): string => {
+    if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']'
+    if (value && typeof value === 'object') return '{' + Object.entries(value).filter(([, item]) => item !== undefined)
+      .sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => JSON.stringify(key) + ':' + canonical(item)).join(',') + '}'
+    return JSON.stringify(value ?? null)
+  }
   function subtitlePolicy(context: Value, params: Value) {
     const takeParams = obj(obj(context.video_take).params)
     const explicit = Object.hasOwn(params, 'subtitlePolicy') || Object.hasOwn(takeParams, 'subtitlePolicy')
@@ -352,10 +358,90 @@ export function principleMediaQualityRuntimeFactory(eventRuntime = audioVisualEv
     const manual = params.qualityDisposition === 'manual-review-v1'
     const enforceSpeech = params.speechEvidencePolicy === 'enforce-evidenced-v1'
     const e = obj(context.video_evidence), shot = obj(context.shot_script), take = obj(context.video_take)
+    const coverageRisks = rows(obj(obj(take.params).coverageCutFrameGate).qualityRisks)
     if (!text(take.url) || e.originalUrl !== take.url || !text(e.url) || !text(e.evidenceUrl) || e.decoded !== true || !Number.isFinite(e.duration) || Number(e.duration) <= 0
       || !Number.isFinite(e.width) || !Number.isFinite(e.height) || Number(e.width) <= 0 || Number(e.height) <= 0
       || !strings(e.frames).length || !text(e.lastFrameUrl) || strings(e.frames).at(-1) !== e.lastFrameUrl) {
       throw Error('MEDIA_EVIDENCE_MISSING: 当前视频须有可解码媒体、尺寸时长、实际采样及末帧；不能用审核报告补造媒体')
+    }
+    if (['旁白', '对白'].includes(String(shot.audioType)) && /^\/generated\/narrated-[a-f\d]{64}\.mp4$/.test(text(take.url))) {
+      const transfer = obj(e.independentNarrationTransfer), isolation = obj(transfer.sourceSpeechIsolation)
+      if (transfer.audioRole !== (shot.audioType === '旁白' ? 'narration' : 'offscreen-dialogue')
+        || transfer.evidenceRef !== e.evidenceUrl || transfer.originalUrl !== take.url
+        || transfer.outputVideoSha256 !== e.sha256 || transfer.pictureSha256 !== isolation.pictureSha256
+        || transfer.mixerVersion !== isolation.mixerVersion || isolation.version !== 'source-speech-isolation-v1'
+        || isolation.status !== 'confirmed' || isolation.mode !== 'full-source-mute') {
+        throw Error('NARRATION_SOURCE_ISOLATION_UNVERIFIED: 独立配音底片人声隔离未证实；保留同素材与回执并重新混音采证')
+      }
+    }
+    if (obj(shot.continuity).mode === 'scene_cut'
+      && shot.visualTreatment === 'live_action' && obj(shot.pacing).version === 'duration-v2') {
+      const paid = obj(take.params), certificate = obj(paid.sceneCutFrameGate)
+      const approvalFrame = obj(certificate.frame), opening = obj(e.sceneCutOutputFirstFrame)
+      const request = obj(e.evidenceRequest), sources = obj(paid.sceneCutSources)
+      const sourceContext = obj(sources.sourceContext), accepted = obj(sourceContext.acceptedRecordBinding)
+      const outline = obj(certificate.outlineBinding), sourceOutline = obj(sources.outlineBinding)
+      const ellipsis = obj(certificate.approvedEllipsis), sourceEllipsis = obj(sources.approvedEllipsis)
+      const priorTail = obj(certificate.priorTail)
+      const sha256 = (value: unknown) => typeof value === 'string' && /^[a-f\d]{64}$/.test(value)
+      const sourceHashes = Array.isArray(certificate.sourceSha256s) ? certificate.sourceSha256s : []
+      const hasEllipsis = Object.keys(ellipsis).length > 0
+      const validEllipsis = !hasEllipsis ? certificate.priorTail === undefined && sources.approvedEllipsis === undefined
+        : obj(shot.continuity).bridgeType === 'cut'
+          && outline.sceneIndex !== 0
+          && ellipsis.version === 'scene-cut-approved-ellipsis-v1'
+          && ellipsis.currentSceneId === shot.id && ellipsis.previousSceneId === obj(shot.continuity).previousShotId
+          && ellipsis.currentSceneSha256 === outline.currentSceneSha256
+          && sha256(ellipsis.previousSceneSha256) && ellipsis.priorShotSha256 === accepted.priorShotSha256
+          && sha256(ellipsis.priorVideoSha256) && sha256(ellipsis.priorTailSha256)
+          && /^\/generated\/[\w.-]+\.mp4$/i.test(String(ellipsis.priorVideoUrl))
+          && /^\/generated\/[\w.-]+\.(?:png|jpe?g|webp)$/i.test(String(ellipsis.priorTailUrl))
+          && priorTail.sourceUrl === ellipsis.priorTailUrl
+          && sourceHashes.at(-1) === ellipsis.priorTailSha256
+          && canonical(sourceEllipsis) === canonical(ellipsis)
+      if (certificate.version !== 'scene-cut-frame-gate-v1' || certificate.passed !== true
+        || !sha256(certificate.signature) || certificate.signature !== opening.approvalSignature
+        || canonical(certificate) !== canonical(request.sceneCutFrameGate)
+        || canonical(paid.sceneCutShot) !== canonical(shot)
+        || sources.version !== 'scene-cut-sources-v1'
+        || accepted.version !== 'scene-cut-source-ledger-v1'
+        || !/^record-[\w-]+$/.test(String(accepted.recordId))
+        || certificate.shotSha256 !== accepted.shotSha256
+        || outline.outlineSha256 !== accepted.outlineSha256
+        || !Array.isArray(obj(sourceContext.approvedOutline).scenes)
+        || rows(obj(sourceContext.approvedOutline).scenes)[Number(outline.sceneIndex)]?.id !== shot.id
+        || Number(outline.sceneIndex) > 0
+          && obj(obj(sourceContext.previous).shot_script).id !== obj(shot.continuity).previousShotId
+        || outline.currentSceneId !== shot.id || !sha256(outline.outlineSha256)
+        || !sha256(outline.currentSceneSha256) || !Number.isSafeInteger(outline.sceneIndex)
+        || Number(outline.sceneIndex) < 0 || canonical(sourceOutline) !== canonical(outline)
+        || !validEllipsis || !text(approvalFrame.sourceUrl)
+        || approvalFrame.sourceUrl !== paid.referenceImage || approvalFrame.sourceUrl !== request.sceneCutReferenceImage
+        || obj(paid.sceneCutShot).id !== shot.id || obj(obj(paid.sceneCutShot).continuity).mode !== 'scene_cut'
+        || opening.version !== 'scene-cut-output-first-frame-v1' || opening.status !== 'matched'
+        || opening.evidenceUrl !== e.evidenceUrl || opening.outputVideoSha256 !== e.sha256
+        || opening.decodedFirstFrameUrl !== strings(e.frames)[0] || opening.candidateUrl !== paid.referenceImage
+        || opening.candidateSha256 !== (Array.isArray(certificate.sourceSha256s) ? certificate.sourceSha256s[0] : undefined)
+        || !text(opening.decodedFirstFrameSha256) || !/^[a-f\d]{64}$/.test(String(opening.decodedFirstFrameSha256))
+        || !time(opening.difference) || !time(opening.maximumDifference)
+        || opening.difference < 0 || opening.maximumDifference < 0 || opening.maximumDifference > .1
+        || opening.difference > opening.maximumDifference) {
+        throw Error('SCENE_CUT_OUTPUT_FIRST_FRAME_UNVERIFIED: 换场成片零秒帧未绑定已签首帧与当前解码视频；保留同素材复核，不自动重拍')
+      }
+    }
+    if (obj(shot.continuity).mode === 'tail_continuation') {
+      const previousTail = text(obj(context.first_frame).url)
+      const requestedTail = text(obj(e.evidenceRequest).previousTail)
+      const paidReference = text(obj(take.params).referenceImage)
+      const maximumDifference = Number(params.maxFirstFrameDifference ?? .1)
+      if (!previousTail || requestedTail !== previousTail || paidReference !== previousTail
+        || !Number.isFinite(maximumDifference) || maximumDifference < 0 || maximumDifference > 1
+        || !time(e.firstFrameDifference) || e.firstFrameDifference < 0 || e.firstFrameDifference > 1) {
+        throw Error('MEDIA_EVIDENCE_MISSING: 连续镜头的付费首帧、前镜实际尾帧与本片像素比对未绑定；保留本片并补同素材采证')
+      }
+      if (e.firstFrameDifference > maximumDifference) {
+        throw Error('VIDEO_QUALITY_REJECTED: 连续镜头实际首帧偏离前镜尾帧；保留本片待局部修复')
+      }
     }
     const review = obj(context.media_review), warnings = warningRows(review.warnings), problems: Value[] = []
     const technical: Value[] = [], speech = obj(e.speechValidation), transcript = rows(e.transcript), audioEvidenceAssessment = speechAssessment(e, shot)
@@ -456,7 +542,7 @@ export function principleMediaQualityRuntimeFactory(eventRuntime = audioVisualEv
       || reactionHold)
     const canProceed = (manual || principleIssues.length === 0) && blockingSpeechIssues.length === 0 && subtitleAssessment?.canProceed !== false
     if (manual) warnings.push({ code: 'manual_review_required', problem: '媒体可解码，质量由用户自主验收；保留全部内容、声音及画面问题，不自动重拍', reportedIssues: principleIssues })
-    const status = !canProceed ? 'rejected' : !valid ? 'unavailable' : manual || warnings.length || review.decision !== 'pass' ? 'needs_attention' : 'passed'
+    const status = !canProceed ? 'rejected' : !valid ? 'unavailable' : manual || coverageRisks.length || warnings.length || review.decision !== 'pass' ? 'needs_attention' : 'passed'
     const qualityReview = { status, canProceed, principleIssues, warnings, rawReport: review, manualReviewRequired: manual,
       manualDecisionRequired, temporalReaction,
       automaticRetakeAllowed: subtitleAssessment?.canProceed === false ? subtitleAssessment.automaticRetakeAllowed : !manual, ...speechPolicy, ...subtitleFields }
@@ -464,6 +550,7 @@ export function principleMediaQualityRuntimeFactory(eventRuntime = audioVisualEv
     return { ...e, ...(take.characterVoices ? { characterVoices: take.characterVoices, voiceManifest: take.voiceManifest, voiceConsistency: take.voiceConsistency } : {}),
       ...(take.nativeGroupVoices ? { nativeGroupVoices: take.nativeGroupVoices, voiceConsistency: take.voiceConsistency } : {}),
       params: take.params, passed: canProceed, qualityPolicy: 'principle-v1', qualityDisposition: manual ? 'manual-review-v1' : 'strict-v1', qualityReview,
+      qualityRisks: coverageRisks,
       manualDecisionRequired, temporalReaction, ...speechPolicy, ...subtitleFields,
       issues: principleIssues.map(row => String(row.problem)), retryPrompt: [
         ...principleIssues.map(row => String(row.repair)),

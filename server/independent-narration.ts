@@ -16,16 +16,39 @@ import { parseFfmpegMetadata, validateVideoMetadata } from './video-inspection.t
 import { videoDimensions, type VideoResolution } from '../src/video-output-profile.ts'
 import { pronunciationInstruction } from '../src/pronunciation-hints.ts'
 import { assertHistoricalMapCleanPlatePrompt } from './historical-map-clean-plate.ts'
+import { buildNarrationMixFilter, saveNarrationCompositionReceipt, decodedAudioDuration } from './narration-transfer-evidence.ts'
 
 const exec = promisify(execFile)
 const ffmpeg = createRequire(import.meta.url)('ffmpeg-static') as string
 type NarrationAsset = { voiceId: string; accountScope: string; targetModel: string; modelId: string; characterId: string; synthesisSeed: number; characterName?: string; audioRole?: string }
 type Segment = ReturnType<typeof projectIndependentNarration>['segments'][number]
-type EdgeNormalization = { version: 'narration-edge-silence-v1'; sourceUrl: string; sourceSha256: string; sourceSampleCount: number; sourceDuration: number;
-  sampleRate: number; trimStartSamples: number; trimEndSamples: number; thresholdDb: -50; minimumSilenceSeconds: 0.08; paddingSeconds: 0.05; maximumTrimSeconds: 0.1;
-  leadingSilence?: { start: number; end: number }; trailingSilence?: { start: number; end: number }; derivedUrl: string; derivedSha256: string; derivedSampleCount: number; derivedDuration: number }
+type EdgeNormalization = { version: 'narration-edge-silence-v1' | 'narration-edge-silence-v2'; sourceUrl: string; sourceSha256: string; sourceSampleCount: number; sourceDuration: number;
+  sampleRate: number; trimStartSamples: number; trimEndSamples: number; thresholdDb: -50; minimumSilenceSeconds: 0.08; paddingSeconds: 0.05; maximumTrimSeconds: number;
+  leadingSilence?: { start: number; end: number }; trailingSilence?: { start: number; end: number };
+  leadingSpeechVad?: { detector: 'silero-vad'; firstSpeechStart: number; windows: Array<{ start: number; end: number }> };
+  derivedUrl: string; derivedSha256: string; derivedSampleCount: number; derivedDuration: number }
 type Track = Segment & { url: string; sourceDuration: number; duration: number; tempo: number; voiceId: string; sha256: string; normalization?: EdgeNormalization;
-  synthesis?: { model: string; rate: number; seed: number; instruction: string } }
+  synthesis?: { model: string; rate: number; seed: number; instruction: string }; synthesisReceiptKey?: string }
+type SpeechWindow = { start: number; end: number }
+type NarrationSynthesisDependencies = { synthesize?: typeof callBailianTts; detectSpeechWindows?: (filename: string) => Promise<SpeechWindow[]> }
+export type NarrationDurationConflict = { beatId: string; text: string; start: number; end: number; availableSeconds: number;
+  minimumWindowSeconds: number | null; sourceDuration: number; rawDuration: number; rawReceiptKey: string; rawSha256: string;
+  derivedSha256?: string; canReplan: boolean; maximumTempo: 1.25; maximumRate: number }
+export class NarrationDurationConflictError extends Error {
+  readonly code = 'NARRATION_DURATION_CONFLICT'
+  readonly conflicts: NarrationDurationConflict[]
+  constructor(conflicts: NarrationDurationConflict[]) {
+    super(`NARRATION_DURATION_CONFLICT: ${conflicts.length} 句实际配音无法在自然语速内适配已批准时间窗，需要修订排程，禁止截断或过度加速`)
+    this.name = 'NarrationDurationConflictError'
+    this.conflicts = conflicts
+  }
+}
+type PictureVoiceObservation = { source: 'asr' | 'vad'; start: number; end: number; text?: string }
+type PictureVoiceDetection = { observations: PictureVoiceObservation[]; detector: string }
+type PictureVoiceWindow = { start: number; end: number; observations: PictureVoiceObservation[] }
+type PictureVoicePlan = { version: 'picture-voice-isolation-v2'; sourceSha256: string; detector: string;
+  status: 'preserved' | 'locally-muted' | 'fully-muted-unverified'; observations: PictureVoiceObservation[];
+  mutedWindows: PictureVoiceWindow[]; preservedOutsideWindows: boolean; fallbackReason?: string }
 export type IllustrationLayerPlan = {
   characterName: string
   x: number
@@ -136,7 +159,14 @@ async function rawSynthesis(model: ExternalModelConfig, voice: NarrationAsset, s
   try { return await work } finally { pendingSyntheses.delete(pendingKey) }
 }
 
-async function normalizeEdgeSilence(result: NarrationSynthesisReceipt['result'], root: string) {
+async function detectNarrationSpeechWindows(filename: string): Promise<SpeechWindow[]> {
+  const python = path.resolve(process.cwd(), '.venv-quality/bin/python')
+  const code = `import json,sys\nfrom faster_whisper.audio import decode_audio\nfrom faster_whisper.vad import get_speech_timestamps,VadOptions\na=decode_audio(sys.argv[1])\nr=get_speech_timestamps(a,VadOptions(min_speech_duration_ms=80,min_silence_duration_ms=100,speech_pad_ms=0))\nprint(json.dumps([{'start':x['start']/16000,'end':x['end']/16000} for x in r]))`
+  const output = await exec(python, ['-c', code, filename], { timeout: 60000, maxBuffer: 1024 * 1024 })
+  return JSON.parse(output.stdout) as SpeechWindow[]
+}
+
+async function normalizeEdgeSilence(result: NarrationSynthesisReceipt['result'], root: string, detectSpeechWindows = detectNarrationSpeechWindows) {
   const bytes = await readFile(path.join(root, 'public', result.url)), wave = readPcmWave(bytes)
   const detected = await exec(ffmpeg, ['-hide_banner', '-i', path.join(root, 'public', result.url), '-af', 'silencedetect=noise=-50dB:d=0.08', '-f', 'null', '-'],
     { maxBuffer: 1024 * 1024, timeout: 60000 })
@@ -150,12 +180,29 @@ async function normalizeEdgeSilence(result: NarrationSynthesisReceipt['result'],
   const tolerance = 2 / wave.sampleRate
   const leading = intervals.find(interval => interval.start <= tolerance), trailing = intervals.findLast(interval => Math.abs(interval.end - wave.duration) <= tolerance)
   if (leading && leading.end >= wave.duration - tolerance) return undefined // An all-silent file cannot be repaired as speech.
-  const trimStartSamples = Math.floor(Math.min(.1, Math.max(0, (leading?.end ?? 0) - .05)) * wave.sampleRate)
+  const quiet = (from: number, to: number) => { for (let sample = from; sample < to; sample++) if (Math.abs(wave.pcm.readInt16LE(sample * 2)) > 104) return false; return true }
+  const longLeadingTrim = Math.floor(Math.max(0, (leading?.end ?? 0) - .05) * wave.sampleRate)
+  let trimStartSamples = Math.floor(Math.min(.1, Math.max(0, (leading?.end ?? 0) - .05)) * wave.sampleRate)
+  let leadingSpeechVad: EdgeNormalization['leadingSpeechVad']
+  // A long provider startup pause may be removed only when the detector and
+  // exact PCM samples independently agree it precedes the first spoken sound.
+  // A missing VAD runtime or ambiguous detection keeps the old 100ms cap.
+  if (longLeadingTrim > trimStartSamples && quiet(0, longLeadingTrim)) {
+    try {
+      const windows = await detectSpeechWindows(path.join(root, 'public', result.url))
+      const firstSpeechStart = Array.isArray(windows) && windows.length ? Math.min(...windows.map(window => window.start)) : NaN
+      if (Array.isArray(windows) && windows.length > 0 && windows.every(window => Number.isFinite(window.start) && Number.isFinite(window.end)
+        && window.start >= 0 && window.end > window.start && window.end <= wave.duration + .02)
+        && firstSpeechStart >= longLeadingTrim / wave.sampleRate + .02) {
+        trimStartSamples = longLeadingTrim
+        leadingSpeechVad = { detector: 'silero-vad', firstSpeechStart, windows }
+      }
+    } catch { /* Use the bounded energy-only fallback; never infer VAD success. */ }
+  }
   const trimEndSamples = Math.floor(Math.min(.1, Math.max(0, wave.duration - (trailing?.start ?? wave.duration) - .05)) * wave.sampleRate)
   if (!trimStartSamples && !trimEndSamples) return undefined
   // Confirm the removed samples themselves are quiet, independently of the
   // detector's decimal timestamps. Internal silence is never touched.
-  const quiet = (from: number, to: number) => { for (let sample = from; sample < to; sample++) if (Math.abs(wave.pcm.readInt16LE(sample * 2)) > 104) return false; return true }
   if (!quiet(0, trimStartSamples) || !quiet(wave.sampleCount - trimEndSamples, wave.sampleCount)) return undefined
   const pcm = wave.pcm.subarray(trimStartSamples * 2, (wave.sampleCount - trimEndSamples) * 2), derived = pcmToWav(pcm, wave.sampleRate)
   const sha256 = createHash('sha256').update(derived).digest('hex'), url = `/generated/tts-edge-${sha256}.wav`
@@ -167,10 +214,11 @@ async function normalizeEdgeSilence(result: NarrationSynthesisReceipt['result'],
     catch (writeError) { if ((writeError as NodeJS.ErrnoException).code !== 'EEXIST' || !(await readFile(destination)).equals(derived)) throw writeError }
   }
   const sampleCount = pcm.length / 2, duration = sampleCount / wave.sampleRate
-  const normalization: EdgeNormalization = { version: 'narration-edge-silence-v1', sourceUrl: result.url, sourceSha256: result.sha256,
+  const normalization: EdgeNormalization = { version: 'narration-edge-silence-v2', sourceUrl: result.url, sourceSha256: result.sha256,
     sourceSampleCount: wave.sampleCount, sourceDuration: wave.duration, sampleRate: wave.sampleRate, trimStartSamples, trimEndSamples,
-    thresholdDb: -50, minimumSilenceSeconds: .08, paddingSeconds: .05, maximumTrimSeconds: .1,
+    thresholdDb: -50, minimumSilenceSeconds: .08, paddingSeconds: .05, maximumTrimSeconds: leadingSpeechVad ? longLeadingTrim / wave.sampleRate : .1,
     ...(leading ? { leadingSilence: leading } : {}), ...(trailing ? { trailingSilence: trailing } : {}),
+    ...(leadingSpeechVad ? { leadingSpeechVad } : {}),
     derivedUrl: url, derivedSha256: sha256, derivedSampleCount: sampleCount, derivedDuration: duration }
   return { url, sha256, duration, normalization }
 }
@@ -192,15 +240,33 @@ export async function cachedNarrationPicture(identity: unknown, call: () => Prom
   return result
 }
 
-export async function synthesizeNarrationTrack(model: ExternalModelConfig, voice: NarrationAsset, segment: Segment, root = process.cwd(), dependencies: { synthesize?: typeof callBailianTts } = {}): Promise<Track> {
+function assertNarrationVoice(model: ExternalModelConfig, voice: NarrationAsset) {
   if (model.id !== voice.modelId || model.settings.model !== voice.targetModel || originalVoiceScope(model) !== voice.accountScope || !voice.voiceId
     || !Number.isInteger(voice.synthesisSeed) || voice.synthesisSeed < 1 || voice.synthesisSeed > 65535) throw Error('VOICE_BINDING_INVALID: 旁白原创音色与当前 TTS 服务或合成配置不一致')
+}
+
+function durationConflict(model: ExternalModelConfig, voice: NarrationAsset, segment: Segment, raw: NarrationSynthesisReceipt['result'], fitted: { duration: number; sha256: string }) {
+  const count = Array.from(segment.text.replace(/[\p{P}\p{Z}\s]/gu, '')).length
+  const canReplan = count / fitted.duration <= segment.maximumRate
+  const minimumWindowSeconds = canReplan ? Math.ceil(Math.max(fitted.duration / 1.25, count / segment.maximumRate) * 1000) / 1000 : null
+  return new NarrationDurationConflictError([{ beatId: segment.beatId, text: segment.text, start: segment.start, end: segment.end,
+    availableSeconds: segment.end - segment.start, minimumWindowSeconds, sourceDuration: fitted.duration, rawDuration: raw.duration,
+    rawReceiptKey: rawReceiptKey(model, voice, segment), rawSha256: raw.sha256,
+    ...(fitted.sha256 !== raw.sha256 ? { derivedSha256: fitted.sha256 } : {}), canReplan, maximumTempo: 1.25, maximumRate: segment.maximumRate }])
+}
+
+function narrationTrackReceiptKey(model: ExternalModelConfig, voice: NarrationAsset, segment: Segment) {
   const synthesisParameters = narrationSynthesisParameters(model, voice, segment)
   // Instructions change audio identity. A retry must not reuse an old track
   // after correcting a reading or changing the configured delivery guidance.
   const identity = synthesisParameters.instruction || segment.pronunciationHints?.length
     ? { version: 2, voice, segment, synthesisParameters } : { version: 1, voice, segment }
-  const key = createHash('sha256').update(JSON.stringify(identity)).digest('hex')
+  return createHash('sha256').update(JSON.stringify(identity)).digest('hex')
+}
+
+export async function synthesizeNarrationTrack(model: ExternalModelConfig, voice: NarrationAsset, segment: Segment, root = process.cwd(), dependencies: NarrationSynthesisDependencies = {}): Promise<Track> {
+  assertNarrationVoice(model, voice)
+  const key = narrationTrackReceiptKey(model, voice, segment)
   const pendingKey = root + ':' + key
   const existing = pending.get(pendingKey)
   if (existing) return existing
@@ -217,7 +283,7 @@ export async function synthesizeNarrationTrack(model: ExternalModelConfig, voice
       if (!audioUrl(track.url) || track.voiceId !== voice.voiceId) throw Error('NARRATION_RECEIPT_INVALID: 已保存音轨身份不匹配')
       const bytes = await readFile(path.join(root, 'public', track.url))
       if (createHash('sha256').update(bytes).digest('hex') !== track.sha256) throw Error('NARRATION_RECEIPT_INVALID: 已保存音频字节发生变化')
-      return track
+      return { ...track, synthesisReceiptKey: rawReceiptKey(model, voice, segment) }
     }
     const result = await rawSynthesis(model, voice, segment, root, dependencies.synthesize ?? callBailianTts)
     let fitted = { url: result.url, sha256: result.sha256, duration: result.duration, normalization: undefined as EdgeNormalization | undefined }
@@ -226,14 +292,18 @@ export async function synthesizeNarrationTrack(model: ExternalModelConfig, voice
     catch (error) {
       if (!(error instanceof Error) || !error.message.startsWith('NARRATION_DURATION_CONFLICT:')) throw error
       let normalized: Awaited<ReturnType<typeof normalizeEdgeSilence>>
-      try { normalized = await normalizeEdgeSilence(result, root) } catch { throw error }
-      if (!normalized) throw error
+      try { normalized = await normalizeEdgeSilence(result, root, dependencies.detectSpeechWindows) } catch { normalized = undefined }
       // Keep the same cap and approved window. A derived file is not permission
       // to truncate speech or force another provider synthesis.
-      tempo = narrationTempo(normalized.duration, segment.end - segment.start, segment.text, segment.maximumRate)
-      fitted = normalized
+      if (normalized) fitted = normalized
+      try { tempo = narrationTempo(fitted.duration, segment.end - segment.start, segment.text, segment.maximumRate) }
+      catch (fitError) {
+        if (!(fitError instanceof Error) || !fitError.message.startsWith('NARRATION_DURATION_CONFLICT:')) throw fitError
+        throw durationConflict(model, voice, segment, result, fitted)
+      }
     }
     const track: Track = { ...segment, url: fitted.url, sourceDuration: fitted.duration, duration: fitted.duration / tempo, tempo, voiceId: voice.voiceId, sha256: fitted.sha256,
+      synthesisReceiptKey: rawReceiptKey(model, voice, segment),
       ...(fitted.normalization ? { normalization: fitted.normalization } : {}),
       synthesis: { model: result.model, rate: result.rate, seed: result.seed, instruction: result.instruction } }
     const temporary = receipt + '.' + randomUUID() + '.tmp'
@@ -242,6 +312,31 @@ export async function synthesizeNarrationTrack(model: ExternalModelConfig, voice
   })()
   pending.set(pendingKey, work)
   try { return await work } finally { pending.delete(pendingKey) }
+}
+
+/** Save every paid utterance before judging whether the approved windows fit.
+ * A schedule revision can reuse the raw receipts, and the conflict reports all
+ * measured lines rather than hiding later overruns behind the first one. */
+export async function synthesizeNarrationTracks(model: ExternalModelConfig, voice: NarrationAsset, segments: Segment[], root = process.cwd(), dependencies: NarrationSynthesisDependencies = {}): Promise<Track[]> {
+  assertNarrationVoice(model, voice)
+  for (const segment of segments) {
+    // Older completed tracks may predate the raw-receipt ledger. They are
+    // already paid and validated by synthesizeNarrationTrack below.
+    const receipt = path.join(root, '.runtime/narration-tracks', narrationTrackReceiptKey(model, voice, segment) + '.json')
+    try { await access(receipt); continue }
+    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error }
+    await rawSynthesis(model, voice, segment, root, dependencies.synthesize ?? callBailianTts)
+  }
+  const tracks: Track[] = [], conflicts: NarrationDurationConflict[] = []
+  for (const segment of segments) {
+    try { tracks.push(await synthesizeNarrationTrack(model, voice, segment, root, dependencies)) }
+    catch (error) {
+      if (error instanceof NarrationDurationConflictError) conflicts.push(...error.conflicts)
+      else throw error
+    }
+  }
+  if (conflicts.length) throw new NarrationDurationConflictError(conflicts)
+  return tracks
 }
 
 async function localPicture(url: string, root: string) {
@@ -261,6 +356,72 @@ async function localPicture(url: string, root: string) {
   const temporary = filename + '.' + randomUUID() + '.tmp'
   await writeFile(temporary, Buffer.concat(chunks)); await rename(temporary, filename)
   return filename
+}
+
+const roundAudioTime = (seconds: number) => Math.round(seconds * 1000) / 1000
+
+/** Independent speech uses only the approved TTS as its vocal source. ASR/VAD
+ * observations remain diagnostics; neither detector can prove that unobserved
+ * supplier speech is absent. Keep the paid picture, but mute all of its audio. */
+export function planPictureVoiceIsolation(detection: PictureVoiceDetection, duration: number, sourceSha256: string): PictureVoicePlan {
+  if (!Number.isFinite(duration) || duration <= 0 || !/^[a-f\d]{64}$/.test(sourceSha256)
+    || !Array.isArray(detection.observations)) throw Error('PICTURE_VOICE_EVIDENCE_INVALID: 底片语音检测证据无效')
+  if (!detection.observations.length) {
+    return fullyMutedPictureVoicePlan(sourceSha256, duration, 'picture-voice-absence-unverified', detection.detector)
+  }
+  const observations = detection.observations.map(observation => {
+    if (!['asr', 'vad'].includes(observation.source) || !Number.isFinite(observation.start) || !Number.isFinite(observation.end)
+      || observation.start < 0 || observation.end <= observation.start || observation.start >= duration + .25
+      || observation.end > duration + .25 || observation.source === 'asr' && !String(observation.text ?? '').trim()) {
+      throw Error('PICTURE_VOICE_EVIDENCE_INVALID: 底片语音时间窗无效')
+    }
+    return { source: observation.source, start: roundAudioTime(Math.max(0, observation.start)),
+      end: roundAudioTime(Math.min(duration, observation.end)), ...(observation.text ? { text: observation.text } : {}) }
+  }).sort((a, b) => a.start - b.start || a.end - b.end)
+  return fullyMutedPictureVoicePlan(sourceSha256, duration, 'independent-speech-source-audio-muted', detection.detector, observations)
+}
+
+function fullyMutedPictureVoicePlan(sourceSha256: string, duration: number,
+  fallbackReason = 'picture-voice-detection-unavailable', detector = 'unavailable', observations: PictureVoiceObservation[] = []): PictureVoicePlan {
+  return { version: 'picture-voice-isolation-v2', sourceSha256, detector, status: 'fully-muted-unverified',
+    observations, mutedWindows: [{ start: 0, end: duration, observations }],
+    preservedOutsideWindows: false, fallbackReason }
+}
+
+async function pictureSha256(filename: string) {
+  const hash = createHash('sha256')
+  for await (const chunk of createReadStream(filename)) hash.update(chunk)
+  return hash.digest('hex')
+}
+
+async function detectPictureVoice(filename: string, root: string, sourceSha256: string): Promise<PictureVoiceDetection> {
+  const directory = path.join(root, '.runtime/narration-picture-voices')
+  await mkdir(directory, { recursive: true })
+  const receipt = path.join(directory, `${sourceSha256}-whisper-small-silero-v1.json`)
+  try {
+    const cached = JSON.parse(await readFile(receipt, 'utf8')) as PictureVoiceDetection & { sourceSha256?: string }
+    if (cached.sourceSha256 === sourceSha256 && cached.detector === 'whisper-small+silero-vad-v1'
+      && Array.isArray(cached.observations)) return cached
+  } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error }
+  const python = path.resolve(process.cwd(), '.venv-quality/bin/python')
+  const script = path.resolve(process.cwd(), 'scripts/transcribe-quality.py')
+  const vadCode = `import json,sys\nfrom faster_whisper.audio import decode_audio\nfrom faster_whisper.vad import get_speech_timestamps,VadOptions\na=decode_audio(sys.argv[1])\nr=get_speech_timestamps(a,VadOptions(min_speech_duration_ms=100,min_silence_duration_ms=150,speech_pad_ms=0))\nprint(json.dumps([{'start':x['start']/16000,'end':x['end']/16000} for x in r]))`
+  const [asr, vad] = await Promise.all([
+    exec(python, [script, filename], { timeout: 180000, maxBuffer: 4 * 1024 * 1024 }),
+    exec(python, ['-c', vadCode, filename], { timeout: 60000, maxBuffer: 1024 * 1024 }),
+  ])
+  const transcript = JSON.parse(asr.stdout) as { segments?: Array<{ start: number; end: number; text: string }> }
+  const vadWindows = JSON.parse(vad.stdout) as Array<{ start: number; end: number }>
+  if (!Array.isArray(transcript.segments) || !Array.isArray(vadWindows)) throw Error('PICTURE_VOICE_EVIDENCE_INVALID: 底片语音检测输出无效')
+  const observations: PictureVoiceObservation[] = [
+    ...transcript.segments.filter(segment => String(segment.text ?? '').trim()).map(segment =>
+      ({ source: 'asr' as const, start: segment.start, end: segment.end, text: segment.text.trim() })),
+    ...vadWindows.map(window => ({ source: 'vad' as const, start: window.start, end: window.end })),
+  ]
+  const result = { sourceSha256, detector: 'whisper-small+silero-vad-v1', observations }
+  const temporary = receipt + '.' + randomUUID() + '.tmp'
+  await writeFile(temporary, JSON.stringify(result)); await rename(temporary, receipt)
+  return result
 }
 
 async function localStillImage(url: string, root: string) {
@@ -507,31 +668,48 @@ export async function composeIllustrationMotionVideo(imageUrl: string, character
   return { url: `/generated/${filename}`, imageUrl, characterImages: references, illustrationLayers: layers, metadata, resolution, width, height, fps: 24, audioSampleRate: 48000, route: 'layered-illustration-v1', motion: 'layered-2d' as const }
 }
 
-/** Keep the generated environmental track. The original supplier result and
- * its URL remain evidence; downstream nodes receive the composed video URL. */
-export async function composeNarration(pictureUrl: string, tracks: Track[], duration: number, aspectRatio: string, root = process.cwd(), resolution: VideoResolution = '720p', audioRole: 'narration' | 'offscreen-dialogue' = 'narration') {
+/** For independently voiced shots, mute the supplier picture audio before
+ * mixing the approved tracks. Keep the original supplier result as evidence. */
+export async function composeNarration(pictureUrl: string, tracks: Track[], duration: number, aspectRatio: string, root = process.cwd(), resolution: VideoResolution = '720p', audioRole: 'narration' | 'offscreen-dialogue' = 'narration',
+  dependencies: { detectPictureVoice?: (filename: string) => Promise<PictureVoiceDetection> } = {}) {
   if (!tracks.length || tracks.some(track => !audioUrl(track.url))) throw Error('NARRATION_TRACK_INVALID: 缺少完整本地旁白音轨')
   if (tracks.some(track => track.start + track.duration > duration + .001)) throw Error('NARRATION_DURATION_CONFLICT: 配音超出视频，禁止截断')
   const directory = path.join(root, 'public/generated'); await mkdir(directory, { recursive: true })
   const picture = await localPicture(pictureUrl, root)
   const inspected = await exec(ffmpeg, ['-hide_banner', '-i', picture, '-f', 'null', '-'], { maxBuffer: 4 * 1024 * 1024, timeout: 120000 })
   validateVideoMetadata(parseFfmpegMetadata(inspected.stderr), duration, aspectRatio, true)
+  const sourceSha256 = await pictureSha256(picture)
+  let pictureVoiceIsolation: PictureVoicePlan
+  try {
+    const detection = await (dependencies.detectPictureVoice?.(picture) ?? detectPictureVoice(picture, root, sourceSha256))
+    pictureVoiceIsolation = planPictureVoiceIsolation(detection, duration, sourceSha256)
+  } catch {
+    // Unknown supplier audio must not be mixed into an approved narration or
+    // off-screen line. Keep the paid picture and TTS; only its audio is muted.
+    pictureVoiceIsolation = fullyMutedPictureVoicePlan(sourceSha256, duration)
+  }
   const [width, height] = videoDimensions(resolution, aspectRatio)
-  const key = createHash('sha256').update(JSON.stringify({ version: 2, pictureUrl, tracks, duration, aspectRatio, resolution })).digest('hex')
+  const key = createHash('sha256').update(JSON.stringify({ version: 7, pictureUrl, tracks, duration, aspectRatio, resolution, pictureVoiceIsolation })).digest('hex')
   const filename = `narrated-${key}.mp4`, destination = path.join(directory, filename)
+  const filterGraph = buildNarrationMixFilter(tracks, pictureVoiceIsolation, duration)
   try { await access(destination) } catch {
     const inputs = tracks.flatMap(track => ['-i', path.join(root, 'public', track.url)])
-    const filters = tracks.map((track, i) => `[${i + 1}:a]atempo=${track.tempo},adelay=${Math.round(track.start * 1000)}:all=1[n${i}]`)
-    filters.push(`[0:a]${tracks.map((_track, i) => `[n${i}]`).join('')}amix=inputs=${tracks.length + 1}:duration=first:dropout_transition=0:normalize=0,alimiter=limit=0.95:level=false[a]`)
     const temporary = path.join(directory, `narrated-${key}-${randomUUID()}.mp4`)
-    await exec(ffmpeg, ['-hide_banner', '-xerror', '-i', picture, ...inputs, '-filter_complex', filters.join(';'), '-map', '0:v:0', '-map', '[a]',
+    await exec(ffmpeg, ['-hide_banner', '-xerror', '-i', picture, ...inputs, '-filter_complex', filterGraph, '-map', '0:v:0', '-map', '[a]',
       '-vf', `scale=${width}:${height}:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:black,setsar=1,fps=24`,
       '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-ar', '48000', '-ac', '2', '-b:a', '192k', '-movflags', '+faststart', temporary], { maxBuffer: 4 * 1024 * 1024, timeout: 10 * 60 * 1000 })
     await rename(temporary, destination)
   }
   const decoded = await exec(ffmpeg, ['-hide_banner', '-xerror', '-i', destination, '-f', 'null', '-'], { maxBuffer: 4 * 1024 * 1024, timeout: 120000 })
   const metadata = validateVideoMetadata(parseFfmpegMetadata(decoded.stderr), duration, aspectRatio, true)
+  const audioDuration = await decodedAudioDuration(destination)
+  if (audioDuration < metadata.duration - .05) throw Error(`NARRATION_AUDIO_TRUNCATED: 成片音轨 ${audioDuration.toFixed(3)} 秒短于画面 ${metadata.duration.toFixed(3)} 秒`)
+  await saveNarrationCompositionReceipt({ key, outputUrl: `/generated/${filename}`, outputFile: destination, pictureUrl,
+    pictureFile: picture, pictureSha256: sourceSha256, tracks, duration, audioRole, pictureVoiceIsolation, filterGraph, audioDuration }, root)
   return { url: `/generated/${filename}`, pictureUrl, tracks, metadata, resolution, width, height, fps: 24, audioSampleRate: 48000,
     route: audioRole === 'offscreen-dialogue' ? 'independent-offscreen-dialogue-v1' : 'independent-narration-v1', audioRole,
-    environmentalTrack: 'preserved', voiceConsistency: { status: 'uncertain', reason: `原创 TTS 音色已复用，成片仍需检查${audioRole === 'offscreen-dialogue' ? '角色画外对白' : '旁白'}、环境音与画内口型` } }
+    environmentalTrack: pictureVoiceIsolation.status === 'preserved' ? 'preserved'
+      : pictureVoiceIsolation.status === 'locally-muted' ? 'partially-preserved' : 'muted-unverified',
+    pictureVoiceIsolation,
+    voiceConsistency: { status: 'uncertain', reason: `原创 TTS 音色已复用，成片仍需检查${audioRole === 'offscreen-dialogue' ? '角色画外对白' : '旁白'}、环境音与画内口型` } }
 }

@@ -26,7 +26,8 @@ test('the actual local rejection is reproduced after full identity, performance 
   // Nonmatching metadata must leave this exact overflowing source untouched.
   assert.throws(() => buildKlingVideoRequest(fixture.model, referenced, { ...params, visualTreatment: 'animated' }), /STORYBOARD_PROMPT_OVERLOAD/)
   const request = buildKlingVideoRequest(fixture.model, referenced, params)
-  assert.equal(Array.from(String(request.prompt)).length, 2238)
+  assert.ok(Array.from(String(request.prompt)).length <= 2500)
+  assert.match(String(request.prompt), /【因果动作锁】/)
   assert.equal(request.duration, '15')
   assert.deepEqual(request.element_list, original.fields.element_list)
   assert.deepEqual(request.image_list, [{ image_url: fixture.params.referenceImages[0] }, { image_url: fixture.params.referenceImage, type: 'first_frame' }])
@@ -94,7 +95,8 @@ test('the complete provider submission keeps all original content and rejects an
   } }
   await callKlingVideo(fixture.model, source, fixture.params, dependencies)
   assert.equal(submissions, 1)
-  assert.equal(Array.from(String(captured.prompt)).length, 2238)
+  assert.ok(Array.from(String(captured.prompt)).length <= 2500)
+  assert.match(String(captured.prompt), /【因果动作锁】/)
   assert.ok(String(captured.prompt).includes(fixture.params.videoTimeline))
   assert.ok(String(captured.prompt).includes(fixture.params.audioText))
   const mandatoryLongBody = source + '\n【作者新增动作】' + '保持全部原动作与台词。'.repeat(120)
@@ -142,6 +144,57 @@ test('the actual independent narration route retains the full picture request an
   assert.equal(posts, 1)
   await assert.rejects(() => callKlingVideo(narration.model, projection.prompt + '\n【作者动作】' + '继续原有动作。'.repeat(30), projection.params, dependencies), /STORYBOARD_PROMPT_OVERLOAD/)
   assert.equal(posts, 1, 'the complete final 2500-character gate still blocks remaining overflow before POST')
+})
+
+test('a signed scene-cut frame replaces only duplicate managed prose and preserves the required final action', () => {
+  const narration = JSON.parse(readFileSync(new URL('./fixtures/independent-narration-provider-overload.json', import.meta.url), 'utf8'))
+  const projection = projectIndependentNarration(narration.prompt, narration.params)
+  const finalState = projection.params.pacing.beats.findLast((beat: { completion?: { modality?: string; requiredThisClip?: boolean } }) =>
+    beat.completion?.modality === 'visual' && beat.completion.requiredThisClip)?.completion.finalState as string
+  const opening = '已批准的开场环境和人物位置。'.repeat(28)
+  const ending = '各人物完成动作后留在原位。'.repeat(20)
+  const still = '【静态尾帧】同一完整场景，不新增人物、文字或动作。'
+  const params = {
+    ...projection.params,
+    scheduleHash: projection.params.pacing.scheduleHash,
+    sceneCutShot: { visualPrompt: opening, lastFramePrompt: `${ending}\n${still}` },
+    sceneCutFrameGate: { passed: true, frame: { sourceUrl: '/generated/approved.png' } },
+    referenceImage: 'data:image/png;base64,AAAA', firstFrameMode: 'reference',
+    videoTimeline: `完整执行已签署的动作时间轴。${finalState}`,
+  }
+  const prompt = `${renderVideoProviderPrompt(projection.prompt, params)}\n${params.videoTimeline}\n【场景与开场画面】${opening}\n【本镜结束时的自然动作结果】${ending}\n${still}\n【作者动作】保留原有节拍和角色关系。`
+  const compact = compactManagedVideoProviderPrompt(prompt, params)
+  assert.ok(compact.length < prompt.length - 200)
+  assert.ok(compact.includes(finalState))
+  assert.ok(compact.includes(params.videoTimeline))
+  assert.ok(compact.includes('【作者动作】保留原有节拍和角色关系。'))
+  assert.ok(!compact.includes(opening))
+  assert.ok(compactManagedVideoProviderPrompt(prompt, { ...params, sceneCutFrameGate: { passed: false } }).includes(opening))
+  assert.ok(compactManagedVideoProviderPrompt(prompt, { ...params, videoTimeline: '缺失最终视觉完成态' }).includes(opening))
+})
+
+test('a signed coverage first frame removes only its duplicate opening brief from the video prompt', () => {
+  const narration = JSON.parse(readFileSync(new URL('./fixtures/independent-narration-provider-overload.json', import.meta.url), 'utf8'))
+  const projection = projectIndependentNarration(narration.prompt, narration.params)
+  const opening = '严颜由两名军士押向院门，张飞留在原位。'.repeat(18)
+  const referenceImage = 'data:image/png;base64,AAAA'
+  const params = { ...projection.params, scheduleHash: projection.params.pacing.scheduleHash,
+    firstFrameMode: 'reference', referenceImage,
+    coverageShot: { visualPrompt: opening },
+    coverageCutFrameGate: { passed: true, frames: [
+      { role: 'previous_tail', sourceUrl: '/generated/previous-tail.png' },
+      { role: 'candidate_first', sourceUrl: referenceImage },
+    ] } }
+  const prompt = `${renderVideoProviderPrompt(projection.prompt, params)}\n【场景与开场画面】${opening}\n【作者动作】保留已批准的动作时间轴。`
+  const compact = compactManagedVideoProviderPrompt(prompt, params)
+  assert.ok(!compact.includes(opening))
+  assert.ok(compact.includes('【作者动作】保留已批准的动作时间轴。'))
+  assert.ok(!compactManagedVideoProviderPrompt(prompt, { ...params,
+    coverageCutFrameGate: { ...params.coverageCutFrameGate, frames: [
+      { role: 'candidate_first', sourceUrl: '/generated/approved-coverage-first.png' },
+    ] } }).includes(opening), 'provider image preparation may replace the signed source URL with validated image bytes')
+  assert.ok(compactManagedVideoProviderPrompt(prompt, { ...params, coverageCutFrameGate: { passed: false, frames: params.coverageCutFrameGate.frames } }).includes(opening))
+  assert.ok(compactManagedVideoProviderPrompt(prompt, { ...params, referenceImage: '/generated/different.png' }).includes(opening))
 })
 
 test('independent route claims, incomplete contracts and custom visual rules cannot enable projection', async () => {

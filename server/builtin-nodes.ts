@@ -36,6 +36,16 @@ import { retrieveInternetSources } from './web-sources.ts'
 import type { InternetSourceInput, InternetSourceResult } from './web-sources.ts'
 import { validateReadableImageReference, validateThreeViewReference } from './image-references.ts'
 import { concatenateVideos } from './video-concat.ts'
+import { assertConcatCurrentBytes, requireConcatCurrentAcceptance } from './video-concat-acceptance.ts'
+import { assertStoryVocalHumanAssets } from './story-vocal-manual-acceptance.ts'
+import { reviewStoryShotVideo } from './story-media-review.ts'
+import { generateStorySubtitleReference } from './story-subtitle-reference.ts'
+import { createStoryScriptSource, readStoryScriptSource, renderStoryShotTimedActions, storyScriptSourcePrompt,
+  StoryShotTimingError, validateStoryShotTimingOutput } from '../src/story-shot-timing.ts'
+import { STORY_ROOMMATE_PERSONA_CONTRACT, storyRoommatePersonaIssues } from '../src/story-roommate-persona.ts'
+import { generatedStoryTopicIssues } from '../src/story-topic-input.ts'
+import { validateStoryVocalBeats } from '../src/story-shot-vocals.ts'
+import { extractTextResponse, normalizeStructuredTextOutput } from '../src/workflow-core.ts'
 import { Converter } from 'opencc-js/cn2t'
 
 export type BuiltinNodeRequest = {
@@ -59,7 +69,197 @@ type MediaExecutor = (request: {
   executionContext?: BuiltinNodeRequest['executionContext']
 }) => Promise<{ status: number; body: unknown }>
 
-type BuiltinDependencies = { prepareIdentityAnchor?: typeof prepareCharacterIdentityAnchor; compareFaceSheets?: typeof compareCharacterFaceSheets }
+type BuiltinDependencies = { prepareIdentityAnchor?: typeof prepareCharacterIdentityAnchor; compareFaceSheets?: typeof compareCharacterFaceSheets;
+  reviewStoryVideo?: typeof reviewStoryShotVideo }
+
+async function storyScriptReview(request: BuiltinNodeRequest, executeMediaModel?: MediaExecutor) {
+  const params = request.params ?? {}
+  const requireRoommatePersona = request.executionContext?.workflowId === 'wf-story'
+    || params.personaContract === STORY_ROOMMATE_PERSONA_CONTRACT
+  const personaIssues = requireRoommatePersona ? storyRoommatePersonaIssues(params.script) : []
+  if (personaIssues.length) return {
+    version: 'story-script-review-v1', passed: false, code: 'STORY_PERSONA_INVALID',
+    issues: personaIssues, repairAttempt: { attempted: false, reason: '角色和剧情身份冲突，必须重新生成完整剧本' },
+  }
+  let source: ReturnType<typeof readStoryScriptSource> | undefined
+  if (params.source !== undefined) {
+    try { source = readStoryScriptSource(params.source) }
+    catch (error) {
+      if (!(error instanceof StoryShotTimingError)) throw error
+      return { version: 'story-script-review-v1', passed: false, code: error.code,
+        issues: error.issues, repairAttempt: { attempted: false, reason: '原剧本来源绑定无效' } }
+    }
+  }
+  const sourcePersonaIssues = requireRoommatePersona && source ? storyRoommatePersonaIssues(source) : []
+  if (sourcePersonaIssues.length) return {
+    version: 'story-script-review-v1', passed: false, code: 'STORY_PERSONA_INVALID',
+    issues: sourcePersonaIssues, repairAttempt: { attempted: false, reason: '原剧本角色身份已冲突，不能在时间重排中沿用' },
+  }
+  const options = {
+    ...(params.expectedCount === undefined ? {} : { expectedCount: Number(params.expectedCount) }),
+    ...(source ? { source } : {}),
+    ...(request.executionContext?.workflowId === 'wf-story' ? { requireAnimalInteraction: true } : {}),
+  }
+  const accept = (candidate: unknown, repairAttempt: Record<string, unknown>) => {
+    if (params.topics !== undefined) {
+      const topicIssues = generatedStoryTopicIssues(params.topics, candidate)
+      if (topicIssues.length) throw new StoryShotTimingError(topicIssues)
+    }
+    const script = validateStoryShotTimingOutput(candidate, options)
+    const candidates = Array.isArray(script) ? script : (script as { shots: unknown[] }).shots
+    const shots = candidates.map((candidate) => {
+      const shot = candidate as Record<string, unknown>
+      return { ...shot, timedActions: renderStoryShotTimedActions(shot) }
+    })
+    return { version: 'story-script-review-v1', passed: true, shots, items: shots, issues: [], repairAttempt }
+  }
+  let initialIssues: string[]
+  try {
+    return accept(params.script, { attempted: false })
+  } catch (error) {
+    if (!(error instanceof StoryShotTimingError)) throw error
+    initialIssues = error.issues
+  }
+  const failed = (issues: string[], repairAttempt: Record<string, unknown>) => ({
+    version: 'story-script-review-v1', passed: false, code: 'STORY_SHOT_TIMING_INVALID',
+    issues, initialIssues, repairAttempt,
+  })
+  if (!params.script || initialIssues.some(issue => issue.includes('expectedCount 必须是正整数'))) {
+    return failed(initialIssues, { attempted: false, reason: '初稿或预期分镜数量无效，无法安全修正' })
+  }
+  const repairableTimingIssue = (issue: string) => [
+    /\.duration 必须是 3–15 秒整数/u,
+    /\.visualBeats 必须逐项列出有可观察完成状态的动作或反应/u,
+    /\.visualBeats\[\d+\] 必须有有效的 startSecond\/endSecond 时间窗/u,
+    /\.visualBeats\[\d+\] 必须从 0 秒开始/u,
+    /\.visualBeats\[\d+\] 必须从上一动作结束处连续开始/u,
+    /\.visualBeats\[\d+\] 只分配 .*少于可读动作最小预算/u,
+    /\.visualBeats\[\d+\] 结束于 .*超出分镜时长/u,
+    /\.content 已使用数字秒点，须给每项动作标出起始秒点/u,
+    /\.visualBeats\[\d+\] 的 content 秒点与 visualBeats\.startSecond\/endSecond 不一致/u,
+    /最后一项完成后须保留至少 .*秒可读收尾/u,
+  ].some(pattern => pattern.test(issue))
+  if (initialIssues.some(issue => !repairableTimingIssue(issue))) {
+    return failed(initialIssues, { attempted: false, reason: '剧本存在角色、声音或剧情结构问题，不能只改时间；须重新生成完整剧本' })
+  }
+  if (!request.model || request.model.capability !== 'text' || !executeMediaModel) {
+    return failed(initialIssues, { attempted: false, reason: '未配置可执行的剧本修正模型' })
+  }
+  // If no archived retry source exists, bind the repair to the exact first
+  // draft. Drop only its defective schedule; its title, action text and
+  // first-frame premise remain the immutable source for this one retry.
+  let repairSource = options.source
+  if (!repairSource) {
+    try {
+      const draft = params.script && typeof params.script === 'object' && !Array.isArray(params.script)
+        ? (params.script as Record<string, unknown>).shots : params.script
+      const unscheduled = Array.isArray(draft) ? draft.map(item => {
+        if (!item || typeof item !== 'object' || Array.isArray(item)) return item
+        const { visualBeats: _invalidSchedule, ...story } = item as Record<string, unknown>
+        void _invalidSchedule
+        return story
+      }) : draft
+      const digest = createHash('sha256').update(JSON.stringify(draft ?? null)).digest('hex').slice(0, 16)
+      repairSource = createStoryScriptSource(unscheduled, {
+        sourceExecutionId: `draft-${digest}`, sourceRunId: request.executionContext?.nodeId || 'story.script-review',
+      })
+    } catch (error) {
+      if (!(error instanceof StoryShotTimingError)) throw error
+      return failed(initialIssues, { attempted: false, reason: '初稿缺少可绑定的完整动作来源，不能自由改写' })
+    }
+  }
+  const requestKey = `${request.executionContext?.requestKey || `story-script-${createHash('sha256').update(JSON.stringify(params.script ?? null)).digest('hex').slice(0, 16)}`}:repair-1`
+  const modelCall = { operation: 'story.script-repair', modelId: request.model.id,
+    provider: request.model.provider, requestKey }
+  const prompt = `【短视频分镜剧本时长修正】以下初稿未通过独立剧本质检。只输出修正后的完整 JSON 分镜数组或 {"shots":[...]}。逐项处理审核问题，不删减、不合并、不改写原动作和标题；每项可见动作至少 2 秒，全部完成后至少保留 1 秒终态，单镜 duration 为 3–15 秒整数。15 秒放不下时须返回明确 error，不能截断动作。\n审核问题：${JSON.stringify(initialIssues)}\n完整初稿：${JSON.stringify(params.script)}${repairSource ? storyScriptSourcePrompt(repairSource) : ''}`
+  let response: Awaited<ReturnType<MediaExecutor>>
+  try {
+    response = await executeMediaModel({ model: request.model, prompt,
+      params: { temperature: 0, maxTokens: 8192 }, operation: 'story.script-repair',
+      executionContext: { ...request.executionContext, requestKey } })
+  } catch (error) {
+    return failed(initialIssues, { attempted: true, modelCall,
+      error: error instanceof Error ? error.message : String(error) })
+  }
+  if (response.status >= 400) {
+    return failed(initialIssues, { attempted: true, modelCall, httpStatus: response.status,
+      error: '剧本修正模型调用失败' })
+  }
+  try {
+    const normalized = normalizeStructuredTextOutput(response.body, extractTextResponse(response.body), 'legacy-shots')
+    const repairedPersonaIssues = requireRoommatePersona ? storyRoommatePersonaIssues(normalized) : []
+    if (repairedPersonaIssues.length) return {
+      version: 'story-script-review-v1', passed: false, code: 'STORY_PERSONA_INVALID',
+      issues: repairedPersonaIssues, initialIssues,
+      repairAttempt: { attempted: true, modelCall, httpStatus: response.status,
+        sourceExecutionId: repairSource?.sourceExecutionId, sourceRunId: repairSource?.sourceRunId,
+        outcome: 'rejected', reason: '时间修正稿违反角色身份' },
+    }
+    // An archived source remains authoritative. Otherwise the first draft's
+    // complete actions become the repair source so the model cannot silently
+    // turn two actions into one to satisfy the time budget.
+    const repaired = validateStoryShotTimingOutput(normalized, {
+      ...options, ...(repairSource ? { source: repairSource } : {}),
+    })
+    return accept(repaired, { attempted: true, modelCall, httpStatus: response.status,
+      sourceExecutionId: repairSource?.sourceExecutionId, sourceRunId: repairSource?.sourceRunId,
+      outcome: 'passed' })
+  } catch (error) {
+    const repairIssues = error instanceof StoryShotTimingError ? error.issues
+      : [error instanceof Error ? error.message : String(error)]
+    return failed(repairIssues, { attempted: true, modelCall, httpStatus: response.status,
+      sourceExecutionId: repairSource?.sourceExecutionId, sourceRunId: repairSource?.sourceRunId,
+      outcome: 'rejected', repairIssues })
+  }
+}
+
+async function storyMediaReview(request: BuiltinNodeRequest, executeMediaModel?: MediaExecutor,
+  review: typeof reviewStoryShotVideo = reviewStoryShotVideo) {
+  const params = request.params ?? {}
+  const video = params.video && typeof params.video === 'object' && !Array.isArray(params.video)
+    ? params.video as Record<string, unknown> : {}
+  const videoUrl = typeof params.video === 'string' ? params.video
+    : typeof video.url === 'string' ? video.url : ''
+  const failed = (issue: string) => {
+    const storyMediaReview = { version: 'story-shot-media-review-v1', videoUrl, passed: false,
+      retryable: false, reviewStatus: 'invalid', issues: [issue], videoEvidence: null }
+    return { ...video, url: videoUrl,
+      originalUrl: typeof video.originalUrl === 'string' ? video.originalUrl : videoUrl,
+      videoEvidence: null, storyMediaReview, passed: false, issues: [issue] }
+  }
+  if (!videoUrl || !params.shot) return failed('STORY_MEDIA_REVIEW_INPUT_INVALID: 缺少分镜或原视频 URL')
+  if (request.executionContext?.workflowId === 'wf-story') {
+    const vocalIssues = validateStoryVocalBeats(params.shot, { required: true })
+    if (vocalIssues.length) return failed(`ANIMAL_INTERACTION_INVALID: ${vocalIssues.join('；')}`)
+  }
+  try {
+    const model = executeMediaModel && request.model
+      ? request.model : { id: '', provider: 'Local', capability: 'text', settings: {} }
+    const result = await review({ shot: params.shot, videoUrl, model,
+      execute: executeMediaModel ?? (async () => ({ status: 503, body: null })),
+      executionContext: request.executionContext,
+      ...(typeof params.aspectRatio === 'string' ? { aspectRatio: params.aspectRatio } : {}),
+      ...(typeof params.requireAudio === 'boolean' ? { requireAudio: params.requireAudio } : {}),
+    })
+    const evidence = result.videoEvidence
+    const issues = [...result.issues]
+    if (request.executionContext?.workflowId === 'wf-story' && result.passed) {
+      issues.push('STORY_VOCAL_LISTENING_REQUIRED: 自动画面复核不能代替猫狗叫声与口型的逐声人工确认')
+    }
+    if (result.passed && (result.reviewStatus !== 'passed' || !evidence?.sha256 || !evidence.evidenceUrl
+      || !/^\/generated\/[\w.-]+\.mp4$/.test(evidence.url))) {
+      issues.push('STORY_MEDIA_REVIEW_EVIDENCE_INVALID: 通过结论未绑定本地审定视频、散列与逐帧证据')
+    }
+    const storyMediaReview = issues.length === result.issues.length ? result
+      : { ...result, passed: false, retryable: false, reviewStatus: 'invalid' as const, issues }
+    return { ...video, url: evidence?.url || videoUrl,
+      originalUrl: typeof video.originalUrl === 'string' ? video.originalUrl : videoUrl,
+      videoEvidence: evidence ?? null, storyMediaReview,
+      passed: storyMediaReview.passed, issues: storyMediaReview.issues }
+  } catch (error) {
+    return failed(`STORY_MEDIA_REVIEW_FAILED: ${error instanceof Error ? error.message : String(error)}`)
+  }
+}
 
 function toArray(value: unknown): unknown[] {
   if (Array.isArray(value)) return value
@@ -1498,14 +1698,13 @@ async function buildTimeline(params: Record<string, unknown>, pool: Pool) {
   }
 }
 
-async function concatenateAcceptedVideos(params: Record<string, unknown>, pool: Pool) {
+async function concatenateAcceptedVideos(params: Record<string, unknown>, pool: Pool, workflowId?: string) {
   assertConcatSubtitleEvidence(params)
   assertConcatSpeechEvidence(params)
   const current = params.currentVideo && typeof params.currentVideo === 'object' && !Array.isArray(params.currentVideo)
     ? params.currentVideo as Record<string, unknown> : {}
-  if (current.passed !== true || (current.qualityReview as Record<string, unknown> | undefined)?.canProceed !== true) {
-    throw Error('VIDEO_CONCAT_QUALITY_REQUIRED: 本镜尚未通过画面与音频质检，禁止进入阶段拼接')
-  }
+  const acceptance = requireConcatCurrentAcceptance(current, workflowId, params.reviewDecision)
+  if (current.humanVocalAcceptance !== undefined) await assertStoryVocalHumanAssets(current)
   const target = voiceReviewTarget(current)
   let voiceConsistency
   if (target) {
@@ -1513,7 +1712,10 @@ async function concatenateAcceptedVideos(params: Record<string, unknown>, pool: 
     voiceConsistency = resolveVoiceGateDecision(target, review)
   }
   const output = await concatenateVideos(params)
-  return { ...output, ...aggregateConcatReviews({ ...params, currentVideo: { ...current, ...(voiceConsistency ? { voiceConsistency } : {}) } }, output.clips) }
+  assertConcatCurrentBytes(acceptance.sourceSha256, output.sourceSha256)
+  return { ...output, ...aggregateConcatReviews({ ...params, currentVideo: { ...current,
+    ...(acceptance.riskReminder ? { riskReminder: acceptance.riskReminder } : {}),
+    ...(voiceConsistency ? { voiceConsistency } : {}) } }, output.clips) }
 }
 
 function verifyHistoricalBoundaries(params: Record<string, unknown>) {
@@ -1678,6 +1880,12 @@ async function characterObserver(pool: Pool, execute: MediaExecutor, request: Bu
 
 export async function executeBuiltinNode(pool: Pool, request: BuiltinNodeRequest, executeMediaModel?: MediaExecutor, dependencies: BuiltinDependencies = {}) {
   const params = request.params ?? {}
+  if (request.operation === 'story.script-review') return storyScriptReview(request, executeMediaModel)
+  if (request.operation === 'story.media-review') return storyMediaReview(request, executeMediaModel, dependencies.reviewStoryVideo)
+  if (request.operation === 'story.subtitle-reference') {
+    if (!executeMediaModel) throw Error('STORY_SUBTITLE_MODEL_REQUIRED: 缺少推理模型执行器')
+    return generateStorySubtitleReference(request, executeMediaModel)
+  }
   if (request.operation === 'internet.retrieve' || request.operation === 'historical.web.retrieve') {
     return retrieveInternetSourcesWithExecutionCache(pool, {
       query: String(params.query ?? request.prompt ?? ''),
@@ -1769,7 +1977,7 @@ export async function executeBuiltinNode(pool: Pool, request: BuiltinNodeRequest
   if (request.operation === 'frame.first.resolve') return resolveFirstFrame(request, executeMediaModel)
   if (request.operation === 'frame.tail.resolve') return resolveTailFrame(request, executeMediaModel)
   if (request.operation === 'history.verify') return verifyHistoricalBoundaries(params)
-  if (request.operation === 'video.concat') return concatenateAcceptedVideos(params, pool)
+  if (request.operation === 'video.concat') return concatenateAcceptedVideos(params, pool, request.executionContext?.workflowId)
   if (request.operation === 'timeline.compose') return buildTimeline(params, pool)
   throw new Error(`不支持的内置节点操作：${request.operation}`)
 }

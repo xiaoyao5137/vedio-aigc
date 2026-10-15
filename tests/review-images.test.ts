@@ -259,6 +259,17 @@ test('sequence transport supports 160 native frames while enforcing 64 final att
   await assert.rejects(loadReviewImages([await save('too-many-pixels.jpg', changedHeader)], root, grid), /解码像素.*单帧16Mi/)
 })
 
+test('sequence transport bounds local source JPEGs separately from transmitted pages', async t => {
+  const { root, save } = await fixture(t)
+  const source = await sharp(randomBytes(576 * 576 * 3), { raw: { width: 576, height: 576, channels: 3 } }).jpeg({ quality: 100 }).toBuffer()
+  assert.ok(source.length * 64 > REVIEW_IMAGE_LIMITS.totalBytes && source.length * 64 < REVIEW_SEQUENCE_LIMITS.sourceBytes)
+  const url = await save('sequence-larger-source.jpg', source)
+  const pages = await loadReviewImages(Array(64).fill(url), root,
+    { transport: { mode: 'sequence-grid', columns: 2, rows: 2, format: 'jpeg', quality: 90, chromaSubsampling: '4:4:4' } })
+  assert.equal(pages.length, 16)
+  assert.ok(pages.reduce((total, page) => total + page.bytes.length, 0) < REVIEW_SEQUENCE_LIMITS.transportBytes)
+})
+
 test('sequence grid rejects invalid metadata, transport choices and mixed crop settings without provider submission', async t => {
   const { root, save } = await fixture(t)
   const url = await save('sequence-invalid.jpg')
@@ -306,6 +317,46 @@ test('sequence output byte limits reject lossless pages or requests without impl
   const { root, save } = await fixture(t)
   const largeUrls = await Promise.all(Array.from({ length: 4 }, async (_, i) => save('large-grid-' + i + '.jpg', await sharp(randomBytes(1024 * 1024 * 3), { raw: { width: 1024, height: 1024, channels: 3 } }).jpeg({ quality: 90 }).toBuffer())))
   await assert.rejects(loadReviewImages(largeUrls, root, grid), /实际附件.*单图上限 5MiB.*不会自动降低质量/)
-  const urls = await Promise.all(Array.from({ length: 28 }, async (_, i) => save('grid-total-' + i + '.jpg', await sharp(randomBytes(600 * 600 * 3), { raw: { width: 600, height: 600, channels: 3 } }).jpeg({ quality: 90 }).toBuffer())))
-  await assert.rejects(loadReviewImages(urls, root, grid), /实际附件合计.*24MiB.*不会自动降低质量/)
+  const urls = await Promise.all(Array.from({ length: 52 }, async (_, i) => save('grid-total-' + i + '.jpg', await sharp(randomBytes(600 * 600 * 3), { raw: { width: 600, height: 600, channels: 3 } }).jpeg({ quality: 90 }).toBuffer())))
+  await assert.rejects(loadReviewImages(urls, root, grid), /实际附件合计.*48MiB.*不会自动降低质量/)
+})
+
+test('large JPEG native review keeps all ordered frames and discloses one bounded quality for every page', async t => {
+  const { root, save } = await fixture(t)
+  const source = await sharp(randomBytes(500 * 500 * 3), { raw: { width: 500, height: 500, channels: 3 } }).jpeg({ quality: 65 }).toBuffer()
+  const url = await save('adaptive-sequence.jpg', source)
+  const count = 245
+  const urls = Array(count).fill(url)
+  const frameMetadata = urls.map((url, evidenceIndex) => ({ evidenceIndex, nativeFrameIndex: evidenceIndex + 8,
+    url, time: (evidenceIndex + 8) / 24, pts: (evidenceIndex + 8) * 512, timeBase: '1/12288' }))
+  const pages = await loadReviewImages(urls, root, { transport: { mode: 'sequence-grid', columns: 2, rows: 2,
+    format: 'jpeg', quality: 90, chromaSubsampling: '4:4:4' }, frameMetadata })
+  assert.equal(pages.length, 62)
+  assert.ok(pages.reduce((bytes, page) => bytes + page.bytes.length, 0) <= REVIEW_SEQUENCE_LIMITS.transportBytes)
+  assert.deepEqual(pages.flatMap(page => page.cells!.map(cell => cell.evidenceIndex)), Array.from({ length: count }, (_, index) => index))
+  assert.deepEqual(pages.flatMap(page => page.cells!.map(cell => cell.nativeFrameIndex)), Array.from({ length: count }, (_, index) => index + 8))
+  assert.ok(pages.every(page => page.encoding?.quality === 80 && page.encoding.requestedQuality === 90
+    && page.encoding.chromaSubsampling === '4:4:4' && page.encoding.noResize === true))
+  assert.ok(pages.every(page => /请求JPEG质量90.*实际质量80/.test(page.label!)))
+  assert.equal(pages.at(-1)!.cells!.length, 1)
+  assert.equal(pages.at(-1)!.cells![0].pts, (count - 1 + 8) * 512)
+  assert.deepEqual([pages[0].cells![0].sourceRect.width, pages[0].cells![0].sourceRect.height], [500, 500])
+  assert.deepEqual([pages[0].cells![0].targetRect.width, pages[0].cells![0].targetRect.height], [500, 500])
+  const pageSize = await sharp(pages[0].bytes).metadata()
+  assert.deepEqual([pageSize.width, pageSize.height], [1000, 1000])
+  const fingerprint = reviewImagesFingerprint('request', pages)
+  assert.notEqual(fingerprint, reviewImagesFingerprint('request', pages.map((page, index) => index
+    ? page : { ...page, encoding: { ...page.encoding!, requestedQuality: 85 } })))
+  assert.notEqual(fingerprint, reviewImagesFingerprint('request', pages.map((page, index) => index === pages.length - 1
+    ? { ...page, bytes: Buffer.concat([page.bytes, Buffer.from([0])]) } : page)))
+})
+
+test('JPEG sequence fails closed when the complete review cannot fit at quality 80, and below-floor requests do not adapt', async t => {
+  const { root, save } = await fixture(t)
+  const source = await sharp(randomBytes(550 * 550 * 3), { raw: { width: 550, height: 550, channels: 3 } }).jpeg({ quality: 65 }).toBuffer()
+  const url = await save('unfit-sequence.jpg', source)
+  const urls = Array(245).fill(url)
+  const config = (quality: number) => ({ transport: { mode: 'sequence-grid', columns: 2, rows: 2, format: 'jpeg', quality, chromaSubsampling: '4:4:4' } })
+  await assert.rejects(loadReviewImages(urls, root, config(90)), /实际附件.*48MiB.*质量80.*未缩放或截断；未提交审查/)
+  await assert.rejects(loadReviewImages(urls, root, config(79)), /实际附件.*48MiB.*质量79.*未缩放或截断；未提交审查/)
 })

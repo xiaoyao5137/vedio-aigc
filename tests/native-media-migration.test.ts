@@ -112,7 +112,7 @@ test('migrated metrics keep observer coverage separate from full native review i
   assert.deepEqual(output.frames.map((frame: { index: number }) => frame.index), [0, 2, 6, 8])
   assert.equal(output.reviewImageDetail.frameMetadata.length, 9)
   assert.deepEqual(output.reviewImageDetail.frameMetadata.map((frame: { evidenceIndex: number }) => frame.evidenceIndex), Array.from({ length: 9 }, (_, i) => i))
-  assert.deepEqual(output.reviewImageDetail.transport, { mode: 'sequence-grid', columns: 2, rows: 2, format: 'jpeg', quality: 95, chromaSubsampling: '4:4:4' })
+  assert.deepEqual(output.reviewImageDetail.transport, { mode: 'sequence-grid', columns: 2, rows: 2, format: 'jpeg', quality: 90, chromaSubsampling: '4:4:4' })
   const interval = output.requirementReviewInputs.find((row: { requirement: { startSecond: number; endSecond: number } }) => row.requirement.startSecond === 1 && row.requirement.endSecond === 3)
   assert.deepEqual(interval.frameReferences.map((ref: { index: number }) => ref.index), [2, 3, 4, 5, 6])
   assert.deepEqual(interval.reviewImageDetail.frameMetadata.map((ref: { evidenceIndex: number }) => ref.evidenceIndex), [0, 1, 2, 3, 4])

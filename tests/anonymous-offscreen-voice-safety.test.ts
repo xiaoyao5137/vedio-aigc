@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import { mkdtemp, mkdir, rm, readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { execFile } from 'node:child_process'
@@ -10,6 +11,7 @@ import { anonymousVoiceRoles, compileKlingVoices, explicitlyOffscreenSpeaker, na
 import { voiceCharacterInputs } from '../src/voice-character-input.ts'
 import { projectIndependentOffscreenDialogue } from '../server/narration-projection.ts'
 import { cachedNarrationPicture, composeNarration } from '../server/independent-narration.ts'
+import { collectIndependentNarrationTransferEvidence } from '../server/narration-transfer-evidence.ts'
 import { resolveVoiceGateDecision, voiceReviewTarget } from '../src/voice-review.ts'
 import { acceptPrincipleMedia } from '../src/principle-media-quality.ts'
 
@@ -171,14 +173,23 @@ test('decoded offscreen dialogue composition remains unreviewed speech and lip s
     const output = await composeNarration('/generated/picture.mp4', [{ beatId: 'speech', text: '对白测试', start: .5, end: 2, url: '/generated/tts-aaaaaaaa.wav', sourceDuration: 1, duration: 1, tempo: 1, voiceId: 'original', sha256: 'fixture' }], 3, '16:9', root, '720p', 'offscreen-dialogue')
     assert.equal(output.route, 'independent-offscreen-dialogue-v1')
     assert.equal(output.audioRole, 'offscreen-dialogue')
+    assert.equal(output.environmentalTrack, 'muted-unverified')
+    assert.deepEqual(output.pictureVoiceIsolation.mutedWindows.map(({ start, end }) => ({ start, end })), [{ start: 0, end: 3 }])
     assert.equal(output.voiceConsistency.status, 'uncertain')
     assert.match(output.voiceConsistency.reason, /角色画外对白/)
     assert.doesNotMatch(output.voiceConsistency.reason, /旁白/)
     assert.equal(output.metadata.hasAudio, true)
+    const outputFile = path.join(root, 'public', output.url)
+    const outputSha256 = createHash('sha256').update(await readFile(outputFile)).digest('hex')
+    const transfer = await collectIndependentNarrationTransferEvidence(output.url, outputFile,
+      '/generated/evidence.json', outputSha256, root)
+    assert.equal(transfer?.audioRole, 'offscreen-dialogue')
+    assert.equal(transfer?.sourceSpeechIsolation?.status, 'confirmed')
     const voice = { characterId: 'scene-disciple', characterName: '弟子', voiceId: 'original', version: 1, modelId: 'tts', accountScope: 'scope', voiceName: '弟子', previewUrl: '/preview.wav' }
     const take = { url: output.url, characterVoices: [voice], voiceConsistency: output.voiceConsistency }
     const accepted = acceptPrincipleMedia({ shot_script: { audioType: '对白', audioText: '弟子（画外）：对白测试', duration: 3 }, video_take: take,
-      video_evidence: { decoded: true, url: output.url, originalUrl: output.url, evidenceUrl: '/generated/evidence.json', duration: output.metadata.duration,
+      video_evidence: { decoded: true, url: output.url, originalUrl: output.url, evidenceUrl: '/generated/evidence.json', sha256: outputSha256,
+        independentNarrationTransfer: transfer, duration: output.metadata.duration,
         width: output.width, height: output.height, frames: ['/generated/end.jpg'], lastFrameUrl: '/generated/end.jpg', hasAudio: true, transcript: [] },
       media_review: { version: 'principle-review-v1', decision: 'uncertain', issues: [], warnings: ['合成样本为测试音调，未进行真实台词识别或听审'] } })
     assert.equal(accepted.technicalValidation.speechVerified, false)

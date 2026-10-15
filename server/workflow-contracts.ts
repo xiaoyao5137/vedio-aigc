@@ -13,6 +13,8 @@ import { historicalMapAnnotationSha256, historicalMapSceneSha256, validateHistor
 import { assertHistoricalMapCleanPlatePrompt } from './historical-map-clean-plate.ts'
 import { characterVisualContextCompatibility, normalizeCharacterVisualContext } from '../src/character-visual-context.ts'
 import { characterEquipmentPrompt, validatedCharacterEquipment } from '../src/character-visual-workflow.ts'
+import { renderStoryShotTimedActions, validateStoryShotTimingOutput } from '../src/story-shot-timing.ts'
+import { storyRoommatePersonaIssues } from '../src/story-roommate-persona.ts'
 type WorkflowMediaRequest = {
   model: { capability: string }
   prompt?: string
@@ -104,8 +106,44 @@ export function validateHistoricalMapPaidImageRequest(request: WorkflowMediaRequ
   }
 }
 
-/** Last line of defence before a paid Sanguo video request leaves the server. */
+/** Last line of defence before a paid workflow media request leaves the server. */
 export function validateWorkflowMediaContract(request: WorkflowMediaRequest) {
+  if (request.executionContext?.workflowId === 'wf-story'
+    && (request.executionContext.nodeId === 'node-image' && request.model.capability === 'image'
+      || request.executionContext.nodeId === 'node-video' && request.model.capability === 'video')) {
+    const params = request.params ?? {}
+    const shot = params.storyShot
+    if (!shot || typeof shot !== 'object' || Array.isArray(shot)) {
+      throw new Error('STORY_PAID_SHOT_REQUIRED: 首帧和视频付费请求必须绑定当前已审分镜')
+    }
+    validateStoryShotTimingOutput([shot], { expectedCount: 1, requireAnimalInteraction: true })
+    const personaIssues = storyRoommatePersonaIssues([shot])
+    if (personaIssues.length) throw new Error(`STORY_PERSONA_INVALID: ${personaIssues.join('；')}`)
+    const reviewed = shot as Record<string, unknown>
+    const currentTimedActions = renderStoryShotTimedActions(shot)
+    const legacyTimedActions = renderStoryShotTimedActions(shot, 'legacy-timed')
+    const timedActions = reviewed.timedActions === currentTimedActions ? currentTimedActions
+      : reviewed.timedActions === legacyTimedActions ? legacyTimedActions : undefined
+    if (!timedActions) {
+      throw new Error('STORY_PAID_SHOT_MISMATCH: 当前分镜不含与动作及叫声一致的已审时间轴')
+    }
+    if (request.executionContext.nodeId === 'node-image') {
+      if (typeof reviewed.firstFramePrompt !== 'string' || !request.prompt?.includes(reviewed.firstFramePrompt)) {
+        throw new Error('STORY_PAID_IMAGE_MISMATCH: 首帧请求未使用当前已审分镜的开场画面')
+      }
+    } else {
+      if (!request.prompt?.includes(timedActions) || params.requiredPromptText !== timedActions) {
+        throw new Error('STORY_PAID_VIDEO_MISMATCH: 视频请求未使用当前已审分镜的完整动作与叫声时间轴')
+      }
+      if (Number(params.duration) !== reviewed.duration || Number(params.expectedDuration) !== reviewed.duration
+        || params.sound !== 'on' || params.requiredSound !== 'on') {
+        throw new Error('STORY_PAID_VIDEO_MISMATCH: 视频时长或原生声音与当前已审分镜不一致')
+      }
+      if (/(?:无人话、旁白、配音或台词|仅环境声与动作音效|全程无声|全程无发音|角色不发声)/u.test(request.prompt)) {
+        throw new Error('STORY_PAID_VIDEO_SILENT_CONFLICT: 视频提示禁止角色发出已审叫声')
+      }
+    }
+  }
   if (request.model.capability === 'video') normalizePronunciationHints(request.params?.pronunciationHints, request.params?.audioText)
   if (request.executionContext?.workflowId !== 'wf-sanguo-history-drama'
     || request.executionContext?.nodeId !== 'sanguo-video'

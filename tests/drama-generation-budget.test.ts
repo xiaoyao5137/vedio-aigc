@@ -14,6 +14,22 @@ test('structural repair and a later editorial retry cannot multiply the three-ca
   assert.equal(createDramaGenerationBudget(undefined).used, 0, 'next independent scene has its own budget')
 })
 
+test('a source-bound failed video replan gets a fresh writer budget without resetting ordinary draft retries', () => {
+  const previousCandidate = { pacing: { scheduleHash: 'signed-schedule' }, repairProvenance: { generationAttempts: 2 } }
+  const feedback = { previousCandidate, sourceVideo: '/generated/verified-film.mp4', issues: ['move final speech after arrival'],
+    durationCompletion: { route: 'replan', passed: false, scheduleHash: 'signed-schedule' } }
+  const replanned = createDramaGenerationBudget(feedback, 2)
+  assert.equal(replanned.used, 0)
+  replanned.consume(); replanned.consume()
+  assert.equal(replanned.canConsume(), false)
+  for (const change of [{ sourceVideo: '/external/unsigned.mp4' },
+    { durationCompletion: { ...feedback.durationCompletion, scheduleHash: 'other-schedule' } },
+    { durationCompletion: { ...feedback.durationCompletion, route: 'continue' } },
+    { issues: [] }]) {
+    assert.equal(createDramaGenerationBudget({ ...feedback, ...change }, 2).canConsume(), false)
+  }
+})
+
 // The structural correction loop is written for three attempts while the shared budget only affords
 // three generations in total, counting the initial one. Letting `consume()` end the loop replaced the
 // real defect list with a cost message, so the run reported DRAMA_GENERATION_LIMIT and hid the reason.

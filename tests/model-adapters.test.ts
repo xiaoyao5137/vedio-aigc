@@ -76,11 +76,15 @@ test('trusted model transport aborts a live response body after headers, even wh
   t.after(() => new Promise<void>(resolve => server.close(() => resolve())))
   const address = server.address()
   assert.ok(address && typeof address === 'object')
+  const deadline = new AbortController()
   const response = await fetchWithModelNetwork(`http://127.0.0.1:${address.port}/messages`, {
-    signal: AbortSignal.timeout(80),
+    signal: deadline.signal,
   })
   const started = Date.now()
-  await assert.rejects(response.text(), /abort|timeout|operation was aborted/i)
+  const timeout = setTimeout(() => deadline.abort(new Error('body deadline')), 80)
+  try {
+    await assert.rejects(response.text(), /abort|timeout|operation was aborted|body deadline/i)
+  } finally { clearTimeout(timeout) }
   assert.ok(Date.now() - started < 1000, 'body read must not outlive the request deadline')
 })
 
@@ -183,6 +187,81 @@ test('Kling requests cap oversized prompts while preserving opening and ending c
   assert.match(videoPrompt, /:ENDING_AUDIO$/)
 })
 
+test('explicit Kling prompt overflow policy rejects an oversized prompt before paid submission', async () => {
+  const model = { ...klingImageModel, id: 'keling3', capability: 'video',
+    settings: { ...klingImageModel.settings, model: 'kling-v3' } }
+  const params = { duration: 7, sound: 'on', promptOverflowPolicy: 'reject' }
+  const overflowing = `OPENING:${'动作连续。'.repeat(520)}:ENDING`
+  assert.ok(Array.from(overflowing).length > KLING_PROMPT_MAX_LENGTH)
+  assert.throws(() => buildKlingVideoRequest(model, overflowing, params), /STORYBOARD_PROMPT_OVERLOAD/)
+  let submissions = 0
+  await assert.rejects(() => callKlingVideo(model, overflowing, params, {
+    fetch: async () => { submissions++; throw Error('unexpected paid submission') },
+  }), /STORYBOARD_PROMPT_OVERLOAD/)
+  assert.equal(submissions, 0)
+  assert.equal(buildKlingVideoRequest(model, 'a'.repeat(KLING_PROMPT_MAX_LENGTH), params).prompt, 'a'.repeat(KLING_PROMPT_MAX_LENGTH))
+  assert.throws(() => buildKlingVideoRequest(model, '短提示', { promptOverflowPolicy: 'typo' }), /KLING_PROMPT_OVERFLOW_POLICY_INVALID/)
+})
+
+test('required video prompt text survives into the paid Kling payload or blocks submission', async () => {
+  const model = { ...klingImageModel, id: 'keling3', capability: 'video',
+    settings: { ...klingImageModel.settings, model: 'kling-v3' } }
+  const required = '0–4 秒：蓝猫把硬币推到柴犬爪边；4–7 秒：柴犬把纸袋推到蓝猫爪边；7–8 秒：保持完成状态。'
+  const params = { duration: 8, sound: 'on', requiredPromptText: required }
+  const accepted = buildKlingVideoRequest(model, `单格竖屏连续画面。${required}自然动作音效。`, params)
+  assert.ok(String(accepted.prompt).includes(required))
+  assert.equal(accepted.duration, '8')
+  assert.equal(accepted.sound, 'on')
+  assert.equal(Object.hasOwn(accepted, 'requiredPromptText'), false, 'workflow-only guard is not a provider field')
+
+  assert.throws(() => buildKlingVideoRequest(model, '单格竖屏连续画面，只有氛围，没有逐项动作。', params),
+    /VIDEO_REQUIRED_PROMPT_TEXT_MISSING/)
+  for (const invalid of ['', [], 0]) {
+    assert.throws(() => buildKlingVideoRequest(model, `单格竖屏。${required}`, { ...params, requiredPromptText: invalid }),
+      /VIDEO_REQUIRED_PROMPT_TEXT_INVALID/)
+  }
+
+  const longPrompt = `${'前景布置。'.repeat(500)}${required}${'背景布置。'.repeat(500)}`
+  assert.ok(longPrompt.includes(required), 'the authored prompt does contain the complete required text')
+  assert.ok(Array.from(longPrompt).length > KLING_PROMPT_MAX_LENGTH)
+  assert.throws(() => buildKlingVideoRequest(model, longPrompt, { ...params, promptOverflowPolicy: 'truncate' }),
+    /VIDEO_REQUIRED_PROMPT_TEXT_MISSING/, 'truncating the final provider payload must not delete a required action')
+
+  let submissions = 0
+  await assert.rejects(() => callKlingVideo(model, '只有氛围。', params, {
+    fetch: async () => { submissions++; throw Error('unexpected paid submission') },
+  }), /VIDEO_REQUIRED_PROMPT_TEXT_MISSING/)
+  assert.equal(submissions, 0)
+})
+
+test('video duration and native sound must match configured acceptance requirements before payment', async () => {
+  const model = { ...klingImageModel, id: 'keling3', capability: 'video',
+    settings: { ...klingImageModel.settings, model: 'kling-v3' } }
+  const complete = { duration: 8, expectedDuration: 8, sound: 'on', requiredSound: 'on' }
+  const accepted = buildKlingVideoRequest(model, '完整动作在第 7 秒结束，第 8 秒保持终态。', complete)
+  assert.equal(accepted.duration, '8')
+  assert.equal(accepted.sound, 'on')
+  assert.equal(Object.hasOwn(accepted, 'expectedDuration'), false)
+  assert.equal(Object.hasOwn(accepted, 'requiredSound'), false)
+
+  assert.throws(() => buildKlingVideoRequest(model, '完整动作。', { ...complete, duration: 3 }),
+    /VIDEO_EXPECTED_DURATION_MISMATCH/)
+  for (const invalid of [0, -1, 'bad']) {
+    assert.throws(() => buildKlingVideoRequest(model, '完整动作。', { ...complete, expectedDuration: invalid }),
+      /VIDEO_EXPECTED_DURATION_INVALID/)
+  }
+  assert.throws(() => buildKlingVideoRequest(model, '完整动作。', { ...complete, sound: 'off' }),
+    /VIDEO_REQUIRED_SOUND_MISSING/)
+
+  let submissions = 0
+  for (const wrong of [{ ...complete, duration: 3 }, { ...complete, sound: 'off' }]) {
+    await assert.rejects(() => callKlingVideo(model, '完整动作。', wrong, {
+      fetch: async () => { submissions++; throw Error('unexpected paid submission') },
+    }), /VIDEO_EXPECTED_DURATION_MISMATCH|VIDEO_REQUIRED_SOUND_MISSING/)
+  }
+  assert.equal(submissions, 0)
+})
+
 test('Kling image-to-video request uses only provider-standard fields and native sound', () => {
   const request = buildKlingVideoRequest({
     ...klingImageModel,
@@ -207,6 +286,22 @@ test('Kling image-to-video request uses only provider-standard fields and native
     negative_prompt: '人物变形、画面闪烁',
     image: 'aGVsbG8=',
   })
+})
+
+test('Kling v3 rejects invalid durations before submission instead of silently changing them', () => {
+  const model = {
+    ...klingImageModel,
+    capability: 'video',
+    settings: { ...klingImageModel.settings, model: 'kling-v3', duration: '5' },
+  }
+  for (const duration of [2, '2', 16, '16', 3.5, 'invalid']) {
+    assert.throws(() => buildKlingVideoRequest(model, '完成整个动作', { duration }), /KLING_DURATION_INVALID/)
+  }
+  assert.throws(() => buildKlingVideoRequest({ ...model, settings: { ...model.settings, duration: '16' } }, '完成整个动作', {}), /KLING_DURATION_INVALID/)
+  assert.throws(() => buildKlingVideoRequest(model, '完成整个动作', { referenceImages: ['character-reference'], duration: 16 }), /KLING_DURATION_INVALID/)
+  for (const duration of [3, 15]) {
+    assert.equal(buildKlingVideoRequest(model, '完成整个动作', { duration }).duration, String(duration))
+  }
 })
 
 test('Kling final request preserves validated actions, gaze, prop transfer, and the ending', () => {
@@ -496,13 +591,13 @@ test('Kling Video 3 request forwards experience-level advanced controls with pro
   })
 })
 
-test('Kling Video 3 text-to-video keeps aspect ratio and clamps duration to the supported range', () => {
+test('Kling Video 3 text-to-video keeps aspect ratio at the supported duration boundary', () => {
   const request = buildKlingVideoRequest({
     ...klingImageModel,
     id: 'keling3',
     capability: 'video',
     settings: { endpoint: 'https://api-singapore.klingai.com/v1/videos', apiKey: 'key', model: 'kling-v3' },
-  }, '城市延时摄影', { duration: 20, aspectRatio: '1:1', multiShot: false })
+  }, '城市延时摄影', { duration: 15, aspectRatio: '1:1', multiShot: false })
   assert.equal(request.duration, '15')
   assert.equal(request.aspect_ratio, '1:1')
   assert.equal(request.multi_shot, false)
@@ -599,6 +694,38 @@ test('Kling tail-frame adapter rejects a successful vertical triptych result', a
   })
   assert.equal(result.status, 502)
   assert.equal((result.body as { rejected_layout: string }).rejected_layout, 'vertical-triptych')
+})
+
+test('Kling singleFrame contract rejects a triptych and accepts one continuous frame', async () => {
+  const triptych = await sharp({ create: { width: 300, height: 900, channels: 3, background: '#ffffff' } })
+    .composite([
+      { input: await sharp({ create: { width: 300, height: 300, channels: 3, background: '#222222' } }).png().toBuffer(), top: 0, left: 0 },
+      { input: await sharp({ create: { width: 300, height: 300, channels: 3, background: '#eeeeee' } }).png().toBuffer(), top: 300, left: 0 },
+      { input: await sharp({ create: { width: 300, height: 300, channels: 3, background: '#555555' } }).png().toBuffer(), top: 600, left: 0 },
+    ])
+    .png()
+    .toBuffer()
+  const singleFrame = await sharp({ create: { width: 300, height: 900, channels: 3, background: '#eeeeee' } })
+    .composite([{ input: await sharp({ create: { width: 300, height: 600, channels: 3, background: '#666666' } }).png().toBuffer(), top: 300, left: 0 }])
+    .png()
+    .toBuffer()
+  const completedImage = (image: Buffer) => new Response(JSON.stringify({
+    code: 0,
+    data: { task_id: 'single-frame', task_status: 'succeed', task_result: { images: [{ url: `data:image/png;base64,${image.toString('base64')}` }] } },
+  }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+
+  const rejected = await callKlingImage(klingImageModel, '一张静止首帧照片', { singleFrame: 'true' }, {
+    fetch: async () => completedImage(triptych),
+  })
+  assert.equal(rejected.status, 502)
+  assert.equal((rejected.body as { rejected_layout: string }).rejected_layout, 'vertical-triptych')
+  assert.match(String((rejected.body as { error: string }).error), /单幅画面布局检查/)
+
+  const accepted = await callKlingImage(klingImageModel, '一张静止首帧照片', { singleFrame: true }, {
+    fetch: async () => completedImage(singleFrame),
+  })
+  assert.equal(accepted.status, 200)
+  assert.equal((accepted.body as { data: { task_result: { images: Array<{ url: string }> } } }).data.task_result.images.length, 1)
 })
 
 test('Kling workflow video adapter waits for a submitted task until a video URL is ready', async () => {

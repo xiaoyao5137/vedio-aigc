@@ -61,6 +61,28 @@ test('a routed loop input cannot overwrite current outputs or restore a previous
   assert.equal(prepared.inputContext.gate, undefined, 'invalidated downstream outputs are not current inputs')
 })
 
+test('loop replay rejects a completed context patch that forges validation evidence', () => {
+  const runs: Run[] = [
+    { ...run('quality', 'validation'), output: { passed: true } },
+    { ...run('patcher', 'code'), output: { contextPatch: { quality: { passed: false } } } },
+    { ...run('next', 'video'), status: 'idle' },
+  ]
+  assert.throws(() => prepareWorkflowRunContext(runs, 2), /VALIDATION_RESULT_CONTEXT_PATCH_CONFLICT/)
+  assert.deepEqual(runs[0].output, { passed: true })
+})
+
+test('restoring a saved top-level run rejects a previously persisted forged validation patch', () => {
+  const detached = (id: string, kind: string) => ({ ...run(id, kind), loopNode: undefined,
+    loopGroupId: undefined, loopIndex: undefined, loopItem: undefined })
+  const runs: Run[] = [
+    { ...detached('quality', 'validation'), output: { passed: true }, context: { quality: { passed: true } } },
+    { ...detached('patcher', 'code'), output: { contextPatch: { quality: { passed: false } } },
+      context: { quality: { passed: false } } },
+    { ...detached('next', 'video'), status: 'idle' },
+  ]
+  assert.throws(() => prepareWorkflowRunContext(runs, 2), /VALIDATION_RESULT_CONTEXT_PATCH_CONFLICT/)
+})
+
 test('rerunning the observer feeds its replacement into the actual next step context', async () => {
   const { runs } = fixture()
   let mediaPurchases = 0
@@ -136,4 +158,19 @@ test('explicit branch input edits survive branch-only retry without restoring it
   assert.deepEqual(prepared.inputContext.gate, { passed: true, reason: 'explicit debug edit' })
   assert.equal(retried[5].branchState, runs[5].branchState)
   assert.equal(manualRetryRuns(runs, 2)[5].routeInputOverrides, undefined, 'regenerating the inputs invalidates their old explicit override')
+})
+
+test('manual route input edits cannot replace validation evidence but can still update ordinary variables', () => {
+  const { runs } = fixture()
+  runs.splice(3, 0, { ...run('quality', 'validation'), output: { passed: true },
+    context: { quality: { passed: true }, observations: captured.freshObservations } })
+  const target = runs.findIndex(item => item.node.id === 'retry')
+  runs[target] = { ...runs[target], routeInputOverrides: {
+    quality: { passed: false }, input: { note: 'manual correction' },
+  } }
+  assert.throws(() => prepareWorkflowRunContext(runs, target), /VALIDATION_RESULT_ROUTE_OVERRIDE_CONFLICT/)
+  runs[target] = { ...runs[target], routeInputOverrides: { input: { note: 'manual correction' } } }
+  const prepared = prepareWorkflowRunContext(runs, target)!
+  assert.deepEqual((prepared.inputContext.input as Record<string, unknown>).note, 'manual correction')
+  assert.deepEqual(prepared.inputContext.quality, { passed: true })
 })

@@ -95,7 +95,7 @@ export function deriveRequirementReviewInputs(shot: Record<string, unknown>, evi
         ...(frame.displayStartSecond === undefined ? {} : { displayStartSecond: frame.displayStartSecond, displayEndSecond: frame.displayEndSecond,
           scopeIntersection: { startSecond: Math.max(start, frame.displayStartSecond), endSecond: Math.min(end, frame.displayEndSecond!) },
           evidenceRole: frame.second < start ? 'boundary-context' as const : 'pts-in-window' as const }) })),
-      ...(nativeMetadata ? { reviewImageDetail: { transport: { mode: 'sequence-grid', columns: 2, rows: 2, format: 'jpeg', quality: 95, chromaSubsampling: '4:4:4' }, frameMetadata: nativeMetadata } } : {}),
+      ...(nativeMetadata ? { reviewImageDetail: { transport: { mode: 'sequence-grid', columns: 2, rows: 2, format: 'jpeg', quality: 90, chromaSubsampling: '4:4:4' }, frameMetadata: nativeMetadata } } : {}),
       reviewImages: frameReferences.map(frame => frame.url), evidenceStatus: frameReferences.length ? 'available' : 'unobservable' }
   })
 }

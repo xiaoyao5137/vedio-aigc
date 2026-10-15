@@ -54,6 +54,20 @@ test('node code controls matching and reports a clear error for an unknown episo
   )
 })
 
+test('static code reads keep large unrelated media ledgers out of the VM payload', async () => {
+  const result = await executeCodeNode({
+    code: 'return { value: context["scene_cut_review"].passed && branch.counts.false === 0 }',
+    context: { scene_cut_review: { passed: true }, branch: { counts: { false: 0 } },
+      first_frame: { raw: 'x'.repeat(13 * 1024 * 1024) } },
+  })
+  assert.equal(result.value, true)
+  await assert.rejects(executeCodeNode({
+    code: 'const key = params.key; return context[key].raw.length',
+    params: { key: 'first_frame' },
+    context: { first_frame: { raw: 'x'.repeat(49 * 1024 * 1024) } },
+  }), /流程上下文超过 48MB 限制/)
+})
+
 test('excel.parse exposes workbook metadata and bounded parsed rows to custom code', async () => {
   const result = await executeCodeNode({
     code: `

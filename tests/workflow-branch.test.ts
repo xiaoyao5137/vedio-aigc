@@ -41,6 +41,15 @@ test('forward true/false arms skip the unselected branch but retain the shared m
  assert.equal(result.runs[result.index].routeInputContext!.input,'keep')
  }
 })
+test('branch context patches cannot overwrite a validation result on a forward or rewind route', () => {
+ const w={nodes:[node('review','validation'),node('b','branch'),node('done')],
+  edges:[edge('review','b'),edge('b','done','true'),edge('b','review','false')]}
+ const runs=w.nodes.map(n=>({...run(n.id,n.kind),node:n}))
+ const inputContext={review:{passed:true}}
+ for(const value of [true,false]) assert.throws(()=>routeBranch(w,runs,1,
+  {value,contextPatch:{review:{passed:false}}},inputContext),/VALIDATION_RESULT_CONTEXT_PATCH_CONFLICT/)
+ assert.deepEqual(inputContext.review,{passed:true})
+})
 test('backward routing supports unrelated nodes, self and cross-loop nodes; fresh revisions and evidence survive', () => {
  const w={nodes:[node('unrelated'),node('b','branch'),node('done')],edges:[edge('b','unrelated','false'),edge('b','done','true')]}
  const runs=[{...run('unrelated'),status:'success',output:{expensive:'old'},inputContext:{seed:1}}, {...run('b','branch'),status:'running',loopGroupId:'L',loopIndex:2},run('done')]

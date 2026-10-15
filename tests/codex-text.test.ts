@@ -8,7 +8,7 @@ import path from 'node:path'
 import { createHash } from 'node:crypto'
 import type { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio } from 'node:child_process'
 import { callCodexText, resolveCodexExecutablePath, resolveCodexTextConfig, CODEX_TEXT_LIMITS, CodexTextError, type CodexTextDependencies } from '../server/codex-text.ts'
-import type { LoadedReviewImage } from '../server/review-images.ts'
+import { REVIEW_IMAGE_LIMITS, REVIEW_SEQUENCE_LIMITS, type LoadedReviewImage } from '../server/review-images.ts'
 import { extractTextResponse, normalizeStructuredTextOutput } from '../src/workflow-core.ts'
 
 const model = { capability: 'text', settings: { executablePath: '/mock/codex', model: 'configured-model', reasoningEffort: 'high', timeoutMs: '1000' } }
@@ -64,6 +64,49 @@ test('Codex options resolve explicit provider settings without guessing a model 
     assert.throws(() => resolveCodexTextConfig(model, invalid), /CODEX_CONFIG_INVALID/)
   }
   assert.throws(() => resolveCodexTextConfig({ ...model, capability: 'video' }), /CODEX_CONFIG_INVALID/)
+})
+
+test('Codex rejects byte and CLI character limits before spawning, including wrapper text', async () => {
+  const mock = mockProcess(invocation => invocation.complete(successEvents('should not run'), 'should not run'))
+  await assert.rejects(callCodexText(configuration(), 'x'.repeat(CODEX_TEXT_LIMITS.promptChars + 1), [], mock.dependencies), /100万字符/)
+  await assert.rejects(callCodexText(configuration(), 'x'.repeat(CODEX_TEXT_LIMITS.promptChars), [], mock.dependencies), /包含附件目录.*100万字符/)
+  await assert.rejects(callCodexText(configuration(), '中'.repeat(700_000), [], mock.dependencies), /2MiB/)
+  assert.equal(mock.calls.length, 0)
+})
+
+test('Codex inherits only an enabled loopback macOS HTTPS proxy, never a parent proxy', async () => {
+  const local = mockProcess(invocation => {
+    assert.equal(invocation.options.env?.HTTPS_PROXY, 'http://127.0.0.1:7890')
+    assert.equal(invocation.options.env?.HTTP_PROXY, undefined)
+    return invocation.complete(successEvents('ok'), 'ok')
+  })
+  local.dependencies.systemProxyOutput = 'HTTPSEnable : 1\nHTTPSProxy : 127.0.0.1\nHTTPSPort : 7890\n'
+  await callCodexText(configuration(), 'proxy check', [], local.dependencies)
+  const remote = mockProcess(invocation => {
+    assert.equal(invocation.options.env?.HTTPS_PROXY, undefined)
+    return invocation.complete(successEvents('ok'), 'ok')
+  })
+  remote.dependencies.systemProxyOutput = 'HTTPSEnable : 1\nHTTPSProxy : remote.invalid\nHTTPSPort : 443\n'
+  await callCodexText(configuration(), 'proxy check', [], remote.dependencies)
+})
+
+test('Codex accepts bounded native grid pages while mixed and ordinary images retain the smaller byte limit', async () => {
+  const mock = mockProcess(invocation => invocation.complete(successEvents('reviewed'), 'reviewed'))
+  const data = Buffer.alloc(1024 * 1024, 7)
+  const pages = Array.from({ length: 40 }, (_, index) => ({
+    url: `sequence-grid:attachment-${index}`, bytes: data, kind: 'sequence-grid' as const, mimeType: 'image/jpeg' as const,
+    detailConfig: { transport: { mode: 'sequence-grid' as const, columns: 2 as const, rows: 2 as const,
+      format: 'jpeg' as const, quality: 90, chromaSubsampling: '4:4:4' as const } },
+    cells: [{ evidenceIndex: index, url: `/generated/native-${index}.jpg`, sourceSha256: 'a'.repeat(64),
+      sourceRect: { left: 0, top: 0, width: 1, height: 1 }, targetRect: { left: 0, top: 0, width: 1, height: 1 } }],
+  })) as LoadedReviewImage[]
+  assert.ok(data.length * pages.length > REVIEW_IMAGE_LIMITS.totalBytes)
+  assert.ok(data.length * pages.length < REVIEW_SEQUENCE_LIMITS.transportBytes)
+  assert.equal((await callCodexText(configuration(), 'review native frames', pages, mock.dependencies)).body.content[0].text, 'reviewed')
+  assert.equal(mock.calls.length, 1)
+  await assert.rejects(callCodexText(configuration(), 'mixed images', [...pages.slice(0, 24),
+    { ...pages[24], kind: 'original' }], mock.dependencies), /总字节上限/)
+  assert.equal(mock.calls.length, 1)
 })
 
 test('only an absent known old app executable resolves to an executable CLI in the same bundle, retaining provenance', async () => {
@@ -239,6 +282,7 @@ test('only exact recovered CLI diagnostics are permitted and remain auditable al
   const diagnostics = [
     { type: 'item.completed', item: { id: 'd1', type: 'error', message: 'Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`.' } },
     { type: 'error', message: 'Reconnecting... 2/5 (request timed out)' },
+    { type: 'error', message: 'Reconnecting... 2/5 (workspace routing discovery timed out)' },
     { type: 'item.completed', item: { id: 'd2', type: 'error', message: 'Falling back from WebSockets to HTTPS transport. request timed out' } },
   ]
   const mock = mockProcess(invocation => invocation.complete([...diagnostics, ...successEvents('recovered')], 'recovered'))
@@ -268,6 +312,21 @@ test('record-s24ke4 WebSocket reset reconnects and HTTPS recovery finish the sam
   assert.equal(mock.calls.length, 1, 'CLI reconnects without a second model invocation')
   assert.deepEqual(mock.calls[0].signals, [], 'recovery progress must not kill the CLI')
   assert.equal(result.body.raw.exitCode, 0)
+})
+
+test('record-t9hedg workspace routing timeout remains reconnect progress until the CLI completes', async () => {
+  const progress = { type: 'error', message: 'Reconnecting... 2/5 (workspace routing discovery timed out)' }
+  const mock = mockProcess(invocation => invocation.complete([progress, ...successEvents('script')], 'script'))
+  const result = await callCodexText(configuration(), 'write the script', [], mock.dependencies)
+  assert.equal(extractTextResponse(result.body), 'script')
+  assert.deepEqual(result.body.raw.recoveredDiagnostics, [progress])
+  assert.deepEqual(mock.calls[0].signals, [])
+
+  const incomplete = mockProcess(invocation => invocation.complete([progress], 'partial script'))
+  await assert.rejects(callCodexText(configuration(), 'write the script', [], incomplete.dependencies), /CODEX_TURN_INCOMPLETE/)
+  const terminal = mockProcess(invocation => invocation.complete([progress,
+    { type: 'turn.failed', error: { message: 'workspace routing discovery timed out' } }], 'partial script'))
+  await assert.rejects(callCodexText(configuration(), 'write the script', [], terminal.dependencies), /CODEX_ERROR_EVENT/)
 })
 
 test('socket-reset progress does not conceal terminal failure, authentication errors, missing output or deadline', async () => {
